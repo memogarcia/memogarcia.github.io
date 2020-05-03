@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Physics Richard Feynman on Memo Garcia</title>
+    <link>https://memogarcia.mx/tags/physics-richard-feynman/</link>
+    <description>Recent content in Physics Richard Feynman on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 04 Jan 2019 22:20:31 +0100</lastBuildDate>
+    
+	<atom:link href="https://memogarcia.mx/tags/physics-richard-feynman/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Some Richard Feynman videos</title>
+      <link>https://memogarcia.mx/posts/richard-feynman/</link>
+      <pubDate>Fri, 04 Jan 2019 22:20:31 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/richard-feynman/</guid>
+      <description>The World from another point of view
+  Fun to imagine
+  </description>
+    </item>
+    
+  </channel>
+</rss>

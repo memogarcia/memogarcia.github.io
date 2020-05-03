@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Memo Garcia</title>
+    <link>https://memogarcia.mx/tags/</link>
+    <description>Recent content in Tags on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 03 Jan 2019 18:53:23 +0100</lastBuildDate>
+    
+	<atom:link href="https://memogarcia.mx/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Beautiful Software Python</title>
+      <link>https://memogarcia.mx/tags/beautiful-software-python/</link>
+      <pubDate>Thu, 03 Jan 2019 18:53:23 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/beautiful-software-python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Boardgames</title>
+      <link>https://memogarcia.mx/tags/boardgames/</link>
+      <pubDate>Fri, 04 Jan 2019 15:49:47 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/boardgames/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fzf Python Documentation</title>
+      <link>https://memogarcia.mx/tags/fzf-python-documentation/</link>
+      <pubDate>Fri, 14 Jun 2019 15:03:30 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/fzf-python-documentation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Japanese</title>
+      <link>https://memogarcia.mx/tags/japanese/</link>
+      <pubDate>Fri, 22 Nov 2019 07:53:23 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/japanese/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linux Matebook</title>
+      <link>https://memogarcia.mx/tags/linux-matebook/</link>
+      <pubDate>Tue, 04 Dec 2018 13:10:28 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/linux-matebook/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Openstack Faas Event Driven Platform</title>
+      <link>https://memogarcia.mx/tags/openstack-faas-event-driven-platform/</link>
+      <pubDate>Fri, 05 Jan 2018 19:08:55 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/openstack-faas-event-driven-platform/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Physics Richard Feynman</title>
+      <link>https://memogarcia.mx/tags/physics-richard-feynman/</link>
+      <pubDate>Fri, 04 Jan 2019 22:20:31 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/physics-richard-feynman/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python Openstack Containers Docker</title>
+      <link>https://memogarcia.mx/tags/python-openstack-containers-docker/</link>
+      <pubDate>Sat, 05 May 2018 18:53:14 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/python-openstack-containers-docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security Ssl Certificates</title>
+      <link>https://memogarcia.mx/tags/security-ssl-certificates/</link>
+      <pubDate>Mon, 05 Feb 2018 19:03:30 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/tags/security-ssl-certificates/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

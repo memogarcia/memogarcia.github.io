@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Openstack Faas Event Driven Platform on Memo Garcia</title>
+    <link>https://memogarcia.mx/tags/openstack-faas-event-driven-platform/</link>
+    <description>Recent content in Openstack Faas Event Driven Platform on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 05 Jan 2018 19:08:55 +0100</lastBuildDate>
+    
+	<atom:link href="https://memogarcia.mx/tags/openstack-faas-event-driven-platform/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Pratai, event driven platform for OpenStack</title>
+      <link>https://memogarcia.mx/posts/pratai/</link>
+      <pubDate>Fri, 05 Jan 2018 19:08:55 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/pratai/</guid>
+      <description>Note This is a Work-In-Progress Document.
+Read the docs at memogarcia/pratai-docs
+Abstract Pratai provides an incredibly flexible and resilient platform to migrate workloads to the cloud that respond to events without having to manage any server or network.
+How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (disclaimer, from now on I will refer to code as functions), that will react to an event without worrying about anything else, the platform handles the execution.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python Openstack Containers Docker on Memo Garcia</title>
+    <link>https://memogarcia.mx/tags/python-openstack-containers-docker/</link>
+    <description>Recent content in Python Openstack Containers Docker on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 05 May 2018 18:53:14 +0100</lastBuildDate>
+    
+	<atom:link href="https://memogarcia.mx/tags/python-openstack-containers-docker/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Deploying OpenStack on Docker</title>
+      <link>https://memogarcia.mx/posts/openstack-containers/</link>
+      <pubDate>Sat, 05 May 2018 18:53:14 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/openstack-containers/</guid>
+      <description>Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer
+Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
+Current deployment: stable/queens
+Host configuration The default configuration for this environment is composed by 3 main components that need to run on the host:
+ Docker Libvirtd OpenVSwitch  Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage.</description>
+    </item>
+    
+  </channel>
+</rss>

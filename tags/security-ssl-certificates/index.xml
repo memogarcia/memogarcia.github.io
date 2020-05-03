@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security Ssl Certificates on Memo Garcia</title>
+    <link>https://memogarcia.mx/tags/security-ssl-certificates/</link>
+    <description>Recent content in Security Ssl Certificates on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 05 Feb 2018 19:03:30 +0100</lastBuildDate>
+    
+	<atom:link href="https://memogarcia.mx/tags/security-ssl-certificates/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>OpenSSL Certificate Authority</title>
+      <link>https://memogarcia.mx/posts/becoming-ca/</link>
+      <pubDate>Mon, 05 Feb 2018 19:03:30 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/becoming-ca/</guid>
+      <description>A Certificate Authority or CA is an entity that signs digital certificates. These digital certificates are used to validate the connection while using secure mechanisms.
+Generating a root CA We will use a root CA to create intermediate CA&amp;rsquo;s which are trusted to sign certificates on its behalf.
+First, prepare the environment.
+mkdir /root/ca &amp;amp;&amp;amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &amp;gt; serial  Then download the template for /root/ca/openssl.</description>
+    </item>
+    
+  </channel>
+</rss>

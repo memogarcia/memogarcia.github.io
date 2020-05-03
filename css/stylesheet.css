@@ -1,0 +1,61 @@
+body {
+    font-family: 'Ubuntu', sans-serif;
+    color: black;
+    margin: auto;
+    max-width: 50em;
+}
+
+#page-title {
+    text-align: center;
+}
+
+#page-title h1 a, .post a {
+    color: black;
+}
+
+a {
+    text-decoration: none;
+}
+
+#page-title a:hover, .post a:hover {
+    text-decoration: underline;
+}
+
+.date-time-title {
+    display: inline-block;
+    min-width: 100px;
+}
+
+#posts {
+    padding-left: 2em;
+}
+
+.post {
+    padding-left: 1em;
+}
+
+.blog-post {
+    padding-left: 1em;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+table {
+    color: #212529;
+    border-collapse: collapse;
+    border: 0;
+}
+
+table th,
+table td {
+    padding: 1rem;
+    vertical-align: top;
+    font-size: 120%;
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Beautiful Software Python on Memo Garcia</title>
+    <link>https://memogarcia.mx/tags/beautiful-software-python/</link>
+    <description>Recent content in Beautiful Software Python on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 03 Jan 2019 18:53:23 +0100</lastBuildDate>
+    
+	<atom:link href="https://memogarcia.mx/tags/beautiful-software-python/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Beyond PEP 8</title>
+      <link>https://memogarcia.mx/posts/beyond-pep8/</link>
+      <pubDate>Thu, 03 Jan 2019 18:53:23 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/beyond-pep8/</guid>
+      <description>Best practices for beautiful intelligible code
+  </description>
+    </item>
+    
+  </channel>
+</rss>

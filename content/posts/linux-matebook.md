@@ -180,6 +180,8 @@ sudo apt install --reinstall linux-image-generic linux-image-4.15.0-42-generic
 sudo for FILE in $(dpkg-divert --list | grep nvidia-340 | awk '{print $3}'); do dpkg-divert --remove $FILE; done
 ```
 
+### Using an eGPU
+
 ### references
 
 * <https://github.com/ValveSoftware/steam-for-linux/issues/5707>
