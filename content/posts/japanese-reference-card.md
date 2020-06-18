@@ -1,5 +1,5 @@
 ---
-title: "日本 参照カード"
+title: "日本語参照カード"
 date: 2019-11-22T07:53:23+01:00
 draft: false
 tags: japanese
@@ -8,38 +8,38 @@ toc: false
 
 ## ひらがな + カタカナ
 
-|   | a         | i         | u         | e        | o        |
-|---|-----------|-----------|-----------|----------|----------|
-| - | a あ ア   | i い イ   | u う ウ   | e え エ  | o お オ  |
-| k | ka か カ  | ki き キ  | ku く ク  | ke け ケ | ko こ コ |
-| s | a さ サ   | shi し シ | su す ス  | se せ セ | so そ ソ |
-| t | ta た タ  | chi ち チ | tsu つ ツ | te て テ | to と ト |
-| n | na な ナ  | ni に ニ  | nu ぬ ヌ  | ne ね ネ | no の ノ |
-| h | ha は ハ  | hi ひ ヒ  | fu ふ フ  | he へ ヘ | ho ほ ホ |
-| m | ma ま マ  | mi み ミ  | mu む ム  | me め メ | mo も モ |
-| y | ya や ヤ  |          | yu ゆ ユ  |          | yo よ ヨ |
-| r | ra ら ラ  | ri り リ  | ru る ル  | re れ レ | ro ろ ロ |
-| w | wa わ ワ  |           |           |          | wo を ヲ |
-| - | n ん ン |           |           |          |          |
-|  |           |           |          |          |
-| g | ga が ガ  | gi ぎ ギ  | gu ぐ グ  | ge げ ゲ | go ご ゴ |
-| z | za ざ ザ  | ji じ ジ  | zu ず ズ  | ze ぜ ゼ | zo ぞ ゾ |
-| d | da だ ダ  | ji ぢ ヂ  | zu づ ヅ  | de で デ | do ど ド |
-| b | ba ば バ  | bi び ビ  | bu ぶ ブ  | be べ ベ | bo ぼ ボ |
-| p | pa ぱ パ  | pi ぴ パ  | pu ぷ プ  | pe ぺ ペ | po ぽ ポ |
-|  |           |           |          |          |
-| ky | kya きゃ キャ |   | kyu きゅ キュ |  | kyo きょ キョ |
-| sh | sha しゃ シャ |   | shu しゅ シュ |  | sho しょ ショ |
-| ch | cha ちゃ チャ |   | chu ちゅ チュ |  | cho ちょ チョ |
-| ny | nya にゃ ニャ |   | nyu にゅ ニュ |  | nyo にょ ニョ |
-| my | mya みゃ ミャ |   | myu みゅ ミュ |  | myo みょ ミョ |
-| ry | rya りゃ リャ |   | ryu りゅ リュ |  | ryo りょ リョ |
-| hy | hya ひゃ ヒャ |   | hyu ひゅ ヒュ |  | hyo ひょ ヒョ |
-|  |           |           |          |          |
-| gy | gya ぎゃ ギャ  |   | gyu ぎゅ ギュ  |  | gyo ぎょ ギョ  |
-| j | ja じゃ ジャ |   | ju じゅ ジュ   |  | jo じょ ジョ  |
-| by | bya びゃ ビャ |   | byu びゅ ビュ |  | byo びょ ビョ |
-| py | pya ぴゃ ピャ |   | pyu ぴゅ ピュ |  | pyo ぴょ ピョ |
+|     | a             | i         | u             | e        | o             |
+| --- | ------------- | --------- | ------------- | -------- | ------------- |
+| -   | a あ ア       | i い イ      | u う ウ          | e え エ     | o お オ       |
+| k   | ka か カ      | ki き キ  | ku く ク      | ke け ケ | ko こ コ      |
+| s   | a さ サ       | shi し シ | su す ス      | se せ セ | so そ ソ      |
+| t   | ta た タ      | chi ち チ | tsu つ ツ     | te て テ | to と ト      |
+| n   | na な ナ      | ni に ニ  | nu ぬ ヌ      | ne ね ネ | no の ノ      |
+| h   | ha は ハ      | hi ひ ヒ  | fu ふ フ      | he へ ヘ | ho ほ ホ      |
+| m   | ma ま マ      | mi み ミ  | mu む ム      | me め メ | mo も モ      |
+| y   | ya や ヤ      |           | yu ゆ ユ      |          | yo よ ヨ      |
+| r   | ra ら ラ      | ri り リ  | ru る ル      | re れ レ | ro ろ ロ      |
+| w   | wa わ ワ      |           |               |          | wo を ヲ      |
+| -   | n ん ン       |           |               |          |               |
+|     |               |           |               |          |
+| g   | ga が ガ      | gi ぎ ギ  | gu ぐ グ      | ge げ ゲ | go ご ゴ      |
+| z   | za ざ ザ      | ji じ ジ  | zu ず ズ      | ze ぜ ゼ | zo ぞ ゾ      |
+| d   | da だ ダ      | ji ぢ ヂ  | zu づ ヅ      | de で デ | do ど ド      |
+| b   | ba ば バ      | bi び ビ  | bu ぶ ブ      | be べ ベ | bo ぼ ボ      |
+| p   | pa ぱ パ      | pi ぴ パ  | pu ぷ プ      | pe ぺ ペ | po ぽ ポ      |
+|     |               |           |               |          |
+| ky  | kya きゃ キャ |           | kyu きゅ キュ |          | kyo きょ キョ |
+| sh  | sha しゃ シャ |           | shu しゅ シュ |          | sho しょ ショ |
+| ch  | cha ちゃ チャ |           | chu ちゅ チュ |          | cho ちょ チョ |
+| ny  | nya にゃ ニャ |           | nyu にゅ ニュ |          | nyo にょ ニョ |
+| my  | mya みゃ ミャ |           | myu みゅ ミュ |          | myo みょ ミョ |
+| ry  | rya りゃ リャ |           | ryu りゅ リュ |          | ryo りょ リョ |
+| hy  | hya ひゃ ヒャ |           | hyu ひゅ ヒュ |          | hyo ひょ ヒョ |
+|     |               |           |               |          |
+| gy  | gya ぎゃ ギャ |           | gyu ぎゅ ギュ |          | gyo ぎょ ギョ |
+| j   | ja じゃ ジャ  |           | ju じゅ ジュ  |          | jo じょ ジョ  |
+| by  | bya びゃ ビャ |           | byu びゅ ビュ |          | byo びょ ビョ |
+| py  | pya ぴゃ ピャ |           | pyu ぴゅ ピュ |          | pyo ぴょ ピョ |
 
 <br>
 
@@ -47,39 +47,39 @@ toc: false
 
 ### Some numbers
 
-|   |          |          |
-|---|-----------|-----------|
-| 0  |   ぜロ/れい      | zero/rei      |
-| 1  |    いち      |  ichi      |
-| 2  |    に      |    ni      |
-| 3  |    さん      |    san      |
-| 4  |    よん     |    yon      |
-| 5  |    ご      |    go      |
-| 6  |    ろく      |    roku      |
-| 7  |    なな      |    nana      |
-| 8  |    はち      |    hachi     |
-| 9  |    きゅ/く      |    kyu/ku      |
-| 10  |    じゅう      |    juu     |
-| 11  |   じゅういち       |    juuichi     |
-| 12  |    じゅうに     |    juuni     |
-| 13  |    じゅうさん      |    juusan     |
-| 14  |    じゅうよん      |    juuyon     |
-| 15  |     じゅうご     |    juugo     |
-| 16  |    じゅうろく      |    juuroku     |
-| 17  |   じゅうなな       |    juunana     |
-| 18  |   じゅうはち       |    juuhachi    |
-| 19  |   じゅうきゅ       |    juukyuu     |
-| 20  |     にじゅう     |    nijuu     |
-| 30  |     さんじゅう     |    sanjuu     |
-| 40  |     よんじゅう     |    yonjuu     |
-| 50  |     ごじゅう     |    gojuu     |
-| 60  |     ろくじゅう     |    rokujuu     |
-| 70  |     ななじゅう     |    nanajuu     |
-| 80  |     はちじゅう     |    hachijuu     |
-| 90  |     きゅじゅう     |    kuujuu     |
-| 100  |   ひゃく      |    hyaku     |
-| 1000  |    せん      |    sen     |
-| 10000  |    まん    |    ichiman     |
+|       |            |          |
+| ----- | ---------- | -------- |
+| 0     | ぜロ/れい  | zero/rei |
+| 1     | いち       | ichi     |
+| 2     | に         | ni       |
+| 3     | さん       | san      |
+| 4     | よん       | yon      |
+| 5     | ご         | go       |
+| 6     | ろく       | roku     |
+| 7     | なな       | nana     |
+| 8     | はち       | hachi    |
+| 9     | きゅ/く    | kyu/ku   |
+| 10    | じゅう     | juu      |
+| 11    | じゅういち | juuichi  |
+| 12    | じゅうに   | juuni    |
+| 13    | じゅうさん | juusan   |
+| 14    | じゅうよん | juuyon   |
+| 15    | じゅうご   | juugo    |
+| 16    | じゅうろく | juuroku  |
+| 17    | じゅうなな | juunana  |
+| 18    | じゅうはち | juuhachi |
+| 19    | じゅうきゅ | juukyuu  |
+| 20    | にじゅう   | nijuu    |
+| 30    | さんじゅう | sanjuu   |
+| 40    | よんじゅう | yonjuu   |
+| 50    | ごじゅう   | gojuu    |
+| 60    | ろくじゅう | rokujuu  |
+| 70    | ななじゅう | nanajuu  |
+| 80    | はちじゅう | hachijuu |
+| 90    | きゅじゅう | kuujuu   |
+| 100   | ひゃく     | hyaku    |
+| 1000  | せん       | sen      |
+| 10000 | まん       | ichiman  |
 
 <br>
 
@@ -90,7 +90,7 @@ toc: false
 <!-- page 60 -->
 
 |           |            |             |
-|-----------|------------|-------------|
+| --------- | ---------- | ----------- |
 | Sunday    | にちようび | nichi-youbi |
 | Monday    | げつようび | getsu-youbi |
 | Tuesday   | かようび   | ka-youbi    |
@@ -102,16 +102,16 @@ toc: false
 ### Days of the month
 
 |      |                    |                   |          |
-|-----:|--------------------|-------------------|----------|
-| 1st  | ついたち           | tsuitachi         | 一日     |
-| 2nd  | ふつか             | futsuka           | 二日     |
-| 3rd  | よっか             | mikka             | 三日     |
-| 4th  | みっか             | yokka             | 四日     |
-| 5th  | いつか             | itsuka            | 五日     |
-| 6th  | むいか             | muika             | 六日     |
-| 7th  | なのか             | nanoka            | 七日     |
-| 8th  | ようか             | youka             | 八日     |
-| 9th  | ここのか           | kokonoka          | 九日     |
+| ---: | ------------------ | ----------------- | -------- |
+|  1st | ついたち           | tsuitachi         | 一日     |
+|  2nd | ふつか             | futsuka           | 二日     |
+|  3rd | よっか             | mikka             | 三日     |
+|  4th | みっか             | yokka             | 四日     |
+|  5th | いつか             | itsuka            | 五日     |
+|  6th | むいか             | muika             | 六日     |
+|  7th | なのか             | nanoka            | 七日     |
+|  8th | ようか             | youka             | 八日     |
+|  9th | ここのか           | kokonoka          | 九日     |
 | 10th | とおか             | tooka             | 十日     |
 | 11th | じゅういちにち     | juuichi-nichi     | 十日     |
 | 12th | じゅうににち       | juuni-nichi       | 十二日   |
@@ -138,7 +138,7 @@ toc: false
 ### Months
 
 |           |                |               |
-|-----------|----------------|---------------|
+| --------- | -------------- | ------------- |
 | January   | いちがつ       | ichi-gatsu    |
 | February  | にがつ         | ni-gatsu      |
 | March     | さんがつ       | san-gatsu     |
@@ -154,14 +154,14 @@ toc: false
 
 ## Extra Tools
 
-* [Rikaichamp Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/rikaichamp/)
+- [Rikaichamp Firefox extension](https://addons.mozilla.org/en-US/firefox/addon/rikaichamp/)
 
 <br>
 
 ## References
 
-* <https://www.mlcjapanese.co.jp/hiragana_katakana.html>
-* <https://en.wikipedia.org/wiki/Hiragana>
-* <https://en.wikipedia.org/wiki/Katakana>
-* <https://www.kanpai-japan.com/learn-japanese/how-write-date-japanese>
-* <https://www.sljfaq.org/afaq/month-days.html>
+- <https://www.mlcjapanese.co.jp/hiragana_katakana.html>
+- <https://en.wikipedia.org/wiki/Hiragana>
+- <https://en.wikipedia.org/wiki/Katakana>
+- <https://www.kanpai-japan.com/learn-japanese/how-write-date-japanese>
+- <https://www.sljfaq.org/afaq/month-days.html>
