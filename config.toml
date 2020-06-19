@@ -1,4 +1,4 @@
-baseURL = "https://memogarcia.mx"
+baseURL = "https://memogarcia.mx/"
 languageCode = "en-us"
 title = "Memo Garcia"
 theme = "archie"
