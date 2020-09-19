@@ -15,7 +15,7 @@ Pratai provides an incredibly flexible and resilient platform to migrate
 workloads to the cloud that respond to events without having to manage any
 server or network.
 
-### How it works
+## How it works
 
 The goal of Pratai is simple. Deploy "code" (disclaimer, from now on I
 will refer to code as functions), that will react to an event without
@@ -49,11 +49,11 @@ endpoint, which can be assigned at creation time, or a message in a queue but
 basically, every event will spawn a container that will execute the event and
 then disappear.
 
-### Architecture
+## Architecture
 
 Pratai is conformed of 2 major pieces, the Control Plane and the Nodes.
 
-#### Control Plane
+### Control Plane
 
 An API gateway, a database cluster and a load balancer, and agent and a scheduler
 runs in the control plane.
@@ -67,7 +67,7 @@ and cluster information.
 And a nginx load balancer will connect 3 instances to the API in a `least_connect`
 manner.
 
-#### Pratai Nodes
+### Pratai Nodes
 
 A Pratai node is composed by a driver and runtimes.
 
@@ -110,7 +110,7 @@ RUN git clone "repo_with_runtimes"
 CMD ["python", "/pratai-runtimes/runtimes/python27/server.py"]
 ```
 
-#### Distributed Queues
+## Distributed Queues
 
 ZeroMQ is the choice for queuing and passing messages in pratai using the PUSH/PULL
 architecture we can create a pipelines of messages that can be distributed
@@ -119,7 +119,7 @@ across multiple nodes.
 We will have a producer and a collector running in the scheduler, and consumers
 running in the Pratai nodes, one consumer should be spawned per thread.
 
-### Events
+## Events
 
 A function can react to any event coming through webhooks or messages
 in a queue, even events that happen in a database can trigger a function, is
@@ -128,7 +128,7 @@ so chaining functions to build pipelines of data processing is easy with Pratai.
 
 There are 2 kinds of events, `async` and `wait_for_response`
 
-#### Async
+### Async
 
 This is the default event for pratai, it will take a request or a message and
 process it asynchronously, then, you can collect the logs or responses,
@@ -164,7 +164,7 @@ every time a timer sends an event, the frequency of the events are set in minute
 pratai function-create {name} --type async --event timer --frequency 5
 ```
 
-#### Wait For Response
+### Wait For Response
 
 This is a request that works like a typical web server, you send a request and
 you wait for a response and only works for webhooks events
@@ -173,18 +173,18 @@ you wait for a response and only works for webhooks events
 pratai function-create {name} --type wait_for_response --event webhook
 ```
 
-### Components
+## Components
 
-#### API Gateway
+### API Gateway
 
 The API is the main interface for incoming webhook requests and for platform
 configuration.
 
-#### Agent
+### Agent
 
 The Agent is the main interface for events in queues and cron jobs.
 
-#### client
+### client
 
 python-prataiclient is the component that allows the user to interact with the
 api from the command line interface, with it you can do stuff like this:
@@ -211,16 +211,16 @@ export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 ```
 
-#### Drivers
+## Drivers
 
 A driver is a backend that orchestrate a container that contains the custom code.
 
-#### Runtimes
+## Runtimes
 
 A runtime is a language that is supported by the platform, it contains the
 language and its dependencies.
 
-#### Scheduler
+## Scheduler
 
 The scheduler primarily consists of a set of Python daemons, though it requires
 and integrates with a number of native system components for databases and
@@ -236,7 +236,7 @@ before being distributed among the pratai nodes.
 When a function finish the function execution it will send the result and
 status here in order to be stored in the database afterwards.
 
-### Security & Secrets
+## Security & Secrets
 
 The functions that interact with external services most often that not they
 require to use credentials to connect, for this, Barbican has been proposed to
@@ -244,11 +244,11 @@ help with this scenario.
 
 We definitely recommend using tokens instead of user/passwords when possible.
 
-### Community
+## Community
 
 Join us at `#pratai` irc channel in `freenode`
 
-### Repositories
+## Repositories
 
 - [memogarcia/pratai-docs](https://github.com/memogarcia/pratai-docs)
 - [memogarcia/pratai-agent](https://github.com/memogarcia/pratai-agent)

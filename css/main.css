@@ -1,5 +1,5 @@
 /* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap');
 /* Markdown */
 :root{
 --maincolor: blue;
@@ -10,7 +10,7 @@
 }
 html {
   color: #232333;
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Open Sans', sans-serif;
   font-size: 15px;
   line-height: 1.6em;
 }

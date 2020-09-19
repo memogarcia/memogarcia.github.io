@@ -24,9 +24,8 @@ if not NETBOX_TOKEN:
     raise OSError("environmet var NETBOX_TOKEN not set")
 
 nb = pynetbox.api(NETBOX_ENDPOINT, NETBOX_TOKEN)
-```
 
-```python
+
 def create_vm(vm_metadata):
     """Create a VM on Netbox"""
     with open("{0}".format(vm_metadata.lower()), "r") as fd:
