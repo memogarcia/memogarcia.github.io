@@ -6,19 +6,10 @@
     <description>Recent content in Tags on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 Nov 2019 07:53:23 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 14 Jun 2019 15:03:30 +0100</lastBuildDate>
     
 	<atom:link href="https://memogarcia.mx/tags/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>japanese</title>
-      <link>https://memogarcia.mx/tags/japanese/</link>
-      <pubDate>Fri, 22 Nov 2019 07:53:23 +0100</pubDate>
-      
-      <guid>https://memogarcia.mx/tags/japanese/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>fzf, python, documentation</title>
