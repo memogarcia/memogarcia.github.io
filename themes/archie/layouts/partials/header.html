@@ -24,8 +24,8 @@
 	{{- else if (isset .Site.Params "social") -}}
 	<script src="{{ .Site.BaseURL }}js/feather.min.js"></script>
 	{{ end }}
-	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" media="screen" href="{{ .Site.BaseURL }}css/main.css" />
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 	{{- if or (eq .Site.Params.mode "auto") (eq .Site.Params.mode "dark") -}}
 	<link rel="stylesheet" type="text/css" href="{{ .Site.BaseURL }}css/dark.css"
 		{{ if eq .Site.Params.mode "auto" }}media="(prefers-color-scheme: dark)" {{ end }} />
