@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sci-fi on Memo Garcia</title>
+    <link>https://memogarcia.mx/tags/sci-fi/</link>
+    <description>Recent content in sci-fi on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 20 Aug 2020 07:53:23 +0100</lastBuildDate>
+    
+	<atom:link href="https://memogarcia.mx/tags/sci-fi/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>How (I think) TARDIS move through Space and Time</title>
+      <link>https://memogarcia.mx/posts/moving-through-timespace/</link>
+      <pubDate>Thu, 20 Aug 2020 07:53:23 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/moving-through-timespace/</guid>
+      <description>With the power of dimension recursion :)
+Disclaimer I&amp;rsquo;m not an astrophysicist, this is just a fun thought experiment.
+Second Disclaimer This might not be exactly the right way to describe dimensions and I don’t pretend to know how they work. The 4th and 5th dimension are just an extrapolation from the first 3 dimensions.
+TARDIS is a fictional time machine and spacecraft from the TV series Doctor Who.
+In the TV show, the TARDIS is able to move through space and time at will, but how does it do it?</description>
+    </item>
+    
+  </channel>
+</rss>

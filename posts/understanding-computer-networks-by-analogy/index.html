@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html><head>
 	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Understanding Computer Networks by Analogy - Part 1 - Computer Networks - Memo Garcia</title><meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta property="og:title" content="Understanding Computer Networks by Analogy - Part 1 - Computer Networks" />
-<meta property="og:description" content="ToC 1. []() " />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Understanding Computer Networks by Analogy - Part 1 - Networks and subnets - Memo Garcia</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="Understanding Computer Networks by Analogy - Part 1 - Networks and subnets" />
+<meta property="og:description" content="Prologue There are many ways to learn something new and no approach is best. But, what works best for me is a combination of trial and error and learning by first principles. But, as someone once said:
+ Knowledge is only valuable when it leads to taking action on an idea.
+ And as long as you share that knowledge you are taking action on an idea.
+Just one big question is: how to share them?" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://memogarcia.mx/posts/understanding-computer-networks-by-analogy/" />
 <meta property="article:published_time" content="2020-08-20T07:53:23+01:00" />
@@ -24,14 +27,68 @@
 <main>
 	<article>
 		<div class="title">
-			<h1 class="title">Understanding Computer Networks by Analogy - Part 1 - Computer Networks</h1>
+			<h1 class="title">Understanding Computer Networks by Analogy - Part 1 - Networks and subnets</h1>
 			<div class="meta">Aug 20, 2020</div>
 		</div>
 		
 
 		<section class="body">
-			<h2 id="toc">ToC</h2>
-<pre><code>1. []()</code></pre>
+			<h2 id="prologue">Prologue</h2>
+<p>There are many ways to learn something new and no approach is best. But, what works best for me is a combination of <code>trial and error</code> and learning by <code>first principles</code>. But, as someone once said:</p>
+<blockquote>
+<p>Knowledge is only valuable when it leads to taking action on an idea.</p>
+</blockquote>
+<p>And as long as you share that knowledge you are taking action on an idea.</p>
+<p>Just one big question is: <strong>how to share them?</strong>
+I find that analogies are a great tool to do that.
+They let you group together many ideas and present them as a whole to new audiences in a very fun way.</p>
+<p>In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.</p>
+<h2 id="networks-or-the-buildings">Networks or &ldquo;The buildings&rdquo;</h2>
+<p>This building represents a &ldquo;network&rdquo; of &ldquo;connected rooms&rdquo;.</p>
+<p>Think of each room as a computer with a room number as an <a href="">IP address</a>.</p>
+<pre><code>room + room number == computer + ip address
+</code></pre>
+<p><img src="/img/building1.png" alt="building1"></p>
+<p>In this network, each room can communicate directly to any other room using <a href="">network protocols</a> that will be represented as a <code>packages</code>.</p>
+<p>But now you are wondering&hellip; I don&rsquo;t want to send packages to all my neighbors&hellip;I just want to communicate with specific ones.</p>
+<p>Enter the&hellip;</p>
+<h2 id="subnets-or-the-floors">Subnets or &ldquo;The floors&rdquo;</h2>
+<p>By dividing your building into floors you can now isolate the communication between them.
+Neighbors in the 6th floor cannot communicate with neighbors in the 9th floor.</p>
+<p>This is called a <a href="https://en.wikipedia.org/wiki/Subnetwork">subnet</a></p>
+<p><img src="/img/floor1.png" alt="floor1"></p>
+<p>You can identify the rooms by the room number or IP address.</p>
+<p>Example room 69 can be idenfied as:</p>
+<pre><code>floor 6, room 9
+</code></pre>
+<p>or as an IP address:</p>
+<pre><code>192.168.6.9
+</code></pre>
+<p>This room number is unique to your building but the next building can have a room 69 in its building as well.</p>
+<h3 id="computers-or-the-room">Computers or &ldquo;The room&rdquo;</h3>
+<p>In reality, your room number is not tied to the physical space in the building but to the door that allows access to it.</p>
+<p><img src="/img/room1.png" alt="room1"></p>
+<p>Which means that your room can have many doors with different properties:</p>
+<ol>
+<li>A door for maintenance,</li>
+<li>A door for guests,</li>
+<li>And so on.</li>
+</ol>
+<p>Within the floor (subnet) your door have a unique number called <a href="https://en.wikipedia.org/wiki/MAC_address">MAC address</a></p>
+<p>In other words, your room is identified by an door number rather than a room number within a subnet.</p>
+<pre><code>room -&gt; door 1 -&gt; room 69
+</code></pre>
+<p>or as a relation between COmputer, MAC and IP</p>
+<pre><code>computer interface eth0 -&gt; ff:ff:ff:ff:ff:ff -&gt; 192.168.6.9
+</code></pre>
+<h2 id="next-topics">Next topics</h2>
+<ol>
+<li>Switches and Routers or how rooms can communicate between floors</li>
+<li>Network protocols or how rooms communicate</li>
+<li>Internet, public IPs, NAT, DNS or how to connect rooms between buildings</li>
+<li>High performance networking or how to speed up the communication between rooms using high speed roads and other techniques</li>
+<li>SDN or dynamic floor arrangement</li>
+</ol>
 
 		</section>
 
@@ -44,6 +101,14 @@
 </main>
 
 
-</div>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-178420056-1"></script>
+<script>
+    
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-178420056-1');
+</script></div>
     </body>
 </html>
