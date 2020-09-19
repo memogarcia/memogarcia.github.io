@@ -6,10 +6,19 @@
     <description>Recent content on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 14 Jun 2019 15:03:30 +0100</lastBuildDate>
+    <lastBuildDate>Thu, 20 Aug 2020 07:53:23 +0100</lastBuildDate>
     
 	<atom:link href="https://memogarcia.mx/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 1 - Computer Networks</title>
+      <link>https://memogarcia.mx/posts/understanding-computer-networks-by-analogy/</link>
+      <pubDate>Thu, 20 Aug 2020 07:53:23 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/understanding-computer-networks-by-analogy/</guid>
+      <description>ToC 1. []() </description>
+    </item>
     
     <item>
       <title>Modular CLI Documentation Fuzzy Finder</title>
