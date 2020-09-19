@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@1,500&display=swap');
 /* Markdown */
 :root{
---maincolor: red;
+--maincolor: blue;
 --bordercl:rebeccapurple;
 --callouctcolor:dodgerblue;
 --hovercolor:navy;
@@ -45,7 +45,7 @@ blockquote {
   padding-left: 1em;
 }
 
-a {
+/* a {
   border-bottom: 3px solid var(--maincolor);
   color: inherit;
   text-decoration: none;
@@ -53,6 +53,27 @@ a {
 a:hover {
     background-color: var(--hovercolor);
     color: #fff;
+} */
+
+a::before {
+  content: "[";
+  /* color: #adb5bd; */
+}
+
+a::after {
+  content: "]";
+  /* color: #adb5bd; */
+}
+
+a {
+  /* color: #495057; */
+  text-decoration: underline;
+  transition: 0.3s;
+}
+
+a:hover {
+  color: #adb5bd;
+  transition: 0.3s;
 }
 
 ul {
@@ -150,12 +171,12 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 2em;
 }
 
-h1::before { color: var(--maincolor); content: '# '; }
-h2::before { color: var(--maincolor); content: '## '; }
-h3::before { color: var(--maincolor); content: '### '; }
-h4::before { color: var(--maincolor); content: '#### '; }
-h5::before { color: var(--maincolor); content: '##### '; }
-h6::before { color: var(--maincolor); content: '###### '; }
+h1::before { color: var(--maincolor); content: 'h1 '; opacity: 50%; }
+h2::before { color: var(--maincolor); content: 'h2 '; opacity: 50%; }
+h3::before { color: var(--maincolor); content: 'h3 '; opacity: 50%; }
+h4::before { color: var(--maincolor); content: 'h4 '; opacity: 50%; }
+h5::before { color: var(--maincolor); content: 'h5 '; opacity: 50%; }
+h6::before { color: var(--maincolor); content: 'h6 '; opacity: 50%; }
 
 /* Footer */
 footer {

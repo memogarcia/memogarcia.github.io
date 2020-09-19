@@ -15,7 +15,7 @@ This laptop has very decent [specs](https://consumer.huawei.com/en/laptops/mateb
 
 Don't expect running workstation level workloads in this machine but it is a wonderful dev machine.
 
-### Things I don't like about the laptop
+## Things I don't like about the laptop
 
 * Palm rejection, especially this one, maybe this is Linux.
 * Sound, it only outputs sound to two speakers under Linux and it has a werid noise under high volumes.
@@ -25,7 +25,7 @@ Don't expect running workstation level workloads in this machine but it is a won
 
 Palm rejection has improved a lot since I updated to the latest `Touchpad` software versions.
 
-### Distro
+## Distro
 
 [Ubuntu 18.04](http://releases.ubuntu.com/18.04/) with kernel `4.15.0-42-generic`
 
@@ -33,13 +33,13 @@ Palm rejection has improved a lot since I updated to the latest `Touchpad` softw
 
 `do-release-upgrade` to [Ubuntu 18.10](http://releases.ubuntu.com/18.10/) and upgraded kernel version to `5.0.0-050000-generic`
 
-### Touchpad
+## Touchpad
 
 ```bash
 sudo apt install acpi acpi-support acpica-tools acpid acpidump acpitail acpitool libacpi0 laptop-detect pommed xserver-xorg-input-synaptics
 ```
 
-### Nvidia drivers
+## Nvidia drivers
 
 ```bash
 sudo add-apt-repository ppa:graphics-drivers/ppa
@@ -82,9 +82,9 @@ I'm getting readings about `4.5W to 6W` battery discharge rate with this configu
 
 After upgrading to kernel `5.0.0-050000-generic` I'm getting discharge rates of `3.5W`, not bad!!!
 
-### Desktop manager
+## Desktop Configuration
 
-#### i3wm
+### i3wm
 
 ```bash
 sudo apt install i3wm i3lock
@@ -118,7 +118,7 @@ i3-msg reload
 i3-msg restart
 ```
 
-##### Media keys
+### Media keys
 
 For screen brightness and key backlights, I'm using [Light](https://github.com/haikarainen/light)
 
@@ -141,7 +141,7 @@ bindsym XF86AudioRaiseVolume exec /usr/bin/pactl set-sink-volume @DEFAULT_SINK@ 
 bindsym XF86AudioMute exec /usr/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
 ```
 
-### Battery
+## Battery
 
 ```bash
 sudo apt install powertop tlp
@@ -150,7 +150,7 @@ sudo powertop --autotune
 sudo tlp start
 ```
 
-### Disk I/O
+## Disk I/O
 
 Following the [graphical method](https://www.cyberciti.biz/faq/howto-linux-unix-test-disk-performance-with-dd-command/) steps on this webpage, I get the following speeds for my 512 GB NVMe PCIe SSD:
 
@@ -162,27 +162,29 @@ Average Access Time: 0.11 msec (1000 samples)
 
 Maybe I'm testing it wrong, but it seems to me the write speeds are quite low.
 
-#### Troubleshooting
+## Troubleshooting
 
-#### Unsigned driver at boot
+### Unsigned driver at boot
 
 If your Matebook X Pro does not boot after installing this nvidia driver or the one downloaded from nvidia's website then disable the `Secure Boot` option in the BIOS.
 
-##### Reconfigure the kernel
+### Reconfigure the kernel
 
 ```bash
 sudo apt install --reinstall linux-image-generic linux-image-4.15.0-42-generic
 ```
 
-##### Remove old drivers
+### Remove old drivers
 
 ```bash
 sudo for FILE in $(dpkg-divert --list | grep nvidia-340 | awk '{print $3}'); do dpkg-divert --remove $FILE; done
 ```
 
-### Using an eGPU
+## Using an eGPU
 
-### references
+`in progress`
+
+## references
 
 * <https://github.com/ValveSoftware/steam-for-linux/issues/5707>
 * <https://wiki.ubuntu.com/UEFI/SecureBoot/Signing>

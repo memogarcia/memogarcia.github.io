@@ -47,7 +47,7 @@ Things I don&rsquo;t like about the laptop  Palm rejection, especially this one,
 <li>512 GB NVMe PCIe SSD</li>
 </ul>
 <p>Don&rsquo;t expect running workstation level workloads in this machine but it is a wonderful dev machine.</p>
-<h3 id="things-i-dont-like-about-the-laptop">Things I don&rsquo;t like about the laptop</h3>
+<h2 id="things-i-dont-like-about-the-laptop">Things I don&rsquo;t like about the laptop</h2>
 <ul>
 <li>Palm rejection, especially this one, maybe this is Linux.</li>
 <li>Sound, it only outputs sound to two speakers under Linux and it has a werid noise under high volumes.</li>
@@ -55,13 +55,13 @@ Things I don&rsquo;t like about the laptop  Palm rejection, especially this one,
 </ul>
 <p><strong>Update</strong> 14/Jul/2019</p>
 <p>Palm rejection has improved a lot since I updated to the latest <code>Touchpad</code> software versions.</p>
-<h3 id="distro">Distro</h3>
+<h2 id="distro">Distro</h2>
 <p><a href="http://releases.ubuntu.com/18.04/">Ubuntu 18.04</a> with kernel <code>4.15.0-42-generic</code></p>
 <p><strong>Update</strong> 14/Jul/2019</p>
 <p><code>do-release-upgrade</code> to <a href="http://releases.ubuntu.com/18.10/">Ubuntu 18.10</a> and upgraded kernel version to <code>5.0.0-050000-generic</code></p>
-<h3 id="touchpad">Touchpad</h3>
+<h2 id="touchpad">Touchpad</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt install acpi acpi-support acpica-tools acpid acpidump acpitail acpitool libacpi0 laptop-detect pommed xserver-xorg-input-synaptics
-</code></pre></div><h3 id="nvidia-drivers">Nvidia drivers</h3>
+</code></pre></div><h2 id="nvidia-drivers">Nvidia drivers</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo add-apt-repository ppa:graphics-drivers/ppa
 sudo apt update
 </code></pre></div><p>At this time, nvidia-driver-415 is the most up to date driver and the recommended one.</p>
@@ -80,8 +80,8 @@ glxinfo | grep OpenGL
 </code></pre></div><p>I&rsquo;m getting readings about <code>4.5W to 6W</code> battery discharge rate with this configuration.</p>
 <p><strong>Update</strong> 14/Jul/2019</p>
 <p>After upgrading to kernel <code>5.0.0-050000-generic</code> I&rsquo;m getting discharge rates of <code>3.5W</code>, not bad!!!</p>
-<h3 id="desktop-manager">Desktop manager</h3>
-<h4 id="i3wm">i3wm</h4>
+<h2 id="desktop-configuration">Desktop Configuration</h2>
+<h3 id="i3wm">i3wm</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt install i3wm i3lock
 </code></pre></div><p><code>vim ~/.config/i3/config</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># HDPI</span>
@@ -103,7 +103,7 @@ exec --no-startup-id /usr/bin/feh --randomize --bg-scale /path/wallpaper/* -Z
 </code></pre></div><p>And then, reload the configuration:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">i3-msg reload
 i3-msg restart
-</code></pre></div><h5 id="media-keys">Media keys</h5>
+</code></pre></div><h3 id="media-keys">Media keys</h3>
 <p>For screen brightness and key backlights, I&rsquo;m using <a href="https://github.com/haikarainen/light">Light</a></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Sreen brightness controls</span>
 bindsym XF86MonBrightnessUp exec light -A <span style="color:#ae81ff">5</span>
@@ -117,26 +117,27 @@ bindsym XF86KbdBrightnessDown exec light -A <span style="color:#ae81ff">5</span>
 bindsym XF86AudioLowerVolume exec /usr/bin/pactl set-sink-volume @DEFAULT_SINK@ <span style="color:#e6db74">&#39;-5%&#39;</span>
 bindsym XF86AudioRaiseVolume exec /usr/bin/pactl set-sink-volume @DEFAULT_SINK@ <span style="color:#e6db74">&#39;+5%&#39;</span>
 bindsym XF86AudioMute exec /usr/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
-</code></pre></div><h3 id="battery">Battery</h3>
+</code></pre></div><h2 id="battery">Battery</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt install powertop tlp
 sudo powertop --calibrate
 sudo powertop --autotune
 sudo tlp start
-</code></pre></div><h3 id="disk-io">Disk I/O</h3>
+</code></pre></div><h2 id="disk-io">Disk I/O</h2>
 <p>Following the <a href="https://www.cyberciti.biz/faq/howto-linux-unix-test-disk-performance-with-dd-command/">graphical method</a> steps on this webpage, I get the following speeds for my 512 GB NVMe PCIe SSD:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Average Read Rate: 1.4 GB/s <span style="color:#f92672">(</span><span style="color:#ae81ff">1000</span> samples<span style="color:#f92672">)</span>
 Average Write Read: 271.5 MB/s <span style="color:#f92672">(</span><span style="color:#ae81ff">1000</span> samples<span style="color:#f92672">)</span>
 Average Access Time: 0.11 msec <span style="color:#f92672">(</span><span style="color:#ae81ff">1000</span> samples<span style="color:#f92672">)</span>
 </code></pre></div><p>Maybe I&rsquo;m testing it wrong, but it seems to me the write speeds are quite low.</p>
-<h4 id="troubleshooting">Troubleshooting</h4>
-<h4 id="unsigned-driver-at-boot">Unsigned driver at boot</h4>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="unsigned-driver-at-boot">Unsigned driver at boot</h3>
 <p>If your Matebook X Pro does not boot after installing this nvidia driver or the one downloaded from nvidia&rsquo;s website then disable the <code>Secure Boot</code> option in the BIOS.</p>
-<h5 id="reconfigure-the-kernel">Reconfigure the kernel</h5>
+<h3 id="reconfigure-the-kernel">Reconfigure the kernel</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt install --reinstall linux-image-generic linux-image-4.15.0-42-generic
-</code></pre></div><h5 id="remove-old-drivers">Remove old drivers</h5>
+</code></pre></div><h3 id="remove-old-drivers">Remove old drivers</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo <span style="color:#66d9ef">for</span> FILE in <span style="color:#66d9ef">$(</span>dpkg-divert --list | grep nvidia-340 | awk <span style="color:#e6db74">&#39;{print $3}&#39;</span><span style="color:#66d9ef">)</span>; <span style="color:#66d9ef">do</span> dpkg-divert --remove $FILE; <span style="color:#66d9ef">done</span>
-</code></pre></div><h3 id="using-an-egpu">Using an eGPU</h3>
-<h3 id="references">references</h3>
+</code></pre></div><h2 id="using-an-egpu">Using an eGPU</h2>
+<p><code>in progress</code></p>
+<h2 id="references">references</h2>
 <ul>
 <li><a href="https://github.com/ValveSoftware/steam-for-linux/issues/5707">https://github.com/ValveSoftware/steam-for-linux/issues/5707</a></li>
 <li><a href="https://wiki.ubuntu.com/UEFI/SecureBoot/Signing">https://wiki.ubuntu.com/UEFI/SecureBoot/Signing</a></li>
