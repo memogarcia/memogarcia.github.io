@@ -55,7 +55,7 @@ or as an IP address:
 
     192.168.6.9
 
-This room number is unique to your building but the next building can have a room 69 in its building as well.
+This room number is unique to your building but the next building can have a room 69 in its building as well (I will cover this in a later post about private vs public IPs).
 
 ## Computers or "The rooms"
 
