@@ -26,7 +26,9 @@ In reality the switch has a table that looks like this:
     | 6    | aa:aa:aa:aa:aa:aa | fa0/2 |
     | 6    | ff:ff:ff:ff:ff:ff | fa0/3 |
 
-The concierge knows to which door exactly to deliver the package
+The concierge knows to which door exactly to deliver the package.
+
+In other words, **a switch connects computers in a network**.
 
 Now, the concierge's capacity is limited by several factors:
 
@@ -52,9 +54,9 @@ Enter the...
 
 ## Routers or "The building concierge"
 
-This building concierge or [router](https://en.wikipedia.org/wiki/Router_(computing)) is the only handling the packages from one floor to another.
+This building concierge or [router](https://en.wikipedia.org/wiki/Router_(computing)) is the one handling the packages from one floor to another.
 
-In other words, a router connects many networks together.
+In other words, **a router connects many networks together**.
 
 Same as the floor concierge, it has a table of rooms, but it uses the room number rather than the door number.
 
