@@ -1,5 +1,5 @@
 ---
-title: "Deploying OpenStack on Docker"
+title: "Deploying OpenStack with Docker"
 date: 2018-05-05T18:53:14+01:00
 draft: false
 tags: python, openstack, containers, docker

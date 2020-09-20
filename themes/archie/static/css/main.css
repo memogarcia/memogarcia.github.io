@@ -55,15 +55,15 @@ a:hover {
     color: #fff;
 } */
 
-a::before {
-  content: "[";
+/* a::before { */
+  /* content: "["; */
   /* color: #adb5bd; */
-}
+/* } */
 
-a::after {
-  content: "]";
+/* a::after { */
+  /* content: "]"; */
   /* color: #adb5bd; */
-}
+/* } */
 
 a {
   /* color: #495057; */
