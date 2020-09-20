@@ -6,11 +6,6 @@ tags: networking
 toc: true
 ---
 
-# TODO:
-* [ ] Fix format
-* [ ] Check spelling
-
-
 ## Switches or "The floor concierge"
 
 Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.
