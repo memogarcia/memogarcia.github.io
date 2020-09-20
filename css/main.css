@@ -28,7 +28,7 @@ body{
 }
 
 p {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: sans-serif;
   line-height: 1.5;
 }
 
@@ -45,11 +45,17 @@ blockquote {
   padding-left: 1em;
 }
 
-/* a {
-  border-bottom: 3px solid var(--maincolor);
-  color: inherit;
+a {
+  /* color: inherit; */
   text-decoration: none;
+  border-bottom: none;
 }
+
+a .maintitle {
+  /* text-decoration: none; */
+  border-bottom: blue;
+}
+/* 
 a:hover {
     background-color: var(--hovercolor);
     color: #fff;
@@ -65,16 +71,16 @@ a:hover {
   /* color: #adb5bd; */
 /* } */
 
-a {
-  /* color: #495057; */
+/* a {
+  color: #495057;
   text-decoration: underline;
   transition: 0.3s;
-}
-
+} */
+/* 
 a:hover {
   color: #adb5bd;
   transition: 0.3s;
-}
+} */
 
 ul {
   list-style: none;
@@ -90,12 +96,12 @@ ul li::before {
 
 /* Images */
 img {
-  border: 3px solid #ececec;
+  /* border: 3px solid #ececec; */
   max-width: 100%;
 }
 
 figure {
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
   display: inline-block;
   margin: 0;
   max-width: 100%;
@@ -171,12 +177,13 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 2em;
 }
 
-h1::before { color: var(--maincolor); content: 'h1 '; opacity: 50%; }
-h2::before { color: var(--maincolor); content: 'h2 '; opacity: 50%; }
-h3::before { color: var(--maincolor); content: 'h3 '; opacity: 50%; }
-h4::before { color: var(--maincolor); content: 'h4 '; opacity: 50%; }
-h5::before { color: var(--maincolor); content: 'h5 '; opacity: 50%; }
-h6::before { color: var(--maincolor); content: 'h6 '; opacity: 50%; }
+/* h1::before { color: var(--maincolor); content: '# '; opacity: 50%; } */
+h1::before { color: var(--maincolor); content: '# '; }
+h2::before { color: var(--maincolor); content: '## '; }
+h3::before { color: var(--maincolor); content: '### '; }
+h4::before { color: var(--maincolor); content: '#### '; }
+h5::before { color: var(--maincolor); content: '#####'; }
+h6::before { color: var(--maincolor); content: '###### '; }
 
 /* Footer */
 footer {
@@ -187,6 +194,8 @@ footer {
 .title h1 {
   margin-bottom: 0;
 }
+
+.title.mainpage::before { color: var(--maincolor); content: '## '; }
 
 time {
   color: grey;
@@ -205,14 +214,9 @@ article .title {
   padding: 1em;
 }
 
-.callout p {
-  font-family: 'IBM Plex Mono', monospace;
-  margin: 0;
-}
-
-.callout a {
+/* .callout a {
   border-bottom: 3px solid #fff;
-}
+} */
 
 .callout a:hover {
   background-color: #fff;
@@ -226,9 +230,9 @@ justify-content: space-between;
 .tags li::before{
   content: "🏷 ";
 }
-.tags a{
+/* .tags a{
   border-bottom: 3px solid var(--maincolor); 
-}
+} */
 .tags a:hover{
   color:white;
   background-color: var(--hovercolor); 

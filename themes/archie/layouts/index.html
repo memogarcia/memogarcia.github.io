@@ -16,7 +16,7 @@
 			{{ $paginator := .Paginate (where $pages "Params.hidden" "ne" true) }}
 			{{ range $paginator.Pages }}
 			<section class="list-item">
-				<h1 class="title"><a href="{{ .RelPermalink }}">{{.Title}}</a></h1>
+				<h1 class="title mainpage"><a href="{{ .RelPermalink }}">{{.Title}}</a></h1>
 			</section>
 			{{ end }}
 			{{ template "partials/paginator.html" . }}
