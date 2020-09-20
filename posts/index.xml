@@ -6,10 +6,21 @@
     <description>Recent content in Posts on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 20 Aug 2020 07:53:23 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2020 00:53:23 +0100</lastBuildDate>
     
 	<atom:link href="https://memogarcia.mx/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 2 - Switches and Routers</title>
+      <link>https://memogarcia.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
+      <pubDate>Fri, 21 Aug 2020 00:53:23 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
+      <description>TODO:  Fix format Check spelling  Switches or &amp;ldquo;The floor concierge&amp;rdquo; Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.
+The concierge or switch has a table of everyone&amp;rsquo;s door numbers:
+| Floor | Room number | Door number | |-------|-------------|-------------| | 6 | 602 | 1 | | 6 | 609 | 1 |  Remember that each room can have many doors.</description>
+    </item>
     
     <item>
       <title>How (I think) TARDIS move through Space and Time</title>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Understanding Computer Networks by Analogy - Part 2 - Switches and Routers - Memo Garcia</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="Understanding Computer Networks by Analogy - Part 2 - Switches and Routers" />
+<meta property="og:description" content="TODO:  Fix format Check spelling  Switches or &ldquo;The floor concierge&rdquo; Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.
+The concierge or switch has a table of everyone&rsquo;s door numbers:
+| Floor | Room number | Door number | |-------|-------------|-------------| | 6 | 602 | 1 | | 6 | 609 | 1 |  Remember that each room can have many doors." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://memogarcia.mx/posts/understanding-computer-networks-by-analogy-part-2/" />
+<meta property="article:published_time" content="2020-08-21T00:53:23+01:00" />
+<meta property="article:modified_time" content="2020-08-21T00:53:23+01:00" />
+
+	<link rel="stylesheet" type="text/css" media="screen" href="https://memogarcia.mx/css/main.css" />
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+</head><body>
+        <div class="content"><header>
+	<div class="main">
+		<a href="https://memogarcia.mx/">Memo Garcia</a>
+	</div>
+	<nav>
+		
+	</nav>
+</header>
+
+<main>
+	<article>
+		<div class="title">
+			<h1 class="title">Understanding Computer Networks by Analogy - Part 2 - Switches and Routers</h1>
+			<div class="meta">Aug 21, 2020</div>
+		</div>
+		
+
+		<section class="body">
+			<h1 id="todo">TODO:</h1>
+<ul>
+<li><input disabled="" type="checkbox"> Fix format</li>
+<li><input disabled="" type="checkbox"> Check spelling</li>
+</ul>
+<h2 id="switches-or-the-floor-concierge">Switches or &ldquo;The floor concierge&rdquo;</h2>
+<p>Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.</p>
+<p>The concierge or <a href="https://en.wikipedia.org/wiki/Network_switch">switch</a> has a table of everyone&rsquo;s door numbers:</p>
+<pre><code>| Floor | Room number | Door number |
+|-------|-------------|-------------|
+| 6     | 602         | 1           |
+| 6     | 609         | 1           |
+</code></pre>
+<p>Remember that each room can have many doors.</p>
+<p>In reality the switch has a table that looks like this:</p>
+<pre><code>| Vlan | MAC Address       | Port  |
+|------|-------------------|-------|
+| 6    | aa:aa:aa:aa:aa:aa | fa0/2 |
+| 6    | ff:ff:ff:ff:ff:ff | fa0/3 |
+</code></pre>
+<p>The concierge knows to which door exactly to deliver the package</p>
+<p>Now, the concierge&rsquo;s capacity is limited by several factors:</p>
+<ol>
+<li>Size of the sending door - <em>speed of your interface</em></li>
+<li>Size of the receiving door - <em>speed of their interface</em></li>
+<li>Size of the hallway in which the package is moving - <em>&ldquo;medium speed&rdquo; (cable, wireless, etc.)</em></li>
+<li>Size of the concierge desk - <em>switch port speed</em></li>
+</ol>
+<p><img src="/img/concierge1.png" alt="concierge1"></p>
+<p>Your concierge (switch) have multple roles as well.</p>
+<ol>
+<li>Package monitoring - <em>Traffic monitoring</em></li>
+<li>Package priority - <em>QoS</em></li>
+<li>Bundle many doors for improved speed or redundancy - <em>link aggregation</em></li>
+<li>Block packages from unwanted rooms - <em>MAC filtering</em> or <em>port disabling</em></li>
+<li>Door monitoring - <em>SNMP</em></li>
+<li>And many more</li>
+</ol>
+<p>But, what if you want to send your package to your neighbor in the 2nd floor?</p>
+<p>Enter the&hellip;</p>
+<h2 id="routers-or-the-building-concierge">Routers or &ldquo;The building concierge&rdquo;</h2>
+<p>This building concierge or <a href="https://en.wikipedia.org/wiki/Router_(computing)">router</a> is the only handling the packages from one floor to another.</p>
+<p>In other words, a router connects many networks together.</p>
+<p>Same as the floor concierge, it has a table of rooms, but it uses the room number rather than the door number.</p>
+<pre><code>| Floor destination | Room quantity | Elevator door number | Room number | Notes            |
+|:-----------------:|:-------------:|:--------------------:|:-----------:|------------------|
+| 6                 | 256           | 1                    | 9           | Easy to deliver  |
+| 2                 | 256           | 1                    | 2           | Deliver at night |
+</code></pre>
+<p>This table will translate to something like this:</p>
+<pre><code>| Network destination |     Netmask     |   Gateway   |  Interface  | Metric |
+|:-------------------:|:---------------:|:-----------:|:-----------:|--------|
+| 192.168.6.0         | 255.255.255.255 | 192.168.6.1 | 192.168.6.9 | 1      |
+| 192.168.2.2         | 255.255.255.255 | 192.168.2.1 | 192.168.2.1 | 10     |
+</code></pre>
+<p>The building concierge (router) has an entry for notes (metrics) to decide which route or time is best to deliver the package to its destination.</p>
+<p>But it cannot do it alone, it needs the floors to be connected somehow&hellip; like with an elevator or <a href="https://en.wikipedia.org/wiki/Gateway_(telecommunications)">gateway</a></p>
+<p>This elevator behaves like a normal room, in the sense that it has a door, but it can move from floor to floor, which means that it has a door &ldquo;assigned&rdquo; in floor 2 and 6.</p>
+<p>This door is managed by the building concierge (router) not the floor concierge (switch). When a package needs to leave the floor, the floor concierge sends the package to the building concierge and it deliver the package to its destination.</p>
+<p><img src="/img/concierge2.png" alt="concierge2"></p>
+<p>From the floor concierge (switch) perspective, is another room with a door number (MAC Address) and it can send/receive packages in the same way as if the packages were in the same floor.</p>
+<p><img src="/img/concierge3.png" alt="concierge3"></p>
+<p>Over time, the building concierge (router) can learn new ways to deliver the packages more efficiently and work with packages based on priority or <em>QoS</em>.</p>
+<h2 id="series">Series</h2>
+<ol>
+<li><a href="../understanding-computer-networks-by-analogy/">Networks and subnets or building layouts</a></li>
+<li><a href="../understanding-computer-networks-by-analogy-part-2/">Switches and Routers or how rooms can communicate between floors</a></li>
+<li>Network protocols or how rooms communicate</li>
+<li>Internet, public IPs, NAT, DNS or how to connect rooms between buildings</li>
+<li>High performance networking or how to speed up the communication between rooms using high speed roads and other techniques</li>
+<li>SDN or dynamic floor arrangement</li>
+</ol>
+<h2 id="contributions">Contributions</h2>
+<p>If you want contribute, please send a pull request or open an issue to this <a href="https://github.com/memogarcia/memogarcia.github.io/">repo</a></p>
+
+		</section>
+
+		<div class="post-tags">
+			
+			
+			
+		</div>
+	</article>
+</main>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-178420056-1"></script>
+<script>
+    
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-178420056-1');
+</script></div>
+    </body>
+</html>

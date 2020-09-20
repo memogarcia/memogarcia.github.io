@@ -3,32 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://memogarcia.mx/</loc>
+    <lastmod>2020-08-21T00:53:23+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://memogarcia.mx/tags/networking/</loc>
+    <lastmod>2020-08-21T00:53:23+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://memogarcia.mx/posts/</loc>
+    <lastmod>2020-08-21T00:53:23+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://memogarcia.mx/tags/</loc>
+    <lastmod>2020-08-21T00:53:23+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://memogarcia.mx/posts/understanding-computer-networks-by-analogy-part-2/</loc>
+    <lastmod>2020-08-21T00:53:23+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://memogarcia.mx/posts/moving-through-timespace/</loc>
     <lastmod>2020-08-20T07:53:23+01:00</lastmod>
   </url>
   
   <url>
-    <loc>https://memogarcia.mx/</loc>
-    <lastmod>2020-08-20T07:53:23+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://memogarcia.mx/tags/networking/</loc>
-    <lastmod>2020-08-20T07:53:23+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://memogarcia.mx/posts/</loc>
-    <lastmod>2020-08-20T07:53:23+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://memogarcia.mx/tags/sci-fi/</loc>
-    <lastmod>2020-08-20T07:53:23+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://memogarcia.mx/tags/</loc>
     <lastmod>2020-08-20T07:53:23+01:00</lastmod>
   </url>
   

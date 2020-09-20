@@ -24,13 +24,13 @@ In this series of posts I propose a not so perfect analogy for computer networks
 
 This building represents a "network" of "connected rooms".
 
-Think of each room as a computer with a room number as an [IP address]().
+Think of each room as a computer with a room number as an [IP address](https://en.wikipedia.org/wiki/IP_address).
 
     room + room number == computer + ip address
 
 ![building1](/img/building1.png)
 
-In this network, each room can communicate directly to any other room using [network protocols]() that will be represented as a `packages`.
+In this network, each room can communicate directly to any other room using [network protocols](https://www.cloudflare.com/learning/network-layer/what-is-a-protocol/) that will be represented as a `packages`.
 
 But now you are wondering... I don't want to send packages to all my neighbors...I just want to communicate with specific ones.
 
@@ -57,7 +57,7 @@ or as an IP address:
 
 This room number is unique to your building but the next building can have a room 69 in its building as well.
 
-### Computers or "The room"
+## Computers or "The rooms"
 
 In reality, your room number is not tied to the physical space in the building but to the door that allows access to it.
 
@@ -75,14 +75,19 @@ In other words, your room is identified by an door number rather than a room num
 
     room -> door 1 -> room 69
 
-or as a relation between COmputer, MAC and IP
+or as a relation between Computer, MAC and IP
 
     computer interface eth0 -> ff:ff:ff:ff:ff:ff -> 192.168.6.9
 
-## Next topics
+## Series
 
-1. Switches and Routers or how rooms can communicate between floors
-2. Network protocols or how rooms communicate
-3. Internet, public IPs, NAT, DNS or how to connect rooms between buildings
-4. High performance networking or how to speed up the communication between rooms using high speed roads and other techniques
-5. SDN or dynamic floor arrangement
+1. [Networks and subnets or building layouts](../understanding-computer-networks-by-analogy/)
+2. [Switches and Routers or how rooms can communicate between floors](../understanding-computer-networks-by-analogy-part-2/)
+3. Network protocols or how rooms communicate
+4. Internet, public IPs, NAT, DNS or how to connect rooms between buildings
+5. High performance networking or how to speed up the communication between rooms using high speed roads and other techniques
+6. SDN or dynamic floor arrangement
+
+## Contributions
+
+If you want contribute, please send a pull request or open an issue to this [repo](https://github.com/memogarcia/memogarcia.github.io/)

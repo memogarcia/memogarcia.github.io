@@ -45,11 +45,11 @@ They let you group together many ideas and present them as a whole to new audien
 <p>In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.</p>
 <h2 id="networks-or-the-buildings">Networks or &ldquo;The buildings&rdquo;</h2>
 <p>This building represents a &ldquo;network&rdquo; of &ldquo;connected rooms&rdquo;.</p>
-<p>Think of each room as a computer with a room number as an <a href="">IP address</a>.</p>
+<p>Think of each room as a computer with a room number as an <a href="https://en.wikipedia.org/wiki/IP_address">IP address</a>.</p>
 <pre><code>room + room number == computer + ip address
 </code></pre>
 <p><img src="/img/building1.png" alt="building1"></p>
-<p>In this network, each room can communicate directly to any other room using <a href="">network protocols</a> that will be represented as a <code>packages</code>.</p>
+<p>In this network, each room can communicate directly to any other room using <a href="https://www.cloudflare.com/learning/network-layer/what-is-a-protocol/">network protocols</a> that will be represented as a <code>packages</code>.</p>
 <p>But now you are wondering&hellip; I don&rsquo;t want to send packages to all my neighbors&hellip;I just want to communicate with specific ones.</p>
 <p>Enter the&hellip;</p>
 <h2 id="subnets-or-the-floors">Subnets or &ldquo;The floors&rdquo;</h2>
@@ -65,7 +65,7 @@ Neighbors in the 6th floor cannot communicate with neighbors in the 9th floor.</
 <pre><code>192.168.6.9
 </code></pre>
 <p>This room number is unique to your building but the next building can have a room 69 in its building as well.</p>
-<h3 id="computers-or-the-room">Computers or &ldquo;The room&rdquo;</h3>
+<h2 id="computers-or-the-rooms">Computers or &ldquo;The rooms&rdquo;</h2>
 <p>In reality, your room number is not tied to the physical space in the building but to the door that allows access to it.</p>
 <p><img src="/img/room1.png" alt="room1"></p>
 <p>Which means that your room can have many doors with different properties:</p>
@@ -78,17 +78,20 @@ Neighbors in the 6th floor cannot communicate with neighbors in the 9th floor.</
 <p>In other words, your room is identified by an door number rather than a room number within a subnet.</p>
 <pre><code>room -&gt; door 1 -&gt; room 69
 </code></pre>
-<p>or as a relation between COmputer, MAC and IP</p>
+<p>or as a relation between Computer, MAC and IP</p>
 <pre><code>computer interface eth0 -&gt; ff:ff:ff:ff:ff:ff -&gt; 192.168.6.9
 </code></pre>
-<h2 id="next-topics">Next topics</h2>
+<h2 id="series">Series</h2>
 <ol>
-<li>Switches and Routers or how rooms can communicate between floors</li>
+<li><a href="../understanding-computer-networks-by-analogy/">Networks and subnets or building layouts</a></li>
+<li><a href="../understanding-computer-networks-by-analogy-part-2/">Switches and Routers or how rooms can communicate between floors</a></li>
 <li>Network protocols or how rooms communicate</li>
 <li>Internet, public IPs, NAT, DNS or how to connect rooms between buildings</li>
 <li>High performance networking or how to speed up the communication between rooms using high speed roads and other techniques</li>
 <li>SDN or dynamic floor arrangement</li>
 </ol>
+<h2 id="contributions">Contributions</h2>
+<p>If you want contribute, please send a pull request or open an issue to this <a href="https://github.com/memogarcia/memogarcia.github.io/">repo</a></p>
 
 		</section>
 
