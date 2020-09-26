@@ -80,11 +80,18 @@ i3
 </code></pre>
 </li>
 <li>
+<p>Narrow the scope of your inbound rule:</p>
+<pre><code> Right click -&gt; Properties -&gt; scope -&gt; Remote IP addresses -&gt; Add
+
+ 172.16.0.0/12
+</code></pre>
+</li>
+<li>
 <p>Search for <code>VcXsrv windows xserver</code> inbound rules and make sure the 4 rules are <code>enabled</code> and in <code>allow</code> mode</p>
 </li>
 </ol>
 <p><img src="/img/wsl.png" alt="firewall1"></p>
-<ol start="4">
+<ol start="5">
 <li>
 <p>Startup i3 script from Windows <code>vcxsrv.vbs</code></p>
 <pre><code> code vcxsrv.vbs
@@ -98,7 +105,7 @@ shell.Run <span style="color:#e6db74">&#34;&#34;&#34;C:\Program Files\VcXsrv\vcx
 WScript.Sleep 200
 
 shell.Run <span style="color:#e6db74">&#34;wsl.exe -d YOUR_DISTRO -u YOUR_USER -- /bin/zsh ~/src/scripts/i3launch.sh&#34;</span>, 0
-</code></pre></div><ol start="5">
+</code></pre></div><ol start="6">
 <li>
 <p>And just run your script from powershell</p>
 <pre><code> .\vcxsrv.vbs

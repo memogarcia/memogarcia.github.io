@@ -53,25 +53,31 @@ Search for `Windows Defender Firewall with Advanced Security` and do the followi
         port type: tcp
         port number: 6000
 
-3. Search for `VcXsrv windows xserver` inbound rules and make sure the 4 rules are `enabled` and in `allow` mode
+3. Narrow the scope of your inbound rule:
+
+        Right click -> Properties -> scope -> Remote IP addresses -> Add
+
+        172.16.0.0/12
+
+4. Search for `VcXsrv windows xserver` inbound rules and make sure the 4 rules are `enabled` and in `allow` mode
 
 ![firewall1](/img/wsl.png)
 
-4. Startup i3 script from Windows `vcxsrv.vbs`
+5. Startup i3 script from Windows `vcxsrv.vbs`
 
         code vcxsrv.vbs
 
 ```powershell
 Set shell = CreateObject("WScript.Shell" ) 
 
-shell.Run """C:\Program Files\VcXsrv\vcxsrv.exe"" :0 -screen 0 @1 -ac +xinerama -engine 1 -nodecoration -wgl"
+shell.Run """C:\Program Files\VcXsrv\vcxsrv.exe"" :0 -screen 0 @1 -ac -engine 1 -nodecoration -wgl"
 
 WScript.Sleep 200
 
 shell.Run "wsl.exe -d YOUR_DISTRO -u YOUR_USER -- /bin/zsh ~/src/scripts/i3launch.sh", 0
 ```
 
-5. And just run your script from powershell
+6. And just run your script from powershell
 
         .\vcxsrv.vbs
 
