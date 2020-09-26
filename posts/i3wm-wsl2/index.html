@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html><head>
 	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>i3wm with WSL2 - Memo Garcia</title><meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta property="og:title" content="i3wm with WSL2" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>i3 with WSL2 - Memo Garcia</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="i3 with WSL2" />
 <meta property="og:description" content="WSL configuration Note This is after WSL2 is configured.
   Install i3
  sudo apt install i3 -y    Create an init script
@@ -26,7 +26,7 @@
 <main>
 	<article>
 		<div class="">
-			<h1 class="title">i3wm with WSL2</h1>
+			<h1 class="title">i3 with WSL2</h1>
 			<div class="meta">Sep 23, 2020</div>
 		</div>
 		
@@ -61,9 +61,16 @@ dbus_status<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</s
 i3
 </code></pre></div><p><strong>Note</strong> I&rsquo;m using <code>zsh</code> instead of <code>bash</code></p>
 <h2 id="windows-configuration">Windows configuration</h2>
+<ol>
+<li>
+<p>Install <code>vcxsrv</code> from powershell</p>
+<pre><code> winget install vcxsrv
+</code></pre>
+</li>
+</ol>
 <p>With WSL2 you need to configure your firewall to allow <code>WSL</code> and <code>vcxsrv</code> to communicate.</p>
 <p>Search for <code>Windows Defender Firewall with Advanced Security</code> and do the following:</p>
-<ol>
+<ol start="2">
 <li>
 <p>Create an inbound rule:</p>
 <pre><code> name: wsl2
@@ -77,14 +84,9 @@ i3
 </li>
 </ol>
 <p><img src="/img/wsl.png" alt="firewall1"></p>
-<ol start="3">
+<ol start="4">
 <li>
-<p>Now install <code>vcxsrv</code> from powershell</p>
-<pre><code> winget install vcxsrv
-</code></pre>
-</li>
-<li>
-<p>Create the startup script <code>vcxsrv.vbs</code></p>
+<p>Startup i3 script from Windows <code>vcxsrv.vbs</code></p>
 <pre><code> code vcxsrv.vbs
 </code></pre>
 </li>
@@ -108,7 +110,7 @@ shell.Run <span style="color:#e6db74">&#34;wsl.exe -d YOUR_DISTRO -u YOUR_USER -
 <h2 id="i3-configuration">i3 configuration</h2>
 <p>From now on, you are free to modify your i3 as you wish.</p>
 <h2 id="note">Note</h2>
-<p>To run wsl2 as root</p>
+<p>To run WSL2 as root</p>
 <pre><code>wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash
 </code></pre>
 <h2 id="references">References</h2>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>windows, linux, i3 on Memo Garcia</title>
+    <link>https://memogarcia.mx/tags/windows-linux-i3/</link>
+    <description>Recent content in windows, linux, i3 on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 23 Sep 2020 14:53:23 +0100</lastBuildDate>
+    
+	<atom:link href="https://memogarcia.mx/tags/windows-linux-i3/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>i3 with WSL2</title>
+      <link>https://memogarcia.mx/posts/i3wm-wsl2/</link>
+      <pubDate>Wed, 23 Sep 2020 14:53:23 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/i3wm-wsl2/</guid>
+      <description>WSL configuration Note This is after WSL2 is configured.
+  Install i3
+ sudo apt install i3 -y    Create an init script
+ vim ~/src/scripts/i3launch.sh    #!/bin/zsh source ~/.zshrc # If not running interactively, don&amp;#39;t do anything [ -z &amp;#34;$PS1&amp;#34; ] &amp;amp;&amp;amp; return export DISPLAY=$(awk &amp;#39;/nameserver / {print $2; exit}&amp;#39; /etc/resolv.conf 2&amp;gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&amp;#34;is not running&amp;#34;* ]]; then sudo service dbus --full-restart fi i3 Note I&amp;rsquo;m using zsh instead of bash</description>
+    </item>
+    
+  </channel>
+</rss>

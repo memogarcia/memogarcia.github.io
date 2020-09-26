@@ -1,8 +1,8 @@
 ---
-title: "i3wm with WSL2"
+title: "i3 with WSL2"
 date: 2020-09-23T14:53:23+01:00
 draft: false
-tags: windows, linux, i3wm
+tags: windows, linux, i3
 toc: true
 ---
 
@@ -38,26 +38,26 @@ i3
 
 ## Windows configuration
 
+1. Install `vcxsrv` from powershell
+
+        winget install vcxsrv
+
 With WSL2 you need to configure your firewall to allow `WSL` and `vcxsrv` to communicate.
 
 Search for `Windows Defender Firewall with Advanced Security` and do the following:
 
-1. Create an inbound rule:
+2. Create an inbound rule:
 
         name: wsl2
         rule type: port
         port type: tcp
         port number: 6000
 
-2. Search for `VcXsrv windows xserver` inbound rules and make sure the 4 rules are `enabled` and in `allow` mode
+3. Search for `VcXsrv windows xserver` inbound rules and make sure the 4 rules are `enabled` and in `allow` mode
 
 ![firewall1](/img/wsl.png)
 
-3. Now install `vcxsrv` from powershell
-
-        winget install vcxsrv
-
-4. Create the startup script `vcxsrv.vbs`
+4. Startup i3 script from Windows `vcxsrv.vbs`
 
         code vcxsrv.vbs
 
@@ -86,7 +86,7 @@ From now on, you are free to modify your i3 as you wish.
 
 ## Note
 
-To run wsl2 as root
+To run WSL2 as root
 
     wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash
 
