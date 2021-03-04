@@ -5,10 +5,10 @@ theme = "archie"
 
 publishDir = ""
 
+paginate = 30
+
 [params]
     author = "Memo Garcia"
     github = "memogarcia"
     gitlab = "memogarcia"
     sitename = "Memo Garcia"
-
-paginate = 30
