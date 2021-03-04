@@ -1,5 +1,5 @@
 ---
-title: "Waju"
+title: "Waju - A fun and brutal game"
 date: 2019-01-04T15:49:47+01:00
 draft: false
 tags: boardgames

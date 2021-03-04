@@ -1,5 +1,5 @@
 ---
-title: "i3 with WSL2"
+title: "i3wm running on WSL2"
 date: 2020-09-23T14:53:23+01:00
 draft: false
 tags: windows, linux, i3

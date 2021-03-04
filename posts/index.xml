@@ -6,13 +6,22 @@
     <description>Recent content in Posts on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 23 Sep 2020 14:53:23 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 03 Mar 2021 23:30:44 +0100</lastBuildDate>
     
 	<atom:link href="https://memogarcia.mx/posts/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>i3 with WSL2</title>
+      <title>curator.social - A recommendation platform</title>
+      <link>https://memogarcia.mx/posts/curator-social/</link>
+      <pubDate>Wed, 03 Mar 2021 23:30:44 +0100</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/curator-social/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>i3wm running on WSL2</title>
       <link>https://memogarcia.mx/posts/i3wm-wsl2/</link>
       <pubDate>Wed, 23 Sep 2020 14:53:23 +0100</pubDate>
       
@@ -84,7 +93,7 @@ doc-fzf -h usage: doc-fzf.py [-h] [-q QUERY] module_name doc-fzf. positional arg
     </item>
     
     <item>
-      <title>Waju</title>
+      <title>Waju - A fun and brutal game</title>
       <link>https://memogarcia.mx/posts/waju/</link>
       <pubDate>Fri, 04 Jan 2019 15:49:47 +0100</pubDate>
       
@@ -96,13 +105,12 @@ Goal The goal of the game is very simple:
     </item>
     
     <item>
-      <title>Beyond PEP 8</title>
+      <title>Beyond PEP 8 - Best practices for beautiful intelligible code</title>
       <link>https://memogarcia.mx/posts/beyond-pep8/</link>
       <pubDate>Thu, 03 Jan 2019 18:53:23 +0100</pubDate>
       
       <guid>https://memogarcia.mx/posts/beyond-pep8/</guid>
-      <description>Best practices for beautiful intelligible code
-  </description>
+      <description>   </description>
     </item>
     
     <item>
@@ -130,7 +138,7 @@ Host configuration The default configuration for this environment is composed by
     </item>
     
     <item>
-      <title>OpenSSL Certificate Authority</title>
+      <title>Becoming a Certificate Authorityn (CA)</title>
       <link>https://memogarcia.mx/posts/becoming-ca/</link>
       <pubDate>Mon, 05 Feb 2018 19:03:30 +0100</pubDate>
       

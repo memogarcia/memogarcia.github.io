@@ -1,15 +1,18 @@
 ---
-title: "Netbox and Ansible"
+title: "Generating a dynamic host inventory for ansible with Netbox"
 date: 2019-01-10T23:30:44+01:00
 draft: true
 tags: python, netbox
 ---
 
-Generating an inventory of virtual machines with ansible and pynetbox
+TODO: steps are incomplete
+
+Usage:
 
     pip install pynetbox ansible
 
     ansible all -i hosts/env -m setup --tree /tmp/facts/env
+
 
 ```python
 import pynetbox
