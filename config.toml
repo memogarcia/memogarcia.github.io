@@ -10,3 +10,5 @@ publishDir = ""
     github = "memogarcia"
     gitlab = "memogarcia"
     sitename = "Memo Garcia"
+
+paginate = 30
