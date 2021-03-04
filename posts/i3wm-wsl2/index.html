@@ -100,7 +100,7 @@ i3
 </ol>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Set shell = CreateObject(<span style="color:#e6db74">&#34;WScript.Shell&#34;</span> ) 
 
-shell.Run <span style="color:#e6db74">&#34;&#34;&#34;C:\Program Files\VcXsrv\vcxsrv.exe&#34;&#34; :0 -screen 0 @1 -ac +xinerama -engine 1 -nodecoration -wgl&#34;</span>
+shell.Run <span style="color:#e6db74">&#34;&#34;&#34;C:\Program Files\VcXsrv\vcxsrv.exe&#34;&#34; :0 -screen 0 @1 -ac -engine 1 -nodecoration -wgl&#34;</span>
 
 WScript.Sleep 200
 

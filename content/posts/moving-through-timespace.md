@@ -6,8 +6,6 @@ tags: sci-fi
 toc: false
 ---
 
-With the power of dimension recursion :)
-
 **Disclaimer** I'm not an astrophysicist, this is just a fun thought experiment.
 
 **Second Disclaimer** This might not be exactly the right way to describe dimensions and I don’t pretend to know how they work. The 4th and 5th dimension are just an extrapolation from the first 3 dimensions.

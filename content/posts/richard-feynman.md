@@ -12,3 +12,7 @@ The World from another point of view
 Fun to imagine
 
 {{< youtube P1ww1IXRfTA >}}
+
+Knowing versus Understanding
+
+{{< youtube NM-zWTU7X-k >}}

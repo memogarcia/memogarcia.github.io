@@ -11,6 +11,7 @@
 html {
   color: #232333;
   font-family: 'Open Sans', sans-serif;
+  /* font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; */
   font-size: 15px;
   line-height: 1.6em;
 }
@@ -178,12 +179,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* h1::before { color: var(--maincolor); content: '# '; opacity: 50%; } */
-h1::before { color: var(--maincolor); content: '# '; }
+/* h1::before { color: var(--maincolor); content: '# '; }
 h2::before { color: var(--maincolor); content: '## '; }
 h3::before { color: var(--maincolor); content: '### '; }
 h4::before { color: var(--maincolor); content: '#### '; }
 h5::before { color: var(--maincolor); content: '#####'; }
-h6::before { color: var(--maincolor); content: '###### '; }
+h6::before { color: var(--maincolor); content: '###### '; } */
 
 /* Footer */
 footer {
@@ -195,7 +196,7 @@ footer {
   margin-bottom: 0;
 }
 
-.title.mainpage::before { color: var(--maincolor); content: '## '; }
+/* .title.mainpage::before { color: var(--maincolor); content: '## '; } */
 
 time {
   color: grey;

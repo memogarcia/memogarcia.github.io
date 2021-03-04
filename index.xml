@@ -40,8 +40,7 @@ The concierge or switch has a table of everyone&amp;rsquo;s door numbers:
       <pubDate>Thu, 20 Aug 2020 07:53:23 +0100</pubDate>
       
       <guid>https://memogarcia.mx/posts/moving-through-timespace/</guid>
-      <description>With the power of dimension recursion :)
-Disclaimer I&amp;rsquo;m not an astrophysicist, this is just a fun thought experiment.
+      <description>Disclaimer I&amp;rsquo;m not an astrophysicist, this is just a fun thought experiment.
 Second Disclaimer This might not be exactly the right way to describe dimensions and I don’t pretend to know how they work. The 4th and 5th dimension are just an extrapolation from the first 3 dimensions.
 TARDIS is a fictional time machine and spacecraft from the TV series Doctor Who.
 In the TV show, the TARDIS is able to move through space and time at will, but how does it do it?</description>
@@ -80,6 +79,7 @@ doc-fzf -h usage: doc-fzf.py [-h] [-q QUERY] module_name doc-fzf. positional arg
       <guid>https://memogarcia.mx/posts/richard-feynman/</guid>
       <description>The World from another point of view
   Fun to imagine
+  Knowing versus Understanding
   </description>
     </item>
     
@@ -151,6 +151,42 @@ mkdir /root/ca &amp;amp;&amp;amp; cd /root/ca mkdir certs crl newcerts private c
 Read the docs at memogarcia/pratai-docs
 Abstract Pratai provides an incredibly flexible and resilient platform to migrate workloads to the cloud that respond to events without having to manage any server or network.
 How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (disclaimer, from now on I will refer to code as functions), that will react to an event without worrying about anything else, the platform handles the execution.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://memogarcia.mx/posts/gitlab-mutli-data-center/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/gitlab-mutli-data-center/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://memogarcia.mx/posts/openstack-heat/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/openstack-heat/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://memogarcia.mx/posts/understanding-calico/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/understanding-calico/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://memogarcia.mx/posts/zero-trust-architectures/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://memogarcia.mx/posts/zero-trust-architectures/</guid>
+      <description>Handbook Roadmap </description>
     </item>
     
   </channel>
