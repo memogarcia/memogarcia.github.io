@@ -6,19 +6,10 @@
     <description>Recent content in Posts on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 Mar 2021 23:30:44 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 23 Sep 2020 14:53:23 +0100</lastBuildDate>
     
 	<atom:link href="https://memogarcia.mx/posts/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>curator.social - A recommendation platform</title>
-      <link>https://memogarcia.mx/posts/curator-social/</link>
-      <pubDate>Wed, 03 Mar 2021 23:30:44 +0100</pubDate>
-      
-      <guid>https://memogarcia.mx/posts/curator-social/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>i3wm running on WSL2</title>
