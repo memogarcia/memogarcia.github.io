@@ -5,10 +5,6 @@
     <link>https://memogarcia.mx/categories/</link>
     <description>Recent content in Categories on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    
-	<atom:link href="https://memogarcia.mx/categories/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-us</language><atom:link href="https://memogarcia.mx/categories/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

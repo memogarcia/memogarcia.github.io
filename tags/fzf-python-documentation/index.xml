@@ -6,11 +6,7 @@
     <description>Recent content in fzf, python, documentation on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 14 Jun 2019 15:03:30 +0100</lastBuildDate>
-    
-	<atom:link href="https://memogarcia.mx/tags/fzf-python-documentation/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Fri, 14 Jun 2019 15:03:30 +0100</lastBuildDate><atom:link href="https://memogarcia.mx/tags/fzf-python-documentation/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Modular CLI Documentation Fuzzy Finder</title>
       <link>https://memogarcia.mx/posts/doc-fzf/</link>

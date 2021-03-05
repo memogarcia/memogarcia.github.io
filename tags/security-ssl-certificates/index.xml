@@ -6,11 +6,7 @@
     <description>Recent content in security, ssl, certificates on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 05 Feb 2018 19:03:30 +0100</lastBuildDate>
-    
-	<atom:link href="https://memogarcia.mx/tags/security-ssl-certificates/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 05 Feb 2018 19:03:30 +0100</lastBuildDate><atom:link href="https://memogarcia.mx/tags/security-ssl-certificates/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Becoming a Certificate Authorityn (CA)</title>
       <link>https://memogarcia.mx/posts/becoming-ca/</link>

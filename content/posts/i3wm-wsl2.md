@@ -1,5 +1,5 @@
 ---
-title: "i3wm running on WSL2"
+title: "i3 running on WSL2"
 date: 2020-09-23T14:53:23+01:00
 draft: false
 tags: windows, linux, i3
@@ -7,8 +7,6 @@ toc: true
 ---
 
 ## WSL configuration
-
-**Note** This is _after_ WSL2 is configured.
 
 1. Install i3
 
@@ -34,7 +32,9 @@ fi
 i3
 ```
 
-**Note** I'm using `zsh` instead of `bash` 
+To run WSL2 as root
+
+    wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash
 
 ## Windows configuration
 
@@ -85,17 +85,9 @@ You should see this screen.
 
 ![i3](/img/i3.png)
 
-
 ## i3 configuration
 
-From now on, you are free to modify your i3 as you wish.
-
-## Note
-
-To run WSL2 as root
-
-    wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash
-
+Up to you.
 
 ## References
 

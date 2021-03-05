@@ -6,11 +6,7 @@
     <description>Recent content in python, openstack, containers, docker on Memo Garcia</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 05 May 2018 18:53:14 +0100</lastBuildDate>
-    
-	<atom:link href="https://memogarcia.mx/tags/python-openstack-containers-docker/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sat, 05 May 2018 18:53:14 +0100</lastBuildDate><atom:link href="https://memogarcia.mx/tags/python-openstack-containers-docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Deploying OpenStack with Docker</title>
       <link>https://memogarcia.mx/posts/openstack-containers/</link>
