@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="not-ready text-sm lg:text-base" lang="en-us">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Deploying OpenStack with Docker - Memo Garcia</title>
+
+  
+  <meta name="theme-color" />
+  
+  <meta name="description" content="Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer
+Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
+Current deployment: stable/queens
+Host configuration The default configuration for this environment is composed by 3 main components that need to run on the host:
+Docker Libvirtd OpenVSwitch Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage." />
+  <meta name="author" content="" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://memooo.ooo/main.min.css" />
+
+  
+  <script defer src="https://memooo.ooo/highlight.min.js" onload="hljs.initHighlightingOnLoad();"></script>
+  
+
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://memooo.ooo/github.svg" />
+  
+
+  
+
+  
+  <meta name="generator" content="Hugo 0.101.0" />
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta property="og:title" content="Deploying OpenStack with Docker" />
+<meta property="og:description" content="Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer
+Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
+Current deployment: stable/queens
+Host configuration The default configuration for this environment is composed by 3 main components that need to run on the host:
+Docker Libvirtd OpenVSwitch Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://memooo.ooo/posts/openstack-containers/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-05-05T18:53:14+01:00" />
+<meta property="article:modified_time" content="2018-05-05T18:53:14+01:00" />
+
+
+  
+  <meta itemprop="name" content="Deploying OpenStack with Docker">
+<meta itemprop="description" content="Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer
+Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
+Current deployment: stable/queens
+Host configuration The default configuration for this environment is composed by 3 main components that need to run on the host:
+Docker Libvirtd OpenVSwitch Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage."><meta itemprop="datePublished" content="2018-05-05T18:53:14+01:00" />
+<meta itemprop="dateModified" content="2018-05-05T18:53:14+01:00" />
+<meta itemprop="wordCount" content="281">
+<meta itemprop="keywords" content="" />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Deploying OpenStack with Docker"/>
+<meta name="twitter:description" content="Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer
+Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
+Current deployment: stable/queens
+Host configuration The default configuration for this environment is composed by 3 main components that need to run on the host:
+Docker Libvirtd OpenVSwitch Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage."/>
+
+  
+  
+</head>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-0.5 text-3xl font-bold" href="https://memooo.ooo/">Memo Garcia</a>
+    <a
+      class="btn-dark ml-6 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"></a>
+  </div>
+
+  <a
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"></a>
+
+  <script>
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const htmlClass = document.documentElement.classList;
+    requestAnimationFrame(() => {
+      htmlClass.remove('not-ready');
+    });
+
+    const setDark = (newDark) => {
+      metaTheme.setAttribute('content', newDark ? '#000' : '#FCFAF9');
+      htmlClass[newDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', newDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkVal = localStorage.getItem('dark');
+    setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block font-medium lg:font-normal text-center leading-[5rem] text-3xl lg:text-base "
+        href="/about/">About</a>
+      
+    </nav>
+    
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:mt-0 lg:ml-12 lg:items-center lg:space-x-6">
+      
+      
+      <a class="h-8 w-8 [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href=" https://github.com/memogarcia "
+        target="_blank"></a>
+      
+      
+    </nav>
+    
+    
+  </div>
+</header>
+
+    <main
+      class="prose prose-zinc relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pt-16 pb-40 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2">Deploying OpenStack with Docker</h1>
+
+    
+    <div class="text-[0.9em] text-zinc-500">
+      
+      <time>May 5, 2018</time>
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p><strong>Note</strong> This is a Work-In-Progress Document and the most up-to-date information is available at: <a href="https://github.com/memogarcia/openstack-deployer">github.com/memogarcia/openstack-deployer</a></p>
+<p>Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and <em>production</em> environments.</p>
+<p>Current deployment: <strong>stable/queens</strong></p>
+<h2 id="host-configuration">Host configuration</h2>
+<p>The default configuration for this environment is composed by 3 main components that need to run on the host:</p>
+<ul>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/infra/docker/README.md">Docker</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/infra/libvirtd/README.md">Libvirtd</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/infra/openvswitch/README.md">OpenVSwitch</a></li>
+</ul>
+<p>Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage.</p>
+<p><img src="https://github.com/memogarcia/openstack-deployer/blob/master/services/infra/docker/host.png?raw=true" alt="host_diagram"></p>
+<h2 id="network-topology">Network topology</h2>
+<p>This is the default network topology, 2 networks are used:</p>
+<ul>
+<li>openstack-management-net: All openstack traffic goes through here</li>
+<li>openstack-provider-net: Instances get IPs in this network</li>
+</ul>
+<p><img src="https://github.com/memogarcia/openstack-deployer/blob/master/services/infra/docker/simplified_networks.png?raw=true" alt="simplified_network_diagram"></p>
+<h2 id="infra-services">Infra services</h2>
+<ul>
+<li>Fluentd: for logging</li>
+<li>Cadvisor: for container stats</li>
+<li>Elasticsearch: for log collection</li>
+<li>Kibana: for log visualization</li>
+<li>Portainer: for container management</li>
+</ul>
+<h2 id="third-party-services">Third-party services</h2>
+<p>Configure the third-party services needed for OpenStack to run.</p>
+<ul>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/third-party/seed/README.md">Seed</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/third-party/mariadb/README.md">MariaDB/MySQL</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/third-party/postgresql/README.md">PostgreSQL</a> <strong>Optional Database</strong></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/third-party/memcached/README.md">Memcached</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/third-party/rabbitmq/README.md">Rabbitmq</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/third-party/onos/README.md">Onos</a> <strong>Optional SDN</strong></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/third-party/minio/README.md">Minio</a> <strong>Optional Object Storage</strong></li>
+</ul>
+<h2 id="openstack-services">OpenStack services</h2>
+<ul>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/openstack/keystone/README.md">Keystone</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/openstack/glance/README.md">Glance</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/openstack/neutron/README.md">Neutron</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/openstack/nova/README.md">Nova</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/openstack/nova-qemu/README.md">Nova-Qemu</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/openstack/cinder/README.md">Cinder</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/openstack/horizon/README.md">Horizon</a></li>
+</ul>
+<h2 id="extending-openstack-services">Extending OpenStack services</h2>
+<ul>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/custom/api/README.md">Custom API</a></li>
+<li><a href="https://github.com/memogarcia/openstack-deployer/tree/master/services/custom/backend/README.md">Custom Backend</a></li>
+</ul>
+<h2 id="deploying-openstack">Deploying OpenStack</h2>
+<p>The model is a yml file describing how your environment should look like. It defines the services to run, networks, ips, volumes, dependencies, etc.</p>
+<p>Configure your runtime environment by modifying <a href="https://github.com/memogarcia/openstack-deployer/blob/master/model.yml">model.yml</a>.</p>
+<p>Apply the configuration with <code>config_processor</code>, which will create the necessary scripts to run the environment.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ansible-playbook -i hosts/localhost config_processor.yml
+</span></span></code></pre></div><p>Config processor will create a new branch <code>deploy</code> where the runtime configuration will be ready for deployment.</p>
+<p>Verify the branch is created correctly.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git branch
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># * deploy</span>
+</span></span><span style="display:flex;"><span>git log
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Ready for deployment</span>
+</span></span></code></pre></div><p>Deploy OpenStack</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./scripts/docker-network-create.sh
+</span></span><span style="display:flex;"><span>./scripts/build.sh
+</span></span><span style="display:flex;"><span>./scripts/start.sh
+</span></span></code></pre></div><h2 id="verify-installation">Verify installation</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>source osrc-v3
+</span></span><span style="display:flex;"><span>openstack project list
+</span></span><span style="display:flex;"><span>openstack image list
+</span></span><span style="display:flex;"><span>openstack network list
+</span></span><span style="display:flex;"><span>openstack server list
+</span></span></code></pre></div><h2 id="references">References</h2>
+<p><a href="https://docs.openstack.org/install-guide/">OpenStack installation Guide</a></p>
+</section>
+
+  
+  
+
+  
+  
+  
+  <nav class="mt-16 flex rounded-lg bg-zinc-100 text-lg dark:bg-zinc-800">
+    
+    <a class="flex w-1/2 items-center p-6 pr-3 font-bold no-underline" href="https://memooo.ooo/posts/linux-matebook/"
+      ><span class="mr-1.5">←</span><span>Linux on Huawei Matebook X Pro</span></a
+    >
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end p-6 pl-3 font-bold no-underline"
+      href="https://memooo.ooo/posts/becoming-ca/"
+      ><span>Becoming a Certificate Authority (CA)</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    
+  </body>
+</html>

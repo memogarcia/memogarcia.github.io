@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="not-ready text-sm lg:text-base" lang="en-us">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Understanding Computer Networks by Analogy - Part 1 - Networks and subnets - Memo Garcia</title>
+
+  
+  <meta name="theme-color" />
+  
+  <meta name="description" content="Prologue There are many ways to learn something new and no approach is best. But, what works best for me is a combination of trial and error and learning by first principles. But, as someone once said:
+Knowledge is only valuable when it leads to taking action on an idea.
+And as long as you share that knowledge you are taking action on an idea.
+Just one big question is: how to share them?" />
+  <meta name="author" content="" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://memooo.ooo/main.min.css" />
+
+  
+  <script defer src="https://memooo.ooo/highlight.min.js" onload="hljs.initHighlightingOnLoad();"></script>
+  
+
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://memooo.ooo/github.svg" />
+  
+
+  
+
+  
+  <meta name="generator" content="Hugo 0.101.0" />
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta property="og:title" content="Understanding Computer Networks by Analogy - Part 1 - Networks and subnets" />
+<meta property="og:description" content="Prologue There are many ways to learn something new and no approach is best. But, what works best for me is a combination of trial and error and learning by first principles. But, as someone once said:
+Knowledge is only valuable when it leads to taking action on an idea.
+And as long as you share that knowledge you are taking action on an idea.
+Just one big question is: how to share them?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://memooo.ooo/posts/understanding-computer-networks-by-analogy/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-08-20T07:53:23+01:00" />
+<meta property="article:modified_time" content="2020-08-20T07:53:23+01:00" />
+
+
+  
+  <meta itemprop="name" content="Understanding Computer Networks by Analogy - Part 1 - Networks and subnets">
+<meta itemprop="description" content="Prologue There are many ways to learn something new and no approach is best. But, what works best for me is a combination of trial and error and learning by first principles. But, as someone once said:
+Knowledge is only valuable when it leads to taking action on an idea.
+And as long as you share that knowledge you are taking action on an idea.
+Just one big question is: how to share them?"><meta itemprop="datePublished" content="2020-08-20T07:53:23+01:00" />
+<meta itemprop="dateModified" content="2020-08-20T07:53:23+01:00" />
+<meta itemprop="wordCount" content="488">
+<meta itemprop="keywords" content="" />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Understanding Computer Networks by Analogy - Part 1 - Networks and subnets"/>
+<meta name="twitter:description" content="Prologue There are many ways to learn something new and no approach is best. But, what works best for me is a combination of trial and error and learning by first principles. But, as someone once said:
+Knowledge is only valuable when it leads to taking action on an idea.
+And as long as you share that knowledge you are taking action on an idea.
+Just one big question is: how to share them?"/>
+
+  
+  
+</head>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-0.5 text-3xl font-bold" href="https://memooo.ooo/">Memo Garcia</a>
+    <a
+      class="btn-dark ml-6 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"></a>
+  </div>
+
+  <a
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"></a>
+
+  <script>
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const htmlClass = document.documentElement.classList;
+    requestAnimationFrame(() => {
+      htmlClass.remove('not-ready');
+    });
+
+    const setDark = (newDark) => {
+      metaTheme.setAttribute('content', newDark ? '#000' : '#FCFAF9');
+      htmlClass[newDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', newDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkVal = localStorage.getItem('dark');
+    setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block font-medium lg:font-normal text-center leading-[5rem] text-3xl lg:text-base "
+        href="/about/">About</a>
+      
+    </nav>
+    
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:mt-0 lg:ml-12 lg:items-center lg:space-x-6">
+      
+      
+      <a class="h-8 w-8 [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href=" https://github.com/memogarcia "
+        target="_blank"></a>
+      
+      
+    </nav>
+    
+    
+  </div>
+</header>
+
+    <main
+      class="prose prose-zinc relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pt-16 pb-40 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2">Understanding Computer Networks by Analogy - Part 1 - Networks and subnets</h1>
+
+    
+    <div class="text-[0.9em] text-zinc-500">
+      
+      <time>Aug 20, 2020</time>
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="prologue">Prologue</h2>
+<p>There are many ways to learn something new and no approach is best. But, what works best for me is a combination of <code>trial and error</code> and learning by <code>first principles</code>. But, as someone once said:</p>
+<blockquote>
+<p>Knowledge is only valuable when it leads to taking action on an idea.</p>
+</blockquote>
+<p>And as long as you share that knowledge you are taking action on an idea.</p>
+<p>Just one big question is: <strong>how to share them?</strong>
+I find that analogies are a great tool to do that.
+They let you group together many ideas and present them as a whole to new audiences in a very fun way.</p>
+<p>In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.</p>
+<h2 id="networks-or-the-buildings">Networks or &ldquo;The buildings&rdquo;</h2>
+<p>This building represents a &ldquo;network&rdquo; of &ldquo;connected rooms&rdquo;.</p>
+<p>Think of each room as a computer with a room number as an <a href="https://en.wikipedia.org/wiki/IP_address">IP address</a>.</p>
+<pre><code>room + room number == computer + ip address
+</code></pre>
+<p><img src="/img/building1.png" alt="building1"></p>
+<p>In this network, each room can communicate directly to any other room using <a href="https://www.cloudflare.com/learning/network-layer/what-is-a-protocol/">network protocols</a> that will be represented as a <code>packages</code>.</p>
+<p>But now you are wondering&hellip; I don&rsquo;t want to send packages to all my neighbors&hellip;I just want to communicate with specific ones.</p>
+<p>Enter the&hellip;</p>
+<h2 id="subnets-or-the-floors">Subnets or &ldquo;The floors&rdquo;</h2>
+<p>By dividing your building into floors you can now isolate the communication between them.
+Neighbors in the 6th floor cannot communicate with neighbors in the 9th floor.</p>
+<p>This is called a <a href="https://en.wikipedia.org/wiki/Subnetwork">subnet</a></p>
+<p><img src="/img/floor1.png" alt="floor1"></p>
+<p>You can identify the rooms by the room number or IP address.</p>
+<p>Example room 69 can be idenfied as:</p>
+<pre><code>floor 6, room 9
+</code></pre>
+<p>or as an IP address:</p>
+<pre><code>192.168.6.9
+</code></pre>
+<p>This room number is unique to your building but the next building can have a room 69 in its building as well (I will cover this in a later post about private vs public IPs).</p>
+<h2 id="computers-or-the-rooms">Computers or &ldquo;The rooms&rdquo;</h2>
+<p>In reality, your room number is not tied to the physical space in the building but to the door that allows access to it.</p>
+<p><img src="/img/room1.png" alt="room1"></p>
+<p>Which means that your room can have many doors with different properties:</p>
+<ol>
+<li>A door for maintenance,</li>
+<li>A door for guests,</li>
+<li>And so on.</li>
+</ol>
+<p>Within the floor (subnet) your door have a unique number called <a href="https://en.wikipedia.org/wiki/MAC_address">MAC address</a></p>
+<p>In other words, your room is identified by an door number rather than a room number within a subnet.</p>
+<pre><code>room -&gt; door 1 -&gt; room 69
+</code></pre>
+<p>or as a relation between Computer, MAC and IP</p>
+<pre><code>computer interface eth0 -&gt; ff:ff:ff:ff:ff:ff -&gt; 192.168.6.9
+</code></pre>
+<h2 id="series">Series</h2>
+<ol>
+<li><a href="../understanding-computer-networks-by-analogy/">Networks and subnets or building layouts</a></li>
+<li><a href="../understanding-computer-networks-by-analogy-part-2/">Switches and Routers or how rooms can communicate between floors</a></li>
+<li>Network protocols or how rooms communicate</li>
+<li>Internet, public IPs, NAT, DNS or how to connect rooms between buildings</li>
+<li>High performance networking or how to speed up the communication between rooms using high speed roads and other techniques</li>
+<li>SDN or dynamic floor arrangement</li>
+</ol>
+<h2 id="contributions">Contributions</h2>
+<p>If you want contribute, please send a pull request or open an issue to this <a href="https://github.com/memogarcia/memogarcia.github.io/">repo</a></p>
+</section>
+
+  
+  
+
+  
+  
+  
+  <nav class="mt-16 flex rounded-lg bg-zinc-100 text-lg dark:bg-zinc-800">
+    
+    <a class="flex w-1/2 items-center p-6 pr-3 font-bold no-underline" href="https://memooo.ooo/posts/moving-through-timespace/"
+      ><span class="mr-1.5">←</span><span>How (I think) TARDIS move through Space and Time</span></a
+    >
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end p-6 pl-3 font-bold no-underline"
+      href="https://memooo.ooo/posts/doc-fzf/"
+      ><span>Modular CLI Documentation Fuzzy Finder</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    
+  </body>
+</html>

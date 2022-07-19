@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="not-ready text-sm lg:text-base" lang="en-us">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Becoming a Certificate Authority (CA) - Memo Garcia</title>
+
+  
+  <meta name="theme-color" />
+  
+  <meta name="description" content="A Certificate Authority or CA is an entity that signs digital certificates. These digital certificates are used to validate the connection while using secure mechanisms.
+Generating a root CA We will use a root CA to create intermediate CA&rsquo;s which are trusted to sign certificates on its behalf.
+First, prepare the environment.
+mkdir /root/ca &amp;&amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &gt; serial Then download the template for /root/ca/openssl." />
+  <meta name="author" content="" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://memooo.ooo/main.min.css" />
+
+  
+  <script defer src="https://memooo.ooo/highlight.min.js" onload="hljs.initHighlightingOnLoad();"></script>
+  
+
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://memooo.ooo/github.svg" />
+  
+
+  
+
+  
+  <meta name="generator" content="Hugo 0.101.0" />
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta property="og:title" content="Becoming a Certificate Authority (CA)" />
+<meta property="og:description" content="A Certificate Authority or CA is an entity that signs digital certificates. These digital certificates are used to validate the connection while using secure mechanisms.
+Generating a root CA We will use a root CA to create intermediate CA&rsquo;s which are trusted to sign certificates on its behalf.
+First, prepare the environment.
+mkdir /root/ca &amp;&amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &gt; serial Then download the template for /root/ca/openssl." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://memooo.ooo/posts/becoming-ca/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-02-05T19:03:30+01:00" />
+<meta property="article:modified_time" content="2018-02-05T19:03:30+01:00" />
+
+
+  
+  <meta itemprop="name" content="Becoming a Certificate Authority (CA)">
+<meta itemprop="description" content="A Certificate Authority or CA is an entity that signs digital certificates. These digital certificates are used to validate the connection while using secure mechanisms.
+Generating a root CA We will use a root CA to create intermediate CA&rsquo;s which are trusted to sign certificates on its behalf.
+First, prepare the environment.
+mkdir /root/ca &amp;&amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &gt; serial Then download the template for /root/ca/openssl."><meta itemprop="datePublished" content="2018-02-05T19:03:30+01:00" />
+<meta itemprop="dateModified" content="2018-02-05T19:03:30+01:00" />
+<meta itemprop="wordCount" content="624">
+<meta itemprop="keywords" content="" />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Becoming a Certificate Authority (CA)"/>
+<meta name="twitter:description" content="A Certificate Authority or CA is an entity that signs digital certificates. These digital certificates are used to validate the connection while using secure mechanisms.
+Generating a root CA We will use a root CA to create intermediate CA&rsquo;s which are trusted to sign certificates on its behalf.
+First, prepare the environment.
+mkdir /root/ca &amp;&amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &gt; serial Then download the template for /root/ca/openssl."/>
+
+  
+  
+</head>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-0.5 text-3xl font-bold" href="https://memooo.ooo/">Memo Garcia</a>
+    <a
+      class="btn-dark ml-6 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"></a>
+  </div>
+
+  <a
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"></a>
+
+  <script>
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const htmlClass = document.documentElement.classList;
+    requestAnimationFrame(() => {
+      htmlClass.remove('not-ready');
+    });
+
+    const setDark = (newDark) => {
+      metaTheme.setAttribute('content', newDark ? '#000' : '#FCFAF9');
+      htmlClass[newDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', newDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkVal = localStorage.getItem('dark');
+    setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block font-medium lg:font-normal text-center leading-[5rem] text-3xl lg:text-base "
+        href="/about/">About</a>
+      
+    </nav>
+    
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:mt-0 lg:ml-12 lg:items-center lg:space-x-6">
+      
+      
+      <a class="h-8 w-8 [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href=" https://github.com/memogarcia "
+        target="_blank"></a>
+      
+      
+    </nav>
+    
+    
+  </div>
+</header>
+
+    <main
+      class="prose prose-zinc relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pt-16 pb-40 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2">Becoming a Certificate Authority (CA)</h1>
+
+    
+    <div class="text-[0.9em] text-zinc-500">
+      
+      <time>Feb 5, 2018</time>
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>A Certificate Authority or CA is an entity that signs digital certificates.
+These digital certificates are used to validate the connection while using secure mechanisms.</p>
+<h2 id="generating-a-root-ca">Generating a root CA</h2>
+<p>We will use a root CA to create intermediate CA&rsquo;s which are trusted to sign certificates on its behalf.</p>
+<p>First, prepare the environment.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir /root/ca <span style="color:#f92672">&amp;&amp;</span> cd /root/ca
+</span></span><span style="display:flex;"><span>mkdir certs crl newcerts private
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">700</span> private
+</span></span><span style="display:flex;"><span>touch index.txt
+</span></span><span style="display:flex;"><span>echo <span style="color:#ae81ff">1000</span> &gt; serial
+</span></span></code></pre></div><p>Then download the template for <code>/root/ca/openssl.cnf</code> from <a href="https://gist.github.com/memogarcia/2ba4b4fee8a588a7448297bc8cc4e0d9">this gist</a> and edit it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vim /root/ca/openssl.cnf
+</span></span></code></pre></div><p>Create the root key <code>ca.key.pem</code> and make sure to keep it secure.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl genrsa -aes256 -out private/ca.key.pem <span style="color:#ae81ff">4096</span>
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">400</span> private/ca.key.pem
+</span></span></code></pre></div><p>Create a root certificate <code>ca.cert.pem</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl req -config openssl.cnf <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -key private/ca.key.pem <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -new -x509 -days <span style="color:#ae81ff">10957</span> -sha256 -extensions v3_ca <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -out certs/ca.cert.pem
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">444</span> certs/ca.cert.pem
+</span></span></code></pre></div><p>Verify the root certificate.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl x509 -noout -text -in certs/ca.cert.pem
+</span></span></code></pre></div><h2 id="generating-an-intermediate-ca">Generating an intermediate CA</h2>
+<p>It&rsquo;s best practice to use intermediate CA&rsquo;s instead of root CA&rsquo;s to sign certificates, this practice allows a root CA to revoke a compromised intermediate CA and create a new one if necessary.</p>
+<p>Prepare the environment.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir /root/ca/intermediate <span style="color:#f92672">&amp;&amp;</span> cd /root/ca/intermediate
+</span></span><span style="display:flex;"><span>mkdir certs crl csr newcerts private
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">700</span> private
+</span></span><span style="display:flex;"><span>touch index.txt
+</span></span><span style="display:flex;"><span>echo <span style="color:#ae81ff">1000</span> &gt; serial
+</span></span><span style="display:flex;"><span>echo <span style="color:#ae81ff">1000</span> &gt; /root/ca/intermediate/crlnumber
+</span></span></code></pre></div><p>Then download the template for <code>/root/ca/intermediate/openssl.cnf</code> from <a href="https://gist.github.com/memogarcia/4c82f92bb4daf7ebc22517df24ce7a61">this gist</a> and edit it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vim /root/ca/intermediate/openssl.cnf
+</span></span></code></pre></div><p>Create the intermediate key <code>intermediate.key.pem</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd /root/ca
+</span></span><span style="display:flex;"><span>openssl genrsa -aes256 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -out intermediate/private/intermediate.key.pem <span style="color:#ae81ff">4096</span>
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">400</span> intermediate/private/intermediate.key.pem
+</span></span></code></pre></div><p>With the intermediate key create an intermediate certificate request <code>intermediate.csr.pem</code> for the root certificate to sign. <strong>Make sure that Common Name is different from your root CA</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl req -config intermediate/openssl.cnf -new -sha256 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -key intermediate/private/intermediate.key.pem <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -out intermediate/csr/intermediate.csr.pem
+</span></span></code></pre></div><p>The root CA will sign this certificate using <code>v3_intermediate_ca</code> extension. <strong>Make sure is valid for less time than the root CA</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl ca -config openssl.cnf -extensions v3_intermediate_ca <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -days <span style="color:#ae81ff">3650</span> -notext -md sha256 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -in intermediate/csr/intermediate.csr.pem <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -out intermediate/certs/intermediate.cert.pem
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">444</span> intermediate/certs/intermediate.cert.pem
+</span></span></code></pre></div><p><code>index.txt</code> is the database file. <strong>Do NOT delete this file</strong></p>
+<p>Veify the intermediate certificate.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl x509 -noout -text <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -in intermediate/certs/intermediate.cert.pem
+</span></span></code></pre></div><p>Verify the intermediate CA against the root CA, the output should be <code>OK</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl verify -CAfile certs/ca.cert.pem <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    intermediate/certs/intermediate.cert.pem
+</span></span></code></pre></div><p>After the verification is <code>OK</code>, chain the root CA and intermediate CA into a chain CA. <strong>This is only necessary if the root certificate is not installed on the client machines</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat intermediate/certs/intermediate.cert.pem <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    certs/ca.cert.pem &gt; intermediate/certs/ca-chain.cert.pem
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">444</span> intermediate/certs/ca-chain.cert.pem
+</span></span></code></pre></div><h2 id="client-certificates">Client certificates</h2>
+<p>The intermediate certificate will be used to sign client certificates. <strong>Skip this step if you have a CSR already.</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd /root/ca
+</span></span><span style="display:flex;"><span>openssl genrsa -aes256 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -out intermediate/private/www.example.com.key.pem <span style="color:#ae81ff">2048</span>
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">400</span> intermediate/private/www.example.com.key.pem
+</span></span></code></pre></div><p>Using 2048 bits for encryption on the client certificates is faster for TLS handshakes and lighter on the CPU but is less secure than using 4096 bits. Use it at discretion.</p>
+<p>Using the private key <code>intermediate/private/www.example.com.key.pem</code>, create a CSR file. <strong>Skip this step if you have a CSR already.</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl req -config intermediate/openssl.cnf <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -key intermediate/private/www.example.com.key.pem <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -new -sha256 -out intermediate/csr/www.example.com.csr.pem
+</span></span></code></pre></div><h3 id="signing-client-certificates">Signing client certificates</h3>
+<p>To create a certificate, use the intermediate CA to sign the CSR.</p>
+<p>If the certificate is going to use for:</p>
+<ol>
+<li>servers, use <code>server_cert</code> extension.</li>
+<li>authentication, use <code>usr_cert</code> extension.</li>
+</ol>
+<p>Usually, client certificates are valid for less time than the CA&rsquo;s.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd /root/ca
+</span></span><span style="display:flex;"><span>openssl ca -config intermediate/openssl.cnf <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -extensions server_cert -days <span style="color:#ae81ff">375</span> -notext -md sha256 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -in intermediate/csr/www.example.com.csr.pem <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -out intermediate/certs/www.example.com.cert.pem
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">444</span> intermediate/certs/www.example.com.cert.pem
+</span></span></code></pre></div><h3 id="verification">Verification</h3>
+<p>Verify that <code>intermediate/index.txt</code> contains a <code>CN</code> for your domain.</p>
+<p>Verify the certificate.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl x509 -noout -text <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -in intermediate/certs/www.example.com.cert.pem
+</span></span></code></pre></div><p>Verify the CA certificate chain. the output should be <code>OK</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl verify -CAfile intermediate/certs/ca-chain.cert.pem <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    intermediate/certs/www.example.com.cert.pem
+</span></span></code></pre></div><h3 id="distribution">Distribution</h3>
+<p>Distribute and/or deploy the following files:</p>
+<ul>
+<li><code>/root/ca/intermediate/certs/ca-chain.cert.pem</code></li>
+<li><code>/root/ca/intermediate/private/www.example.com.key.pem</code>  <strong>Only if you are signing the CSR</strong></li>
+<li><code>/root/ca/intermediate/certs/www.example.com.cert.pem</code></li>
+</ul>
+<h2 id="next-steps">Next steps</h2>
+<ol>
+<li>Sign certificates</li>
+<li>Cash in</li>
+<li>Sell out</li>
+<li>Bro down</li>
+</ol>
+<h2 id="references">References</h2>
+<p><a href="https://jamielinux.com/docs/openssl-certificate-authority/index.html">OpenSSL Certificate Authority</a></p>
+</section>
+
+  
+  
+
+  
+  
+  
+  <nav class="mt-16 flex rounded-lg bg-zinc-100 text-lg dark:bg-zinc-800">
+    
+    <a class="flex w-1/2 items-center p-6 pr-3 font-bold no-underline" href="https://memooo.ooo/posts/openstack-containers/"
+      ><span class="mr-1.5">←</span><span>Deploying OpenStack with Docker</span></a
+    >
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end p-6 pl-3 font-bold no-underline"
+      href="https://memooo.ooo/posts/pratai/"
+      ><span>Pratai, event driven platform for OpenStack</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    
+  </body>
+</html>

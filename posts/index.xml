@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Memo Garcia</title>
+    <link>https://memooo.ooo/posts/</link>
+    <description>Recent content in Posts on Memo Garcia</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 02 Jul 2022 00:00:00 +0100</lastBuildDate><atom:link href="https://memooo.ooo/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python templates when writing bash and python</title>
+      <link>https://memooo.ooo/posts/python-templates-for-bash/</link>
+      <pubDate>Sat, 02 Jul 2022 00:00:00 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/python-templates-for-bash/</guid>
+      <description>I write a lot of bash scripts to automate and glue services together however, parsing cli or api outputs becomes messy very quickly with bash alone.
+This python script template has features for some of the use cases I have:
+Use case: Parse stdin I use this when I want to work with piped data.
+cat README.md | python3 for_bash.py --stdin import argparse def arguments(): &amp;#34;&amp;#34;&amp;#34; https://docs.python.org/3/library/argparse.html &amp;#34;&amp;#34;&amp;#34; parser = argparse.</description>
+    </item>
+    
+    <item>
+      <title>Lessons I learned from senior engineers</title>
+      <link>https://memooo.ooo/posts/senior-engineers/</link>
+      <pubDate>Fri, 01 Jul 2022 00:00:00 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/senior-engineers/</guid>
+      <description>“Why is this important”? Good senior engineers always ask “why” this feature, or function or even project is necessary.
+Understanding “why” allows them to make decisions on “what” to do, “how” to do it and even how to take shortcuts to get there.
+They also understand “why” target users would want these features in the first place.
+Clear communication Good senior engineers always strive to be good communicators.
+They document everything, from code to the decision making process and agreements between people involved in a project.</description>
+    </item>
+    
+    <item>
+      <title>Demystifying Kubernetes</title>
+      <link>https://memooo.ooo/posts/understanding-kubernetes/</link>
+      <pubDate>Thu, 30 Jun 2022 00:00:00 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/understanding-kubernetes/</guid>
+      <description>Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
+My goal is to demystify its components.
+Main components There are two main components in a Kubernetes cluster.
+Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it.</description>
+    </item>
+    
+    <item>
+      <title>A lesson from my dog</title>
+      <link>https://memooo.ooo/posts/taquito/</link>
+      <pubDate>Tue, 28 Jun 2022 20:20:31 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/taquito/</guid>
+      <description>Looming recession !! , third world war !!, climate change !!
+Meanwhile taquito…
+Nap nap nap Take a nap, the world will be there in 15 minutes (or 4 hours). Rush it when you have to but mainly take it easy.</description>
+    </item>
+    
+    <item>
+      <title>How to use GitOps in a non-cloud-native environment</title>
+      <link>https://memooo.ooo/posts/gitops-in-enterprise/</link>
+      <pubDate>Fri, 04 Mar 2022 02:05:30 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/gitops-in-enterprise/</guid>
+      <description>The rapid development and adoption of cloud-native stacks that brings a better developer experience, security, reproducibility and speed at which organizations deliver value are leaving more traditional stacks behind. Hence, there is more pressure from the markets, organizations and developers to bring those stacks into a more modern era.
+We often wonder whether the same techniques and toolchains of these modern stacks can be used to configure not-so-modern applications or infrastructures.</description>
+    </item>
+    
+    <item>
+      <title>Setup multiple git identities and pgp keys</title>
+      <link>https://memooo.ooo/posts/git-multiple-identities/</link>
+      <pubDate>Fri, 04 Mar 2022 02:03:30 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/git-multiple-identities/</guid>
+      <description>Be very carrefull in your setup : any misconfiguration make all the git config to fail silently !
+Setup multiple git ssh identities for git Generate your SSH keys as per your git provider documentation. Add each public SSH keys to your git providers acounts. In your ~/.ssh/config, set each ssh key for each repository as in this exemple: Host github.com HostName github.com User git IdentityFile ~/.ssh/github_private_key IdentitiesOnly=yes Host gitlab.com Hostname gitlab.</description>
+    </item>
+    
+    <item>
+      <title>i3 running on WSL2</title>
+      <link>https://memooo.ooo/posts/i3wm-wsl2/</link>
+      <pubDate>Wed, 23 Sep 2020 14:53:23 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/i3wm-wsl2/</guid>
+      <description>WSL configuration Install i3
+sudo apt install i3 -y Create an init script
+vim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don&amp;#39;t do anything [ -z &amp;#34;$PS1&amp;#34; ] &amp;amp;&amp;amp; return export DISPLAY=$(awk &amp;#39;/nameserver / {print $2; exit}&amp;#39; /etc/resolv.conf 2&amp;gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&amp;#34;is not running&amp;#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root
+wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 2 - Switches and Routers</title>
+      <link>https://memooo.ooo/posts/understanding-computer-networks-by-analogy-part-2/</link>
+      <pubDate>Fri, 21 Aug 2020 00:53:23 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/understanding-computer-networks-by-analogy-part-2/</guid>
+      <description>Switches or &amp;ldquo;The floor concierge&amp;rdquo; Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.
+The concierge or switch has a table of everyone&amp;rsquo;s door numbers:
+| Floor | Room number | Door number | |-------|-------------|-------------| | 6 | 602 | 1 | | 6 | 609 | 1 | Remember that each room can have many doors.</description>
+    </item>
+    
+    <item>
+      <title>How (I think) TARDIS move through Space and Time</title>
+      <link>https://memooo.ooo/posts/moving-through-timespace/</link>
+      <pubDate>Thu, 20 Aug 2020 07:53:23 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/moving-through-timespace/</guid>
+      <description>Disclaimer I&amp;rsquo;m not an astrophysicist, this is just a fun thought experiment.
+Second Disclaimer This might not be exactly the right way to describe dimensions and I don’t pretend to know how they work. The 4th and 5th dimension are just an extrapolation from the first 3 dimensions.
+TARDIS is a fictional time machine and spacecraft from the TV series Doctor Who.
+In the TV show, the TARDIS is able to move through space and time at will, but how does it do it?</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 1 - Networks and subnets</title>
+      <link>https://memooo.ooo/posts/understanding-computer-networks-by-analogy/</link>
+      <pubDate>Thu, 20 Aug 2020 07:53:23 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/understanding-computer-networks-by-analogy/</guid>
+      <description>Prologue There are many ways to learn something new and no approach is best. But, what works best for me is a combination of trial and error and learning by first principles. But, as someone once said:
+Knowledge is only valuable when it leads to taking action on an idea.
+And as long as you share that knowledge you are taking action on an idea.
+Just one big question is: how to share them?</description>
+    </item>
+    
+    <item>
+      <title>Modular CLI Documentation Fuzzy Finder</title>
+      <link>https://memooo.ooo/posts/doc-fzf/</link>
+      <pubDate>Fri, 14 Jun 2019 15:03:30 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/doc-fzf/</guid>
+      <description>Fuzzy Search documentation from the CLI.
+See it in action here https://terminalizer.com/view/2c3935cf1418
+Disclaimer This tool was built to learn FZF capabilities. Feel free to use it or extend it.
+Usage doc-fzf ansible doc-fzf ansible -q yum Installation pip3 install doc-fzf Verify your installation:
+doc-fzf -h usage: doc-fzf.py [-h] [-q QUERY] module_name doc-fzf. positional arguments: module_name Name of the module to search optional arguments: -h, --help show this help message and exit -q QUERY Query the docs Extending Doc-FZF doc-fzf is a modular application.</description>
+    </item>
+    
+    <item>
+      <title>Generating a dynamic host inventory for ansible with Netbox</title>
+      <link>https://memooo.ooo/posts/pynetbox/</link>
+      <pubDate>Thu, 10 Jan 2019 23:30:44 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/pynetbox/</guid>
+      <description>Usage:
+pip install pynetbox ansible ansible all -i hosts/env -m setup --tree /tmp/facts/env #!/opt/netbox/bin/python import argparse import json import os import sys import pynetbox import yaml import urllib3 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) if sys.version_info &amp;lt; (3, 6): print(&amp;#34;Python 3.6 is required&amp;#34;) sys.exit(2) def to_json(in_dict): return json.dumps(in_dict, sort_keys=True, indent=4) def load_configuration(path=&amp;#34;/etc/ansible/netbox.yml&amp;#34;): &amp;#34;&amp;#34;&amp;#34; Load netbox configuration /etc/ansible/netbox.yml &amp;#34;&amp;#34;&amp;#34; try: with open(path, &amp;#34;r&amp;#34;) as fd: return yaml.safe_load(fd) except yaml.YAMLError as yml_error: print(yml_error) NETBOX_ENDPOINT = load_configuration()[&amp;#34;netbox_endpoint&amp;#34;] NETBOX_TOKEN = load_configuration()[&amp;#34;netbox_token&amp;#34;] if not NETBOX_ENDPOINT: raise OSError(&amp;#34;environmet var NETBOX_ENDPOINT not set&amp;#34;) if not NETBOX_TOKEN: raise OSError(&amp;#34;environmet var NETBOX_TOKEN not set&amp;#34;) nb = pynetbox.</description>
+    </item>
+    
+    <item>
+      <title>Some Richard Feynman videos</title>
+      <link>https://memooo.ooo/posts/richard-feynman/</link>
+      <pubDate>Fri, 04 Jan 2019 22:20:31 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/richard-feynman/</guid>
+      <description>The World from another point of view
+Fun to imagine
+Knowing versus Understanding</description>
+    </item>
+    
+    <item>
+      <title>Waju - A fun and brutal game</title>
+      <link>https://memooo.ooo/posts/waju/</link>
+      <pubDate>Fri, 04 Jan 2019 15:49:47 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/waju/</guid>
+      <description>Waju or whatever is called is a game that until this day I don&amp;rsquo;t know from where it comes. But, is fun.
+Edit: The game is based on a German game called Mensch ärgere Dich nicht
+Goal The goal of the game is very simple:
+Move your marbles for one lap from your home to your goal. Don&amp;rsquo;t worry about winning but don&amp;rsquo;t let anyone else win. Have fun. Board The board has six main components:</description>
+    </item>
+    
+    <item>
+      <title>Beyond PEP 8 - Best practices for beautiful intelligible code</title>
+      <link>https://memooo.ooo/posts/beyond-pep8/</link>
+      <pubDate>Thu, 03 Jan 2019 18:53:23 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/beyond-pep8/</guid>
+      <description> </description>
+    </item>
+    
+    <item>
+      <title>Linux on Huawei Matebook X Pro</title>
+      <link>https://memooo.ooo/posts/linux-matebook/</link>
+      <pubDate>Tue, 04 Dec 2018 13:10:28 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/linux-matebook/</guid>
+      <description>This laptop has very decent specs:
+8th Generation Intel® Core™ i7-8550U processor GPU: NVIDIA® GeForce® MX150 with 2 GB GDDR5 / Intel® UHD Graphics 620 16 GB LPDDR3 2133 MHz BT 4.1 (compatible with 3.0 and 2.1+EDR) 512 GB NVMe PCIe SSD Don&amp;rsquo;t expect running workstation level workloads in this machine but it is a wonderful dev machine.
+Things I don&amp;rsquo;t like about the laptop Palm rejection, especially this one, maybe this is Linux.</description>
+    </item>
+    
+    <item>
+      <title>Deploying OpenStack with Docker</title>
+      <link>https://memooo.ooo/posts/openstack-containers/</link>
+      <pubDate>Sat, 05 May 2018 18:53:14 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/openstack-containers/</guid>
+      <description>Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer
+Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
+Current deployment: stable/queens
+Host configuration The default configuration for this environment is composed by 3 main components that need to run on the host:
+Docker Libvirtd OpenVSwitch Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage.</description>
+    </item>
+    
+    <item>
+      <title>Becoming a Certificate Authority (CA)</title>
+      <link>https://memooo.ooo/posts/becoming-ca/</link>
+      <pubDate>Mon, 05 Feb 2018 19:03:30 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/becoming-ca/</guid>
+      <description>A Certificate Authority or CA is an entity that signs digital certificates. These digital certificates are used to validate the connection while using secure mechanisms.
+Generating a root CA We will use a root CA to create intermediate CA&amp;rsquo;s which are trusted to sign certificates on its behalf.
+First, prepare the environment.
+mkdir /root/ca &amp;amp;&amp;amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &amp;gt; serial Then download the template for /root/ca/openssl.</description>
+    </item>
+    
+    <item>
+      <title>Pratai, event driven platform for OpenStack</title>
+      <link>https://memooo.ooo/posts/pratai/</link>
+      <pubDate>Fri, 05 Jan 2018 19:08:55 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/pratai/</guid>
+      <description>Note This is a Work-In-Progress Document.
+Read the docs at memogarcia/pratai-docs
+Abstract Pratai provides an incredibly flexible and resilient platform to migrate workloads to the cloud that respond to events without having to manage any server or network.
+How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (disclaimer, from now on I will refer to code as functions), that will react to an event without worrying about anything else, the platform handles the execution.</description>
+    </item>
+    
+  </channel>
+</rss>

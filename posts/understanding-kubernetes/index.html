@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="not-ready text-sm lg:text-base" lang="en-us">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Demystifying Kubernetes - Memo Garcia</title>
+
+  
+  <meta name="theme-color" />
+  
+  <meta name="description" content="Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
+My goal is to demystify its components.
+Main components There are two main components in a Kubernetes cluster.
+Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it." />
+  <meta name="author" content="" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://memooo.ooo/main.min.css" />
+
+  
+  <script defer src="https://memooo.ooo/highlight.min.js" onload="hljs.initHighlightingOnLoad();"></script>
+  
+
+  
+  
+  
+  
+
+  
+  <link rel="preload" as="image" href="https://memooo.ooo/github.svg" />
+  
+
+  
+
+  
+  <meta name="generator" content="Hugo 0.101.0" />
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta property="og:title" content="Demystifying Kubernetes" />
+<meta property="og:description" content="Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
+My goal is to demystify its components.
+Main components There are two main components in a Kubernetes cluster.
+Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://memooo.ooo/posts/understanding-kubernetes/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-06-30T00:00:00+01:00" />
+<meta property="article:modified_time" content="2022-06-30T00:00:00+01:00" />
+
+
+  
+  <meta itemprop="name" content="Demystifying Kubernetes">
+<meta itemprop="description" content="Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
+My goal is to demystify its components.
+Main components There are two main components in a Kubernetes cluster.
+Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it."><meta itemprop="datePublished" content="2022-06-30T00:00:00+01:00" />
+<meta itemprop="dateModified" content="2022-06-30T00:00:00+01:00" />
+<meta itemprop="wordCount" content="611">
+<meta itemprop="keywords" content="" />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Demystifying Kubernetes"/>
+<meta name="twitter:description" content="Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
+My goal is to demystify its components.
+Main components There are two main components in a Kubernetes cluster.
+Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it."/>
+
+  
+  
+</head>
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a class="-translate-x-[1px] -translate-y-0.5 text-3xl font-bold" href="https://memooo.ooo/">Memo Garcia</a>
+    <a
+      class="btn-dark ml-6 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"></a>
+  </div>
+
+  <a
+    class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"></a>
+
+  <script>
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const htmlClass = document.documentElement.classList;
+    requestAnimationFrame(() => {
+      htmlClass.remove('not-ready');
+    });
+
+    const setDark = (newDark) => {
+      metaTheme.setAttribute('content', newDark ? '#000' : '#FCFAF9');
+      htmlClass[newDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', newDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkVal = localStorage.getItem('dark');
+    setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none">
+    
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a class="block font-medium lg:font-normal text-center leading-[5rem] text-3xl lg:text-base "
+        href="/about/">About</a>
+      
+    </nav>
+    
+    
+
+    
+    <nav class="mt-12 flex justify-center space-x-10 dark:invert lg:mt-0 lg:ml-12 lg:items-center lg:space-x-6">
+      
+      
+      <a class="h-8 w-8 [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6"
+        style="--url: url(./github.svg)"
+        href=" https://github.com/memogarcia "
+        target="_blank"></a>
+      
+      
+    </nav>
+    
+    
+  </div>
+</header>
+
+    <main
+      class="prose prose-zinc relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pt-16 pb-40 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2">Demystifying Kubernetes</h1>
+
+    
+    <div class="text-[0.9em] text-zinc-500">
+      
+      <time>Jun 30, 2022</time>
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.</p>
+<p>My goal is to demystify its components.</p>
+<h2 id="main-components">Main components</h2>
+<p>There are two main components in a Kubernetes cluster.</p>
+<ol>
+<li>Master nodes</li>
+<li>Worker nodes</li>
+</ol>
+<ul>
+<li>The only difference is the workloads they run.</li>
+<li>You can assign metadata to these nodes to schedule specific workloads on each node or type of node.</li>
+</ul>
+<h2 id="for-users">For Users</h2>
+<h3 id="containers">Containers</h3>
+<ul>
+<li>A container is a filesystem and process wrapped in a “box” with some labels on it.</li>
+</ul>
+<h3 id="volumes">Volumes</h3>
+<ul>
+<li>A volume is a filesystem that lives outside the container.</li>
+</ul>
+<h3 id="pods">Pods</h3>
+<ul>
+<li>Organize containers (one or more) and a volume(s) as a single unit</li>
+<li>This is the basic unit on which Kubernetes works.</li>
+<li>A pod has an IP (or more depending on your CNI)</li>
+</ul>
+<h3 id="configmaps">ConfigMaps</h3>
+<ul>
+<li>Are just files that are mounted in pods (specifically, they are mounted in a container)</li>
+</ul>
+<h3 id="secrets">Secrets</h3>
+<ul>
+<li>Are just files that are mounted in the pods but the data is encoded. (specifically, they are mounted in a container).</li>
+</ul>
+<p><strong>Note</strong> This is insecure, take a look at different approaches if security is important</p>
+<h3 id="deployment">Deployment</h3>
+<ul>
+<li>Is a way to tell Kubernetes the desired state of your pods, services, and volumes.</li>
+<li>It also tells Kubernetes how you want to deploy your pods, how many replicas (replicaset) or if you want a fixed amount of pods for a database cluster for example.(statefulset)</li>
+</ul>
+<h3 id="service">Service</h3>
+<ul>
+<li>Service has an IP that redirects traffic to your pod(s)</li>
+</ul>
+<h3 id="selectors">Selectors</h3>
+<ul>
+<li>This is how you map a service to a pod using labels</li>
+</ul>
+<h3 id="ingress">Ingress</h3>
+<ul>
+<li>Create rules to allow traffic from outside the cluster to inside the cluster</li>
+</ul>
+<h3 id="imperative-vs-declarative-mode">Imperative vs Declarative mode</h3>
+<ul>
+<li>You tell Kubernetes what you want to do:</li>
+</ul>
+<p><code>kubectl create ns namespace</code></p>
+<ul>
+<li>You tell Kubernetes the desired state of your resource.</li>
+</ul>
+<p><code>kubectl create -f resource.yml</code></p>
+<h2 id="for-operators">For Operators</h2>
+<p>Kubernetes control plane is composed of the following components:</p>
+<h2 id="kube-apiserver">kube-apiserver</h2>
+<ul>
+<li>Runs in master nodes</li>
+<li>Creates resources in the cluster</li>
+<li>Custom resource definitions is a way to add features to the api</li>
+<li>Stores things in etcd or sqlite (for k3s)</li>
+</ul>
+<h2 id="kube-scheduler">kube-scheduler</h2>
+<ul>
+<li>Runs in the master node (a single instance at a time)</li>
+<li>It watches the kube-apiserver and schedules resources in nodes</li>
+<li>You can specify or give hints to the scheduler where you want your resources to live</li>
+<li>Custom schedulers are allowed, and more than 1 scheduler is allowed</li>
+</ul>
+<h2 id="kube-controller-manager">kube-controller-manager</h2>
+<ul>
+<li>Runs in the master node (a single instance at a time)</li>
+<li>Delegates tasks to the rest of the managers to manage resources
+<ul>
+<li><code>namespace-manager</code></li>
+<li><code>deployment-manager</code></li>
+<li><code>replicase-manager</code></li>
+<li><code>secret-manager</code></li>
+<li><code>operators</code> are custom <code>controller-managers</code></li>
+</ul>
+</li>
+<li>In other words, <code>*-managers</code>, are a bunch of for loops watching for changes in the Kubernetes API and applying them to the cluster.</li>
+<li>They also watch for changes in the cluster against the desired state and make sure they match it.</li>
+</ul>
+<h2 id="kubelet">kubelet</h2>
+<ul>
+<li>Runs in all nodes</li>
+<li>It creates containers</li>
+<li>It talks to container runtimes (<code>rkt</code>, <code>docker</code>, <code>podman</code>, etc.)</li>
+<li>Interacts with liveness probes</li>
+<li>Interacts with readiness probes</li>
+</ul>
+<h2 id="kube-proxy">kube-proxy</h2>
+<ul>
+<li>Runs in all nodes</li>
+<li>It creates services and its underlying <code>iptables</code></li>
+</ul>
+<p><strong>anything can be extended or replaced</strong></p>
+<h2 id="kubernetes-networking">Kubernetes networking</h2>
+<h3 id="pod">Pod</h3>
+<ul>
+<li>Has a unique IP and has a CIDR</li>
+</ul>
+<h3 id="services">Services</h3>
+<ul>
+<li>A service has a port that listens to traffic from outside a pod(s) and sends it to the pod(s)</li>
+<li>Is an abstraction to give a name instead of an IP for other services to reach a pod(s)</li>
+<li>Types:
+<ul>
+<li>ClusterIP
+<ul>
+<li>The ClusterIP does not “live” in your interfaces, is an <code>iptables</code> rule created by <code>kube-proxy</code> manages this</li>
+</ul>
+</li>
+<li>NodePort
+<ul>
+<li>Still has a ClusterIP but also has a port in the node where the pod lives</li>
+<li>It is also an <code>iptables</code> rule</li>
+</ul>
+</li>
+<li>LoadBalancer
+<ul>
+<li>This is cloud-specific on how it works</li>
+<li>Point your client to your load balancer <code>ip:port</code> instead of the <code>node_ip:port</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+
+  
+  
+
+  
+  
+  
+  <nav class="mt-16 flex rounded-lg bg-zinc-100 text-lg dark:bg-zinc-800">
+    
+    <a class="flex w-1/2 items-center p-6 pr-3 font-bold no-underline" href="https://memooo.ooo/posts/senior-engineers/"
+      ><span class="mr-1.5">←</span><span>Lessons I learned from senior engineers</span></a
+    >
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end p-6 pl-3 font-bold no-underline"
+      href="https://memooo.ooo/posts/taquito/"
+      ><span>A lesson from my dog</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+
+  
+  
+</article>
+
+
+    </main>
+
+    
+  </body>
+</html>
