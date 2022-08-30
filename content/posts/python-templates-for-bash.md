@@ -1,7 +1,7 @@
 ---
 title: "Python templates when writing bash and python"
 date: 2022-07-02T00:00:00+01:00
-draft: false
+draft: true
 ---
 
 I write a lot of bash scripts to automate and glue services together however, parsing cli or api outputs becomes messy very quickly with bash alone.

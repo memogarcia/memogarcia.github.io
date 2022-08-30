@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Series on Memo Garcia</title>
+    <link>https://memooo.ooo/series/</link>
+    <description>Recent content in Series on Memo Garcia</description>
+    <image>
+      <url>https://memooo.ooo/papermod-cover.png</url>
+      <link>https://memooo.ooo/papermod-cover.png</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://memooo.ooo/series/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>
