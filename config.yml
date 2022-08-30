@@ -37,8 +37,8 @@ languages:
         # - name: Tags
         #   url: tags/
         #   weight: 10
-        # - name: YouTube
-        #   url: https://github.com/adityatelange/hugo-PaperMod/wiki/
+        - name: CV
+          url: https://github.com/memogarcia/cv
         # - name: Discord
         #   url: https://discord.gg/ahpmTvhVmp
 outputs:
