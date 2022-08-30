@@ -39,8 +39,6 @@ languages:
         #   weight: 10
         - name: CV
           url: https://github.com/memogarcia/cv
-        # - name: Discord
-        #   url: https://discord.gg/ahpmTvhVmp
 outputs:
   home:
     - HTML
@@ -149,10 +147,10 @@ markup:
   highlight:
     noClasses: false
     # anchorLineNos: true
-    # codeFences: true
-    # guessSyntax: true
+    codeFences: true
+    guessSyntax: false
     # lineNos: true
-    # style: monokai
+    style: monokai
 
 privacy:
   vimeo:
