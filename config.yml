@@ -82,7 +82,16 @@ params:
   homeInfoParams:
     Title: "Memo Garcia"
     Content: >
-      ""
+      Software Engineer
+
+
+      Cloud Architect
+
+
+      Wizard lvl 9
+
+
+      Human
   socialIcons:
     - name: github
       url: "https://github.com/memogarcia"
@@ -92,7 +101,9 @@ params:
       url: "https://www.youtube.com/channel/UCX1om98WNAcHx6R7VlhIJqw"
     - name: Discord
       url: "https://discord.com/channels/1014044476588707840/1014044477687595081"
-    - name: Rss
+    - name: LinkedIn
+      url: "https://www.linkedin.com/in/guillermo-ramirez-garcia-0328117a/"
+    - name: RSS
       url: "index.xml"
 
   # editPost:
