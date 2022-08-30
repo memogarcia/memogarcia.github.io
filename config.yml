@@ -37,10 +37,10 @@ languages:
         # - name: Tags
         #   url: tags/
         #   weight: 10
-        - name: YouTube
-          url: https://github.com/adityatelange/hugo-PaperMod/wiki/
-        - name: Discord
-          url: https://discord.gg/ahpmTvhVmp
+        # - name: YouTube
+        #   url: https://github.com/adityatelange/hugo-PaperMod/wiki/
+        # - name: Discord
+        #   url: https://discord.gg/ahpmTvhVmp
 outputs:
   home:
     - HTML
@@ -59,51 +59,46 @@ params:
   # disableSpecial1stPost: true
   displayFullLangName: true
   ShowPostNavLinks: true
-  ShowBreadCrumbs: true
+  ShowBreadCrumbs: false
   ShowCodeCopyButtons: true
   ShowRssButtonInSectionTermList: true
   ShowToc: true
   # comments: false
   images: ["papermod-cover.png"]
 
-  profileMode:
-    enabled: false
-    title: PaperMod
-    imageUrl: "#"
-    imageTitle: my image
-    # imageWidth: 120
-    # imageHeight: 120
-    buttons:
-      - name: Archives
-        url: archives
-      - name: Tags
-        url: tags
+  # profileMode:
+  #   enabled: false
+  #   title: PaperMod
+  #   imageUrl: "#"
+  #   imageTitle: my image
+  #   # imageWidth: 120
+  #   # imageHeight: 120
+  #   buttons:
+  #     - name: Archives
+  #       url: archives
+  #     - name: Tags
+  #       url: tags
 
   homeInfoParams:
     Title: "Memo Garcia"
     Content: >
-      Welcome to demo of hugo's theme PaperMod.
-
-      - **PaperMod** is a simple but fast and responsive theme with useful feature-set that enhances UX.
-
-      - Do give a 🌟 on Github !
-
-      - PaperMod is based on theme [Paper](https://github.com/nanxiaobei/hugo-paper).
-
+      ""
   socialIcons:
     - name: github
       url: "https://github.com/memogarcia"
     - name: gitlab
       url: "https://gitlab.com/memogarcia"
     - name: YouTube
-      url: "https://youtube.com"
+      url: "https://www.youtube.com/channel/UCX1om98WNAcHx6R7VlhIJqw"
+    - name: Discord
+      url: "https://discord.com/channels/1014044476588707840/1014044477687595081"
     - name: Rss
       url: "index.xml"
 
-  editPost:
-    URL: "https://github.com/adityatelange/hugo-PaperMod/tree/exampleSite/content"
-    Text: "Suggest Changes" # edit text
-    appendFilePath: true # to append file path to Edit link
+  # editPost:
+  #   URL: "https://github.com/memogarcia/memogarcia.github.io/"
+  #   Text: "Suggest Changes" # edit text
+  #   appendFilePath: true # to append file path to Edit link
 
   # label:
   #     text: "Home"
