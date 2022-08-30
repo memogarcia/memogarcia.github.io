@@ -3,7 +3,7 @@ title: Memo Garcia
 paginate: 500
 theme: PaperMod
 
-publishDir: public/"
+publishDir: .
 
 enableInlineShortcodes: true
 enableRobotsTXT: true
