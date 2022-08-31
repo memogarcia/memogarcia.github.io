@@ -9,7 +9,19 @@
       <link>https://memooo.ooo/papermod-cover.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 30 Jun 2022 00:00:00 +0100</lastBuildDate><atom:link href="https://memooo.ooo/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 30 Aug 2022 23:30:44 +0100</lastBuildDate><atom:link href="https://memooo.ooo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Why am I so busy</title>
+      <link>https://memooo.ooo/posts/busy/</link>
+      <pubDate>Tue, 30 Aug 2022 23:30:44 +0100</pubDate>
+      
+      <guid>https://memooo.ooo/posts/busy/</guid>
+      <description>I’m trying to learn everything at once,
+I’m trying to do everything at once
+&amp;hellip;
+Except what I should be doing right now.</description>
+    </item>
+    
     <item>
       <title>Demystifying Kubernetes</title>
       <link>https://memooo.ooo/posts/understanding-kubernetes/</link>
