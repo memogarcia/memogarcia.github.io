@@ -4,6 +4,10 @@
     <title>Series on Memo Garcia</title>
     <link>https://memo.mx/series/</link>
     <description>Recent content in Series on Memo Garcia</description>
+    <image>
+      <url>https://memo.mx/papermod-cover.png</url>
+      <link>https://memo.mx/papermod-cover.png</link>
+    </image>
     <generator>Hugo -- gohugo.io</generator><atom:link href="https://memo.mx/series/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

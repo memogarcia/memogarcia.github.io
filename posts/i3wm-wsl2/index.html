@@ -75,11 +75,13 @@ sudo apt install i3 -y Create an init script
 vim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don&#39;t do anything [ -z &#34;$PS1&#34; ] &amp;&amp; return export DISPLAY=$(awk &#39;/nameserver / {print $2; exit}&#39; /etc/resolv.conf 2&gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&#34;is not running&#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root
 wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://memo.mx/posts/i3wm-wsl2/" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://memo.mx/posts/i3wm-wsl2/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2020-09-23T14:53:23&#43;01:00" />
 <meta property="article:modified_time" content="2023-01-09T16:39:57&#43;09:00" />
 
-<meta name="twitter:card" content="summary"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
+
 <meta name="twitter:title" content="i3 running on WSL2"/>
 <meta name="twitter:description" content="WSL configuration Install i3
 sudo apt install i3 -y Create an init script

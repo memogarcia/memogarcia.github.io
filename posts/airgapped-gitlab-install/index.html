@@ -75,11 +75,13 @@ But is not straightforward to find which container tags map to which GitLab vers
 An easy way to find which tags you need is to print the helm templates first and get the values from there.
 helm -n gitlab template gitlab gitlab/gitlab --version 6.4.1 -f values." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://memo.mx/posts/airgapped-gitlab-install/" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://memo.mx/posts/airgapped-gitlab-install/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-10-03T19:03:30&#43;01:00" />
 <meta property="article:modified_time" content="2023-01-09T16:39:57&#43;09:00" />
 
-<meta name="twitter:card" content="summary"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
+
 <meta name="twitter:title" content="Installing GitLab in air-gapped mode"/>
 <meta name="twitter:description" content="When installing GitLab in air-gapped mode using helm charts first you need to pull the required images for the target version to your private container registry.
 But is not straightforward to find which container tags map to which GitLab version.

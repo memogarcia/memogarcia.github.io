@@ -75,11 +75,13 @@ Compiled languages like GoLang or Rust can take advantage of this by just copyin
 This is an example from the official docs:
 FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://memo.mx/posts/multi-stage-build-python/" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://memo.mx/posts/multi-stage-build-python/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-01-01T05:53:23&#43;09:00" />
 <meta property="article:modified_time" content="2023-01-09T16:39:57&#43;09:00" />
 
-<meta name="twitter:card" content="summary"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
+
 <meta name="twitter:title" content="Multi stage docker build for python"/>
 <meta name="twitter:description" content="Docker multi-stage build is a great way to build a docker image with a minimal footprint.
 Compiled languages like GoLang or Rust can take advantage of this by just copying a binary into the &ldquo;deployment container&rdquo;
