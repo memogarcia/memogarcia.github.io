@@ -59,7 +59,7 @@ params:
   # disableThemeToggle: true
   ShowShareButtons: false
   ShowReadingTime: true
-  # disableSpecial1stPost: true
+  # disableSpecial1stPost: false
   displayFullLangName: true
   ShowPostNavLinks: true
   ShowBreadCrumbs: false
@@ -67,7 +67,7 @@ params:
   ShowRssButtonInSectionTermList: true
   ShowToc: true
   # comments: false
-  images: ["papermod-cover.png"]
+  # images: ["papermod-cover.png"]
 
   homeInfoParams:
     Title: "いらしゃいませい"

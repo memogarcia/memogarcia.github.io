@@ -71,13 +71,11 @@ if (!doNotTrack) {
 <meta property="og:description" content="Usage:
 pip install pynetbox ansible ansible all -i hosts/env -m setup --tree /tmp/facts/env #!/opt/netbox/bin/python import argparse import json import os import sys import pynetbox import yaml import urllib3 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) if sys.version_info &lt; (3, 6): print(&#34;Python 3.6 is required&#34;) sys.exit(2) def to_json(in_dict): return json.dumps(in_dict, sort_keys=True, indent=4) def load_configuration(path=&#34;/etc/ansible/netbox.yml&#34;): &#34;&#34;&#34; Load netbox configuration /etc/ansible/netbox.yml &#34;&#34;&#34; try: with open(path, &#34;r&#34;) as fd: return yaml.safe_load(fd) except yaml.YAMLError as yml_error: print(yml_error) NETBOX_ENDPOINT = load_configuration()[&#34;netbox_endpoint&#34;] NETBOX_TOKEN = load_configuration()[&#34;netbox_token&#34;] if not NETBOX_ENDPOINT: raise OSError(&#34;environmet var NETBOX_ENDPOINT not set&#34;) if not NETBOX_TOKEN: raise OSError(&#34;environmet var NETBOX_TOKEN not set&#34;) nb = pynetbox." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://memo.mx/posts/pynetbox/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://memo.mx/posts/pynetbox/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2019-01-10T23:30:44&#43;01:00" />
 <meta property="article:modified_time" content="2023-01-09T16:39:57&#43;09:00" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
-
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Generating a dynamic host inventory for ansible with Netbox"/>
 <meta name="twitter:description" content="Usage:
 pip install pynetbox ansible ansible all -i hosts/env -m setup --tree /tmp/facts/env #!/opt/netbox/bin/python import argparse import json import os import sys import pynetbox import yaml import urllib3 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) if sys.version_info &lt; (3, 6): print(&#34;Python 3.6 is required&#34;) sys.exit(2) def to_json(in_dict): return json.dumps(in_dict, sort_keys=True, indent=4) def load_configuration(path=&#34;/etc/ansible/netbox.yml&#34;): &#34;&#34;&#34; Load netbox configuration /etc/ansible/netbox.yml &#34;&#34;&#34; try: with open(path, &#34;r&#34;) as fd: return yaml.safe_load(fd) except yaml.YAMLError as yml_error: print(yml_error) NETBOX_ENDPOINT = load_configuration()[&#34;netbox_endpoint&#34;] NETBOX_TOKEN = load_configuration()[&#34;netbox_token&#34;] if not NETBOX_ENDPOINT: raise OSError(&#34;environmet var NETBOX_ENDPOINT not set&#34;) if not NETBOX_TOKEN: raise OSError(&#34;environmet var NETBOX_TOKEN not set&#34;) nb = pynetbox."/>
