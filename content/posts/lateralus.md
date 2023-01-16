@@ -1,6 +1,6 @@
 ---
 title: "TOOL - Lateralus"
-date: 2023-01-02T05:53:23+09:00
+date: 2022-10-17T05:53:23+09:00
 draft: false
 ---
 

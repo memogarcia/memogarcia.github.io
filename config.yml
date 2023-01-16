@@ -40,8 +40,8 @@ languages:
         # - name: Tags
         #   url: tags/
         #   weight: 10
-        - name: CV
-          url: https://github.com/memogarcia/cv
+        # - name: CV
+        #   url: https://github.com/memogarcia/cv
         - name: Continuous Learning
           url: https://memogarcia.gitbook.io/continuous-learning/
 outputs:
@@ -70,7 +70,7 @@ params:
   images: ["papermod-cover.png"]
 
   homeInfoParams:
-    Title: "Memo Garcia"
+    Title: "いらしゃいませい"
     Content: >
       Software Engineer
 
@@ -93,8 +93,8 @@ params:
       url: "https://www.youtube.com/@memo.i.garcia"
     - name: Discord
       url: "https://discord.com/channels/1014044476588707840/1014044477687595081"
-    - name: LinkedIn
-      url: "https://www.linkedin.com/in/guillermo-ramirez-garcia"
+    # - name: LinkedIn
+    #   url: "https://www.linkedin.com/in/guillermo-ramirez-garcia"
     - name: RSS
       url: "index.xml"
 

@@ -5,16 +5,10 @@
     <loc>https://memo.mx/</loc>
     <lastmod>2023-01-09T16:39:57+09:00</lastmod>
   </url><url>
-    <loc>https://memo.mx/posts/</loc>
-    <lastmod>2023-01-09T16:39:57+09:00</lastmod>
-  </url><url>
-    <loc>https://memo.mx/posts/todos/</loc>
-    <lastmod>2023-01-09T16:39:57+09:00</lastmod>
-  </url><url>
-    <loc>https://memo.mx/posts/lateralus/</loc>
-    <lastmod>2023-01-09T16:39:57+09:00</lastmod>
-  </url><url>
     <loc>https://memo.mx/posts/multi-stage-build-python/</loc>
+    <lastmod>2023-01-09T16:39:57+09:00</lastmod>
+  </url><url>
+    <loc>https://memo.mx/posts/</loc>
     <lastmod>2023-01-09T16:39:57+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/big-o/</loc>
@@ -24,6 +18,9 @@
     <lastmod>2023-01-09T16:39:57+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/is-openstack-losing/</loc>
+    <lastmod>2023-01-09T16:39:57+09:00</lastmod>
+  </url><url>
+    <loc>https://memo.mx/posts/lateralus/</loc>
     <lastmod>2023-01-09T16:39:57+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/the-role-of-a-systems-architect/</loc>
@@ -45,6 +42,9 @@
     <lastmod>2023-01-09T16:39:57+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/taquito/</loc>
+    <lastmod>2023-01-09T16:39:57+09:00</lastmod>
+  </url><url>
+    <loc>https://memo.mx/posts/todos/</loc>
     <lastmod>2023-01-09T16:39:57+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/gitops-in-enterprise/</loc>
