@@ -113,10 +113,10 @@ params:
     - name: RSS
       url: "index.xml"
 
-  # editPost:
-  #   URL: "https://github.com/memogarcia/memogarcia.github.io/"
-  #   Text: "Suggest Changes" # edit text
-  #   appendFilePath: true # to append file path to Edit link
+  editPost:
+    URL: "https://github.com/memogarcia/memogarcia.github.io/"
+    Text: "Suggest Changes" # edit text
+    appendFilePath: true # to append file path to Edit link
 
   # label:
   #     text: "Home"
