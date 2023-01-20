@@ -139,7 +139,7 @@ xmind</description>
       <description>When installing GitLab in air-gapped mode using helm charts first you need to pull the required images for the target version to your private container registry.
 But is not straightforward to find which container tags map to which GitLab version.
 An easy way to find which tags you need is to print the helm templates first and get the values from there.
-helm -n gitlab template gitlab gitlab/gitlab --version 6.4.1 -f values.</description>
+helm \ -n gitlab \ template \ gitlab gitlab/gitlab \ --version 6.</description>
     </item>
     
     <item>
@@ -151,7 +151,8 @@ helm -n gitlab template gitlab gitlab/gitlab --version 6.4.1 -f values.</descrip
       <description>I’m trying to learn everything at once.
 I’m trying to do everything at once.
 &amp;hellip;
-Except what I should be doing right now.</description>
+Except what I should be doing right now.
+一度にすべてを学ぼうとしています。 一度にすべてをやろうとしています。 &amp;hellip; 今すぐやるべきことを除いて。</description>
     </item>
     
     <item>
@@ -183,6 +184,7 @@ Meanwhile taquito…</description>
       
       <guid>https://memo.mx/posts/todos/</guid>
       <description>There is a real cognitive and spiritual burden of having to carry lots of unfulfilled promises into the future.
+未来に達成されない多くの約束を抱えなければならないという現実的な認知的および精神的な負担があります。
 At its core this is what TODOs represent to me.</description>
     </item>
     

@@ -11,3 +11,8 @@ I’m trying to do everything at once.
 ...
 
 Except what I should be doing right now.
+
+一度にすべてを学ぼうとしています。
+一度にすべてをやろうとしています。
+...
+今すぐやるべきことを除いて。

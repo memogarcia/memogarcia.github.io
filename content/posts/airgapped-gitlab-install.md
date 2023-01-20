@@ -11,8 +11,13 @@ But is not straightforward to find which container tags map to which GitLab vers
 An easy way to find which tags you need is to print the `helm templates` first and get the values from there.
 
 ```bash
-helm -n gitlab template gitlab gitlab/gitlab --version 6.4.1 -f values.yml \
-    > gitlab-6.4.1.yml
+helm \
+    -n gitlab \
+    template \
+    gitlab gitlab/gitlab \
+    --version 6.4.1 \
+    -f values.yml \
+> gitlab-6.4.1.yml
 
 cat gitlab-6.4.1.yml | grep image:
 ```
