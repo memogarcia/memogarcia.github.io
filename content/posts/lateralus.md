@@ -52,14 +52,6 @@ More and
 Beckons me
 To look through to these
 Infinite possibilities
-You might also like
-Parabola
-Tool
-Schism
-Tool
-Ticks & Leeches
-Tool
-
 
 As below so above and beyond I imagine
 Drawn outside the lines of reason
