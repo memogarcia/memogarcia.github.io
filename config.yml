@@ -34,6 +34,9 @@ languages:
         - name: About
           url: about
           weight: 5
+        - name: Understanding networks
+          url: understanding-networks-by-analogy
+          weight: 6
         - name: Continuous Learning
           url: https://memogarcia.gitbook.io/continuous-learning/
 outputs:

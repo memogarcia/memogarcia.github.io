@@ -1,6 +1,6 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 2 - Switches and Routers"
-date: 2020-08-21T00:53:23+01:00
+date: 2023-03-05T01:53:23+01:00
 draft: false
 ---
 
@@ -89,40 +89,3 @@ From the floor concierge (switch) perspective, is another room with a door numbe
 ![concierge3](/img/concierge3.png)
 
 Over time, the building concierge (router) can learn new ways to deliver the packages more efficiently and work with packages based on priority or _QoS_.
-
-## Series
-
-1. [Networks and subnets or building layouts](../understanding-computer-networks-by-analogy/)
-2. [Switches and Routers or how rooms can communicate between floors](../understanding-computer-networks-by-analogy-part-2/)
-3. Network protocols or how rooms communicate
-4. Internet, public IPs, NAT, DNS or how to connect rooms between buildings
-5. High performance networking or how to speed up the communication between rooms using high speed roads and other techniques
-6. SDN or dynamic floor arrangement
-
-## Contributions
-
-If you want contribute, please send a pull request or open an issue to this [repo](https://github.com/memogarcia/memogarcia.github.io/)
-
-## License
-
-    MIT License
-
-    Copyright (c) 2022 Guillermo Ramirez Garcia
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.

@@ -9,7 +9,79 @@
       <link>https://memo.mx/papermod-cover.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 18 Jan 2023 05:53:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 05 Mar 2023 01:53:23 +0100</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 2 - Switches and Routers</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
+      <pubDate>Sun, 05 Mar 2023 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
+      <description>Switches or &amp;ldquo;The floor concierge&amp;rdquo; Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.
+The concierge or switch has a table of everyone&amp;rsquo;s door numbers:
+| Floor | Room number | Door number | |-------|-------------|-------------| | 6 | 602 | 1 | | 6 | 609 | 1 | Remember that each room can have many doors.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 3 - Network protocols</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</link>
+      <pubDate>Sun, 05 Mar 2023 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
+      <description>By itself a room or a door does not communicate with other rooms. Rooms, floors, buildings are just a logical or physical arrangement.
+What communicates between rooms are people, and people use different ways to communicate, some use Japanese, some use Spanish, Some use English and even some use their own language.
+Network protocols are the languages that computers use to communicate with each other. They define the rules that computers must follow to communicate.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 4 - Internet</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</link>
+      <pubDate>Sun, 05 Mar 2023 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
+      <description>In our building analogy, the internet is like a city that connects different buildings and their networks. It is a vast network of interconnected networks that allows people and devices to communicate with each other from anywhere in the world.
+Just like a city has roads, highways, and other transportation systems that allow people to move from one place to another, the internet has cables, satellites, and other infrastructure that allow data to move from one network to another.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 5 - High performance networking</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</link>
+      <pubDate>Sun, 05 Mar 2023 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</guid>
+      <description>Imagine you&amp;rsquo;re in a building with multiple elevators, some are slow and take a while to get to your floor, while others are express elevators that can take you directly to your floor in no time. High-performance networking is like the express elevator of computer networks, designed to move data as quickly and efficiently as possible.
+To achieve this speed, high-performance networking uses specialized hardware and software that is optimized for low latency and high bandwidth.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 6 - SDN or dynamic floor arrangement</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</link>
+      <pubDate>Sun, 05 Mar 2023 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</guid>
+      <description>Imagine a building where all the rooms, doors, lights, and temperature controls are automated and can be controlled from a central location. This is similar to a software-defined network (SDN), where network devices such as switches, routers, and firewalls can be controlled from a central location using software.
+In this building, the building automation system (BAS) acts as the central controller for all the systems in the building. Similarly, in an SDN, the controller acts as the central point of control for all the network devices.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 7 - Mesh networks</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/</link>
+      <pubDate>Sun, 05 Mar 2023 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/</guid>
+      <description>Imagine a building with many interconnected hallways that form a labyrinth. In this building, every hallway can connect to multiple other hallways, creating a complex network of paths. This is a lot like a mesh network, where each node can connect to multiple other nodes, creating a self-organizing network.
+In a mesh network, each node is both a sender and a receiver, and messages can be routed through multiple nodes to reach their destination.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 1 - Networks and subnets</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
+      <pubDate>Sat, 04 Mar 2023 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
+      <description>Networks or &amp;ldquo;The buildings&amp;rdquo; Imagine a building with many rooms connected by hallways and staircases. This building is a lot like a computer network, where each room is a computer with its own room number called an IP address. Just like people move between rooms in a building.
+In this building, each room can communicate directly to any room. That communication is done using network protocols. Each network protocol is like a language, some rooms communicate with others in Japanese, some other in Spanish, and so on.</description>
+    </item>
+    
     <item>
       <title>Is complexity a human construct?</title>
       <link>https://memo.mx/posts/complexity/</link>
@@ -221,28 +293,6 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
     </item>
     
     <item>
-      <title>Understanding Computer Networks by Analogy - Part 2 - Switches and Routers</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
-      <pubDate>Fri, 21 Aug 2020 00:53:23 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>Switches or &amp;ldquo;The floor concierge&amp;rdquo; Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.
-The concierge or switch has a table of everyone&amp;rsquo;s door numbers:
-| Floor | Room number | Door number | |-------|-------------|-------------| | 6 | 602 | 1 | | 6 | 609 | 1 | Remember that each room can have many doors.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 1 - Networks and subnets</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
-      <pubDate>Thu, 20 Aug 2020 07:53:23 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.
-Networks or &amp;ldquo;The buildings&amp;rdquo; Imagine a building with many rooms connected by hallways and staircases. This building is a lot like a computer network, where each room is a computer with its own room number called an IP address. Just like people move between rooms in a building.
-In this building, each room can communicate directly to any room.</description>
-    </item>
-    
-    <item>
       <title>Modular CLI Documentation Fuzzy Finder</title>
       <link>https://memo.mx/posts/doc-fzf/</link>
       <pubDate>Fri, 14 Jun 2019 15:03:30 +0100</pubDate>
@@ -354,6 +404,16 @@ How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (di
       <description>My blog is intended as a self reference and I don’t provide any support unless specified.
 If you find anything useful, please どうぞ! License
 DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (C) Guillermo Ramirez Garcia &amp;lt;root@memo.mx&amp;gt; Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed. DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 0.</description>
+    </item>
+    
+    <item>
+      <title>Understanding computer networks by analogy</title>
+      <link>https://memo.mx/understanding-networks-by-analogy/</link>
+      <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
+      
+      <guid>https://memo.mx/understanding-networks-by-analogy/</guid>
+      <description>In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.
+Networks and subnets or building layouts Switches and routers or how rooms can communicate between floors Network protocols or how rooms communicate Internet, public IPs, NAT, DNS or how to connect rooms between buildings High performance networking or how to speed up the communication SDN or dynamic floor arrangement Mesh networks </description>
     </item>
     
   </channel>
