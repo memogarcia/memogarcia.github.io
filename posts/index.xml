@@ -237,10 +237,9 @@ The concierge or switch has a table of everyone&amp;rsquo;s door numbers:
       <pubDate>Thu, 20 Aug 2020 07:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>Prologue There are many ways to learn something new and no approach is best. But, what works best for me is a combination of trial and error and learning by first principles. But, as someone once said:
-Knowledge is only valuable when it leads to taking action on an idea.
-And as long as you share that knowledge you are taking action on an idea.
-Just one big question is: how to share them?</description>
+      <description>In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.
+Networks or &amp;ldquo;The buildings&amp;rdquo; Imagine a building with many rooms connected by hallways and staircases. This building is a lot like a computer network, where each room is a computer with its own room number called an IP address. Just like people move between rooms in a building.
+In this building, each room can communicate directly to any room.</description>
     </item>
     
     <item>

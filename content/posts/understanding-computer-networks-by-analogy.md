@@ -4,70 +4,63 @@ date: 2020-08-20T07:53:23+01:00
 draft: false
 ---
 
-## Prologue
-
-There are many ways to learn something new and no approach is best. But, what works best for me is a combination of `trial and error` and learning by `first principles`. But, as someone once said:
-
-> Knowledge is only valuable when it leads to taking action on an idea.
-
-And as long as you share that knowledge you are taking action on an idea.
-
-Just one big question is: **how to share them?**
-I find that analogies are a great tool to do that.
-They let you group together many ideas and present them as a whole to new audiences in a very fun way.
-
 In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.
 
 ## Networks or "The buildings"
 
-This building represents a "network" of "connected rooms".
+Imagine a building with many rooms connected by hallways and staircases. This building is a lot like a computer network, where each room is a computer with its own room number called an IP address. Just like people move between rooms in a building.
 
-Think of each room as a computer with a room number as an [IP address](https://en.wikipedia.org/wiki/IP_address).
-
-    room + room number == computer + ip address
 
 ![building1](/img/building1.png)
 
-In this network, each room can communicate directly to any other room using [network protocols](https://www.cloudflare.com/learning/network-layer/what-is-a-protocol/) that will be represented as a `packages`.
+In this building, each room can communicate directly to any room. That communication is done using [network protocols](https://www.cloudflare.com/learning/network-layer/what-is-a-protocol/). Each network protocol is like a language, some rooms communicate with others in Japanese, some other in Spanish, and so on.
 
-But now you are wondering... I don't want to send packages to all my neighbors...I just want to communicate with the ones in my flooor.
+    building           => network
+    room + room number => computer + ip address
+    language           => network protocol
 
-Enter the...
 
 ## Subnets or "The floors"
 
-By dividing your building into floors you can now isolate the communication between them.
-Neighbors in the 1st floor cannot communicate with neighbors in the 2nd floor.
-
-This is called a [subnet](https://en.wikipedia.org/wiki/Subnetwork)
+But what if you don't want to communicate with everyone in the building? That's where [subnets](https://en.wikipedia.org/wiki/Subnetwork) come in. By dividing the building into floors, you can isolate communication between them. This is like creating subnetworks in a computer network, where groups of computers can communicate with each other but not with other groups.
 
 ![floor1](/img/floor1.png)
 
-You can identify the rooms by the room number or IP address.
+Now is easy to identify a room in a building by its floor and room number.
 
 Example room 101 can be idenfied as:
 
     floor 1, room 1
 
-or as an IP address:
+Similarly, you can represent a computer by its IP address:
 
     192.168.1.1
 
-This room number is unique to your building but the next building can have a room 101 in its building as well (I will cover this in a later post about private vs public IPs).
+Remember that this room number is unique to your building and each building can have a room 101 in its building as well.
+
+For example, within your building you can communicate with room 101 using its room number, but if you want to communicate with room 101 in another building, you need to use its full address (or its public IP)
+
+    building X, floor 1, room 101
 
 ## Computers or "The rooms"
 
-In reality, your room number is not tied to the physical space in the building but to the door that allows access to it.
+In reality, a room number is not tied to the physical space in that floor but to the door that allows access to it.
 
 ![room1](/img/room1.png)
 
-Which means that your room can have many doors with different properties:
+A single room in your floor can have many doors, each door can have a different purpose.
 
-1. A door for maintenance,
-2. A door for guests,
-3. And so on.
+    1. A main door,
+    2. A door for maintenance,
+    3. And so on.
 
-Within the floor (subnet) your door have a unique number called [MAC address](https://en.wikipedia.org/wiki/MAC_address)
+This is similar to:
+
+    1. Wifi interface,
+    2. Ethernet interface,
+    3. And so on.
+
+Each door is identified by its name or [MAC address](https://en.wikipedia.org/wiki/MAC_address) and any message sent to that room is sent to a specific door in that room.
 
 In other words, your room is identified by an door number rather than a room number within a subnet.
 

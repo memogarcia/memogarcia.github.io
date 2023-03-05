@@ -237,10 +237,9 @@ The concierge or switch has a table of everyone&amp;rsquo;s door numbers:
       <pubDate>Thu, 20 Aug 2020 07:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>Prologue There are many ways to learn something new and no approach is best. But, what works best for me is a combination of trial and error and learning by first principles. But, as someone once said:
-Knowledge is only valuable when it leads to taking action on an idea.
-And as long as you share that knowledge you are taking action on an idea.
-Just one big question is: how to share them?</description>
+      <description>In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.
+Networks or &amp;ldquo;The buildings&amp;rdquo; Imagine a building with many rooms connected by hallways and staircases. This building is a lot like a computer network, where each room is a computer with its own room number called an IP address. Just like people move between rooms in a building.
+In this building, each room can communicate directly to any room.</description>
     </item>
     
     <item>
@@ -344,6 +343,17 @@ mkdir /root/ca &amp;amp;&amp;amp; cd /root/ca mkdir certs crl newcerts private c
 Read the docs at memogarcia/pratai-docs
 Abstract Pratai provides an incredibly flexible and resilient platform to migrate workloads to the cloud that respond to events without having to manage any server or network.
 How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (disclaimer, from now on I will refer to code as functions), that will react to an event without worrying about anything else, the platform handles the execution.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://memo.mx/about/</link>
+      <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
+      
+      <guid>https://memo.mx/about/</guid>
+      <description>My blog is intended as a self reference and I don’t provide any support unless specified.
+If you find anything useful, please どうぞ! License
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (C) Guillermo Ramirez Garcia &amp;lt;root@memo.mx&amp;gt; Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed. DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 0.</description>
     </item>
     
   </channel>
