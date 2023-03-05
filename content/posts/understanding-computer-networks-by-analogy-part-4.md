@@ -4,6 +4,8 @@ date: 2023-03-05T01:53:23+01:00
 draft: false
 ---
 
+## How to connect rooms between buildings
+
 In our building analogy, the internet is like a city that connects different buildings and their networks. It is a vast network of interconnected networks that allows people and devices to communicate with each other from anywhere in the world.
 
 Just like a city has roads, highways, and other transportation systems that allow people to move from one place to another, the internet has cables, satellites, and other infrastructure that allow data to move from one network to another.

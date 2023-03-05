@@ -4,6 +4,8 @@ date: 2023-03-05T01:53:23+01:00
 draft: false
 ---
 
+## How rooms communicate
+
 By itself a room or a door does not communicate with other rooms. Rooms, floors, buildings are just a logical or physical arrangement.
 
 What communicates between rooms are people, and people use different ways to communicate, some use Japanese, some use Spanish, Some use English and even some use their own language.

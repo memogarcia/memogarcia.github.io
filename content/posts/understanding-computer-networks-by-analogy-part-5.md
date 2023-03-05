@@ -4,6 +4,8 @@ date: 2023-03-05T01:53:23+01:00
 draft: false
 ---
 
+## How to speed up the communication
+
 Imagine you're in a building with multiple elevators, some are slow and take a while to get to your floor, while others are express elevators that can take you directly to your floor in no time. High-performance networking is like the express elevator of computer networks, designed to move data as quickly and efficiently as possible.
 
 To achieve this speed, high-performance networking uses specialized hardware and software that is optimized for low latency and high bandwidth. Just like the express elevator is designed to quickly move people up and down the building without stopping at every floor, high-performance networks are designed to move data quickly and efficiently without getting bogged down by unnecessary processing or delays.

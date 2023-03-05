@@ -27,9 +27,9 @@ The concierge or switch has a table of everyone&amp;rsquo;s door numbers:
       <pubDate>Sun, 05 Mar 2023 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
-      <description>By itself a room or a door does not communicate with other rooms. Rooms, floors, buildings are just a logical or physical arrangement.
+      <description>Networks Protocols or &amp;ldquo;How rooms communicate&amp;rdquo; By itself a room or a door does not communicate with other rooms. Rooms, floors, buildings are just a logical or physical arrangement.
 What communicates between rooms are people, and people use different ways to communicate, some use Japanese, some use Spanish, Some use English and even some use their own language.
-Network protocols are the languages that computers use to communicate with each other. They define the rules that computers must follow to communicate.</description>
+Network protocols are the languages that computers use to communicate with each other.</description>
     </item>
     
     <item>

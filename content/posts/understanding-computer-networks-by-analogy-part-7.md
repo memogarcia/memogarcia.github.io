@@ -4,6 +4,8 @@ date: 2023-03-05T01:53:23+01:00
 draft: false
 ---
 
+## Mesh networks
+
 Imagine a building with many interconnected hallways that form a labyrinth. In this building, every hallway can connect to multiple other hallways, creating a complex network of paths. This is a lot like a mesh network, where each node can connect to multiple other nodes, creating a self-organizing network.
 
 In a mesh network, each node is both a sender and a receiver, and messages can be routed through multiple nodes to reach their destination. This allows for greater flexibility and redundancy, as there are multiple paths for messages to travel.

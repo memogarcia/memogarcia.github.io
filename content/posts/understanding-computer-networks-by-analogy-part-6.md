@@ -1,8 +1,10 @@
 ---
-title: "Understanding Computer Networks by Analogy - Part 6 - SDN or dynamic floor arrangement"
+title: "Understanding Computer Networks by Analogy - Part 6 - SDN"
 date: 2023-03-05T01:53:23+01:00
 draft: false
 ---
+
+## Dynamic floor arrangement
 
 Imagine a building where all the rooms, doors, lights, and temperature controls are automated and can be controlled from a central location. This is similar to a software-defined network (SDN), where network devices such as switches, routers, and firewalls can be controlled from a central location using software.
 
