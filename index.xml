@@ -362,7 +362,7 @@ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (
       
       <guid>https://memo.mx/understanding-networks-by-analogy/</guid>
       <description> In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.
-Networks and subnets or building layouts Switches and routers or how rooms can communicate between floors Network protocols or how rooms communicate Internet, public IPs, NAT, DNS or how to connect rooms between buildings High performance networking or how to speed up the communication SDN or dynamic floor arrangement Mesh networks </description>
+Networks and subnets or building layouts Switches and routers or how rooms can communicate between floors </description>
     </item>
     
   </channel>
