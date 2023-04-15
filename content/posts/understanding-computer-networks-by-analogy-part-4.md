@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 4 - Internet"
 date: 2023-03-05T01:53:23+01:00
-draft: false
+draft: true
 ---
 
 ## How to connect rooms between buildings
