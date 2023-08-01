@@ -10,7 +10,18 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 01 Aug 2023 05:53:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 01 Aug 2023 06:53:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>So, you want to be a DevOps</title>
+      <link>https://memo.mx/posts/being-devops/</link>
+      <pubDate>Tue, 01 Aug 2023 06:53:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/being-devops/</guid>
+      <description>First of, congratulations!
+Few words before moving on:
+There is no such thing as DevOps Engineer, DevOps is a philosophy, a way of working. Your DevOps role will depend on your organization structure and maturity. Some organizations use DevOps, SRE and Platform engineering interchangeably, don’t worry. Focus on the goal. You will work in a team, empathy is mandatory. A lot of people ask, do I really need to know ___ALL OF THAT___ to work as a DevOps?</description>
+    </item>
+    
     <item>
       <title>What is Kubernetes, really?</title>
       <link>https://memo.mx/posts/what-is-kubernetes/</link>
