@@ -18,7 +18,7 @@
       
       <guid>https://memo.mx/posts/what-is-kubernetes/</guid>
       <description>As in the ship of Theseus&amp;hellip; If you replace each Kubernetes component&amp;hellip; what is it that you get at the end?
-An API and an ecosystem and the sum of its parts.
+An API, an ecosystem and the sum of its parts.
 BTW, is kubernetes an overkill? Yes and No
 I think is a necessary evil to avoid selling your soul to a cloud provider.</description>
     </item>

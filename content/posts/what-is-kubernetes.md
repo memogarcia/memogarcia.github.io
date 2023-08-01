@@ -7,7 +7,7 @@ draft: false
 As in the ship of Theseus...
 If you replace each Kubernetes component... what is it that you get at the end?
 
-> An API and an ecosystem and the sum of its parts.
+> An API, an ecosystem and the sum of its parts.
 
 BTW, is kubernetes an overkill? Yes and No
 
