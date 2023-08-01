@@ -12,13 +12,13 @@ When changes in one component require a new interface it propagates those “req
 
 However, not all good changes are permanent, and not all bad changes are discarded. The environment and the capacity to adapt are the two factor that dictates if this iteration propagates into the future.
 
-So far, this has worked ok biology.
+So far, this has worked ok for biology.
 
-In the software world, we tend to avoid nature’s trial and error approach (although not always) in favor of a more logical one because we have other tools at our disposal for example, we can think, we can predict, and test outcomes, and more importantly, we can work outside our brain and collaborate with other individuals to tackle more and more complex scenarios.
+In the software world, we tend to avoid nature’s trial and error approach, or at least is frowned upon, in favor of a more logical one because we have other tools at our disposal for example, we can think, we can predict, and test outcomes, and more importantly, we can work outside  our brain and collaborate with other individuals to leverage other people’s experiences.
 
-Because of human collaboration, the first signs of complexity start to manifest. Now interfaces not only for software but for communications need to be in place. And these interfaces must be updated as fast as possible to allow a free flow of communication between everyone involved otherwise silos of information begin to form in each brain.
+Because of human collaboration, complexity starts to grow. Now interfaces not only for software but for communications need to be in place. And these interfaces must be updated as fast as possible to allow a free flow of communication between everyone involved otherwise silos of information begin to form in each brain.
 
-When these interfaces are not implemented or are broken, mutations on each component start to occur and act independently from the whole system. This can lead from small failures to system-wide failures or even worse, to corrupt the system into thinking it's working as expected when in reality not.
+When these interfaces are not implemented or are broken, mutations on each component start to occur and act independently from the whole system. This can lead from small failures to system wide failures or even worse, to corrupt the system into thinking it’s working as expected when in reality not.
 
 But why do these human communication interfaces fail? Is it because they are difficult by the very nature of human communication? is it because a lot of context and information that is explicitly required is assumed instead?
 
@@ -28,10 +28,8 @@ When ego is introduced in systems it often prevents discarding what doesn’t wo
 
 Then, there is the other side of one of our tools, prediction.
 
-We often try to predict how the system will behave in the future that we start adding complexity to handle unknown behaviors that simply doesn’t yet exist. But why? Human ego? Or communication issue?
+We often try to predict how the system will behave in an unknown future that we start adding complexity to handle unknown behaviors that simply doesn’t yet exist. But why? Human ego? Or communication issue?
 
 And this leads to a cascade of decisions that now people need to think of and wrap their brains around this.
 
 Regardless, **Complexity has consequences**.
-
-
