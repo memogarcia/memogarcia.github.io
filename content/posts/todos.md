@@ -6,4 +6,4 @@ draft: false
 
 At its core, TODOS are a real cognitive and spiritual burden of having to carry lots of unfulfilled promises into the future.
 
-未来に達成されない多くの約束を抱えなければならないという現実的な認知的および精神的な負担があります。
+その本質において、TODOリストは、未来に持ち込む未完の約束の重たい認知的および精神的な負担である。
