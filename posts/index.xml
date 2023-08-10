@@ -72,8 +72,8 @@ When changes in one component require a new interface it propagates those “req
       <pubDate>Sun, 01 Jan 2023 05:53:23 +0900</pubDate>
       
       <guid>https://memo.mx/posts/multi-stage-build-python/</guid>
-      <description>Docker multi-stage build is a great way to build a docker image with a minimal footprint.
-Compiled languages like GoLang or Rust can take advantage of this by just copying a binary into the &amp;ldquo;deployment container&amp;rdquo;
+      <description>Docker multi-stage build is a great way to build a container images with a minimal footprint.
+Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container
 This is an example from the official docs:
 FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.</description>
     </item>
@@ -228,9 +228,8 @@ Meanwhile taquito…</description>
       <pubDate>Thu, 05 May 2022 06:53:23 +0900</pubDate>
       
       <guid>https://memo.mx/posts/todos/</guid>
-      <description>There is a real cognitive and spiritual burden of having to carry lots of unfulfilled promises into the future.
-未来に達成されない多くの約束を抱えなければならないという現実的な認知的および精神的な負担があります。
-At its core this is what TODOs represent to me.</description>
+      <description>At its core, TODOS are a real cognitive and spiritual burden of having to carry lots of unfulfilled promises into the future.
+未来に達成されない多くの約束を抱えなければならないという現実的な認知的および精神的な負担があります。</description>
     </item>
     
     <item>

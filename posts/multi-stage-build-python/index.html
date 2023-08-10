@@ -7,8 +7,8 @@
 <meta name="robots" content="index, follow">
 <title>Multi stage docker build for python | Memo Garcia</title>
 <meta name="keywords" content="">
-<meta name="description" content="Docker multi-stage build is a great way to build a docker image with a minimal footprint.
-Compiled languages like GoLang or Rust can take advantage of this by just copying a binary into the &ldquo;deployment container&rdquo;
+<meta name="description" content="Docker multi-stage build is a great way to build a container images with a minimal footprint.
+Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container
 This is an example from the official docs:
 FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.">
 
@@ -70,8 +70,8 @@ if (!doNotTrack) {
 }
 </script>
 <meta property="og:title" content="Multi stage docker build for python" />
-<meta property="og:description" content="Docker multi-stage build is a great way to build a docker image with a minimal footprint.
-Compiled languages like GoLang or Rust can take advantage of this by just copying a binary into the &ldquo;deployment container&rdquo;
+<meta property="og:description" content="Docker multi-stage build is a great way to build a container images with a minimal footprint.
+Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container
 This is an example from the official docs:
 FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github." />
 <meta property="og:type" content="article" />
@@ -83,8 +83,8 @@ FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -
 <meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
 
 <meta name="twitter:title" content="Multi stage docker build for python"/>
-<meta name="twitter:description" content="Docker multi-stage build is a great way to build a docker image with a minimal footprint.
-Compiled languages like GoLang or Rust can take advantage of this by just copying a binary into the &ldquo;deployment container&rdquo;
+<meta name="twitter:description" content="Docker multi-stage build is a great way to build a container images with a minimal footprint.
+Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container
 This is an example from the official docs:
 FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github."/>
 
@@ -115,12 +115,12 @@ FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -
   "@type": "BlogPosting",
   "headline": "Multi stage docker build for python",
   "name": "Multi stage docker build for python",
-  "description": "Docker multi-stage build is a great way to build a docker image with a minimal footprint.\nCompiled languages like GoLang or Rust can take advantage of this by just copying a binary into the \u0026ldquo;deployment container\u0026rdquo;\nThis is an example from the official docs:\nFROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.",
+  "description": "Docker multi-stage build is a great way to build a container images with a minimal footprint.\nCompiled languages like Go or Rust can take advantage of this by just shipping a binary to a container\nThis is an example from the official docs:\nFROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.",
   "keywords": [
     
   ],
-  "articleBody": "Docker multi-stage build is a great way to build a docker image with a minimal footprint.\nCompiled languages like GoLang or Rust can take advantage of this by just copying a binary into the “deployment container”\nThis is an example from the official docs:\nFROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.com/alexellis/href-counter/app ./ CMD [\"./app\"] When it comes to python, most of the benefits seems to get lost. For example, is quite cumbersome to generate a binary from python code that can be shipped as-is.\nBut this won’t stop me.\nWe can use a virtualenv in the same way we would use a binary from another language.\nHere is an example:\nFROM python:3.11 as build-image WORKDIR /workspaces/modern-dev/ RUN pip install poetry \u0026\u0026 poetry config virtualenvs.in-project true COPY poetry.lock pyproject.toml /workspaces/modern-dev/ RUN poetry install FROM python:3.11-alpine as release-image WORKDIR /workspaces/modern-dev/src COPY --from=build-image /workspaces/modern-dev/ /workspaces/modern-dev/ EXPOSE 80 COPY src/* /workspaces/modern-dev/src/ ENV PATH=\"/workspaces/modern-dev/.venv/bin:$PATH\" CMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"80\"] This image uses 103MB (with current poetry dependencies)\nHere is the simpler example:\nFROM python:3.11 WORKDIR /workspaces/modern-dev/ RUN pip install poetry \u0026\u0026 poetry config virtualenvs.in-project true COPY poetry.lock pyproject.toml /workspaces/modern-dev/ RUN poetry install WORKDIR /workspaces/modern-dev/src EXPOSE 80 COPY src/* /workspaces/modern-dev/src/ ENV PATH=\"/workspaces/modern-dev/.venv/bin:$PATH\" CMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"80\"] With this simpler Dockerfile, the image size would be: 1.04GB, that’s 10 times bigger\n",
-  "wordCount" : "247",
+  "articleBody": "Docker multi-stage build is a great way to build a container images with a minimal footprint.\nCompiled languages like Go or Rust can take advantage of this by just shipping a binary to a container\nThis is an example from the official docs:\nFROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.com/alexellis/href-counter/app ./ CMD [\"./app\"] When it comes to python, most of the benefits seems to get lost because you still need a python interpreter and also is quite cumbersome to generate a binary from python code that can be shipped as-is.\nBut this won’t stop me!!\nWe can ship a virtualenv in the same way we would ship a binary from another language.\nHere is an example:\nFROM python:3.11 as build-image WORKDIR /workspaces/modern-dev/ RUN pip install poetry \u0026\u0026 poetry config virtualenvs.in-project true COPY poetry.lock pyproject.toml /workspaces/modern-dev/ RUN poetry install FROM gcr.io/distroless/python3-debian11:latest as release-image WORKDIR /workspaces/modern-dev/src COPY --from=build-image /workspaces/modern-dev/ /workspaces/modern-dev/ EXPOSE 80 COPY src/* /workspaces/modern-dev/src/ ENV PATH=\"/workspaces/modern-dev/.venv/bin:$PATH\" CMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"80\"] This image uses 103MB (with current poetry dependencies) which sadly is still 10x-15x bigger than a binary example.\nAs for context, this is an example of a typical Dockerfile that has dev dependencies included in the final container image:\nFROM python:3.11 WORKDIR /workspaces/modern-dev/ RUN pip install poetry \u0026\u0026 poetry config virtualenvs.in-project true COPY poetry.lock pyproject.toml /workspaces/modern-dev/ RUN poetry install WORKDIR /workspaces/modern-dev/src EXPOSE 80 COPY src/* /workspaces/modern-dev/src/ ENV PATH=\"/workspaces/modern-dev/.venv/bin:$PATH\" CMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"80\"] This image size would be: 1.04GB, that’s 10 times bigger or 100 times bigger than the Go binary.\n",
+  "wordCount" : "283",
   "inLanguage": "en",
   "datePublished": "2023-01-01T05:53:23+09:00",
   "dateModified": "2023-01-09T16:39:57+09:00",
@@ -220,8 +220,8 @@ FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -
 </div>
   </header> 
 
-  <div class="post-content"><p>Docker <a href="https://docs.docker.com/build/building/multi-stage/">multi-stage build</a> is a great way to build a docker image with a minimal footprint.</p>
-<p>Compiled languages like GoLang or Rust can take advantage of this by just copying a binary into the &ldquo;deployment container&rdquo;</p>
+  <div class="post-content"><p>Docker <a href="https://docs.docker.com/build/building/multi-stage/">multi-stage build</a> is a great way to build a container images with a minimal footprint.</p>
+<p>Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container</p>
 <p>This is an example from the official docs:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Dockerfile" data-lang="Dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> golang:1.16</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /go/src/github.com/alexellis/href-counter/</span><span class="err">
@@ -234,9 +234,9 @@ FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /root/</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span><span class="m">0</span> /go/src/github.com/alexellis/href-counter/app ./<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;./app&#34;</span><span class="p">]</span><span class="err">
-</span></span></span></code></pre></div><p>When it comes to python, most of the benefits seems to get lost. For example, is quite cumbersome to generate a binary from python code that can be shipped as-is.</p>
-<p>But this won&rsquo;t stop me.</p>
-<p>We can use a <code>virtualenv</code> in the same way we would use a binary from another language.</p>
+</span></span></span></code></pre></div><p>When it comes to python, most of the benefits seems to get lost because you still need a python interpreter and also is quite cumbersome to generate a binary from python code that can be shipped as-is.</p>
+<p>But this won&rsquo;t stop me!!</p>
+<p>We can ship a <code>virtualenv</code> in the same way we would ship a binary from another language.</p>
 <p>Here is an example:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Dockerfile" data-lang="Dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> python:3.11 as build-image</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /workspaces/modern-dev/</span><span class="err">
@@ -245,15 +245,15 @@ FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> poetry install<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">FROM</span><span class="s"> python:3.11-alpine as release-image</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">FROM</span><span class="s"> gcr.io/distroless/python3-debian11:latest as release-image</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /workspaces/modern-dev/src</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>build-image /workspaces/modern-dev/ /workspaces/modern-dev/<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 80</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> src/* /workspaces/modern-dev/src/<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&#34;/workspaces/modern-dev/.venv/bin:</span><span class="nv">$PATH</span><span class="s2">&#34;</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;uvicorn&#34;</span><span class="p">,</span> <span class="s2">&#34;app:app&#34;</span><span class="p">,</span> <span class="s2">&#34;--host&#34;</span><span class="p">,</span> <span class="s2">&#34;0.0.0.0&#34;</span><span class="p">,</span> <span class="s2">&#34;--port&#34;</span><span class="p">,</span> <span class="s2">&#34;80&#34;</span><span class="p">]</span><span class="err">
-</span></span></span></code></pre></div><p>This image uses <code>103MB</code> (with current poetry dependencies)</p>
-<p>Here is the simpler example:</p>
+</span></span></span></code></pre></div><p>This image uses <code>103MB</code> (with current poetry dependencies) which sadly is still 10x-15x bigger than a binary example.</p>
+<p>As for context, this is an example of a typical Dockerfile that has dev dependencies included in the final container image:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Dockerfile" data-lang="Dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> python:3.11</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /workspaces/modern-dev/</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> pip install poetry <span class="o">&amp;&amp;</span> poetry config virtualenvs.in-project true<span class="err">
@@ -264,7 +264,7 @@ FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> src/* /workspaces/modern-dev/src/<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&#34;/workspaces/modern-dev/.venv/bin:</span><span class="nv">$PATH</span><span class="s2">&#34;</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;uvicorn&#34;</span><span class="p">,</span> <span class="s2">&#34;app:app&#34;</span><span class="p">,</span> <span class="s2">&#34;--host&#34;</span><span class="p">,</span> <span class="s2">&#34;0.0.0.0&#34;</span><span class="p">,</span> <span class="s2">&#34;--port&#34;</span><span class="p">,</span> <span class="s2">&#34;80&#34;</span><span class="p">]</span><span class="err">
-</span></span></span></code></pre></div><p>With this simpler Dockerfile, the image size would be: <code>1.04GB</code>, that&rsquo;s <strong>10 times bigger</strong></p>
+</span></span></span></code></pre></div><p>This image size would be: <code>1.04GB</code>, that&rsquo;s <strong>10 times bigger</strong> or 100 times bigger than the Go binary.</p>
 
 
   </div>

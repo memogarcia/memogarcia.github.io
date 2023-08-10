@@ -249,8 +249,8 @@ When changes in one component require a new interface it propagates those “req
     </h2>
   </header>
   <div class="entry-content">
-    <p>Docker multi-stage build is a great way to build a docker image with a minimal footprint.
-Compiled languages like GoLang or Rust can take advantage of this by just copying a binary into the “deployment container”
+    <p>Docker multi-stage build is a great way to build a container images with a minimal footprint.
+Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container
 This is an example from the official docs:
 FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github....</p>
   </div>
@@ -441,9 +441,8 @@ Meanwhile taquito…</p>
     </h2>
   </header>
   <div class="entry-content">
-    <p>There is a real cognitive and spiritual burden of having to carry lots of unfulfilled promises into the future.
-未来に達成されない多くの約束を抱えなければならないという現実的な認知的および精神的な負担があります。
-At its core this is what TODOs represent to me.</p>
+    <p>At its core, TODOS are a real cognitive and spiritual burden of having to carry lots of unfulfilled promises into the future.
+未来に達成されない多くの約束を抱えなければならないという現実的な認知的および精神的な負担があります。</p>
   </div>
   <footer class="entry-footer"><span title='2022-05-05 06:53:23 +0900 JST'>May 5, 2022</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;Memo Garcia</footer>
   <a class="entry-link" aria-label="post link to TODOs" href="https://memo.mx/posts/todos/"></a>
