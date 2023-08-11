@@ -23,7 +23,7 @@ There is no such thing as DevOps Engineer, DevOps is a philosophy, a way of work
     </item>
     
     <item>
-      <title>What is Kubernetes, really?</title>
+      <title>What is Kubernetes, really</title>
       <link>https://memo.mx/posts/what-is-kubernetes/</link>
       <pubDate>Tue, 01 Aug 2023 05:53:23 +0900</pubDate>
       
@@ -133,11 +133,8 @@ Black Then White are All I see In my infancy Red and yellow then came to be Reac
       <pubDate>Fri, 14 Oct 2022 00:03:30 +0100</pubDate>
       
       <guid>https://memo.mx/posts/the-role-of-a-systems-architect/</guid>
-      <description>Define the scope of the problem
-Avoid ambiguous words when defining your scope, for example, a maintainable solution … what is that? Make a solution able to adapt to changes and requirements.
-There is no such thing as the perfect architecture, but there are definitely bad architectures. Identify them as soon as possible.
-Identify what matters for your system.
-What do you care the most? performance? resiliency? consistency? something else?</description>
+      <description>Define the scope of your system Start by asking this broad questions:
+Why is your system required? This will help you find the reason why this system or organization exists What is the goal of your system? These two questions will help you understand your organization&amp;rsquo;s requirements, use them as a starting place, then clarify as much as you can those answers so you can start building a clear picture of what components might be needed and more importantly, which ones won&amp;rsquo;t.</description>
     </item>
     
     <item>

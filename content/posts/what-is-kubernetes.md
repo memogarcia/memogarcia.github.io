@@ -1,5 +1,5 @@
 ---
-title: "What is Kubernetes, really?"
+title: "What is Kubernetes, really"
 date: 2023-08-01T05:53:23+09:00
 draft: false
 ---
