@@ -24,7 +24,7 @@ What do you care the most in your system
 3. Consistency?
 4. Something else?
 
-> What matters changes from system to system. Clarify the expectations with your organization as clear as possible.
+> What matters changes from system to system. Clarify the expectations with your organization as much as possible.
 
 Don’t spend extra cost on performance, for example, if that’s not required.
 
