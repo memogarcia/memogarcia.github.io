@@ -37,3 +37,5 @@ In no particular order:
 * [Deadstream](https://www.imdb.com/title/tt12788488/)
 
 * [The Dark and the Wicked](https://www.imdb.com/title/tt10229558/)
+
+* [Channel Zero](https://www.imdb.com/title/tt4820370/)
