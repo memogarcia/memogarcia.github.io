@@ -154,11 +154,12 @@ Aterrados
 Incantation | Zhou
 Gonjiam: Haunted Asylum | Gon-ji-am
 A Tale Of Two Sisters | Janghwa, Hongryeon
-Lake Mungo
 Hereditary
 The Shining
 The Babadook
-Veronica</description>
+Veronica
+Deadstream
+The Dark and the Wicked</description>
     </item>
     
     <item>
@@ -169,6 +170,7 @@ Veronica</description>
       <guid>https://memo.mx/posts/learning-resources/</guid>
       <description>Tools for better thinking
 The Catalog of Design Patterns
+Learn X in Y minutes
 xmind</description>
     </item>
     
@@ -324,7 +326,7 @@ Move your marbles for one lap from your home to your goal. Don&amp;rsquo;t worry
       <guid>https://memo.mx/posts/linux-matebook/</guid>
       <description>This laptop has very decent specs:
 8th Generation Intel® Core™ i7-8550U processor GPU: NVIDIA® GeForce® MX150 with 2 GB GDDR5 / Intel® UHD Graphics 620 16 GB LPDDR3 2133 MHz BT 4.1 (compatible with 3.0 and 2.1+EDR) 512 GB NVMe PCIe SSD Don&amp;rsquo;t expect running workstation level workloads in this machine but it is a wonderful dev machine.
-Things I don&amp;rsquo;t like about the laptop Palm rejection, especially this one, maybe this is Linux.</description>
+Things I don&amp;rsquo;t like about the laptop Palm rejection on Linux Sound, it only outputs sound to two speakers on Linux and it has a werid noise under high volumes.</description>
     </item>
     
     <item>

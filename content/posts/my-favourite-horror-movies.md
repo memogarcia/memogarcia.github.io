@@ -26,8 +26,6 @@ In no particular order:
 
 * [A Tale Of Two Sisters | Janghwa, Hongryeon](https://www.imdb.com/title/tt0365376/)
 
-* [Lake Mungo](https://www.imdb.com/title/tt0816556/)
-
 * [Hereditary](https://www.imdb.com/title/tt7784604/)
 
 * [The Shining](https://www.imdb.com/title/tt0081505/)
@@ -35,3 +33,7 @@ In no particular order:
 * [The Babadook](https://www.imdb.com/title/tt2321549/)
 
 * [Veronica](https://www.imdb.com/title/tt5862312/?ref_=nv_sr_srsg_2)
+
+* [Deadstream](https://www.imdb.com/title/tt12788488/)
+
+* [The Dark and the Wicked](https://www.imdb.com/title/tt10229558/)

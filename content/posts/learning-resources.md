@@ -8,4 +8,6 @@ draft: false
 
 * [The Catalog of Design Patterns](https://refactoring.guru/design-patterns/catalog)
 
+* [Learn X in Y minutes](https://learnxinyminutes.com/)
+
 * [xmind](https://xmind.app/)

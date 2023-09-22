@@ -16,8 +16,8 @@ Don't expect running workstation level workloads in this machine but it is a won
 
 ## Things I don't like about the laptop
 
-* Palm rejection, especially this one, maybe this is Linux.
-* Sound, it only outputs sound to two speakers under Linux and it has a werid noise under high volumes.
+* Palm rejection on Linux
+* Sound, it only outputs sound to two speakers on Linux and it has a werid noise under high volumes.
 * BIOS configuration is too limited (but this is Huawei's fault)
 
 **Update** 14/Jul/2019
