@@ -27,12 +27,12 @@ languages:
     weight: 1
     menu:
       main:
-        - name: Understanding computer networks by analogy
-          url: understanding-networks-by-analogy
-          weight: 6
-        - name: DevOps Life
-          url: devops
-          weight: 7
+        # - name: Understanding computer networks by analogy
+        #   url: understanding-networks-by-analogy
+        #   weight: 6
+        # - name: DevOps Life
+        #   url: devops
+        #   weight: 7
         - name: About
           url: about
           weight: 8
