@@ -3,10 +3,10 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://memo.mx/</loc>
-    <lastmod>2023-09-22T16:03:56+09:00</lastmod>
+    <lastmod>2023-09-22T19:10:57+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/</loc>
-    <lastmod>2023-09-22T16:03:56+09:00</lastmod>
+    <lastmod>2023-09-22T19:10:57+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/being-devops/</loc>
     <lastmod>2023-08-01T21:54:44+09:00</lastmod>
@@ -42,7 +42,7 @@
     <lastmod>2023-08-13T17:22:28+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/my-favourite-horror-movies/</loc>
-    <lastmod>2023-09-22T16:03:56+09:00</lastmod>
+    <lastmod>2023-09-22T19:10:57+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/learning-resources/</loc>
     <lastmod>2023-09-22T16:03:56+09:00</lastmod>
@@ -100,6 +100,9 @@
   </url><url>
     <loc>https://memo.mx/about/</loc>
     <lastmod>2023-03-05T14:43:27+09:00</lastmod>
+  </url><url>
+    <loc>https://memo.mx/devops/</loc>
+    <lastmod>2000-01-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://memo.mx/understanding-networks-by-analogy/</loc>
     <lastmod>2023-04-15T21:09:13+09:00</lastmod>

@@ -12,7 +12,7 @@
     <language>en</language>
     <lastBuildDate>Tue, 01 Aug 2023 06:53:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>So, you want to be a DevOps</title>
+      <title>So, you want to be a DevOps Engineer?</title>
       <link>https://memo.mx/posts/being-devops/</link>
       <pubDate>Tue, 01 Aug 2023 06:53:23 +0900</pubDate>
       
@@ -376,6 +376,15 @@ How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (di
       <description>My blog is intended as a self reference and I don’t provide any support unless specified.
 If you find anything useful, please どうぞ! License
 DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (C) Guillermo Ramirez Garcia &amp;lt;root@memo.mx&amp;gt; Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed. DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 0.</description>
+    </item>
+    
+    <item>
+      <title>DevOps Life</title>
+      <link>https://memo.mx/devops/</link>
+      <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
+      
+      <guid>https://memo.mx/devops/</guid>
+      <description></description>
     </item>
     
     <item>

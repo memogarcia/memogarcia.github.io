@@ -33,12 +33,13 @@ languages:
       main:
         - name: About
           url: about
-          weight: 5
-        - name: Understanding networks
+          weight: 8
+        - name: Understanding computer networks by analogy
           url: understanding-networks-by-analogy
           weight: 6
-        - name: Continuous Learning
-          url: https://memogarcia.gitbook.io/continuous-learning/
+        - name: DevOps Life
+          url: devops
+          weight: 7
 outputs:
   home:
     - HTML
@@ -80,14 +81,6 @@ params:
   socialIcons:
     - name: mastodon
       url: "https://mastodon.social/@__warlord__"
-    - name: github
-      url: "https://github.com/memogarcia"
-    - name: gitlab
-      url: "https://gitlab.com/memogarcia"
-    - name: YouTube
-      url: "https://www.youtube.com/@memo.i.garcia"
-    - name: Discord
-      url: "https://discord.com/channels/1014044476588707840/1014044477687595081"
     - name: RSS
       url: "index.xml"
 
@@ -104,10 +97,8 @@ markup:
       unsafe: true
   highlight:
     noClasses: true
-    # anchorLineNos: true
     codeFences: true
     guessSyntax: true
-    # lineNos: true
     style: solarized-dark
 
 privacy:
