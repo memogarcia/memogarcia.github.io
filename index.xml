@@ -10,7 +10,17 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 01 Aug 2023 06:53:23 +0000</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 17 Feb 2024 05:53:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Embracing Change</title>
+      <link>https://memo.mx/posts/embrace-change/</link>
+      <pubDate>Sat, 17 Feb 2024 05:53:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/embrace-change/</guid>
+      <description>In the ever-evolving landscape of technology, standing still is not an option. Progress, by its very nature, demands change. It beckons us to guess, to venture into the unknown, and to embrace risks with open arms. Why? Because without the courage to step beyond the familiar, innovation remains a distant dream.
+The Power of Adaptability The first step towards progress is acknowledging that change is inevitable. In my work for example, what worked yesterday may not do so tomorrow.</description>
+    </item>
+    
     <item>
       <title>So, you want to be a DevOps Engineer?</title>
       <link>https://memo.mx/posts/being-devops/</link>
