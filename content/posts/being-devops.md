@@ -1,6 +1,6 @@
 ---
 title: "So, you want to be a DevOps Engineer?"
-date: 2023-08-01T06:53:23+09:00
+date: 2023-08-01T06:53:23
 draft: false
 ---
 
@@ -14,7 +14,7 @@ Few words before moving on:
 3. You will work in a team, empathy is mandatory.
 
 </br>
-A lot of people ask, do I really need to know ___ALL OF THAT___ to work as a DevOps?
+A lot of people ask, do I really need to know ___ALL OF THAT___ to work as a DevOps Engineer?
 
 Short answer is: **no**, most probably someone in your team or organization already knows it, leverage them!! ask questions!!
 

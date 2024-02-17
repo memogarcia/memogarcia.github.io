@@ -25,26 +25,21 @@ languages:
   en:
     languageName: "English"
     weight: 1
-    taxonomies:
-      category: categories
-      tag: tags
-      series: series
     menu:
       main:
-        - name: About
-          url: about
-          weight: 8
         - name: Understanding computer networks by analogy
           url: understanding-networks-by-analogy
           weight: 6
         - name: DevOps Life
           url: devops
           weight: 7
+        - name: About
+          url: about
+          weight: 8
 outputs:
   home:
     - HTML
     - RSS
-    - JSON
 
 params:
   env: production
@@ -92,14 +87,18 @@ params:
     disableHLJS: true
 
 markup:
+  defaultMarkdownHandler: goldmark
   goldmark:
     renderer:
       unsafe: true
+      hardWraps: false
   highlight:
     noClasses: true
     codeFences: true
     guessSyntax: true
     style: solarized-dark
+    # anchorLineNos: true
+    # lineNos: true
 
 privacy:
   vimeo:
