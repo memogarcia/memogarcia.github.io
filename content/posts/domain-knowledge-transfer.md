@@ -6,7 +6,7 @@ draft: false
 
 > Innovation often springs from the most unexpected sources. -- Me
 
-The ability to transfer domain knowledge from one field to another stands can breed a lot of creativity and gives you new perspectives and the opportunity to think outside the box.
+The ability to transfer domain knowledge from one field to another can breed a lot of creativity and gives you new perspectives and the opportunity to think outside the box.
 
 But what is `Domain Knowledge Transfer`?
 
