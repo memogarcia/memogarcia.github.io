@@ -16,9 +16,11 @@ Few words before moving on:
 </br>
 A lot of people ask, do I really need to know ___ALL OF THAT___ to work as a DevOps Engineer?
 
-Short answer is: **no**, most probably someone in your team or organization already knows it, leverage them!! ask questions!!
+Short answer is: **no**, most probably someone in your team or organization already knows how to do stuff, leverage them!! ask questions!!
 
-Long answer is: **yes**, this role is more complex than it should and its mainly because people’s egos and the way people are organized within your team. Of course, the wide range of tools and stacks makes it complex but nothing like a good ol’ [draw.io](http://draw.io) to help you visualize what’s happening.
+Long answer is: **yes**, this role tends to be more complex than it should and I think a big part is communication and how people organize within a team.
+
+Of course, the wide range of tools and stacks makes it complex but nothing like a good ol’ [draw.io](http://draw.io) to help you visualize what’s happening.
 
 ## Your goal
 
