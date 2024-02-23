@@ -30,7 +30,7 @@ Once you start working as DevOps, specially if you come from a sysadmin or devel
 
 Then learn how to separate the “why” and the “what” and start mastering the “why”.
 
-Mastering the why will help you understand the concepts and reason about why they are necessary. So next time you move from Github to Gitlab, for example, you will notice that they both do the same (almost) thing just with a different logo.
+Mastering the why will help you understand the concepts and reason about why they are necessary. So next time you move from Github to Gitlab for example, you will notice that they both do the (almost) same thing just with a different logo.
 
 ## Know your people
 
