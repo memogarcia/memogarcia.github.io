@@ -4,7 +4,9 @@ date: 2024-02-17T05:53:23+09:00
 draft: false
 ---
 
-In the ever-evolving landscape of technology, standing still is not an option. Progress, by its very nature, demands change. It beckons us to guess, to venture into the unknown, and to embrace risks with open arms. Why? Because without the courage to step beyond the familiar, innovation remains a distant dream.
+> A made up mind is hard to change -- Jeff Bezos or Confucius, I don't know who, but the phrase got stuck with me
+
+Standing still is not an option. Progress, by its very nature, demands change. It beckons us to guess, to venture into the unknown, and to embrace risks with open arms. Why? Because without the courage to step beyond the familiar, innovation remains a distant dream.
 
 ## The Power of Adaptability
 

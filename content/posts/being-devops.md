@@ -17,7 +17,7 @@ A lot of people ask, do I really need to know ___ALL OF THAT___ to work as a Dev
 
 Short answer is: **no**, most probably someone in your team or organization already knows how to do stuff, leverage them!! ask questions!!
 
-Long answer is: **yes**, this role tends to be more complex than it should and I think a big part is communication and how people organize within a team. [Conway's law](https://en.wikipedia.org/wiki/Conway%27s_law)
+Long answer is: **yes**, this role tends to be more complex than it should and I think a big part is communication and how people organize within a team. See [Conway's law](https://en.wikipedia.org/wiki/Conway%27s_law) for example.
 
 Of course, the wide range of tools and stacks makes it complex but nothing like a good ol’ [draw.io](http://draw.io) to help you visualize what’s happening.
 
