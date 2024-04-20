@@ -123,3 +123,6 @@ services:
     disableInlineCSS: true
   twitter:
     disableInlineCSS: true
+
+ignoreLogs:
+  - 'err-youtube-remote'

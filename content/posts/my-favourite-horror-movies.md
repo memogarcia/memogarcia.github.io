@@ -12,6 +12,14 @@ In no particular order:
 
 * [The Medium](https://www.imdb.com/title/tt13446168/)
 
+* [Late Night with the Devil](https://www.rottentomatoes.com/m/late_night_with_the_devil)
+
+* [The Dark and the Wicked](https://www.imdb.com/title/tt10229558/)
+
+* [When Evil Lurks | Cuando Acecha La Maldad](https://www.rottentomatoes.com/m/when_evil_lurks)
+
+* [Perfect Blue | Pâfekuto burû](https://www.imdb.com/title/tt0156887/)
+
 * [Satan’s Slaves | Pengabdi Setan](https://www.imdb.com/title/tt7076834/)
 
 * [Satan's Slaves: Communion | Pengabdi Setan 2: Communion](https://www.imdb.com/title/tt16915972/?ref_=nv_sr_srsg_2)
@@ -32,10 +40,10 @@ In no particular order:
 
 * [The Babadook](https://www.imdb.com/title/tt2321549/)
 
+* [The Witch](https://www.rottentomatoes.com/m/the_witch_2016)
+
 * [Veronica](https://www.imdb.com/title/tt5862312/?ref_=nv_sr_srsg_2)
 
 * [Deadstream](https://www.imdb.com/title/tt12788488/)
-
-* [The Dark and the Wicked](https://www.imdb.com/title/tt10229558/)
 
 * [Channel Zero](https://www.imdb.com/title/tt4820370/)
