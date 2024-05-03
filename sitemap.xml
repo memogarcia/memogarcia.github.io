@@ -3,15 +3,18 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://memo.mx/posts/lateral-thinking/</loc>
-    <lastmod>2024-05-03T15:16:10+09:00</lastmod>
+    <lastmod>2024-05-03T15:34:50+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/</loc>
-    <lastmod>2024-05-03T15:16:10+09:00</lastmod>
+    <lastmod>2024-05-03T15:34:50+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/</loc>
-    <lastmod>2024-05-03T15:16:10+09:00</lastmod>
+    <lastmod>2024-05-03T15:34:50+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/optimization/</loc>
+    <lastmod>2024-05-03T15:16:10+09:00</lastmod>
+  </url><url>
+    <loc>https://memo.mx/posts/microservices-vs-monoliths/</loc>
     <lastmod>2024-05-03T15:16:10+09:00</lastmod>
   </url><url>
     <loc>https://memo.mx/posts/github-actions/</loc>

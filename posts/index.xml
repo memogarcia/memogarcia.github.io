@@ -33,6 +33,17 @@ Understanding WHAT you want to achieve. Understanding WHY you want to achieve it
     </item>
     
     <item>
+      <title>Microservices vs monoliths</title>
+      <link>https://memo.mx/posts/microservices-vs-monoliths/</link>
+      <pubDate>Fri, 03 May 2024 01:09:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/microservices-vs-monoliths/</guid>
+      <description>Which architecture should I choose?
+I don&amp;rsquo;t think this is the right question to ask. A better question would be, given the current state of my service/product, which architecture will provide what I&amp;rsquo;m looking for? For example, performance, independent deployments, application boundaries, etc.
+For example, many people mention that we should start with a monolith and while I agree with some of the arguments (simplified development and deployment, consistent performance), it tends to ignore the fact that it might be better to prioritize freedom and experimentation at early stages rather than performance.</description>
+    </item>
+    
+    <item>
       <title>My issue with Github Actions</title>
       <link>https://memo.mx/posts/github-actions/</link>
       <pubDate>Fri, 03 May 2024 00:03:30 +0100</pubDate>
