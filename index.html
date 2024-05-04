@@ -193,6 +193,21 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>AWS | Crossaccount IAM role assumption
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.
+Let’s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB
+Account A In AccountA create a role account_a_role that has 2 types of policies:
+a Trust Relationship that define which entities can assume this role { &#34;Version&#34;: &#34;2012-10-17&#34;, &#34;Statement&#34;: [ { &#34;Sid&#34;: &#34;AllowAssumeRoleFromAccountB&#34;, &#34;Effect&#34;: &#34;Allow&#34;, &#34;Principal&#34;: { &#34;AWS&#34;: &#34;arn:aws:iam::ACCOUNT_B_ID:role/account_b_role&#34; }, &#34;Action&#34;: &#34;sts:AssumeRole&#34; } ] } You can also set Conditions to filter which entities can AssumeRole and even configure AssumeRoleWithWebIdentity for users who have been authenticated with a web identity provider....</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-05-04 00:55:24 +0900 JST'>May 4, 2024</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Memo Garcia</footer>
+  <a class="entry-link" aria-label="post link to AWS | Crossaccount IAM role assumption" href="https://memo.mx/posts/aws-iam-crossaccount-roles/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>Lateral Thinking
     </h2>
   </header>
@@ -200,7 +215,7 @@
     <p>For me, lateral thinking is:
 Solving problems using an indirect and creative approach. Using reasoning that is not immediately obvious and involving ideas that might not be obtainable by using traditional step-by-step logic.
 One “simple” approach to “think outside the box” is:
-Understanding WHAT you want to achieve. Understanding WHY you want to achieve it. Knowing the rules of the game constraints like environment, budget, physical limitations, etc. Reframing WHAT you want in a way that ignores these rules of the game....</p>
+Understanding WHAT you want to achieve. Understanding WHY you want to achieve it. Knowing the rules of the game (constraints like environment, budget, physical limitations, etc.) Reframing WHAT you want in a way that ignores these rules of the game....</p>
   </div>
   <footer class="entry-footer"><span title='2024-05-03 02:13:30 +0100 +0100'>May 3, 2024</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Memo Garcia</footer>
   <a class="entry-link" aria-label="post link to Lateral Thinking" href="https://memo.mx/posts/lateral-thinking/"></a>
@@ -298,6 +313,21 @@ Standing still is not an option. Progress, by its very nature, demands change. I
   </div>
   <footer class="entry-footer"><span title='2024-02-17 05:53:23 +0900 JST'>February 17, 2024</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Memo Garcia</footer>
   <a class="entry-link" aria-label="post link to Embracing Change" href="https://memo.mx/posts/embrace-change/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2>Generations
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Society seems to follow a cycle of moods that last around 20 years each.
+Each cycle is called “Turning”
+NOTE This is an unfalsifiable theory, so take it with a grain of salt.
+High The first turning is a high, which occurs after a crisis. During the high, institutions are strong and individualism is weak. Society is confident about where it wants to go collectively, though those outside the majoritarian center often feel stifled by conformity...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-09-27 09:03:30 +0100 +0100'>September 27, 2023</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Memo Garcia</footer>
+  <a class="entry-link" aria-label="post link to Generations" href="https://memo.mx/posts/generations/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -494,7 +524,18 @@ A Tale Of Two Sisters | Janghwa, Hongryeon...</p>
     <p>Tools for better thinking
 The Catalog of Design Patterns
 Learn X in Y minutes
-xmind</p>
+XMind
+Amazon EKS Blueprints for Terraform
+AWS Architecture Blog
+Cloud Design Patterns
+AWS in plain English
+AWS Solutions
+AWS Well-Architected
+Distributed Load Testing on AWS
+Istio by example
+High scalability
+Kubernetes Failure Stories
+AWS Prescriptive Guidance Patterns</p>
   </div>
   <footer class="entry-footer"><span title='2022-10-12 00:03:30 +0100 +0100'>October 12, 2022</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;Memo Garcia</footer>
   <a class="entry-link" aria-label="post link to Learning resources I use" href="https://memo.mx/posts/learning-resources/"></a>

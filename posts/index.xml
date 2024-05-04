@@ -10,7 +10,19 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 03 May 2024 02:13:30 +0100</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 04 May 2024 00:55:24 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AWS | Crossaccount IAM role assumption</title>
+      <link>https://memo.mx/posts/aws-iam-crossaccount-roles/</link>
+      <pubDate>Sat, 04 May 2024 00:55:24 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/aws-iam-crossaccount-roles/</guid>
+      <description>In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.
+Let&amp;rsquo;s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB
+Account A In AccountA create a role account_a_role that has 2 types of policies:
+a Trust Relationship that define which entities can assume this role { &amp;#34;Version&amp;#34;: &amp;#34;2012-10-17&amp;#34;, &amp;#34;Statement&amp;#34;: [ { &amp;#34;Sid&amp;#34;: &amp;#34;AllowAssumeRoleFromAccountB&amp;#34;, &amp;#34;Effect&amp;#34;: &amp;#34;Allow&amp;#34;, &amp;#34;Principal&amp;#34;: { &amp;#34;AWS&amp;#34;: &amp;#34;arn:aws:iam::ACCOUNT_B_ID:role/account_b_role&amp;#34; }, &amp;#34;Action&amp;#34;: &amp;#34;sts:AssumeRole&amp;#34; } ] } You can also set Conditions to filter which entities can AssumeRole and even configure AssumeRoleWithWebIdentity for users who have been authenticated with a web identity provider.</description>
+    </item>
+    
     <item>
       <title>Lateral Thinking</title>
       <link>https://memo.mx/posts/lateral-thinking/</link>
@@ -20,7 +32,7 @@
       <description>For me, lateral thinking is:
 Solving problems using an indirect and creative approach. Using reasoning that is not immediately obvious and involving ideas that might not be obtainable by using traditional step-by-step logic.
 One &amp;ldquo;simple&amp;rdquo; approach to &amp;ldquo;think outside the box&amp;rdquo; is:
-Understanding WHAT you want to achieve. Understanding WHY you want to achieve it. Knowing the rules of the game constraints like environment, budget, physical limitations, etc. Reframing WHAT you want in a way that ignores these rules of the game.</description>
+Understanding WHAT you want to achieve. Understanding WHY you want to achieve it. Knowing the rules of the game (constraints like environment, budget, physical limitations, etc.) Reframing WHAT you want in a way that ignores these rules of the game.</description>
     </item>
     
     <item>
@@ -94,6 +106,18 @@ Domain knowledge transfer is the process of applying knowledge, principles, and 
       <guid>https://memo.mx/posts/embrace-change/</guid>
       <description>A made up mind is hard to change &amp;ndash; Jeff Bezos or Confucius, I don&amp;rsquo;t know who, but the phrase got stuck with me
 Standing still is not an option. Progress, by its very nature, demands change. It beckons us to guess, to venture into the unknown, and to embrace risks with open arms. Why? Because without the courage to step beyond the familiar, innovation remains a distant dream.</description>
+    </item>
+    
+    <item>
+      <title>Generations</title>
+      <link>https://memo.mx/posts/generations/</link>
+      <pubDate>Wed, 27 Sep 2023 09:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/generations/</guid>
+      <description>Society seems to follow a cycle of moods that last around 20 years each.
+Each cycle is called &amp;ldquo;Turning&amp;rdquo;
+NOTE This is an unfalsifiable theory, so take it with a grain of salt.
+High The first turning is a high, which occurs after a crisis. During the high, institutions are strong and individualism is weak. Society is confident about where it wants to go collectively, though those outside the majoritarian center often feel stifled by conformity</description>
     </item>
     
     <item>
@@ -254,7 +278,18 @@ A Tale Of Two Sisters | Janghwa, Hongryeon</description>
       <description>Tools for better thinking
 The Catalog of Design Patterns
 Learn X in Y minutes
-xmind</description>
+XMind
+Amazon EKS Blueprints for Terraform
+AWS Architecture Blog
+Cloud Design Patterns
+AWS in plain English
+AWS Solutions
+AWS Well-Architected
+Distributed Load Testing on AWS
+Istio by example
+High scalability
+Kubernetes Failure Stories
+AWS Prescriptive Guidance Patterns</description>
     </item>
     
     <item>
