@@ -1,5 +1,5 @@
 ---
-title: "AWS | Crossaccount IAM role assumption"
+title: "AWS | Cross-Account IAM Role Assumption"
 date: 2024-05-04T00:55:24+09:00
 draft: false
 ---
@@ -74,7 +74,7 @@ In `AccountB`, create a role `account_b_role` with a single policy (for this pur
 }
 ```
 
-## IRSA or Pod Identitiies
+## IRSA or Pod Identities
 
 This topic is not cover in this post, but if you want to configure an EKS service account to assume an AWS role to perform the above take a look at [EKS Pod Identities](https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html) and [IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
 

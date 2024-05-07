@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>AWS | Crossaccount IAM role assumption | Memo Garcia</title>
+<title>AWS | Cross-Account IAM Role Assumption | Memo Garcia</title>
 <meta name="keywords" content="">
 <meta name="description" content="In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.
 Let&rsquo;s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB
@@ -79,7 +79,7 @@ a Trust Relationship that define which entities can assume this role { &#34;Vers
     
   
 
-<meta property="og:title" content="AWS | Crossaccount IAM role assumption" />
+<meta property="og:title" content="AWS | Cross-Account IAM Role Assumption" />
 <meta property="og:description" content="In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.
 Let&rsquo;s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB
 Account A In AccountA create a role account_a_role that has 2 types of policies:
@@ -87,12 +87,12 @@ a Trust Relationship that define which entities can assume this role { &#34;Vers
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://memo.mx/posts/aws-iam-crossaccount-roles/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2024-05-04T00:55:24&#43;09:00" />
-<meta property="article:modified_time" content="2024-05-04T00:55:24&#43;09:00" />
+<meta property="article:modified_time" content="2024-05-04T12:54:49&#43;09:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
 
-<meta name="twitter:title" content="AWS | Crossaccount IAM role assumption"/>
+<meta name="twitter:title" content="AWS | Cross-Account IAM Role Assumption"/>
 <meta name="twitter:description" content="In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.
 Let&rsquo;s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB
 Account A In AccountA create a role account_a_role that has 2 types of policies:
@@ -113,7 +113,7 @@ a Trust Relationship that define which entities can assume this role { &#34;Vers
     {
       "@type": "ListItem",
       "position":  2 ,
-      "name": "AWS | Crossaccount IAM role assumption",
+      "name": "AWS | Cross-Account IAM Role Assumption",
       "item": "https://memo.mx/posts/aws-iam-crossaccount-roles/"
     }
   ]
@@ -123,17 +123,17 @@ a Trust Relationship that define which entities can assume this role { &#34;Vers
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "AWS | Crossaccount IAM role assumption",
-  "name": "AWS | Crossaccount IAM role assumption",
+  "headline": "AWS | Cross-Account IAM Role Assumption",
+  "name": "AWS | Cross-Account IAM Role Assumption",
   "description": "In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.\nLet\u0026rsquo;s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB\nAccount A In AccountA create a role account_a_role that has 2 types of policies:\na Trust Relationship that define which entities can assume this role { \u0026#34;Version\u0026#34;: \u0026#34;2012-10-17\u0026#34;, \u0026#34;Statement\u0026#34;: [ { \u0026#34;Sid\u0026#34;: \u0026#34;AllowAssumeRoleFromAccountB\u0026#34;, \u0026#34;Effect\u0026#34;: \u0026#34;Allow\u0026#34;, \u0026#34;Principal\u0026#34;: { \u0026#34;AWS\u0026#34;: \u0026#34;arn:aws:iam::ACCOUNT_B_ID:role/account_b_role\u0026#34; }, \u0026#34;Action\u0026#34;: \u0026#34;sts:AssumeRole\u0026#34; } ] } You can also set Conditions to filter which entities can AssumeRole and even configure AssumeRoleWithWebIdentity for users who have been authenticated with a web identity provider.",
   "keywords": [
     
   ],
-  "articleBody": "In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.\nLet’s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB\nAccount A In AccountA create a role account_a_role that has 2 types of policies:\na Trust Relationship that define which entities can assume this role { \"Version\": \"2012-10-17\", \"Statement\": [ { \"Sid\": \"AllowAssumeRoleFromAccountB\", \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::ACCOUNT_B_ID:role/account_b_role\" }, \"Action\": \"sts:AssumeRole\" } ] } You can also set Conditions to filter which entities can AssumeRole and even configure AssumeRoleWithWebIdentity for users who have been authenticated with a web identity provider.\na Permission Policy that defines what this role can do, for example, aps:remoteWrite to AWS Managed Prometheus { \"Version\": \"2012-10-17\", \"Statement\": [ { \"Sid\": \"PrometheusRemoteWrite\", \"Effect\": \"Allow\", \"Action\": [ \"aps:remoteWrite\" ], \"Resource\": \"aws_managed_prometheus_arn\" } ] } Account B In AccountB, create a role account_b_role with a single policy (for this purpose) that can assume the role of AccountA\na Permission Policy that defines the sts:AssumeRole permission { \"Version\": \"2012-10-17\", \"Statement\": [ { \"Sid\": \"PrometheusRemoteWrite\", \"Effect\": \"Allow\", \"Action\": [ \"sts:AssumeRole\" ], \"Resource\": \"arn:aws:iam::ACCOUNT_A_ID:role/account_a_role\" } ] } IRSA or Pod Identitiies This topic is not cover in this post, but if you want to configure an EKS service account to assume an AWS role to perform the above take a look at EKS Pod Identities and IAM roles for service accounts\nReferences How IAM works ",
+  "articleBody": "In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.\nLet’s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB\nAccount A In AccountA create a role account_a_role that has 2 types of policies:\na Trust Relationship that define which entities can assume this role { \"Version\": \"2012-10-17\", \"Statement\": [ { \"Sid\": \"AllowAssumeRoleFromAccountB\", \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::ACCOUNT_B_ID:role/account_b_role\" }, \"Action\": \"sts:AssumeRole\" } ] } You can also set Conditions to filter which entities can AssumeRole and even configure AssumeRoleWithWebIdentity for users who have been authenticated with a web identity provider.\na Permission Policy that defines what this role can do, for example, aps:remoteWrite to AWS Managed Prometheus { \"Version\": \"2012-10-17\", \"Statement\": [ { \"Sid\": \"PrometheusRemoteWrite\", \"Effect\": \"Allow\", \"Action\": [ \"aps:remoteWrite\" ], \"Resource\": \"aws_managed_prometheus_arn\" } ] } Account B In AccountB, create a role account_b_role with a single policy (for this purpose) that can assume the role of AccountA\na Permission Policy that defines the sts:AssumeRole permission { \"Version\": \"2012-10-17\", \"Statement\": [ { \"Sid\": \"PrometheusRemoteWrite\", \"Effect\": \"Allow\", \"Action\": [ \"sts:AssumeRole\" ], \"Resource\": \"arn:aws:iam::ACCOUNT_A_ID:role/account_a_role\" } ] } IRSA or Pod Identities This topic is not cover in this post, but if you want to configure an EKS service account to assume an AWS role to perform the above take a look at EKS Pod Identities and IAM roles for service accounts\nReferences How IAM works ",
   "wordCount" : "246",
   "inLanguage": "en",
   "datePublished": "2024-05-04T00:55:24+09:00",
-  "dateModified": "2024-05-04T00:55:24+09:00",
+  "dateModified": "2024-05-04T12:54:49+09:00",
   "author":{
     "@type": "Person",
     "name": "Memo Garcia"
@@ -209,7 +209,7 @@ a Trust Relationship that define which entities can assume this role { &#34;Vers
   <header class="post-header">
     
     <h1 class="post-title">
-      AWS | Crossaccount IAM role assumption
+      AWS | Cross-Account IAM Role Assumption
     </h1>
     <div class="post-meta"><span title='2024-05-04 00:55:24 +0900 JST'>May 4, 2024</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Memo Garcia
 
@@ -226,7 +226,7 @@ a Trust Relationship that define which entities can assume this role { &#34;Vers
                 <li>
                     <a href="#account-b" aria-label="Account B">Account B</a></li>
                 <li>
-                    <a href="#irsa-or-pod-identitiies" aria-label="IRSA or Pod Identitiies">IRSA or Pod Identitiies</a></li>
+                    <a href="#irsa-or-pod-identities" aria-label="IRSA or Pod Identities">IRSA or Pod Identities</a></li>
                 <li>
                     <a href="#references" aria-label="References">References</a>
                 </li>
@@ -292,7 +292,7 @@ a Trust Relationship that define which entities can assume this role { &#34;Vers
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">    <span class="p">]</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="irsa-or-pod-identitiies">IRSA or Pod Identitiies<a hidden class="anchor" aria-hidden="true" href="#irsa-or-pod-identitiies">#</a></h2>
+</span></span></code></pre></div><h2 id="irsa-or-pod-identities">IRSA or Pod Identities<a hidden class="anchor" aria-hidden="true" href="#irsa-or-pod-identities">#</a></h2>
 <p>This topic is not cover in this post, but if you want to configure an EKS service account to assume an AWS role to perform the above take a look at <a href="https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html">EKS Pod Identities</a> and <a href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html">IAM roles for service accounts</a></p>
 <h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
 <ul>
