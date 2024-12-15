@@ -193,6 +193,62 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     </item>
     
     <item>
+      <title>Understanding Computer Networks by Analogy - Part 6 - Internet Providers</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</link>
+      <pubDate>Sat, 04 Mar 2023 01:53:28 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</guid>
+      <description>&lt;p&gt;We’ve looked at your building (your network), the city of networks (the internet), and how data travels through it. But what about the organizations that connect you to the city in the first place? Think of Internet Service Providers (ISPs) like the utility companies or public infrastructure services that give you the resources to participate in city life.&lt;/p&gt;
+&lt;h2 id=&#34;isps-the-utility-and-road-builders&#34;&gt;ISPs: The Utility and Road Builders&lt;/h2&gt;
+&lt;p&gt;An ISP is responsible for laying the roads (cables, fiber lines, wireless connections) that link your building to the rest of the city. Without them, you’d be isolated, cut off from all the other buildings and services. Just like you depend on water and electricity companies for everyday needs, you rely on your ISP to deliver internet access.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 5 - Internet</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</link>
+      <pubDate>Sat, 04 Mar 2023 01:53:27 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</guid>
+      <description>&lt;p&gt;We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?&lt;/p&gt;
+&lt;h2 id=&#34;the-internet-a-vast-city-of-buildings&#34;&gt;The Internet: A Vast City of Buildings&lt;/h2&gt;
+&lt;p&gt;If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 4 - Ports and Protocols</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</link>
+      <pubDate>Sat, 04 Mar 2023 01:53:26 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
+      <description>&lt;p&gt;We’ve looked at how data finds the right building, floor, and room. But once you’re at the right room, how do you figure out what kind of service you need? Think about what happens inside a single room. A room might have different activities going on—like a guest reading a newspaper by the window, a small coffee stand in the corner, and a desk where someone can answer questions.&lt;/p&gt;
+&lt;h2 id=&#34;ports-specific-service-entry-points&#34;&gt;Ports: Specific Service Entry Points&lt;/h2&gt;
+&lt;p&gt;Imagine that each room has multiple little mailboxes or service windows, each dedicated to a different task. These mailboxes or windows are like ports. The room (computer) has one address (the IP), but it can offer many services at the same time, each at its own port. Just like a hotel room might have a separate slot for mail, room service orders, and maintenance requests, a computer can run multiple services—web, email, file sharing—each listening on a different port.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 3 - Sending messages</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</link>
+      <pubDate>Sat, 04 Mar 2023 01:53:25 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
+      <description>&lt;p&gt;So far, we’ve focused on the inner workings of a single building—our network. We’ve covered floors, rooms, switches, routers, and gateways. But what happens when you need to reach a room in another building or send something outside your own property?&lt;/p&gt;
+&lt;h2 id=&#34;private-vs-public-ip-addresses-inside-vs-outside-the-building&#34;&gt;Private vs. Public IP Addresses: Inside vs. Outside the Building&lt;/h2&gt;
+&lt;p&gt;Inside your building, rooms have numbers you can reuse across many buildings. Room 101 exists in this building, and another building can have a Room 101 too. These are like private IP addresses—unique within your own network, but not necessarily unique everywhere.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 2 - Switches and Routers</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
+      <pubDate>Sat, 04 Mar 2023 01:53:24 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
+      <description>&lt;p&gt;Let’s keep building this analogy (pun intended) to explain more about how networks work.&lt;/p&gt;
+&lt;p&gt;Each room is a computer with a unique number (IP address) that makes it easy to locate. Hallways connect the rooms, floors act as subnets, and elevators or staircases connect the floors. But how does everything work together?&lt;/p&gt;
+&lt;h2 id=&#34;switches-as-the-floor-manager&#34;&gt;Switches as the floor manager&lt;/h2&gt;
+&lt;p&gt;Think of the switch as the floor manager. If you want to send a message to Room 203, you don’t wander around knocking on every door. Instead, the floor manager (switch) has a list of which doors (MAC addresses) belong to which rooms and quickly delivers your message to the correct one.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Understanding Computer Networks by Analogy - Part 1 - Networks and subnets</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
       <pubDate>Sat, 04 Mar 2023 01:53:23 +0100</pubDate>
@@ -207,62 +263,6 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
 &lt;/ol&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Buildings have specific purposes—some are residential, others commercial, or industrial. Similarly, networks can be designed for home use, business operations, or data centers. The design of each building reflects the needs of its occupants, just like networks are optimized for their intended applications.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 2 - Switches and Routers</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:23 +0102</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>&lt;p&gt;Let’s keep building this analogy (pun intended) to explain more about how networks work.&lt;/p&gt;
-&lt;p&gt;Each room is a computer with a unique number (IP address) that makes it easy to locate. Hallways connect the rooms, floors act as subnets, and elevators or staircases connect the floors. But how does everything work together?&lt;/p&gt;
-&lt;h2 id=&#34;switches-as-the-floor-manager&#34;&gt;Switches as the floor manager&lt;/h2&gt;
-&lt;p&gt;Think of the switch as the floor manager. If you want to send a message to Room 203, you don’t wander around knocking on every door. Instead, the floor manager (switch) has a list of which doors (MAC addresses) belong to which rooms and quickly delivers your message to the correct one.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 3 - Sending messages</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:23 +0103</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
-      <description>&lt;p&gt;So far, we’ve focused on the inner workings of a single building—our network. We’ve covered floors, rooms, switches, routers, and gateways. But what happens when you need to reach a room in another building or send something outside your own property?&lt;/p&gt;
-&lt;h2 id=&#34;private-vs-public-ip-addresses-inside-vs-outside-the-building&#34;&gt;Private vs. Public IP Addresses: Inside vs. Outside the Building&lt;/h2&gt;
-&lt;p&gt;Inside your building, rooms have numbers you can reuse across many buildings. Room 101 exists in this building, and another building can have a Room 101 too. These are like private IP addresses—unique within your own network, but not necessarily unique everywhere.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 4 - Ports and Protocols</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:23 +0104</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
-      <description>&lt;p&gt;We’ve looked at how data finds the right building, floor, and room. But once you’re at the right room, how do you figure out what kind of service you need? Think about what happens inside a single room. A room might have different activities going on—like a guest reading a newspaper by the window, a small coffee stand in the corner, and a desk where someone can answer questions.&lt;/p&gt;
-&lt;h2 id=&#34;ports-specific-service-entry-points&#34;&gt;Ports: Specific Service Entry Points&lt;/h2&gt;
-&lt;p&gt;Imagine that each room has multiple little mailboxes or service windows, each dedicated to a different task. These mailboxes or windows are like ports. The room (computer) has one address (the IP), but it can offer many services at the same time, each at its own port. Just like a hotel room might have a separate slot for mail, room service orders, and maintenance requests, a computer can run multiple services—web, email, file sharing—each listening on a different port.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 5 - Internet</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:23 +0105</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</guid>
-      <description>&lt;p&gt;We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?&lt;/p&gt;
-&lt;h2 id=&#34;the-internet-a-vast-city-of-buildings&#34;&gt;The Internet: A Vast City of Buildings&lt;/h2&gt;
-&lt;p&gt;If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 6 - Internet Providers</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:23 +0106</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</guid>
-      <description>&lt;p&gt;We’ve looked at your building (your network), the city of networks (the internet), and how data travels through it. But what about the organizations that connect you to the city in the first place? Think of Internet Service Providers (ISPs) like the utility companies or public infrastructure services that give you the resources to participate in city life.&lt;/p&gt;
-&lt;h2 id=&#34;isps-the-utility-and-road-builders&#34;&gt;ISPs: The Utility and Road Builders&lt;/h2&gt;
-&lt;p&gt;An ISP is responsible for laying the roads (cables, fiber lines, wireless connections) that link your building to the rest of the city. Without them, you’d be isolated, cut off from all the other buildings and services. Just like you depend on water and electricity companies for everyday needs, you rely on your ISP to deliver internet access.&lt;/p&gt;</description>
     </item>
     
     <item>
