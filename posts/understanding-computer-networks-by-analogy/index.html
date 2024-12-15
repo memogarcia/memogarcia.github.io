@@ -7,7 +7,7 @@
 <meta name="robots" content="index, follow">
 <title>Understanding Computer Networks by Analogy - Part 1 - Networks and subnets | Memo Garcia</title>
 <meta name="keywords" content="">
-<meta name="description" content="Networks as Buildings
+<meta name="description" content="Networks as buildings
 Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.
 
 Building = Network
@@ -79,7 +79,7 @@ Buildings have specific purposes—some are residential, others commercial, or i
           gtag('config', 'G-ZRB1GGCC9B');
         }
       </script><meta property="og:title" content="Understanding Computer Networks by Analogy - Part 1 - Networks and subnets" />
-<meta property="og:description" content="Networks as Buildings
+<meta property="og:description" content="Networks as buildings
 Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.
 
 Building = Network
@@ -97,7 +97,7 @@ Buildings have specific purposes—some are residential, others commercial, or i
 <meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
 
 <meta name="twitter:title" content="Understanding Computer Networks by Analogy - Part 1 - Networks and subnets"/>
-<meta name="twitter:description" content="Networks as Buildings
+<meta name="twitter:description" content="Networks as buildings
 Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.
 
 Building = Network
@@ -134,11 +134,11 @@ Buildings have specific purposes—some are residential, others commercial, or i
   "@type": "BlogPosting",
   "headline": "Understanding Computer Networks by Analogy - Part 1 - Networks and subnets",
   "name": "Understanding Computer Networks by Analogy - Part 1 - Networks and subnets",
-  "description": "Networks as Buildings Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.\nBuilding = Network Room + Room Number = Computer + IP Address Language = Network Protocol Buildings have specific purposes—some are residential, others commercial, or industrial. Similarly, networks can be designed for home use, business operations, or data centers. The design of each building reflects the needs of its occupants, just like networks are optimized for their intended applications.\n",
+  "description": "Networks as buildings Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.\nBuilding = Network Room + Room Number = Computer + IP Address Language = Network Protocol Buildings have specific purposes—some are residential, others commercial, or industrial. Similarly, networks can be designed for home use, business operations, or data centers. The design of each building reflects the needs of its occupants, just like networks are optimized for their intended applications.\n",
   "keywords": [
     
   ],
-  "articleBody": "Networks as Buildings Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.\nBuilding = Network Room + Room Number = Computer + IP Address Language = Network Protocol Buildings have specific purposes—some are residential, others commercial, or industrial. Similarly, networks can be designed for home use, business operations, or data centers. The design of each building reflects the needs of its occupants, just like networks are optimized for their intended applications.\nSubnets as Floors Now, if you want to limit communication to certain areas, you can divide the building into floors. Each floor acts as a subnet, allowing rooms on the same floor to communicate freely while restricting access to other floors. This is similar to creating subnetworks in a computer network, where groups of computers can talk to each other but not to other groups.\nIdentifying a room becomes easier: Room 101 is on Floor 1, Room 1. Similarly, a computer’s IP address might be 192.168.1.1. Remember, this room number is unique within your building, but other buildings can have a Room 101 too. So, within your building, you can reach Room 101 directly, but to contact Room 101 in another building, you need its full address (or public IP).\nBuilding X, Floor 1, Room 101 Designing a Floor (Subnetting): Hall Width: Represents bandwidth. Wider halls allow more people (data packets) to move between rooms. For high-traffic areas, you’d design wider hallways (subnets with more bandwidth). Number of Rooms: A floor has a maximum capacity based on how many rooms you can fit (IP addresses in the subnet). Smaller floors are easier to manage, but larger floors can handle more people. Subnet Sizes: Big floors: These can host many rooms (e.g., a /16 subnet with 65,536 IPs). Useful for large offices but harder to manage. Small floors: Limited to a few rooms (e.g., a /30 subnet with 4 IPs), good for point-to-point links but less flexible. Computers as Rooms Each room represents a computer. It has specific purposes based on its occupants and their tasks. Rooms have doors for entry and exit, which correspond to network interfaces\nMultiple Doors (Interfaces): A single room can have several doors, each leading to different parts of the building or even outside:\nMain Door: Used for regular visitors (primary interface, e.g., Ethernet or Wi-Fi). Maintenance Door: For janitors or delivery services (secondary interface, e.g., VPN or dedicated management port). Emergency Exit: Rarely used but vital in crises (backup interface or failover link). Each door has a unique identifier, like a MAC address, ensuring the right person or data packet reaches the right room.\nSome rooms have private, internal doors connecting to other rooms, like internal VLANs or private networks. If a door (interface) is locked or broken, the room becomes inaccessible to outsiders (network failure or misconfiguration). ",
+  "articleBody": "Networks as buildings Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.\nBuilding = Network Room + Room Number = Computer + IP Address Language = Network Protocol Buildings have specific purposes—some are residential, others commercial, or industrial. Similarly, networks can be designed for home use, business operations, or data centers. The design of each building reflects the needs of its occupants, just like networks are optimized for their intended applications.\nSubnets as floors Now, if you want to limit communication to certain areas, you can divide the building into floors. Each floor acts as a subnet, allowing rooms on the same floor to communicate freely while restricting access to other floors. This is similar to creating subnetworks in a computer network, where groups of computers can talk to each other but not to other groups.\nIdentifying a room becomes easier: Room 101 is on Floor 1, Room 1. Similarly, a computer’s IP address might be 192.168.1.1. Remember, this room number is unique within your building, but other buildings can have a Room 101 too. So, within your building, you can reach Room 101 directly, but to contact Room 101 in another building, you need its full address (or public IP).\nBuilding X, Floor 1, Room 101 Designing a floor (Subnetting): Hall Width: Represents bandwidth. Wider halls allow more people (data packets) to move between rooms. For high-traffic areas, you’d design wider hallways (subnets with more bandwidth). Number of Rooms: A floor has a maximum capacity based on how many rooms you can fit (IP addresses in the subnet). Smaller floors are easier to manage, but larger floors can handle more people. Subnet sizes: Big floors: These can host many rooms (e.g., a /16 subnet with 65,536 IPs). Useful for large offices but harder to manage. Small floors: Limited to a few rooms (e.g., a /30 subnet with 4 IPs), good for point-to-point links but less flexible. Computers as rooms Each room represents a computer. It has specific purposes based on its occupants and their tasks. Rooms have doors for entry and exit, which correspond to network interfaces\nMultiple Doors (Interfaces): A single room can have several doors, each leading to different parts of the building or even outside:\nMain Door: Used for regular visitors (primary interface, e.g., Ethernet or Wi-Fi). Maintenance Door: For janitors or delivery services (secondary interface, e.g., VPN or dedicated management port). Emergency Exit: Rarely used but vital in crises (backup interface or failover link). Each door has a unique identifier, like a MAC address, ensuring the right person or data packet reaches the right room.\nSome rooms have private, internal doors connecting to other rooms, like internal VLANs or private networks. If a door (interface) is locked or broken, the room becomes inaccessible to outsiders (network failure or misconfiguration). ",
   "wordCount" : "519",
   "inLanguage": "en",
   "datePublished": "2023-03-04T01:53:23+01:00",
@@ -231,24 +231,24 @@ Buildings have specific purposes—some are residential, others commercial, or i
 
         <div class="inner"><ul>
                 <li>
-                    <a href="#networks-as-buildings" aria-label="Networks as Buildings">Networks as Buildings</a></li>
+                    <a href="#networks-as-buildings" aria-label="Networks as buildings">Networks as buildings</a></li>
                 <li>
-                    <a href="#subnets-as-floors" aria-label="Subnets as Floors">Subnets as Floors</a><ul>
+                    <a href="#subnets-as-floors" aria-label="Subnets as floors">Subnets as floors</a><ul>
                         
                 <li>
-                    <a href="#designing-a-floor-subnetting" aria-label="Designing a Floor (Subnetting):">Designing a Floor (Subnetting):</a></li>
+                    <a href="#designing-a-floor-subnetting" aria-label="Designing a floor (Subnetting):">Designing a floor (Subnetting):</a></li>
                 <li>
-                    <a href="#subnet-sizes" aria-label="Subnet Sizes:">Subnet Sizes:</a></li></ul>
+                    <a href="#subnet-sizes" aria-label="Subnet sizes:">Subnet sizes:</a></li></ul>
                 </li>
                 <li>
-                    <a href="#computers-as-rooms" aria-label="Computers as Rooms">Computers as Rooms</a>
+                    <a href="#computers-as-rooms" aria-label="Computers as rooms">Computers as rooms</a>
                 </li>
             </ul>
         </div>
     </details>
 </div>
 
-  <div class="post-content"><h2 id="networks-as-buildings">Networks as Buildings<a hidden class="anchor" aria-hidden="true" href="#networks-as-buildings">#</a></h2>
+  <div class="post-content"><h2 id="networks-as-buildings">Networks as buildings<a hidden class="anchor" aria-hidden="true" href="#networks-as-buildings">#</a></h2>
 <p>Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.</p>
 <ol>
 <li>Building = Network</li>
@@ -260,24 +260,24 @@ Buildings have specific purposes—some are residential, others commercial, or i
 </blockquote>
 <p><img loading="lazy" src="/img/building1.png" alt="building1"  />
 </p>
-<h2 id="subnets-as-floors">Subnets as Floors<a hidden class="anchor" aria-hidden="true" href="#subnets-as-floors">#</a></h2>
+<h2 id="subnets-as-floors">Subnets as floors<a hidden class="anchor" aria-hidden="true" href="#subnets-as-floors">#</a></h2>
 <p>Now, if you want to limit communication to certain areas, you can divide the building into floors. Each floor acts as a subnet, allowing rooms on the same floor to communicate freely while restricting access to other floors. This is similar to creating subnetworks in a computer network, where groups of computers can talk to each other but not to other groups.</p>
 <p><img loading="lazy" src="/img/floor1.png" alt="floor1"  />
 </p>
 <p>Identifying a room becomes easier: Room 101 is on Floor 1, Room 1. Similarly, a computer’s IP address might be 192.168.1.1. Remember, this room number is unique within your building, but other buildings can have a Room 101 too. So, within your building, you can reach Room 101 directly, but to contact Room 101 in another building, you need its full address (or public IP).</p>
 <pre><code>Building X, Floor 1, Room 101
 </code></pre>
-<h3 id="designing-a-floor-subnetting">Designing a Floor (Subnetting):<a hidden class="anchor" aria-hidden="true" href="#designing-a-floor-subnetting">#</a></h3>
+<h3 id="designing-a-floor-subnetting">Designing a floor (Subnetting):<a hidden class="anchor" aria-hidden="true" href="#designing-a-floor-subnetting">#</a></h3>
 <ul>
 <li>Hall Width: Represents bandwidth. Wider halls allow more people (data packets) to move between rooms. For high-traffic areas, you’d design wider hallways (subnets with more bandwidth).</li>
 <li>Number of Rooms: A floor has a maximum capacity based on how many rooms you can fit (IP addresses in the subnet). Smaller floors are easier to manage, but larger floors can handle more people.</li>
 </ul>
-<h3 id="subnet-sizes">Subnet Sizes:<a hidden class="anchor" aria-hidden="true" href="#subnet-sizes">#</a></h3>
+<h3 id="subnet-sizes">Subnet sizes:<a hidden class="anchor" aria-hidden="true" href="#subnet-sizes">#</a></h3>
 <ul>
 <li>Big floors: These can host many rooms (e.g., a /16 subnet with 65,536 IPs). Useful for large offices but harder to manage.</li>
 <li>Small floors: Limited to a few rooms (e.g., a /30 subnet with 4 IPs), good for point-to-point links but less flexible.</li>
 </ul>
-<h2 id="computers-as-rooms">Computers as Rooms<a hidden class="anchor" aria-hidden="true" href="#computers-as-rooms">#</a></h2>
+<h2 id="computers-as-rooms">Computers as rooms<a hidden class="anchor" aria-hidden="true" href="#computers-as-rooms">#</a></h2>
 <p>Each room represents a computer. It has specific purposes based on its occupants and their tasks. Rooms have doors for entry and exit, which correspond to network interfaces</p>
 <p><img loading="lazy" src="/img/room1.png" alt="room1"  />
 </p>

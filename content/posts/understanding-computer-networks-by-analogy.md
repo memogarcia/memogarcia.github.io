@@ -4,7 +4,7 @@ date: 2023-03-04T01:53:23+01:00
 draft: false
 ---
 
-## Networks as Buildings
+## Networks as buildings
 
 Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.
 
@@ -18,7 +18,7 @@ Think of a building with many rooms connected by hallways and staircases. Each r
 ![building1](/img/building1.png)
 
 
-## Subnets as Floors
+## Subnets as floors
 
 Now, if you want to limit communication to certain areas, you can divide the building into floors. Each floor acts as a subnet, allowing rooms on the same floor to communicate freely while restricting access to other floors. This is similar to creating subnetworks in a computer network, where groups of computers can talk to each other but not to other groups.
 
@@ -29,18 +29,18 @@ Identifying a room becomes easier: Room 101 is on Floor 1, Room 1. Similarly, a 
 
     Building X, Floor 1, Room 101
 
-### Designing a Floor (Subnetting):
+### Designing a floor (Subnetting):
 	
 * Hall Width: Represents bandwidth. Wider halls allow more people (data packets) to move between rooms. For high-traffic areas, you’d design wider hallways (subnets with more bandwidth).
 * Number of Rooms: A floor has a maximum capacity based on how many rooms you can fit (IP addresses in the subnet). Smaller floors are easier to manage, but larger floors can handle more people.
 
-### Subnet Sizes:
+### Subnet sizes:
 
 * Big floors: These can host many rooms (e.g., a /16 subnet with 65,536 IPs). Useful for large offices but harder to manage.
 * Small floors: Limited to a few rooms (e.g., a /30 subnet with 4 IPs), good for point-to-point links but less flexible.
 
 
-## Computers as Rooms
+## Computers as rooms
 
 Each room represents a computer. It has specific purposes based on its occupants and their tasks. Rooms have doors for entry and exit, which correspond to network interfaces
 

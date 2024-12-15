@@ -4,88 +4,38 @@ date: 2023-03-05T01:53:23+01:00
 draft: false
 ---
 
-## Switches or "The floor concierge"
+Let’s keep building this analogy (pun intended) to explain more about how networks work.
 
-Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.
+Each room is a computer with a unique number (IP address) that makes it easy to locate. Hallways connect the rooms, floors act as subnets, and elevators or staircases connect the floors. But how does everything work together?
 
-The concierge or [switch](https://en.wikipedia.org/wiki/Network_switch) has a table of everyone's door numbers:
+## Switches as the floor manager
 
-    | Floor | Room number | Door number |
-    |-------|-------------|-------------|
-    | 6     | 602         | 1           |
-    | 6     | 609         | 1           |
+Think of the switch as the floor manager. If you want to send a message to Room 203, you don’t wander around knocking on every door. Instead, the floor manager (switch) has a list of which doors (MAC addresses) belong to which rooms and quickly delivers your message to the correct one.
 
-Remember that each room can have many doors.
+Switches are efficient because they only work within a single floor (or subnet). They don’t worry about what’s happening on other floors or in the rest of the building—they stick to managing traffic in their own space.
 
-In reality the switch has a table that looks like this:
+* In networking terms: A switch connects devices on the same local network (LAN) and uses MAC addresses to figure out where to send data packets.
 
-    | Vlan | MAC Address       | Port  |
-    |------|-------------------|-------|
-    | 6    | aa:aa:aa:aa:aa:aa | fa0/2 |
-    | 6    | ff:ff:ff:ff:ff:ff | fa0/3 |
+## Routers as the building concierge
 
-The concierge knows to which door exactly to deliver the package.
+When you need to send a message to Room 504 on a different floor, the floor manager (switch) hands your message off to the building concierge—a router. The router’s job is to figure out how to get your message between floors.
 
-In other words, **a switch connects computers in a network**.
+The router has a detailed map of the building (a routing table) that helps it decide the best way to send your message. It chooses the fastest or most efficient elevator (gateway) to move your message to Floor 5. Once it gets there, the floor manager on Floor 5 takes over to deliver the message to Room 504.
 
-Now, the concierge's capacity is limited by several factors:
+* In networking terms: A router connects different subnets or networks and uses IP addresses to determine the best route for your data.
 
-1. Size of the sending door - _speed of your interface_
-2. Size of the receiving door - _speed of their interface_
-3. Size of the hallway in which the package is moving - _"medium speed" (cable, wireless, etc.)_
-4. Size of the concierge desk - _switch port speed_
+## Gateways as the elevators between floors
 
-![concierge1](/img/concierge1.png)
+Elevators act as gateways connecting the floors. They don’t care about the contents of your message—they just move it to the correct floor. Once the elevator delivers your message, the floor manager on the destination floor takes over to ensure it reaches the right room.
 
-Your concierge (switch) have multple roles as well.
+* In networking terms: Gateways link different networks or subnets and ensure data is transferred correctly, even when moving between entirely different systems or protocols.
 
-1. Package monitoring - _Traffic monitoring_
-2. Package priority - _QoS_
-3. Bundle many doors for improved speed or redundancy - _link aggregation_
-4. Block packages from unwanted rooms - _MAC filtering_ or _port disabling_
-5. Door monitoring - _SNMP_
-6. And many more
+## Putting It All Together: A Message’s Journey
 
-But, what if you want to send your package to your neighbor in the 2nd floor?
+Here’s an example of how communication works in this building setup:
 
-Enter the...
-
-## Routers or "The building concierge"
-
-This building concierge or [router](https://en.wikipedia.org/wiki/Router_(computing)) is the one handling the packages from one floor to another.
-
-In other words, **a router connects many networks together**.
-
-Same as the floor concierge, it has a table of rooms, but it uses the room number rather than the door number.
-
-
-    | Floor destination | Room quantity | Elevator door number | Room number | Notes            |
-    |:-----------------:|:-------------:|:--------------------:|:-----------:|------------------|
-    | 1                 | 256           | 255                    | 1           | Easy to deliver  |
-    | 2                 | 256           | 255                    | 2           | Deliver at night |
-
-
-This table will translate to something like this:
-
-
-    | Network destination |     Netmask     |   Gateway   |  Interface  | Metric |
-    |:-------------------:|:---------------:|:-----------:|:-----------:|--------|
-    | 192.168.1.1         | 255.255.255.255 | 192.168.1.255 | 192.168.1.1 | 1      |
-    | 192.168.2.2         | 255.255.255.255 | 192.168.2.255 | 192.168.2.2 | 10     |
-
-
-The building concierge (router) has an entry for notes (metrics) to decide which route or time is best to deliver the package to its destination.
-
-But it cannot do it alone, it needs the floors to be connected somehow... like with an elevator or [gateway](https://en.wikipedia.org/wiki/Gateway_(telecommunications))
-
-This elevator behaves like a normal room, in the sense that it has a door, but it can move from floor to floor, which means that it has a door "assigned" in floor 1 and 2.
-
-This door is managed by the building concierge (router) not the floor concierge (switch). When a package needs to leave the floor, the floor concierge sends the package to the building concierge and it deliver the package to its destination.
-
-![concierge2](/img/concierge2.png)
-
-From the floor concierge (switch) perspective, is another room with a door number (MAC Address) and it can send/receive packages in the same way as if the packages were in the same floor.
-
-![concierge3](/img/concierge3.png)
-
-Over time, the building concierge (router) can learn new ways to deliver the packages more efficiently and work with packages based on priority or _QoS_.
+1.	Starting Point: Room 101 (your computer) wants to send a message to Room 504.
+2.	Switch Takes Over: The floor manager (switch) on Floor 1 checks its records and realizes Room 504 isn’t on this floor.
+3.	Hand-Off to Router: The switch passes the message to the router (concierge).
+4.	Routing the Message: The router looks at its map and picks the best elevator (gateway) to get to Floor 5.
+5.	Delivery on Floor 5: The elevator takes the message to Floor 5, where the local switch delivers it to Room 504.

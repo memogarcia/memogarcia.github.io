@@ -198,15 +198,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
       <pubDate>Sun, 05 Mar 2023 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>&lt;h2 id=&#34;switches-or-the-floor-concierge&#34;&gt;Switches or &amp;ldquo;The floor concierge&amp;rdquo;&lt;/h2&gt;
-&lt;p&gt;Imagine that you want to send a package from room 69 to room 62. In a typical building you cannot go to your neighbor and give them the package, it’s rude, you need to do it through the floor concierge.&lt;/p&gt;
-&lt;p&gt;The concierge or &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_switch&#34;&gt;switch&lt;/a&gt; has a table of everyone&amp;rsquo;s door numbers:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;| Floor | Room number | Door number |
-|-------|-------------|-------------|
-| 6     | 602         | 1           |
-| 6     | 609         | 1           |
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Remember that each room can have many doors.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Let’s keep building this analogy (pun intended) to explain more about how networks work.&lt;/p&gt;
+&lt;p&gt;Each room is a computer with a unique number (IP address) that makes it easy to locate. Hallways connect the rooms, floors act as subnets, and elevators or staircases connect the floors. But how does everything work together?&lt;/p&gt;
+&lt;h2 id=&#34;switches-as-the-floor-manager&#34;&gt;Switches as the floor manager&lt;/h2&gt;
+&lt;p&gt;Think of the switch as the floor manager. If you want to send a message to Room 203, you don’t wander around knocking on every door. Instead, the floor manager (switch) has a list of which doors (MAC addresses) belong to which rooms and quickly delivers your message to the correct one.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -215,7 +210,7 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
       <pubDate>Sat, 04 Mar 2023 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>&lt;h2 id=&#34;networks-as-buildings&#34;&gt;Networks as Buildings&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;networks-as-buildings&#34;&gt;Networks as buildings&lt;/h2&gt;
 &lt;p&gt;Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Building = Network&lt;/li&gt;
