@@ -1,30 +1,59 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
 <title>i3 running on WSL2 | Memo Garcia</title>
 <meta name="keywords" content="">
-<meta name="description" content="WSL configuration Install i3
-sudo apt install i3 -y Create an init script
-vim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don&#39;t do anything [ -z &#34;$PS1&#34; ] &amp;&amp; return export DISPLAY=$(awk &#39;/nameserver / {print $2; exit}&#39; /etc/resolv.conf 2&gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&#34;is not running&#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root
-wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell">
+<meta name="description" content="WSL configuration
+
+
+Install i3
+ sudo apt install i3 -y
+
+
+
+Create an init script
+ vim ~/src/scripts/i3launch.sh
+
+
+
+#!/bin/zsh
+source ~/.zshrc
+# If not running interactively, don&#39;t do anything
+[ -z &#34;$PS1&#34; ] &amp;&amp; return
+
+export DISPLAY=$(awk &#39;/nameserver / {print $2; exit}&#39; /etc/resolv.conf 2&gt;/dev/null):0
+export LIBGL_ALWAYS_INDIRECT=1
+
+dbus_status=$(service dbus status)
+if [[ $dbus_status = *&#34;is not running&#34;* ]]; then
+  sudo service dbus --full-restart
+fi
+i3
+To run WSL2 as root
+wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash
+
+Windows configuration
+
+
+Install vcxsrv from powershell">
 
 <link rel="canonical"
-    href="https://memo.mx/posts/i3wm-wsl2/">
+    href="http://localhost:1313/posts/i3wm-wsl2/">
 <meta name="google-site-verification" content="G-ZRB1GGCC9B">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.d1467e28595903f993a7e37893057cefe5f69aece461c850796bf5b0a3bf422a.css" integrity="sha256-0UZ&#43;KFlZA/mTp&#43;N4kwV87&#43;X2muzkYchQeWv1sKO/Qio="
     rel="preload stylesheet" as="style">
-<link rel="icon" href="https://memo.mx/%20favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://memo.mx/%20favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://memo.mx/%20favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://memo.mx/%20apple-touch-icon.png">
-<link rel="mask-icon" href="https://memo.mx/%20safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:1313/%20favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%20favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%20favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/%20apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/%20safari-pinned-tab.svg">
 <meta name="theme-color" content=" #2e2e33">
 <meta name="msapplication-TileColor" content=" #2e2e33">
-<link rel="alternate" hreflang="en" href="https://memo.mx/posts/i3wm-wsl2/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/i3wm-wsl2/">
 <noscript>
     <style>
         #theme-toggle,
@@ -60,8 +89,6 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
         }
     </style>
 </noscript>
-  
-    
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRB1GGCC9B"></script>
       <script>
         var doNotTrack = false;
@@ -75,28 +102,82 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
           gtag('js', new Date());
           gtag('config', 'G-ZRB1GGCC9B');
         }
-      </script>
-    
-  
+      </script><meta property="og:title" content="i3 running on WSL2" />
+<meta property="og:description" content="WSL configuration
 
-<meta property="og:title" content="i3 running on WSL2" />
-<meta property="og:description" content="WSL configuration Install i3
-sudo apt install i3 -y Create an init script
-vim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don&#39;t do anything [ -z &#34;$PS1&#34; ] &amp;&amp; return export DISPLAY=$(awk &#39;/nameserver / {print $2; exit}&#39; /etc/resolv.conf 2&gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&#34;is not running&#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root
-wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell" />
+
+Install i3
+ sudo apt install i3 -y
+
+
+
+Create an init script
+ vim ~/src/scripts/i3launch.sh
+
+
+
+#!/bin/zsh
+source ~/.zshrc
+# If not running interactively, don&#39;t do anything
+[ -z &#34;$PS1&#34; ] &amp;&amp; return
+
+export DISPLAY=$(awk &#39;/nameserver / {print $2; exit}&#39; /etc/resolv.conf 2&gt;/dev/null):0
+export LIBGL_ALWAYS_INDIRECT=1
+
+dbus_status=$(service dbus status)
+if [[ $dbus_status = *&#34;is not running&#34;* ]]; then
+  sudo service dbus --full-restart
+fi
+i3
+To run WSL2 as root
+wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash
+
+Windows configuration
+
+
+Install vcxsrv from powershell" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://memo.mx/posts/i3wm-wsl2/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="http://localhost:1313/posts/i3wm-wsl2/" /><meta property="og:image" content="http://localhost:1313/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2020-09-23T14:53:23&#43;01:00" />
 <meta property="article:modified_time" content="2023-01-09T16:39:57&#43;09:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
+<meta name="twitter:image" content="http://localhost:1313/papermod-cover.png"/>
 
 <meta name="twitter:title" content="i3 running on WSL2"/>
-<meta name="twitter:description" content="WSL configuration Install i3
-sudo apt install i3 -y Create an init script
-vim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don&#39;t do anything [ -z &#34;$PS1&#34; ] &amp;&amp; return export DISPLAY=$(awk &#39;/nameserver / {print $2; exit}&#39; /etc/resolv.conf 2&gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&#34;is not running&#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root
-wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell"/>
+<meta name="twitter:description" content="WSL configuration
+
+
+Install i3
+ sudo apt install i3 -y
+
+
+
+Create an init script
+ vim ~/src/scripts/i3launch.sh
+
+
+
+#!/bin/zsh
+source ~/.zshrc
+# If not running interactively, don&#39;t do anything
+[ -z &#34;$PS1&#34; ] &amp;&amp; return
+
+export DISPLAY=$(awk &#39;/nameserver / {print $2; exit}&#39; /etc/resolv.conf 2&gt;/dev/null):0
+export LIBGL_ALWAYS_INDIRECT=1
+
+dbus_status=$(service dbus status)
+if [[ $dbus_status = *&#34;is not running&#34;* ]]; then
+  sudo service dbus --full-restart
+fi
+i3
+To run WSL2 as root
+wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash
+
+Windows configuration
+
+
+Install vcxsrv from powershell"/>
 
 
 <script type="application/ld+json">
@@ -108,13 +189,13 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
       "@type": "ListItem",
       "position":  1 ,
       "name": "Posts",
-      "item": "https://memo.mx/posts/"
+      "item": "http://localhost:1313/posts/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "i3 running on WSL2",
-      "item": "https://memo.mx/posts/i3wm-wsl2/"
+      "item": "http://localhost:1313/posts/i3wm-wsl2/"
     }
   ]
 }
@@ -125,7 +206,7 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
   "@type": "BlogPosting",
   "headline": "i3 running on WSL2",
   "name": "i3 running on WSL2",
-  "description": "WSL configuration Install i3\nsudo apt install i3 -y Create an init script\nvim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don\u0026#39;t do anything [ -z \u0026#34;$PS1\u0026#34; ] \u0026amp;\u0026amp; return export DISPLAY=$(awk \u0026#39;/nameserver / {print $2; exit}\u0026#39; /etc/resolv.conf 2\u0026gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *\u0026#34;is not running\u0026#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root\nwsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell",
+  "description": "WSL configuration Install i3\nsudo apt install i3 -y Create an init script\nvim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don\u0026#39;t do anything [ -z \u0026#34;$PS1\u0026#34; ] \u0026amp;\u0026amp; return export DISPLAY=$(awk \u0026#39;/nameserver / {print $2; exit}\u0026#39; /etc/resolv.conf 2\u0026gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *\u0026#34;is not running\u0026#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root\nwsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell\n",
   "keywords": [
     
   ],
@@ -140,14 +221,14 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://memo.mx/posts/i3wm-wsl2/"
+    "@id": "http://localhost:1313/posts/i3wm-wsl2/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Memo Garcia",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://memo.mx/favicon.ico"
+      "url": "http://localhost:1313/favicon.ico"
     }
   }
 }
@@ -169,7 +250,7 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://memo.mx/" accesskey="h" title="Memo Garcia (Alt + H)">Memo Garcia</a>
+            <a href="http://localhost:1313/" accesskey="h" title="Memo Garcia (Alt + H)">Memo Garcia</a>
                     <div class="logo-switches">
                         <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                             <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -197,7 +278,7 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
         </div>
         <ul id="menu">
             <li>
-                <a href="https://memo.mx/about" title="About">
+                <a href="http://localhost:1313/about" title="About">
                     <span>About</span>
                 </a>
             </li>
@@ -336,12 +417,12 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
     <ul class="post-tags">
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://memo.mx/posts/git-multiple-identities/">
+  <a class="prev" href="http://localhost:1313/posts/git-multiple-identities/">
     <span class="title">« Prev</span>
     <br>
     <span>Setup multiple git identities and pgp keys</span>
   </a>
-  <a class="next" href="https://memo.mx/posts/doc-fzf/">
+  <a class="next" href="http://localhost:1313/posts/doc-fzf/">
     <span class="title">Next »</span>
     <br>
     <span>Modular CLI Documentation Fuzzy Finder</span>

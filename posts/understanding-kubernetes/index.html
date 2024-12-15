@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
@@ -9,22 +9,54 @@
 <meta name="keywords" content="">
 <meta name="description" content="Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
 My goal is to demystify its components.
-Main components There are two main components in a Kubernetes cluster.
-Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it.">
+Main components
+There are two main components in a Kubernetes cluster.
+
+Master nodes
+Worker nodes
+
+
+The only difference is the workloads they run.
+You can assign metadata to these nodes to schedule specific workloads on each node or type of node.
+
+For Users
+Containers
+
+A container is a filesystem and process wrapped in a “box” with some labels on it.
+
+Volumes
+
+A volume is a filesystem that lives outside the container.
+
+Pods
+
+Organize containers (one or more) and a volume(s) as a single unit
+This is the basic unit on which Kubernetes works.
+A pod has an IP (or more depending on your CNI)
+
+ConfigMaps
+
+Are just files that are mounted in pods (specifically, they are mounted in a container)
+
+Secrets
+
+Are just files that are mounted in the pods but the data is encoded. (specifically, they are mounted in a container).
+
+Note This is insecure, take a look at different approaches if security is important">
 
 <link rel="canonical"
-    href="https://memo.mx/posts/understanding-kubernetes/">
+    href="http://localhost:1313/posts/understanding-kubernetes/">
 <meta name="google-site-verification" content="G-ZRB1GGCC9B">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.d1467e28595903f993a7e37893057cefe5f69aece461c850796bf5b0a3bf422a.css" integrity="sha256-0UZ&#43;KFlZA/mTp&#43;N4kwV87&#43;X2muzkYchQeWv1sKO/Qio="
     rel="preload stylesheet" as="style">
-<link rel="icon" href="https://memo.mx/%20favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://memo.mx/%20favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://memo.mx/%20favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://memo.mx/%20apple-touch-icon.png">
-<link rel="mask-icon" href="https://memo.mx/%20safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:1313/%20favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/%20favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/%20favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/%20apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/%20safari-pinned-tab.svg">
 <meta name="theme-color" content=" #2e2e33">
 <meta name="msapplication-TileColor" content=" #2e2e33">
-<link rel="alternate" hreflang="en" href="https://memo.mx/posts/understanding-kubernetes/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/understanding-kubernetes/">
 <noscript>
     <style>
         #theme-toggle,
@@ -60,8 +92,6 @@ Master nodes Worker nodes The only difference is the workloads they run. You can
         }
     </style>
 </noscript>
-  
-    
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRB1GGCC9B"></script>
       <script>
         var doNotTrack = false;
@@ -75,28 +105,88 @@ Master nodes Worker nodes The only difference is the workloads they run. You can
           gtag('js', new Date());
           gtag('config', 'G-ZRB1GGCC9B');
         }
-      </script>
-    
-  
-
-<meta property="og:title" content="Demystifying Kubernetes" />
+      </script><meta property="og:title" content="Demystifying Kubernetes" />
 <meta property="og:description" content="Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
 My goal is to demystify its components.
-Main components There are two main components in a Kubernetes cluster.
-Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it." />
+Main components
+There are two main components in a Kubernetes cluster.
+
+Master nodes
+Worker nodes
+
+
+The only difference is the workloads they run.
+You can assign metadata to these nodes to schedule specific workloads on each node or type of node.
+
+For Users
+Containers
+
+A container is a filesystem and process wrapped in a “box” with some labels on it.
+
+Volumes
+
+A volume is a filesystem that lives outside the container.
+
+Pods
+
+Organize containers (one or more) and a volume(s) as a single unit
+This is the basic unit on which Kubernetes works.
+A pod has an IP (or more depending on your CNI)
+
+ConfigMaps
+
+Are just files that are mounted in pods (specifically, they are mounted in a container)
+
+Secrets
+
+Are just files that are mounted in the pods but the data is encoded. (specifically, they are mounted in a container).
+
+Note This is insecure, take a look at different approaches if security is important" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://memo.mx/posts/understanding-kubernetes/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="http://localhost:1313/posts/understanding-kubernetes/" /><meta property="og:image" content="http://localhost:1313/papermod-cover.png"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-06-30T00:00:00&#43;01:00" />
 <meta property="article:modified_time" content="2023-01-09T16:39:57&#43;09:00" />
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
+<meta name="twitter:image" content="http://localhost:1313/papermod-cover.png"/>
 
 <meta name="twitter:title" content="Demystifying Kubernetes"/>
 <meta name="twitter:description" content="Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
 My goal is to demystify its components.
-Main components There are two main components in a Kubernetes cluster.
-Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it."/>
+Main components
+There are two main components in a Kubernetes cluster.
+
+Master nodes
+Worker nodes
+
+
+The only difference is the workloads they run.
+You can assign metadata to these nodes to schedule specific workloads on each node or type of node.
+
+For Users
+Containers
+
+A container is a filesystem and process wrapped in a “box” with some labels on it.
+
+Volumes
+
+A volume is a filesystem that lives outside the container.
+
+Pods
+
+Organize containers (one or more) and a volume(s) as a single unit
+This is the basic unit on which Kubernetes works.
+A pod has an IP (or more depending on your CNI)
+
+ConfigMaps
+
+Are just files that are mounted in pods (specifically, they are mounted in a container)
+
+Secrets
+
+Are just files that are mounted in the pods but the data is encoded. (specifically, they are mounted in a container).
+
+Note This is insecure, take a look at different approaches if security is important"/>
 
 
 <script type="application/ld+json">
@@ -108,13 +198,13 @@ Master nodes Worker nodes The only difference is the workloads they run. You can
       "@type": "ListItem",
       "position":  1 ,
       "name": "Posts",
-      "item": "https://memo.mx/posts/"
+      "item": "http://localhost:1313/posts/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Demystifying Kubernetes",
-      "item": "https://memo.mx/posts/understanding-kubernetes/"
+      "item": "http://localhost:1313/posts/understanding-kubernetes/"
     }
   ]
 }
@@ -125,7 +215,7 @@ Master nodes Worker nodes The only difference is the workloads they run. You can
   "@type": "BlogPosting",
   "headline": "Demystifying Kubernetes",
   "name": "Demystifying Kubernetes",
-  "description": "Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.\nMy goal is to demystify its components.\nMain components There are two main components in a Kubernetes cluster.\nMaster nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it.",
+  "description": "Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.\nMy goal is to demystify its components.\nMain components There are two main components in a Kubernetes cluster.\nMaster nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it. Volumes A volume is a filesystem that lives outside the container. Pods Organize containers (one or more) and a volume(s) as a single unit This is the basic unit on which Kubernetes works. A pod has an IP (or more depending on your CNI) ConfigMaps Are just files that are mounted in pods (specifically, they are mounted in a container) Secrets Are just files that are mounted in the pods but the data is encoded. (specifically, they are mounted in a container). Note This is insecure, take a look at different approaches if security is important\n",
   "keywords": [
     
   ],
@@ -140,14 +230,14 @@ Master nodes Worker nodes The only difference is the workloads they run. You can
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://memo.mx/posts/understanding-kubernetes/"
+    "@id": "http://localhost:1313/posts/understanding-kubernetes/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Memo Garcia",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://memo.mx/favicon.ico"
+      "url": "http://localhost:1313/favicon.ico"
     }
   }
 }
@@ -169,7 +259,7 @@ Master nodes Worker nodes The only difference is the workloads they run. You can
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://memo.mx/" accesskey="h" title="Memo Garcia (Alt + H)">Memo Garcia</a>
+            <a href="http://localhost:1313/" accesskey="h" title="Memo Garcia (Alt + H)">Memo Garcia</a>
                     <div class="logo-switches">
                         <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                             <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -197,7 +287,7 @@ Master nodes Worker nodes The only difference is the workloads they run. You can
         </div>
         <ul id="menu">
             <li>
-                <a href="https://memo.mx/about" title="About">
+                <a href="http://localhost:1313/about" title="About">
                     <span>About</span>
                 </a>
             </li>
@@ -420,12 +510,12 @@ Master nodes Worker nodes The only difference is the workloads they run. You can
     <ul class="post-tags">
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://memo.mx/posts/busy/">
+  <a class="prev" href="http://localhost:1313/posts/busy/">
     <span class="title">« Prev</span>
     <br>
     <span>Why am I always busy?</span>
   </a>
-  <a class="next" href="https://memo.mx/posts/taquito/">
+  <a class="next" href="http://localhost:1313/posts/taquito/">
     <span class="title">Next »</span>
     <br>
     <span>A lesson from my dog</span>
