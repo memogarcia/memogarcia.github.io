@@ -193,6 +193,17 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     </item>
     
     <item>
+      <title>Understanding Computer Networks by Analogy - Part 7 - More network concepts</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/</link>
+      <pubDate>Sat, 04 Mar 2023 01:53:29 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;ll split this into its own chapters, this is a pinky promise.&lt;/p&gt;
+&lt;h2 id=&#34;network-security-locking-doors-and-guarding-entrances&#34;&gt;Network Security: Locking Doors and Guarding Entrances&lt;/h2&gt;
+&lt;p&gt;Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Understanding Computer Networks by Analogy - Part 6 - Internet Providers</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</link>
       <pubDate>Sat, 04 Mar 2023 01:53:28 +0100</pubDate>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Understanding Computer Networks by Analogy - Part 7 - More network concepts | Memo Garcia</title>
+<meta name="keywords" content="">
+<meta name="description" content="I&rsquo;ll split this into its own chapters, this is a pinky promise.
+Network Security: Locking Doors and Guarding Entrances
+Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property.">
+
+<link rel="canonical"
+    href="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/">
+<meta name="google-site-verification" content="G-ZRB1GGCC9B">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d1467e28595903f993a7e37893057cefe5f69aece461c850796bf5b0a3bf422a.css" integrity="sha256-0UZ&#43;KFlZA/mTp&#43;N4kwV87&#43;X2muzkYchQeWv1sKO/Qio="
+    rel="preload stylesheet" as="style">
+<link rel="icon" href="https://memo.mx/%20favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://memo.mx/%20favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://memo.mx/%20favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://memo.mx/%20apple-touch-icon.png">
+<link rel="mask-icon" href="https://memo.mx/%20safari-pinned-tab.svg">
+<meta name="theme-color" content=" #2e2e33">
+<meta name="msapplication-TileColor" content=" #2e2e33">
+<link rel="alternate" hreflang="en" href="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+    </style>
+</noscript>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRB1GGCC9B"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-ZRB1GGCC9B');
+        }
+      </script><meta property="og:title" content="Understanding Computer Networks by Analogy - Part 7 - More network concepts" />
+<meta property="og:description" content="I&rsquo;ll split this into its own chapters, this is a pinky promise.
+Network Security: Locking Doors and Guarding Entrances
+Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-03-04T01:53:29&#43;01:00" />
+<meta property="article:modified_time" content="2023-04-15T21:08:15&#43;09:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
+
+<meta name="twitter:title" content="Understanding Computer Networks by Analogy - Part 7 - More network concepts"/>
+<meta name="twitter:description" content="I&rsquo;ll split this into its own chapters, this is a pinky promise.
+Network Security: Locking Doors and Guarding Entrances
+Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://memo.mx/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Understanding Computer Networks by Analogy - Part 7 - More network concepts",
+      "item": "https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Understanding Computer Networks by Analogy - Part 7 - More network concepts",
+  "name": "Understanding Computer Networks by Analogy - Part 7 - More network concepts",
+  "description": "I\u0026rsquo;ll split this into its own chapters, this is a pinky promise.\nNetwork Security: Locking Doors and Guarding Entrances Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "I’ll split this into its own chapters, this is a pinky promise.\nNetwork Security: Locking Doors and Guarding Entrances Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property.\nVPNs and Tunnels: Secret Passages Between Distant Buildings A Virtual Private Network (VPN) acts like a hidden passageway that connects your building to another one, far away. Even though these buildings are separated by city blocks (different networks), the VPN tunnel creates a secure, private route. Outsiders see only the regular streets, but you and your partner building use a hidden corridor that keeps your conversations confidential. It’s a way to communicate securely, even in a crowded city.\nLoad Balancing and Redundancy: Sharing the Work and Having Backups Large networks get busy, just like bustling hotel lobbies at check-in time. Load balancers are like extra staff members who guide guests to different reception counters so that no single counter is overwhelmed. This splits the workload evenly, speeding things up and improving service. Redundancy ensures that if one route, staff member, or piece of equipment fails, another is ready to take over. This keeps everything running smoothly, even when problems arise.\nContent Delivery Networks (CDNs): Local Branches for Faster Access When you want something delivered quickly, it helps if there’s a local branch nearby. CDNs are like little storage hubs placed around the city. Instead of making you travel across town, the CDN lets you pick up what you need from a closer location. This reduces travel time (latency) and makes the experience faster for everyone. By caching popular content in many places, CDNs help websites load quickly no matter where you are.\nCloud Computing: Renting Rooms in Someone Else’s Building Sometimes you don’t need to build your own floors or maintain your own rooms. You can rent space in someone else’s massive skyscraper where they handle all the maintenance and services. Cloud computing lets you pay for what you use, scale up if you need more space, and scale down when you don’t. It’s like having access to a fully-staffed, well-maintained building without needing to construct anything yourself.\nQuality of Service (QoS): Priority Lanes for Important Traffic Not all traffic is equal. Some messages are urgent (video calls), while others are less time-sensitive (emails). QoS acts like special priority lanes on the road. Important vehicles (data packets) get to bypass traffic jams, ensuring smooth, uninterrupted communication. This helps critical services run smoothly while still allowing everyday traffic to flow at a reasonable pace.\nNAT (Network Address Translation): Translating Room Numbers at the Door Your building uses private room numbers internally, but outside visitors rely on your building’s public address. NAT is like having a front desk clerk who translates the building’s single public street address into the correct internal room number. When data arrives from the internet, NAT directs it to the right room. When data leaves your building, NAT replaces the room number with the building’s public address. It’s how multiple rooms share one public-facing identity.\nNetwork Monitoring and Logging: Keeping Track of Who Comes and Goes Just as a concierge might note who enters and leaves, network monitoring and logging keep records of data traveling through your building. This can help identify suspicious activity, diagnose problems, and ensure that everything is running as expected. By reviewing these logs, you can find out if someone tried to sneak in, where things got delayed, and what adjustments to make next time.\nSoftware-Defined Networking (SDN): Reconfiguring Rooms and Hallways on the Fly Usually, changing a building’s layout takes time and money. But SDN is like having the ability to rearrange rooms and hallways instantly with a remote control. Instead of physically rewiring things, you use software to shape how data flows. This gives you agility—if you need a new passage or want to close a certain hallway, you can do it with a few clicks, adapting to changes in real-time.\nIPv4 and IPv6: Different Ways of Numbering Rooms Early on, buildings used a certain numbering system for rooms (IPv4), but as the city grew, they began to run out of unique numbers. IPv6 came along with a much larger numbering scheme, ensuring there are enough unique addresses for every possible room. It’s like upgrading from a simple numbering system to one with far more digits, so you never run out of unique room numbers again.\nNetwork Topologies: Mapping the Rooms, Floors, and Buildings A network topology is like the blueprint that shows how rooms connect to each other, how floors are laid out, and how buildings link to the city. Some designs arrange rooms in a line (bus topology), others form loops (ring), or branch out like trees (star or hierarchical). The way you arrange connections can affect speed, reliability, and how easy it is to add more floors or rooms. Choosing the right topology ensures that your building runs efficiently, is easy to manage, and scales as you grow.\n",
+  "wordCount" : "879",
+  "inLanguage": "en",
+  "datePublished": "2023-03-04T01:53:29+01:00",
+  "dateModified": "2023-04-15T21:08:15+09:00",
+  "author":{
+    "@type": "Person",
+    "name": "Memo Garcia"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Memo Garcia",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://memo.mx/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://memo.mx/" accesskey="h" title="Memo Garcia (Alt + H)">Memo Garcia</a>
+                    <div class="logo-switches">
+                        <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                            <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                            <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                <line x1="1" y1="12" x2="3" y2="12"></line>
+                                <line x1="21" y1="12" x2="23" y2="12"></line>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                            </svg>
+                        </button>
+
+                        
+                    </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://memo.mx/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header><main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Understanding Computer Networks by Analogy - Part 7 - More network concepts
+    </h1>
+    <div class="post-meta"><span title='2023-03-04 01:53:29 +0100 +0100'>March 4, 2023</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;Memo Garcia
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#network-security-locking-doors-and-guarding-entrances" aria-label="Network Security: Locking Doors and Guarding Entrances">Network Security: Locking Doors and Guarding Entrances</a></li>
+                <li>
+                    <a href="#vpns-and-tunnels-secret-passages-between-distant-buildings" aria-label="VPNs and Tunnels: Secret Passages Between Distant Buildings">VPNs and Tunnels: Secret Passages Between Distant Buildings</a></li>
+                <li>
+                    <a href="#load-balancing-and-redundancy-sharing-the-work-and-having-backups" aria-label="Load Balancing and Redundancy: Sharing the Work and Having Backups">Load Balancing and Redundancy: Sharing the Work and Having Backups</a></li>
+                <li>
+                    <a href="#content-delivery-networks-cdns-local-branches-for-faster-access" aria-label="Content Delivery Networks (CDNs): Local Branches for Faster Access">Content Delivery Networks (CDNs): Local Branches for Faster Access</a></li>
+                <li>
+                    <a href="#cloud-computing-renting-rooms-in-someone-elses-building" aria-label="Cloud Computing: Renting Rooms in Someone Else’s Building">Cloud Computing: Renting Rooms in Someone Else’s Building</a></li>
+                <li>
+                    <a href="#quality-of-service-qos-priority-lanes-for-important-traffic" aria-label="Quality of Service (QoS): Priority Lanes for Important Traffic">Quality of Service (QoS): Priority Lanes for Important Traffic</a></li>
+                <li>
+                    <a href="#nat-network-address-translation-translating-room-numbers-at-the-door" aria-label="NAT (Network Address Translation): Translating Room Numbers at the Door">NAT (Network Address Translation): Translating Room Numbers at the Door</a></li>
+                <li>
+                    <a href="#network-monitoring-and-logging-keeping-track-of-who-comes-and-goes" aria-label="Network Monitoring and Logging: Keeping Track of Who Comes and Goes">Network Monitoring and Logging: Keeping Track of Who Comes and Goes</a></li>
+                <li>
+                    <a href="#software-defined-networking-sdn-reconfiguring-rooms-and-hallways-on-the-fly" aria-label="Software-Defined Networking (SDN): Reconfiguring Rooms and Hallways on the Fly">Software-Defined Networking (SDN): Reconfiguring Rooms and Hallways on the Fly</a></li>
+                <li>
+                    <a href="#ipv4-and-ipv6-different-ways-of-numbering-rooms" aria-label="IPv4 and IPv6: Different Ways of Numbering Rooms">IPv4 and IPv6: Different Ways of Numbering Rooms</a></li>
+                <li>
+                    <a href="#network-topologies-mapping-the-rooms-floors-and-buildings" aria-label="Network Topologies: Mapping the Rooms, Floors, and Buildings">Network Topologies: Mapping the Rooms, Floors, and Buildings</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>I&rsquo;ll split this into its own chapters, this is a pinky promise.</p>
+<h2 id="network-security-locking-doors-and-guarding-entrances">Network Security: Locking Doors and Guarding Entrances<a hidden class="anchor" aria-hidden="true" href="#network-security-locking-doors-and-guarding-entrances">#</a></h2>
+<p>Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property.</p>
+<h2 id="vpns-and-tunnels-secret-passages-between-distant-buildings">VPNs and Tunnels: Secret Passages Between Distant Buildings<a hidden class="anchor" aria-hidden="true" href="#vpns-and-tunnels-secret-passages-between-distant-buildings">#</a></h2>
+<p>A Virtual Private Network (VPN) acts like a hidden passageway that connects your building to another one, far away. Even though these buildings are separated by city blocks (different networks), the VPN tunnel creates a secure, private route. Outsiders see only the regular streets, but you and your partner building use a hidden corridor that keeps your conversations confidential. It’s a way to communicate securely, even in a crowded city.</p>
+<h2 id="load-balancing-and-redundancy-sharing-the-work-and-having-backups">Load Balancing and Redundancy: Sharing the Work and Having Backups<a hidden class="anchor" aria-hidden="true" href="#load-balancing-and-redundancy-sharing-the-work-and-having-backups">#</a></h2>
+<p>Large networks get busy, just like bustling hotel lobbies at check-in time. Load balancers are like extra staff members who guide guests to different reception counters so that no single counter is overwhelmed. This splits the workload evenly, speeding things up and improving service. Redundancy ensures that if one route, staff member, or piece of equipment fails, another is ready to take over. This keeps everything running smoothly, even when problems arise.</p>
+<h2 id="content-delivery-networks-cdns-local-branches-for-faster-access">Content Delivery Networks (CDNs): Local Branches for Faster Access<a hidden class="anchor" aria-hidden="true" href="#content-delivery-networks-cdns-local-branches-for-faster-access">#</a></h2>
+<p>When you want something delivered quickly, it helps if there’s a local branch nearby. CDNs are like little storage hubs placed around the city. Instead of making you travel across town, the CDN lets you pick up what you need from a closer location. This reduces travel time (latency) and makes the experience faster for everyone. By caching popular content in many places, CDNs help websites load quickly no matter where you are.</p>
+<h2 id="cloud-computing-renting-rooms-in-someone-elses-building">Cloud Computing: Renting Rooms in Someone Else’s Building<a hidden class="anchor" aria-hidden="true" href="#cloud-computing-renting-rooms-in-someone-elses-building">#</a></h2>
+<p>Sometimes you don’t need to build your own floors or maintain your own rooms. You can rent space in someone else’s massive skyscraper where they handle all the maintenance and services. Cloud computing lets you pay for what you use, scale up if you need more space, and scale down when you don’t. It’s like having access to a fully-staffed, well-maintained building without needing to construct anything yourself.</p>
+<h2 id="quality-of-service-qos-priority-lanes-for-important-traffic">Quality of Service (QoS): Priority Lanes for Important Traffic<a hidden class="anchor" aria-hidden="true" href="#quality-of-service-qos-priority-lanes-for-important-traffic">#</a></h2>
+<p>Not all traffic is equal. Some messages are urgent (video calls), while others are less time-sensitive (emails). QoS acts like special priority lanes on the road. Important vehicles (data packets) get to bypass traffic jams, ensuring smooth, uninterrupted communication. This helps critical services run smoothly while still allowing everyday traffic to flow at a reasonable pace.</p>
+<h2 id="nat-network-address-translation-translating-room-numbers-at-the-door">NAT (Network Address Translation): Translating Room Numbers at the Door<a hidden class="anchor" aria-hidden="true" href="#nat-network-address-translation-translating-room-numbers-at-the-door">#</a></h2>
+<p>Your building uses private room numbers internally, but outside visitors rely on your building’s public address. NAT is like having a front desk clerk who translates the building’s single public street address into the correct internal room number. When data arrives from the internet, NAT directs it to the right room. When data leaves your building, NAT replaces the room number with the building’s public address. It’s how multiple rooms share one public-facing identity.</p>
+<h2 id="network-monitoring-and-logging-keeping-track-of-who-comes-and-goes">Network Monitoring and Logging: Keeping Track of Who Comes and Goes<a hidden class="anchor" aria-hidden="true" href="#network-monitoring-and-logging-keeping-track-of-who-comes-and-goes">#</a></h2>
+<p>Just as a concierge might note who enters and leaves, network monitoring and logging keep records of data traveling through your building. This can help identify suspicious activity, diagnose problems, and ensure that everything is running as expected. By reviewing these logs, you can find out if someone tried to sneak in, where things got delayed, and what adjustments to make next time.</p>
+<h2 id="software-defined-networking-sdn-reconfiguring-rooms-and-hallways-on-the-fly">Software-Defined Networking (SDN): Reconfiguring Rooms and Hallways on the Fly<a hidden class="anchor" aria-hidden="true" href="#software-defined-networking-sdn-reconfiguring-rooms-and-hallways-on-the-fly">#</a></h2>
+<p>Usually, changing a building’s layout takes time and money. But SDN is like having the ability to rearrange rooms and hallways instantly with a remote control. Instead of physically rewiring things, you use software to shape how data flows. This gives you agility—if you need a new passage or want to close a certain hallway, you can do it with a few clicks, adapting to changes in real-time.</p>
+<h2 id="ipv4-and-ipv6-different-ways-of-numbering-rooms">IPv4 and IPv6: Different Ways of Numbering Rooms<a hidden class="anchor" aria-hidden="true" href="#ipv4-and-ipv6-different-ways-of-numbering-rooms">#</a></h2>
+<p>Early on, buildings used a certain numbering system for rooms (IPv4), but as the city grew, they began to run out of unique numbers. IPv6 came along with a much larger numbering scheme, ensuring there are enough unique addresses for every possible room. It’s like upgrading from a simple numbering system to one with far more digits, so you never run out of unique room numbers again.</p>
+<h2 id="network-topologies-mapping-the-rooms-floors-and-buildings">Network Topologies: Mapping the Rooms, Floors, and Buildings<a hidden class="anchor" aria-hidden="true" href="#network-topologies-mapping-the-rooms-floors-and-buildings">#</a></h2>
+<p>A network topology is like the blueprint that shows how rooms connect to each other, how floors are laid out, and how buildings link to the city. Some designs arrange rooms in a line (bus topology), others form loops (ring), or branch out like trees (star or hierarchical). The way you arrange connections can affect speed, reliability, and how easy it is to add more floors or rooms. Choosing the right topology ensures that your building runs efficiently, is easy to manage, and scales as you grow.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://memo.mx/posts/what-is-kubernetes/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>What is Kubernetes, really?</span>
+  </a>
+  <a class="next" href="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Understanding Computer Networks by Analogy - Part 6 - Internet Providers</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script></body>
+
+</html>
