@@ -1,6 +1,6 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 2 - Switches and Routers"
-date: 2023-03-05T01:53:23+01:00
+date: 2023-03-04T01:53:23+01:02
 draft: false
 ---
 

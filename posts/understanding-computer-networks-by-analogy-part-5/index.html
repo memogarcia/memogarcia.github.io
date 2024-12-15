@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Understanding Computer Networks by Analogy - Part 5 - Internet | Memo Garcia</title>
+<meta name="keywords" content="">
+<meta name="description" content="We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?
+The Internet: A Vast City of Buildings
+If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:">
+
+<link rel="canonical"
+    href="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/">
+<meta name="google-site-verification" content="G-ZRB1GGCC9B">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d1467e28595903f993a7e37893057cefe5f69aece461c850796bf5b0a3bf422a.css" integrity="sha256-0UZ&#43;KFlZA/mTp&#43;N4kwV87&#43;X2muzkYchQeWv1sKO/Qio="
+    rel="preload stylesheet" as="style">
+<link rel="icon" href="https://memo.mx/%20favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://memo.mx/%20favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://memo.mx/%20favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://memo.mx/%20apple-touch-icon.png">
+<link rel="mask-icon" href="https://memo.mx/%20safari-pinned-tab.svg">
+<meta name="theme-color" content=" #2e2e33">
+<meta name="msapplication-TileColor" content=" #2e2e33">
+<link rel="alternate" hreflang="en" href="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+    </style>
+</noscript>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRB1GGCC9B"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-ZRB1GGCC9B');
+        }
+      </script><meta property="og:title" content="Understanding Computer Networks by Analogy - Part 5 - Internet" />
+<meta property="og:description" content="We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?
+The Internet: A Vast City of Buildings
+If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/" /><meta property="og:image" content="https://memo.mx/papermod-cover.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-03-04T01:53:23&#43;01:05" />
+<meta property="article:modified_time" content="2023-04-15T21:08:15&#43;09:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://memo.mx/papermod-cover.png"/>
+
+<meta name="twitter:title" content="Understanding Computer Networks by Analogy - Part 5 - Internet"/>
+<meta name="twitter:description" content="We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?
+The Internet: A Vast City of Buildings
+If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://memo.mx/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Understanding Computer Networks by Analogy - Part 5 - Internet",
+      "item": "https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Understanding Computer Networks by Analogy - Part 5 - Internet",
+  "name": "Understanding Computer Networks by Analogy - Part 5 - Internet",
+  "description": "We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?\nThe Internet: A Vast City of Buildings If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?\nThe Internet: A Vast City of Buildings If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:\nSome buildings are small homes (personal networks). Others are huge skyscrapers (large company networks or data centers). Some might specialize in certain activities (gaming servers, streaming services, online stores). All these buildings connect together through roads, highways, and bridges. These connections are like undersea cables, fiber lines, and wireless links that span the globe. With so many buildings and complex paths, finding your way requires reliable guides and well-planned routes.\nRouters as City Maps Inside your building, the router helps you find the right floor. But to travel across the entire city, you need a network of routers sharing their maps. When you send data out to the internet, your local router passes it along to other routers, each making a step-by-step decision to move your data closer to its destination.\nThis chain of routers acts like a series of street signs and traffic lights guiding you along the route. Each router knows a bit about which roads lead where, and by passing your message from router to router, the data eventually arrives at the destination building on the other side of the world.\nRouting Tables: The City’s Navigation System How do all these routers know where to send your data? They rely on routing tables, which are like city maps updated in real-time. These maps help each router pick the best road at every intersection. If a road closes or a new road opens, routers adjust their maps to keep data flowing smoothly.\nIn short, routing tables keep track of the entire city’s layout so that no matter where your message needs to go, it can find a way.\nTraffic, Congestion, and Detours Just like a city has rush hours and traffic jams, the internet sees periods of heavy data flow. When too much data travels the same route, congestion slows everything down. Routers might pick alternative routes (detours) to avoid slowdowns and keep things moving.\nThis adaptability makes the internet resilient. Even if one road (cable) fails, data can find a different path. Think of it like having multiple ways to get from one side of the city to the other. You’re never stuck in just one path.\nA Global Neighborhood From your single room, inside your building, on your floor, you can reach another building on the opposite side of the globe. You do this by leveraging all the concepts we covered:\nIP and Ports: Find the right building and room. DNS: Translate a known name into a location you can reach. Protocols: Speak the right language at the right window (port). Routers and Gateways: Pass data through countless intersections in the global city. Public/Private IPs: Distinguish between private spaces and public addresses that anyone can find. In the end, the internet is just a giant city connecting infinite buildings. While complex, it follows the same principles we’ve talked about. It’s an enormous, interconnected web of rooms, floors, and buildings, all able to send and receive messages at incredible speed.\n",
+  "wordCount" : "580",
+  "inLanguage": "en",
+  "datePublished": "2023-03-04T01:53:23+01:05",
+  "dateModified": "2023-04-15T21:08:15+09:00",
+  "author":{
+    "@type": "Person",
+    "name": "Memo Garcia"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Memo Garcia",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://memo.mx/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://memo.mx/" accesskey="h" title="Memo Garcia (Alt + H)">Memo Garcia</a>
+                    <div class="logo-switches">
+                        <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                            <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                            <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                <line x1="1" y1="12" x2="3" y2="12"></line>
+                                <line x1="21" y1="12" x2="23" y2="12"></line>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                            </svg>
+                        </button>
+
+                        
+                    </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://memo.mx/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header><main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Understanding Computer Networks by Analogy - Part 5 - Internet
+    </h1>
+    <div class="post-meta"><span title='2023-03-04 01:53:23 +0105 +0105'>March 4, 2023</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;Memo Garcia
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#the-internet-a-vast-city-of-buildings" aria-label="The Internet: A Vast City of Buildings">The Internet: A Vast City of Buildings</a></li>
+                <li>
+                    <a href="#routers-as-city-maps" aria-label="Routers as City Maps">Routers as City Maps</a></li>
+                <li>
+                    <a href="#routing-tables-the-citys-navigation-system" aria-label="Routing Tables: The City’s Navigation System">Routing Tables: The City’s Navigation System</a></li>
+                <li>
+                    <a href="#traffic-congestion-and-detours" aria-label="Traffic, Congestion, and Detours">Traffic, Congestion, and Detours</a></li>
+                <li>
+                    <a href="#a-global-neighborhood" aria-label="A Global Neighborhood">A Global Neighborhood</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?</p>
+<h2 id="the-internet-a-vast-city-of-buildings">The Internet: A Vast City of Buildings<a hidden class="anchor" aria-hidden="true" href="#the-internet-a-vast-city-of-buildings">#</a></h2>
+<p>If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:</p>
+<ul>
+<li>Some buildings are small homes (personal networks).</li>
+<li>Others are huge skyscrapers (large company networks or data centers).</li>
+<li>Some might specialize in certain activities (gaming servers, streaming services, online stores).</li>
+</ul>
+<p>All these buildings connect together through roads, highways, and bridges. These connections are like undersea cables, fiber lines, and wireless links that span the globe. With so many buildings and complex paths, finding your way requires reliable guides and well-planned routes.</p>
+<h2 id="routers-as-city-maps">Routers as City Maps<a hidden class="anchor" aria-hidden="true" href="#routers-as-city-maps">#</a></h2>
+<p>Inside your building, the router helps you find the right floor. But to travel across the entire city, you need a network of routers sharing their maps. When you send data out to the internet, your local router passes it along to other routers, each making a step-by-step decision to move your data closer to its destination.</p>
+<p>This chain of routers acts like a series of street signs and traffic lights guiding you along the route. Each router knows a bit about which roads lead where, and by passing your message from router to router, the data eventually arrives at the destination building on the other side of the world.</p>
+<h2 id="routing-tables-the-citys-navigation-system">Routing Tables: The City’s Navigation System<a hidden class="anchor" aria-hidden="true" href="#routing-tables-the-citys-navigation-system">#</a></h2>
+<p>How do all these routers know where to send your data? They rely on routing tables, which are like city maps updated in real-time. These maps help each router pick the best road at every intersection. If a road closes or a new road opens, routers adjust their maps to keep data flowing smoothly.</p>
+<p>In short, routing tables keep track of the entire city’s layout so that no matter where your message needs to go, it can find a way.</p>
+<h2 id="traffic-congestion-and-detours">Traffic, Congestion, and Detours<a hidden class="anchor" aria-hidden="true" href="#traffic-congestion-and-detours">#</a></h2>
+<p>Just like a city has rush hours and traffic jams, the internet sees periods of heavy data flow. When too much data travels the same route, congestion slows everything down. Routers might pick alternative routes (detours) to avoid slowdowns and keep things moving.</p>
+<p>This adaptability makes the internet resilient. Even if one road (cable) fails, data can find a different path. Think of it like having multiple ways to get from one side of the city to the other. You’re never stuck in just one path.</p>
+<h2 id="a-global-neighborhood">A Global Neighborhood<a hidden class="anchor" aria-hidden="true" href="#a-global-neighborhood">#</a></h2>
+<p>From your single room, inside your building, on your floor, you can reach another building on the opposite side of the globe. You do this by leveraging all the concepts we covered:</p>
+<ul>
+<li>IP and Ports: Find the right building and room.</li>
+<li>DNS: Translate a known name into a location you can reach.</li>
+<li>Protocols: Speak the right language at the right window (port).</li>
+<li>Routers and Gateways: Pass data through countless intersections in the global city.</li>
+<li>Public/Private IPs: Distinguish between private spaces and public addresses that anyone can find.</li>
+</ul>
+<p>In the end, the internet is just a giant city connecting infinite buildings. While complex, it follows the same principles we’ve talked about. It’s an enormous, interconnected web of rooms, floors, and buildings, all able to send and receive messages at incredible speed.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Understanding Computer Networks by Analogy - Part 4 - Ports and Protocols</span>
+  </a>
+  <a class="next" href="https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Understanding Computer Networks by Analogy - Part 6 - Internet Providers</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script></body>
+
+</html>
