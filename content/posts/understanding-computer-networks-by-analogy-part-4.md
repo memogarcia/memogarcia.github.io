@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 4 - Ports and Protocols"
 date: 2023-03-04T01:53:26+01:00
-draft: false
+draft: true
 ---
 
 We’ve looked at how data finds the right building, floor, and room. But once you’re at the right room, how do you figure out what kind of service you need? Think about what happens inside a single room. A room might have different activities going on—like a guest reading a newspaper by the window, a small coffee stand in the corner, and a desk where someone can answer questions.

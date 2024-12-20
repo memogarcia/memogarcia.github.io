@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 7 - More network concepts"
 date: 2023-03-04T01:53:29+01:00
-draft: false
+draft: true
 ---
 
 I'll split this into its own chapters, this is a pinky promise.

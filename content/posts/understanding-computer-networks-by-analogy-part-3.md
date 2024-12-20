@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 3 - Sending messages"
 date: 2023-03-04T01:53:25+01:00
-draft: false
+draft: true
 ---
 
 So far, we’ve focused on the inner workings of a single building—our network. We’ve covered floors, rooms, switches, routers, and gateways. But what happens when you need to reach a room in another building or send something outside your own property?

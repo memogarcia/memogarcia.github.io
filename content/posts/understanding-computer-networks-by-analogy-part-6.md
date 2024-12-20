@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 6 - Internet Providers"
 date: 2023-03-04T01:53:28+01:00
-draft: false
+draft: true
 ---
 
 We’ve looked at your building (your network), the city of networks (the internet), and how data travels through it. But what about the organizations that connect you to the city in the first place? Think of Internet Service Providers (ISPs) like the utility companies or public infrastructure services that give you the resources to participate in city life.

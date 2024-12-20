@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 5 - Internet"
 date: 2023-03-04T01:53:27+01:00
-draft: false
+draft: true
 ---
 
 We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?

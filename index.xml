@@ -2,24 +2,41 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Memo Garcia</title>
-    <link>https://memo.mx/</link>
+    <link>http://localhost:1313/</link>
     <description>Recent content on Memo Garcia</description>
     <image>
-      <url>https://memo.mx/papermod-cover.png</url>
-      <link>https://memo.mx/papermod-cover.png</link>
+      <url>http://localhost:1313/papermod-cover.png</url>
+      <link>http://localhost:1313/papermod-cover.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 04 May 2024 01:55:24 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 20 Dec 2024 01:53:23 +0100</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Computer Networks by Analogy</title>
+      <link>http://localhost:1313/posts/understanding-computer-networks-by-analogy/</link>
+      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
+      
+      <guid>http://localhost:1313/posts/understanding-computer-networks-by-analogy/</guid>
+      <description>&lt;h2 id=&#34;networks-as-buildings&#34;&gt;Networks as buildings&lt;/h2&gt;
+&lt;p&gt;Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Building = Network&lt;/li&gt;
+&lt;li&gt;Room + Room Number = Computer + IP Address&lt;/li&gt;
+&lt;li&gt;Language = Network Protocol&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Buildings have specific purposes—some are residential, others commercial, or industrial. Similarly, networks can be designed for home use, business operations, or data centers. The design of each building reflects the needs of its occupants, just like networks are optimized for their intended applications.&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>AWS | Cross-Account IAM Role Assumption</title>
-      <link>https://memo.mx/posts/aws-iam-crossaccount-roles/</link>
+      <link>http://localhost:1313/posts/aws-iam-crossaccount-roles/</link>
       <pubDate>Sat, 04 May 2024 00:55:24 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/aws-iam-crossaccount-roles/</guid>
+      <guid>http://localhost:1313/posts/aws-iam-crossaccount-roles/</guid>
       <description>&lt;p&gt;In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use &lt;a href=&#34;https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html&#34;&gt;sts:AssumeRole&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Let&amp;rsquo;s say that you have some resources in &lt;code&gt;AccountA&lt;/code&gt; (AWS Managed Prometheus for example) that you want to access from &lt;code&gt;AccountB&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://memo.mx/img/crossaccount.png&#34; alt=&#34;crossaccount&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/img/crossaccount.png&#34; alt=&#34;crossaccount&#34;  /&gt;
 &lt;/p&gt;
 &lt;h2 id=&#34;account-a&#34;&gt;Account A&lt;/h2&gt;
 &lt;p&gt;In &lt;code&gt;AccountA&lt;/code&gt; create a role &lt;code&gt;account_a_role&lt;/code&gt; that has 2 types of policies:&lt;/p&gt;
@@ -44,13 +61,13 @@
     
     <item>
       <title>Lateral Thinking</title>
-      <link>https://memo.mx/posts/lateral-thinking/</link>
+      <link>http://localhost:1313/posts/lateral-thinking/</link>
       <pubDate>Fri, 03 May 2024 02:13:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/lateral-thinking/</guid>
+      <guid>http://localhost:1313/posts/lateral-thinking/</guid>
       <description>&lt;p&gt;For me, lateral thinking is:&lt;/p&gt;
 &lt;p&gt;Solving problems using an indirect and creative approach. Using reasoning that is not immediately obvious and involving ideas that might not be obtainable by using traditional step-by-step logic.&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://memo.mx/img/lateral-thinking-1.png&#34; alt=&#34;lateral-thinking&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/img/lateral-thinking-1.png&#34; alt=&#34;lateral-thinking&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;One &amp;ldquo;simple&amp;rdquo; approach to &amp;ldquo;think outside the box&amp;rdquo; is:&lt;/p&gt;
 &lt;ol&gt;
@@ -60,25 +77,25 @@
 &lt;li&gt;Reframing WHAT you want in a way that ignores these &lt;code&gt;rules of the game.&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;Assessing if the solution still aligns with your initial WHY.&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;Focusing on point 4, Frame the &lt;code&gt;WHAT&lt;/code&gt; in a way that ignores the current &lt;code&gt;rules of the game&lt;/code&gt;. In order to do this you require lots of reading and imagination. &lt;a href=&#34;https://memo.mx/posts/domain-knowledge-transfer/&#34;&gt;It is also helpful to read about other domains.&lt;/a&gt;&lt;/p&gt;</description>
+&lt;p&gt;Focusing on point 4, Frame the &lt;code&gt;WHAT&lt;/code&gt; in a way that ignores the current &lt;code&gt;rules of the game&lt;/code&gt;. In order to do this you require lots of reading and imagination. &lt;a href=&#34;http://localhost:1313/posts/domain-knowledge-transfer/&#34;&gt;It is also helpful to read about other domains.&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Simplicity vs familiarity</title>
-      <link>https://memo.mx/posts/simplicity-vs-familiarity/</link>
+      <link>http://localhost:1313/posts/simplicity-vs-familiarity/</link>
       <pubDate>Fri, 03 May 2024 02:05:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/simplicity-vs-familiarity/</guid>
+      <guid>http://localhost:1313/posts/simplicity-vs-familiarity/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve been thinking a lot about how we interact with technology, and I&amp;rsquo;ve come to realize that being familiar with something doesn&amp;rsquo;t always mean it&amp;rsquo;s simple. In fact, it can sometimes make things more complicated.&lt;/p&gt;
 &lt;p&gt;For example, when I&amp;rsquo;m working on code or documentation, I find myself getting too close to the issue. It&amp;rsquo;s easy to lose sight of the bigger picture and get caught up in the details. That&amp;rsquo;s why it&amp;rsquo;s important for us to take a step back, look at our work from a different perspective, and ask for feedback.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Optimizations</title>
-      <link>https://memo.mx/posts/optimization/</link>
+      <link>http://localhost:1313/posts/optimization/</link>
       <pubDate>Fri, 03 May 2024 02:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/optimization/</guid>
+      <guid>http://localhost:1313/posts/optimization/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;In order to make it faster, we need to understand why it is slow.&lt;/p&gt;
 &lt;/blockquote&gt;</description>
@@ -86,10 +103,10 @@
     
     <item>
       <title>Microservices vs monoliths</title>
-      <link>https://memo.mx/posts/microservices-vs-monoliths/</link>
+      <link>http://localhost:1313/posts/microservices-vs-monoliths/</link>
       <pubDate>Fri, 03 May 2024 01:09:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/microservices-vs-monoliths/</guid>
+      <guid>http://localhost:1313/posts/microservices-vs-monoliths/</guid>
       <description>&lt;p&gt;Which architecture should I choose?&lt;/p&gt;
 &lt;p&gt;I don&amp;rsquo;t think this is the right question to ask. A better question would be, given the current state of my service/product, which architecture will provide what I&amp;rsquo;m looking for? For example, performance, independent deployments, application boundaries, etc.&lt;/p&gt;
 &lt;p&gt;For example, many people mention that we should start with a monolith and while I agree with some of the arguments (simplified development and deployment, consistent performance), it tends to ignore the fact that it might be better to prioritize freedom and experimentation at early stages rather than performance.&lt;/p&gt;</description>
@@ -97,10 +114,10 @@
     
     <item>
       <title>My issue with Github Actions</title>
-      <link>https://memo.mx/posts/github-actions/</link>
+      <link>http://localhost:1313/posts/github-actions/</link>
       <pubDate>Fri, 03 May 2024 00:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/github-actions/</guid>
+      <guid>http://localhost:1313/posts/github-actions/</guid>
       <description>&lt;p&gt;GitHub actions are a problem because they lock you by the balls and you cannot reproduce your pipelines.&lt;/p&gt;
 &lt;p&gt;Getting to depend on all those small &lt;code&gt;Actions&lt;/code&gt; saves 5 minutes today, only to make migrations immensely painful tomorrow.&lt;/p&gt;
 &lt;p&gt;Build, package, and release software should be written as standalone scripts that in principle could even run in the developer&amp;rsquo;s machine. Moving them to CI is just changing the machine that will run the scripts.&lt;/p&gt;</description>
@@ -108,10 +125,10 @@
     
     <item>
       <title>Organizational Culture</title>
-      <link>https://memo.mx/posts/organizational-culture/</link>
+      <link>http://localhost:1313/posts/organizational-culture/</link>
       <pubDate>Sat, 17 Feb 2024 05:55:27 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/organizational-culture/</guid>
+      <guid>http://localhost:1313/posts/organizational-culture/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;A pattern of shared assumptions that groups have learned as they solve problems of external adaptation and internal integration, that has worked well enough in the past to be considered valid and therefore to be taught to new members as the correct way to PERCEIVE, THINK and FEEL &amp;ndash; Edgar Schein&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -120,10 +137,10 @@
     
     <item>
       <title>Domain Knowledge Transfer</title>
-      <link>https://memo.mx/posts/domain-knowledge-transfer/</link>
+      <link>http://localhost:1313/posts/domain-knowledge-transfer/</link>
       <pubDate>Sat, 17 Feb 2024 05:55:23 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/domain-knowledge-transfer/</guid>
+      <guid>http://localhost:1313/posts/domain-knowledge-transfer/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;Innovation often springs from the most unexpected sources. &amp;ndash; Me&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -134,10 +151,10 @@
     
     <item>
       <title>Embracing Change</title>
-      <link>https://memo.mx/posts/embrace-change/</link>
+      <link>http://localhost:1313/posts/embrace-change/</link>
       <pubDate>Sat, 17 Feb 2024 05:53:23 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/embrace-change/</guid>
+      <guid>http://localhost:1313/posts/embrace-change/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;A made up mind is hard to change &amp;ndash; Jeff Bezos or Confucius, I don&amp;rsquo;t know who, but the phrase got stuck with me&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -148,14 +165,14 @@
     
     <item>
       <title>Generations</title>
-      <link>https://memo.mx/posts/generations/</link>
+      <link>http://localhost:1313/posts/generations/</link>
       <pubDate>Wed, 27 Sep 2023 09:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/generations/</guid>
+      <guid>http://localhost:1313/posts/generations/</guid>
       <description>&lt;p&gt;Society seems to follow a cycle of moods that last around 20 years each.&lt;/p&gt;
 &lt;p&gt;Each cycle is called &amp;ldquo;Turning&amp;rdquo;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;NOTE&lt;/strong&gt; This is an &lt;a href=&#34;https://en.wikipedia.org/wiki/Falsifiability&#34;&gt;unfalsifiable theory&lt;/a&gt;, so take it with a grain of salt.&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://memo.mx/img/generations.svg&#34; alt=&#34;generations&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/img/generations.svg&#34; alt=&#34;generations&#34;  /&gt;
 &lt;/p&gt;
 &lt;h2 id=&#34;high&#34;&gt;High&lt;/h2&gt;
 &lt;p&gt;The first turning is a high, which occurs after a crisis. During the high, institutions are strong and individualism is weak. Society is confident about where it wants to go collectively, though those outside the majoritarian center often feel stifled by conformity&lt;/p&gt;</description>
@@ -163,10 +180,10 @@
     
     <item>
       <title>So, you want to be a DevOps Engineer?</title>
-      <link>https://memo.mx/posts/being-devops/</link>
+      <link>http://localhost:1313/posts/being-devops/</link>
       <pubDate>Tue, 01 Aug 2023 06:53:23 +0000</pubDate>
       
-      <guid>https://memo.mx/posts/being-devops/</guid>
+      <guid>http://localhost:1313/posts/being-devops/</guid>
       <description>&lt;p&gt;First of, congratulations!&lt;/p&gt;
 &lt;p&gt;Few words before moving on:&lt;/p&gt;
 &lt;ol&gt;
@@ -181,10 +198,10 @@ A lot of people ask, do I really need to know ___ALL OF THAT___ to work as a Dev
     
     <item>
       <title>What is Kubernetes, really?</title>
-      <link>https://memo.mx/posts/what-is-kubernetes/</link>
+      <link>http://localhost:1313/posts/what-is-kubernetes/</link>
       <pubDate>Tue, 01 Aug 2023 05:53:23 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/what-is-kubernetes/</guid>
+      <guid>http://localhost:1313/posts/what-is-kubernetes/</guid>
       <description>&lt;p&gt;As in the ship of Theseus&amp;hellip;
 If you replace each Kubernetes component&amp;hellip; what is it that you get at the end?&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;An API, an ecosystem and the sum of its parts.&lt;/strong&gt;&lt;/p&gt;
@@ -193,95 +210,11 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     </item>
     
     <item>
-      <title>Understanding Computer Networks by Analogy - Part 7 - More network concepts</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:29 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-7/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;ll split this into its own chapters, this is a pinky promise.&lt;/p&gt;
-&lt;h2 id=&#34;network-security-locking-doors-and-guarding-entrances&#34;&gt;Network Security: Locking Doors and Guarding Entrances&lt;/h2&gt;
-&lt;p&gt;Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 6 - Internet Providers</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:28 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</guid>
-      <description>&lt;p&gt;We’ve looked at your building (your network), the city of networks (the internet), and how data travels through it. But what about the organizations that connect you to the city in the first place? Think of Internet Service Providers (ISPs) like the utility companies or public infrastructure services that give you the resources to participate in city life.&lt;/p&gt;
-&lt;h2 id=&#34;isps-the-utility-and-road-builders&#34;&gt;ISPs: The Utility and Road Builders&lt;/h2&gt;
-&lt;p&gt;An ISP is responsible for laying the roads (cables, fiber lines, wireless connections) that link your building to the rest of the city. Without them, you’d be isolated, cut off from all the other buildings and services. Just like you depend on water and electricity companies for everyday needs, you rely on your ISP to deliver internet access.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 5 - Internet</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:27 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</guid>
-      <description>&lt;p&gt;We’ve talked about your building (your network), how to find the right floor and room, and how to speak the correct language once inside. But what if you want to send messages beyond your neighborhood of buildings and reach distant places you’ve never visited before?&lt;/p&gt;
-&lt;h2 id=&#34;the-internet-a-vast-city-of-buildings&#34;&gt;The Internet: A Vast City of Buildings&lt;/h2&gt;
-&lt;p&gt;If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 4 - Ports and Protocols</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:26 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
-      <description>&lt;p&gt;We’ve looked at how data finds the right building, floor, and room. But once you’re at the right room, how do you figure out what kind of service you need? Think about what happens inside a single room. A room might have different activities going on—like a guest reading a newspaper by the window, a small coffee stand in the corner, and a desk where someone can answer questions.&lt;/p&gt;
-&lt;h2 id=&#34;ports-specific-service-entry-points&#34;&gt;Ports: Specific Service Entry Points&lt;/h2&gt;
-&lt;p&gt;Imagine that each room has multiple little mailboxes or service windows, each dedicated to a different task. These mailboxes or windows are like ports. The room (computer) has one address (the IP), but it can offer many services at the same time, each at its own port. Just like a hotel room might have a separate slot for mail, room service orders, and maintenance requests, a computer can run multiple services—web, email, file sharing—each listening on a different port.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 3 - Sending messages</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:25 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
-      <description>&lt;p&gt;So far, we’ve focused on the inner workings of a single building—our network. We’ve covered floors, rooms, switches, routers, and gateways. But what happens when you need to reach a room in another building or send something outside your own property?&lt;/p&gt;
-&lt;h2 id=&#34;private-vs-public-ip-addresses-inside-vs-outside-the-building&#34;&gt;Private vs. Public IP Addresses: Inside vs. Outside the Building&lt;/h2&gt;
-&lt;p&gt;Inside your building, rooms have numbers you can reuse across many buildings. Room 101 exists in this building, and another building can have a Room 101 too. These are like private IP addresses—unique within your own network, but not necessarily unique everywhere.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 2 - Switches and Routers</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:24 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>&lt;p&gt;Let’s keep building this analogy (pun intended) to explain more about how networks work.&lt;/p&gt;
-&lt;p&gt;Each room is a computer with a unique number (IP address) that makes it easy to locate. Hallways connect the rooms, floors act as subnets, and elevators or staircases connect the floors. But how does everything work together?&lt;/p&gt;
-&lt;h2 id=&#34;switches-as-the-floor-manager&#34;&gt;Switches as the floor manager&lt;/h2&gt;
-&lt;p&gt;Think of the switch as the floor manager. If you want to send a message to Room 203, you don’t wander around knocking on every door. Instead, the floor manager (switch) has a list of which doors (MAC addresses) belong to which rooms and quickly delivers your message to the correct one.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy - Part 1 - Networks and subnets</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
-      <pubDate>Sat, 04 Mar 2023 01:53:23 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>&lt;h2 id=&#34;networks-as-buildings&#34;&gt;Networks as buildings&lt;/h2&gt;
-&lt;p&gt;Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Building = Network&lt;/li&gt;
-&lt;li&gt;Room + Room Number = Computer + IP Address&lt;/li&gt;
-&lt;li&gt;Language = Network Protocol&lt;/li&gt;
-&lt;/ol&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Buildings have specific purposes—some are residential, others commercial, or industrial. Similarly, networks can be designed for home use, business operations, or data centers. The design of each building reflects the needs of its occupants, just like networks are optimized for their intended applications.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
       <title>Is complexity a human construct?</title>
-      <link>https://memo.mx/posts/complexity/</link>
+      <link>http://localhost:1313/posts/complexity/</link>
       <pubDate>Wed, 18 Jan 2023 05:53:23 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/complexity/</guid>
+      <guid>http://localhost:1313/posts/complexity/</guid>
       <description>&lt;p&gt;Or is it a perspective? is it the result of the human ego? or is it just a communication problem?&lt;/p&gt;
 &lt;p&gt;If you look at biology, evolution has found a way to design its systems in a way that each component has a defined interface to communicate, and more importantly, each component is free to “experiment” or evolve independently from each other by random mutations.&lt;/p&gt;
 &lt;p&gt;When changes in one component require a new interface it propagates those “requirements” to the other components in a trial-and-error mechanism. Thus, allowing a more dynamic evolution.&lt;/p&gt;</description>
@@ -289,10 +222,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Multi stage docker build for python</title>
-      <link>https://memo.mx/posts/multi-stage-build-python/</link>
+      <link>http://localhost:1313/posts/multi-stage-build-python/</link>
       <pubDate>Sun, 01 Jan 2023 05:53:23 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/multi-stage-build-python/</guid>
+      <guid>http://localhost:1313/posts/multi-stage-build-python/</guid>
       <description>&lt;p&gt;Docker &lt;a href=&#34;https://docs.docker.com/build/building/multi-stage/&#34;&gt;multi-stage build&lt;/a&gt; is a great way to build a container images with a minimal footprint.&lt;/p&gt;
 &lt;p&gt;Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container&lt;/p&gt;
 &lt;p&gt;This is an example from the official docs:&lt;/p&gt;
@@ -312,10 +245,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Big O notation</title>
-      <link>https://memo.mx/posts/big-o/</link>
+      <link>http://localhost:1313/posts/big-o/</link>
       <pubDate>Wed, 28 Dec 2022 05:53:23 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/big-o/</guid>
+      <guid>http://localhost:1313/posts/big-o/</guid>
       <description>&lt;p&gt;Big O Notation (or the Big O) is used to describe how long and complex an operation will be based on its input.&lt;/p&gt;
 &lt;p&gt;Complexity could mean that an operation takes N amount of time, or N amount of memory, N CPU resources, etc.&lt;/p&gt;
 &lt;p&gt;There are some notations to describe this:&lt;/p&gt;
@@ -330,10 +263,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Istio Ambient Mesh</title>
-      <link>https://memo.mx/posts/istio-ambient-mesh/</link>
+      <link>http://localhost:1313/posts/istio-ambient-mesh/</link>
       <pubDate>Thu, 24 Nov 2022 00:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/istio-ambient-mesh/</guid>
+      <guid>http://localhost:1313/posts/istio-ambient-mesh/</guid>
       <description>&lt;p&gt;Ambient mesh is a new data plane mode for Istio that doesn’t rely on sidecars.&lt;/p&gt;
 &lt;p&gt;It gives users the option to forgo sidecar proxies in favor of a mesh data plane that’s integrated into your infrastructure.&lt;/p&gt;
 &lt;p&gt;Ambient mesh benefits are:&lt;/p&gt;
@@ -349,10 +282,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Is OpenStack fighting a lost battle?</title>
-      <link>https://memo.mx/posts/is-openstack-losing/</link>
+      <link>http://localhost:1313/posts/is-openstack-losing/</link>
       <pubDate>Thu, 20 Oct 2022 00:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/is-openstack-losing/</guid>
+      <guid>http://localhost:1313/posts/is-openstack-losing/</guid>
       <description>&lt;p&gt;Update Jan 2023: &lt;a href=&#34;https://www.youtube.com/watch?v=xkEQElJaScM&#34;&gt;Is OpenStack Still Needed in 2022? - Thierry Carrez, Open Infrastructure Foundation&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;And why Kubernetes “won”.&lt;/p&gt;
 &lt;p&gt;I owe my career to OpenStack and to all its contributors. I have made excellent friends, I learned a lot from them and the project itself.&lt;/p&gt;
@@ -363,18 +296,15 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>TOOL - Lateralus</title>
-      <link>https://memo.mx/posts/lateralus/</link>
+      <link>http://localhost:1313/posts/lateralus/</link>
       <pubDate>Mon, 17 Oct 2022 05:53:23 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/lateralus/</guid>
+      <guid>http://localhost:1313/posts/lateralus/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://toolband.com/&#34;&gt;TOOL Website&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=Y7JG63IuaWs&#34;&gt;TOOL - Lateralus&lt;/a&gt;&lt;/p&gt;
 
-
-    
     &lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
-      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/Y7JG63IuaWs?autoplay=0&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=0&amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;
-      &gt;&lt;/iframe&gt;
+      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/Y7JG63IuaWs?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;&gt;&lt;/iframe&gt;
     &lt;/div&gt;
 
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Black
@@ -473,10 +403,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>The role of a systems architect</title>
-      <link>https://memo.mx/posts/the-role-of-a-systems-architect/</link>
+      <link>http://localhost:1313/posts/the-role-of-a-systems-architect/</link>
       <pubDate>Fri, 14 Oct 2022 00:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/the-role-of-a-systems-architect/</guid>
+      <guid>http://localhost:1313/posts/the-role-of-a-systems-architect/</guid>
       <description>&lt;h2 id=&#34;define-the-scope-of-your-system&#34;&gt;Define the scope of your system&lt;/h2&gt;
 &lt;p&gt;Start by asking this broad questions:&lt;/p&gt;
 &lt;ol&gt;
@@ -488,10 +418,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>My favorite horror movies</title>
-      <link>https://memo.mx/posts/my-favourite-horror-movies/</link>
+      <link>http://localhost:1313/posts/my-favourite-horror-movies/</link>
       <pubDate>Thu, 13 Oct 2022 00:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/my-favourite-horror-movies/</guid>
+      <guid>http://localhost:1313/posts/my-favourite-horror-movies/</guid>
       <description>&lt;p&gt;In no particular order:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -539,10 +469,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Learning resources I use</title>
-      <link>https://memo.mx/posts/learning-resources/</link>
+      <link>http://localhost:1313/posts/learning-resources/</link>
       <pubDate>Wed, 12 Oct 2022 00:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/learning-resources/</guid>
+      <guid>http://localhost:1313/posts/learning-resources/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a href=&#34;https://untools.co/&#34;&gt;Tools for better thinking&lt;/a&gt;&lt;/p&gt;
@@ -572,7 +502,7 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
 &lt;p&gt;&lt;a href=&#34;https://aws.amazon.com/solutions/&#34;&gt;AWS Solutions&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;a href=&#34;https://aws.amazon.com/architecture/well-architected/?wa-lens-whitepapers.sort-by=item.additionalFields.sortDate&amp;wa-lens-whitepapers.sort-order=desc&amp;wa-guidance-whitepapers.sort-by=item.additionalFields.sortDate&amp;wa-guidance-whitepapers.sort-order=desc&#34;&gt;AWS Well-Architected&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://aws.amazon.com/architecture/well-architected/?wa-lens-whitepapers.sort-by=item.additionalFields.sortDate&amp;amp;wa-lens-whitepapers.sort-order=desc&amp;amp;wa-guidance-whitepapers.sort-by=item.additionalFields.sortDate&amp;amp;wa-guidance-whitepapers.sort-order=desc&#34;&gt;AWS Well-Architected&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a href=&#34;https://aws.amazon.com/solutions/implementations/distributed-load-testing-on-aws/&#34;&gt;Distributed Load Testing on AWS&lt;/a&gt;&lt;/p&gt;
@@ -594,10 +524,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Installing GitLab in air-gapped mode</title>
-      <link>https://memo.mx/posts/airgapped-gitlab-install/</link>
+      <link>http://localhost:1313/posts/airgapped-gitlab-install/</link>
       <pubDate>Mon, 03 Oct 2022 19:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/airgapped-gitlab-install/</guid>
+      <guid>http://localhost:1313/posts/airgapped-gitlab-install/</guid>
       <description>&lt;p&gt;When installing GitLab in air-gapped mode using helm charts first you need to pull the required images for the target version to your private container registry.&lt;/p&gt;
 &lt;p&gt;But is not straightforward to find which container tags map to which GitLab version.&lt;/p&gt;
 &lt;p&gt;An easy way to find which tags you need is to print the &lt;code&gt;helm templates&lt;/code&gt; first and get the values from there.&lt;/p&gt;
@@ -615,10 +545,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Why am I always busy?</title>
-      <link>https://memo.mx/posts/busy/</link>
+      <link>http://localhost:1313/posts/busy/</link>
       <pubDate>Tue, 30 Aug 2022 23:30:44 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/busy/</guid>
+      <guid>http://localhost:1313/posts/busy/</guid>
       <description>&lt;p&gt;I’m trying to learn everything at once.&lt;/p&gt;
 &lt;p&gt;I’m trying to do everything at once.&lt;/p&gt;
 &lt;p&gt;&amp;hellip;&lt;/p&gt;
@@ -631,10 +561,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Demystifying Kubernetes</title>
-      <link>https://memo.mx/posts/understanding-kubernetes/</link>
+      <link>http://localhost:1313/posts/understanding-kubernetes/</link>
       <pubDate>Thu, 30 Jun 2022 00:00:00 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/understanding-kubernetes/</guid>
+      <guid>http://localhost:1313/posts/understanding-kubernetes/</guid>
       <description>&lt;p&gt;Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.&lt;/p&gt;
 &lt;p&gt;My goal is to demystify its components.&lt;/p&gt;
 &lt;h2 id=&#34;main-components&#34;&gt;Main components&lt;/h2&gt;
@@ -675,42 +605,42 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>A lesson from my dog</title>
-      <link>https://memo.mx/posts/taquito/</link>
+      <link>http://localhost:1313/posts/taquito/</link>
       <pubDate>Tue, 28 Jun 2022 20:20:31 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/taquito/</guid>
+      <guid>http://localhost:1313/posts/taquito/</guid>
       <description>&lt;p&gt;Looming recession &lt;strong&gt;!!&lt;/strong&gt; , third world war &lt;strong&gt;!!&lt;/strong&gt;, climate change &lt;strong&gt;!!&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;Meanwhile taquito…&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://memo.mx/img/taquito.jpeg&#34; alt=&#34;taquito&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/img/taquito.jpeg&#34; alt=&#34;taquito&#34;  /&gt;
 &lt;/p&gt;</description>
     </item>
     
     <item>
       <title>TODOs</title>
-      <link>https://memo.mx/posts/todos/</link>
+      <link>http://localhost:1313/posts/todos/</link>
       <pubDate>Thu, 05 May 2022 06:53:23 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/todos/</guid>
+      <guid>http://localhost:1313/posts/todos/</guid>
       <description>&lt;p&gt;At its core, TODOS are a real cognitive and spiritual burden of having to carry lots of unfulfilled promises into the future.&lt;/p&gt;
 &lt;p&gt;その本質において、TODOリストは、未来に持ち込む未完の約束の重たい認知的および精神的な負担である。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>How to use GitOps in a non-cloud-native environment</title>
-      <link>https://memo.mx/posts/gitops-in-enterprise/</link>
+      <link>http://localhost:1313/posts/gitops-in-enterprise/</link>
       <pubDate>Fri, 04 Mar 2022 02:05:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/gitops-in-enterprise/</guid>
+      <guid>http://localhost:1313/posts/gitops-in-enterprise/</guid>
       <description>&lt;p&gt;The rapid development and adoption of cloud-native stacks that brings a better developer experience, security, reproducibility and speed at which organizations deliver value are leaving more traditional stacks behind. Hence, there is more pressure from the markets, organizations and developers to bring those stacks into a more modern era.&lt;/p&gt;
 &lt;p&gt;We often wonder whether the same techniques and toolchains of these modern stacks can be used to configure not-so-modern applications or infrastructures.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Setup multiple git identities and pgp keys</title>
-      <link>https://memo.mx/posts/git-multiple-identities/</link>
+      <link>http://localhost:1313/posts/git-multiple-identities/</link>
       <pubDate>Fri, 04 Mar 2022 02:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/git-multiple-identities/</guid>
+      <guid>http://localhost:1313/posts/git-multiple-identities/</guid>
       <description>&lt;p&gt;Be very carrefull in your setup : &lt;strong&gt;any misconfiguration make all the git config to fail silently !&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id=&#34;setup-multiple-git-ssh-identities-for-git&#34;&gt;Setup multiple git ssh identities for git&lt;/h2&gt;
 &lt;ul&gt;
@@ -734,10 +664,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>i3 running on WSL2</title>
-      <link>https://memo.mx/posts/i3wm-wsl2/</link>
+      <link>http://localhost:1313/posts/i3wm-wsl2/</link>
       <pubDate>Wed, 23 Sep 2020 14:53:23 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/i3wm-wsl2/</guid>
+      <guid>http://localhost:1313/posts/i3wm-wsl2/</guid>
       <description>&lt;h2 id=&#34;wsl-configuration&#34;&gt;WSL configuration&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -775,10 +705,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Modular CLI Documentation Fuzzy Finder</title>
-      <link>https://memo.mx/posts/doc-fzf/</link>
+      <link>http://localhost:1313/posts/doc-fzf/</link>
       <pubDate>Fri, 14 Jun 2019 15:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/doc-fzf/</guid>
+      <guid>http://localhost:1313/posts/doc-fzf/</guid>
       <description>&lt;p&gt;Fuzzy Search documentation from the CLI.&lt;/p&gt;
 &lt;p&gt;See it in action here &lt;a href=&#34;https://terminalizer.com/view/2c3935cf1418&#34;&gt;https://terminalizer.com/view/2c3935cf1418&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Disclaimer&lt;/strong&gt; This tool was built to learn &lt;code&gt;FZF&lt;/code&gt; capabilities. Feel free to use it or extend it.&lt;/p&gt;
@@ -806,10 +736,10 @@ If you replace each Kubernetes component&amp;hellip; what is it that you get at 
     
     <item>
       <title>Generating a dynamic host inventory for ansible with Netbox</title>
-      <link>https://memo.mx/posts/pynetbox/</link>
+      <link>http://localhost:1313/posts/pynetbox/</link>
       <pubDate>Thu, 10 Jan 2019 23:30:44 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/pynetbox/</guid>
+      <guid>http://localhost:1313/posts/pynetbox/</guid>
       <description>&lt;p&gt;Usage:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;pip install pynetbox ansible
 
@@ -1080,44 +1010,35 @@ ansible all -i hosts/env -m setup --tree /tmp/facts/env
     
     <item>
       <title>Some Richard Feynman videos</title>
-      <link>https://memo.mx/posts/richard-feynman/</link>
+      <link>http://localhost:1313/posts/richard-feynman/</link>
       <pubDate>Fri, 04 Jan 2019 22:20:31 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/richard-feynman/</guid>
+      <guid>http://localhost:1313/posts/richard-feynman/</guid>
       <description>&lt;p&gt;The World from another point of view&lt;/p&gt;
 
-
-    
     &lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
-      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/GNhlNSLQAFE?autoplay=0&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=0&amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;
-      &gt;&lt;/iframe&gt;
+      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/GNhlNSLQAFE?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;&gt;&lt;/iframe&gt;
     &lt;/div&gt;
 
 &lt;p&gt;Fun to imagine&lt;/p&gt;
 
-
-    
     &lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
-      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/P1ww1IXRfTA?autoplay=0&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=0&amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;
-      &gt;&lt;/iframe&gt;
+      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/P1ww1IXRfTA?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;&gt;&lt;/iframe&gt;
     &lt;/div&gt;
 
 &lt;p&gt;Knowing versus Understanding&lt;/p&gt;
 
-
-    
     &lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
-      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/NM-zWTU7X-k?autoplay=0&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=0&amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;
-      &gt;&lt;/iframe&gt;
+      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/NM-zWTU7X-k?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;&gt;&lt;/iframe&gt;
     &lt;/div&gt;</description>
     </item>
     
     <item>
       <title>Waju - A fun and brutal game</title>
-      <link>https://memo.mx/posts/waju/</link>
+      <link>http://localhost:1313/posts/waju/</link>
       <pubDate>Fri, 04 Jan 2019 15:49:47 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/waju/</guid>
+      <guid>http://localhost:1313/posts/waju/</guid>
       <description>&lt;p&gt;Waju or whatever is called is a game that until this day I don&amp;rsquo;t know from where it comes. But, is fun.&lt;/p&gt;
 &lt;p&gt;Edit: The game is based on a German game called &lt;a href=&#34;https://en.m.wikipedia.org/wiki/Mensch_%C3%A4rgere_Dich_nicht&#34;&gt;Mensch ärgere Dich nicht&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;goal&#34;&gt;Goal&lt;/h2&gt;
@@ -1128,28 +1049,27 @@ ansible all -i hosts/env -m setup --tree /tmp/facts/env
 &lt;li&gt;Have fun.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;board&#34;&gt;Board&lt;/h2&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://memo.mx/img/waju_text.jpg&#34; alt=&#34;Waju&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/img/waju_text.jpg&#34; alt=&#34;Waju&#34;  /&gt;
 &lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Beyond PEP 8 - Best practices for beautiful intelligible code</title>
-      <link>https://memo.mx/posts/beyond-pep8/</link>
+      <link>http://localhost:1313/posts/beyond-pep8/</link>
       <pubDate>Thu, 03 Jan 2019 18:53:23 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/beyond-pep8/</guid>
+      <guid>http://localhost:1313/posts/beyond-pep8/</guid>
       <description>&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
-      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/wf-BqAjZb8M?autoplay=0&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=0&amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;
-      &gt;&lt;/iframe&gt;
+      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube-nocookie.com/embed/wf-BqAjZb8M?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;&gt;&lt;/iframe&gt;
     &lt;/div&gt;</description>
     </item>
     
     <item>
       <title>Linux on Huawei Matebook X Pro</title>
-      <link>https://memo.mx/posts/linux-matebook/</link>
+      <link>http://localhost:1313/posts/linux-matebook/</link>
       <pubDate>Tue, 04 Dec 2018 13:10:28 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/linux-matebook/</guid>
+      <guid>http://localhost:1313/posts/linux-matebook/</guid>
       <description>&lt;p&gt;This laptop has very decent &lt;a href=&#34;https://consumer.huawei.com/en/laptops/matebook-x-pro/specs/&#34;&gt;specs&lt;/a&gt;:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://ark.intel.com/products/122589/Intel-Core-i7-8550U-Processor-8M-Cache-up-to-4-00-GHz&#34;&gt;8th Generation Intel® Core™ i7-8550U processor&lt;/a&gt;&lt;/li&gt;
@@ -1170,10 +1090,10 @@ ansible all -i hosts/env -m setup --tree /tmp/facts/env
     
     <item>
       <title>Deploying OpenStack with Docker</title>
-      <link>https://memo.mx/posts/openstack-containers/</link>
+      <link>http://localhost:1313/posts/openstack-containers/</link>
       <pubDate>Sat, 05 May 2018 18:53:14 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/openstack-containers/</guid>
+      <guid>http://localhost:1313/posts/openstack-containers/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; This is a Work-In-Progress Document and the most up-to-date information is available at: &lt;a href=&#34;https://github.com/memogarcia/openstack-deployer&#34;&gt;github.com/memogarcia/openstack-deployer&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and &lt;em&gt;production&lt;/em&gt; environments.&lt;/p&gt;
 &lt;p&gt;Current deployment: &lt;strong&gt;stable/queens&lt;/strong&gt;&lt;/p&gt;
@@ -1189,10 +1109,10 @@ ansible all -i hosts/env -m setup --tree /tmp/facts/env
     
     <item>
       <title>Becoming a Certificate Authority (CA)</title>
-      <link>https://memo.mx/posts/becoming-ca/</link>
+      <link>http://localhost:1313/posts/becoming-ca/</link>
       <pubDate>Mon, 05 Feb 2018 19:03:30 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/becoming-ca/</guid>
+      <guid>http://localhost:1313/posts/becoming-ca/</guid>
       <description>&lt;p&gt;A Certificate Authority or CA is an entity that signs digital certificates.
 These digital certificates are used to validate the connection while using secure mechanisms.&lt;/p&gt;
 &lt;h2 id=&#34;generating-a-root-ca&#34;&gt;Generating a root CA&lt;/h2&gt;
@@ -1208,10 +1128,10 @@ These digital certificates are used to validate the connection while using secur
     
     <item>
       <title>Pratai, event driven platform for OpenStack</title>
-      <link>https://memo.mx/posts/pratai/</link>
+      <link>http://localhost:1313/posts/pratai/</link>
       <pubDate>Fri, 05 Jan 2018 19:08:55 +0100</pubDate>
       
-      <guid>https://memo.mx/posts/pratai/</guid>
+      <guid>http://localhost:1313/posts/pratai/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; This is a Work-In-Progress Document.&lt;/p&gt;
 &lt;p&gt;Read the docs at &lt;a href=&#34;https://github.com/memogarcia/pratai-docs&#34;&gt;memogarcia/pratai-docs&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;abstract&#34;&gt;Abstract&lt;/h2&gt;
@@ -1226,10 +1146,10 @@ worrying about anything else, the platform handles the execution. Simple right?&
     
     <item>
       <title>About</title>
-      <link>https://memo.mx/about/</link>
+      <link>http://localhost:1313/about/</link>
       <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
       
-      <guid>https://memo.mx/about/</guid>
+      <guid>http://localhost:1313/about/</guid>
       <description>&lt;p&gt;My blog is intended as a self reference and I don’t provide any support unless specified.&lt;/p&gt;
 &lt;p&gt;If you find anything useful, please どうぞ!
 License&lt;/p&gt;
@@ -1251,19 +1171,19 @@ License&lt;/p&gt;
     
     <item>
       <title>DevOps Life</title>
-      <link>https://memo.mx/devops/</link>
+      <link>http://localhost:1313/devops/</link>
       <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
       
-      <guid>https://memo.mx/devops/</guid>
+      <guid>http://localhost:1313/devops/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Understanding computer networks by analogy</title>
-      <link>https://memo.mx/understanding-networks-by-analogy/</link>
+      <link>http://localhost:1313/understanding-networks-by-analogy/</link>
       <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
       
-      <guid>https://memo.mx/understanding-networks-by-analogy/</guid>
+      <guid>http://localhost:1313/understanding-networks-by-analogy/</guid>
       <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;./koto.jpg&#34; alt=&#34;koto&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.&lt;/p&gt;

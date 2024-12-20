@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy - Part 2 - Switches and Routers"
 date: 2023-03-04T01:53:24+01:00
-draft: false
+draft: true
 ---
 
 Let’s keep building this analogy (pun intended) to explain more about how networks work.
