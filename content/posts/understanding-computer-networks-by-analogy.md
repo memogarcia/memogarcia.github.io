@@ -4,6 +4,15 @@ date: 2024-12-20T01:53:23+01:00
 draft: false
 ---
 
+I'm writing this for the version of me back in university who struggled to grasp networking concepts. This isn't a full map of the networking world, but it's a starting point. If you're also finding it tricky to understand some of the ideas that make the internet works, I hope this helps.
+
+I’m sticking with analogies here instead of going deep into technical terms—you can find those easily anywhere. I just enjoy looking at the world from different perspectives. It’s fascinating how many connections you can spot when you approach things from a new angle.
+
+I get that analogies have their limits and sometimes you have to stretch things to make them work. In those cases, maybe it’s better to stick to first principles. But honestly, I find this approach more fun.
+
+> For me, analogies are a powerful way to make sense of the world, especially when I’m working with abstract concepts like computer networks.
+> I want to emphasize that this analogy isn’t meant to be an exact representation of the topics discussed here. It’s simply a learning tool to help you view networks from a different perspective.
+
 ## Networks as buildings
 
 Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.
