@@ -1171,34 +1171,5 @@ License&lt;/p&gt;
       <description></description>
     </item>
     
-    <item>
-      <title>Understanding computer networks by analogy</title>
-      <link>https://memo.mx/understanding-networks-by-analogy/</link>
-      <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
-      
-      <guid>https://memo.mx/understanding-networks-by-analogy/</guid>
-      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;./koto.jpg&#34; alt=&#34;koto&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;In this series of posts I propose a not so perfect analogy for computer networks represented as buildings.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;../posts/understanding-computer-networks-by-analogy/&#34;&gt;Networks and subnets or building layouts&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;../posts/understanding-computer-networks-by-analogy-part-2/&#34;&gt;Switches and routers or how rooms can communicate between floors&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;!-- 3. [Network protocols or how rooms communicate](../posts/understanding-computer-networks-by-analogy-part-3/) --&gt;
-&lt;!-- 4. [Internet, public IPs, NAT, DNS or how to connect rooms between buildings](../posts/understanding-computer-networks-by-analogy-part-4/) --&gt;
-&lt;!-- 5. [High performance networking or how to speed up the communication](../posts/understanding-computer-networks-by-analogy-part-5/) --&gt;
-&lt;!-- 6. [SDN or dynamic floor arrangement](../posts/understanding-computer-networks-by-analogy-part-6/) --&gt;
-&lt;!-- 7. [Mesh networks](../posts/understanding-computer-networks-by-analogy-part-7/) --&gt;
-&lt;!-- 8. [Network security](../posts/understanding-computer-networks-by-analogy-part-8/) --&gt;
-&lt;!-- 9. [Network management](../posts/understanding-computer-networks-by-analogy-part-9/) --&gt;
-&lt;!-- 10. [Network monitoring](../posts/understanding-computer-networks-by-analogy-part-10/) --&gt;
-&lt;!-- 11. [Network troubleshooting](../posts/understanding-computer-networks-by-analogy-part-11/) --&gt;
-&lt;!-- 12. [Network automation](../posts/understanding-computer-networks-by-analogy-part-12/) --&gt;
-&lt;!-- 13. [Network virtualization](../posts/understanding-computer-networks-by-analogy-part-13/) --&gt;
-&lt;!-- 14. [Network economics](../posts/understanding-computer-networks-by-analogy-part-14/) --&gt;
-&lt;!-- 15. [Networks and the Internet of Things](../posts/understanding-computer-networks-by-analogy-part-15/) --&gt;
-&lt;!-- 16. [Networks and the cloud](../posts/understanding-computer-networks-by-analogy-part-16/) --&gt;</description>
-    </item>
-    
   </channel>
 </rss>
