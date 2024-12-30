@@ -27,12 +27,15 @@ languages:
     weight: 1
     menu:
       main:
-        # - name: Understanding computer networks by analogy
-        #   url: understanding-networks-by-analogy
-        #   weight: 6
-        # - name: DevOps Life
-        #   url: devops
-        #   weight: 7
+        - name: Thinking
+          url: thinking
+          weight: 5
+        - name: Books
+          url: books
+          weight: 6
+        - name: DevOps
+          url: devops
+          weight: 7
         - name: About
           url: about
           weight: 8
@@ -125,4 +128,4 @@ services:
     disableInlineCSS: true
 
 ignoreLogs:
-  - 'err-youtube-remote'
+  - "err-youtube-remote"
