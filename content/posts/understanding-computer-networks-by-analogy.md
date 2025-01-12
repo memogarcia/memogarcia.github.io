@@ -12,11 +12,13 @@ I understand that analogies have their limits and sometimes you have to stretch 
 
 Finally, I want to emphasize that this analogy isn’t meant to be an exact representation of the "world of networking". It’s simply a learning tool to help view computer networks from a different perspective.
 
-## Networks as buildings
+## Networks as Buildings
 
 ![Networks as buildings](/img/networks-1.png)
 
-Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.
+Imagine a large building filled with countless rooms, hallways, and staircases. Each room represents a computer, and its room number acts as its IP address. Just as people walk through hallways to visit different rooms, data moves between computers within a network.
+
+Components of the Building Analogy:
 
 1. Building = Network  
 2. Room + Room Number = Computer + IP Address  
@@ -26,7 +28,7 @@ Think of a building with many rooms connected by hallways and staircases. Each r
 
 ---
 
-## Subnets as floors
+## Designing Network Floors
 
 ![Subnets as floors](/img/subnets-1.png)
 
@@ -36,23 +38,23 @@ Identifying a room becomes easier: Room 101 is on Floor 1, Room 1. Similarly, a 
 
     Building X, Floor 1, Room 101
 
-### Designing a floor:
+1. Designing a floor
 
 - Hall Width: Represents bandwidth. Wider halls allow more people (data packets) to move between rooms. For high-traffic areas, you’d design wider hallways (subnets with more bandwidth).
 - Number of Rooms: A floor has a maximum capacity based on how many rooms you can fit (IP addresses in the subnet). Smaller floors are easier to manage, but larger floors can handle more people.
 
-### Subnet sizes:
+2. Subnet sizes
 
 - Big floors: These can host many rooms (e.g., a /16 subnet with 65,536 IPs). Useful for large offices but harder to manage.
 - Small floors: Limited to a few rooms (e.g., a /30 subnet with 4 IPs), good for point-to-point links but less flexible.
 
 ---
 
-## Computers as rooms
+## Computers as Rooms
 
 Each room represents a computer. It has specific purposes based on its occupants and their tasks. Rooms have doors for entry and exit, which correspond to network interfaces.
 
-### Multiple Doors:
+### Multiple Doors
 
 A single room can have several doors, each leading to different parts of the building or even outside:
 
@@ -67,7 +69,7 @@ Each door has a unique identifier, like a MAC address, ensuring the right person
 
 ---
 
-## Switches as the floor manager
+## Switches as Floor Managers
 
 Think of the switch as the floor manager. If you want to send a message to Room 203, you don’t wander around knocking on every door. Instead, the floor manager (switch) has a list of which doors (MAC addresses) belong to which rooms and quickly delivers your message to the correct one.
 
@@ -77,7 +79,7 @@ Switches are efficient because they only work within a single floor (or subnet).
 
 ---
 
-## Routers as the building concierge
+## Routers as Building Concierges
 
 When you need to send a message to Room 504 on a different floor, the floor manager (switch) hands your message off to the building concierge—a router. The router’s job is to figure out how to get your message between floors.
 
@@ -87,7 +89,7 @@ The router has a detailed map of the building (a routing table) that helps it de
 
 ---
 
-## Gateways as the elevators between floors
+## Gateways as Elevators
 
 Elevators act as gateways connecting the floors. They don’t care about the contents of your message—they just move it to the correct floor. Once the elevator delivers your message, the floor manager on the destination floor takes over to ensure it reaches the right room.
 
@@ -95,7 +97,7 @@ Elevators act as gateways connecting the floors. They don’t care about the con
 
 ---
 
-## Putting It All Together: A Message’s Journey
+## A Message’s Journey
 
 Here’s an example of how communication works in this building setup:
 
@@ -111,7 +113,7 @@ So far, we’ve focused on the inner workings of a single building—our network
 
 ---
 
-## Private vs. Public IP Addresses: Inside vs. Outside the Building
+## Private vs. Public IP Addresses
 
 Inside your building, rooms have numbers you can reuse across many buildings. Room 101 exists in this building, and another building can have a Room 101 too. These are like private IP addresses—unique within your own network, but not necessarily unique everywhere.
 
@@ -122,7 +124,7 @@ When you need to receive mail from outside or send something beyond your buildin
 
 ---
 
-## DNS: The Public Directory for Computers
+## DNS: The Public Directory
 
 Imagine you want to send a letter to “Hotel Sunrise” in another city, but you don’t know its exact address. You might look it up in a telephone directory or online. In networking, this is what DNS (Domain Name System) does.
 
@@ -132,7 +134,7 @@ DNS acts like a giant, public directory for computer names. Instead of memorizin
 
 ---
 
-## TCP and UDP: Different Ways to Send Messages
+## TCP vs. UDP
 
 When you send something to another room or building, how it’s packaged and delivered matters. In networking, messages are sent in packets—little bundles of data. The two most common ways to send these packets are TCP and UDP, which work like different types of mail services.
 
@@ -147,7 +149,7 @@ When you send something to another room or building, how it’s packaged and del
 
 ---
 
-## Ports: Specific Service Entry Points
+## Ports as Mailboxes
 
 Imagine that each room has multiple little mailboxes, each dedicated to a different task. These mailboxes are like ports. The room has one address, but it can offer many services at the same time, each at its own port. Just like a hotel room might have a separate slot for mail, room service orders, and maintenance requests, a computer can run multiple services—web, email, file sharing—each listening on a different port.
 
@@ -162,7 +164,7 @@ For example:
 
 ---
 
-## Protocols: The Rules of Conversation
+## Network Protocols
 
 Knowing which mailbox to approach is only half the story. Once you get to that mailbox, how do you leave a message? You need a common set of rules or a language. These sets of rules and formats are called protocols.
 
@@ -175,7 +177,7 @@ Protocols define how messages are structured, what words mean, and how the back-
 
 ---
 
-## Messages: Data Packets
+## Data Packets
 
 When you send a message, it doesn’t travel as one big chunk. Instead, it’s split into smaller parts called packets. Think of writing a long letter and dividing it into several envelopes. Each envelope (packet) contains not just a piece of the letter but also important details about where it’s going and where it came from.
 
@@ -191,7 +193,7 @@ These packets might take different hallways or elevators (routes) to reach the d
 
 ---
 
-## Putting It All Together: Reaching the Right Service, Speaking the Right Language
+## Putting It All Together: Delivering Data Correctly
 
 Let’s say you’re in Room 101 again and you want to load a webpage from “memo.mx.” You already know how to find the building using DNS (to get its IP), and you know the building’s public IP address.
 
@@ -228,7 +230,7 @@ This chain of routers acts like a series of street signs and traffic lights guid
 
 ---
 
-## Routing Tables: The City’s Navigation System
+## Routing Tables
 
 How do all these routers know where to send your data? They rely on routing tables, which are like city maps updated in real-time. These maps help each router pick the best road at every intersection. If a road closes or a new road opens, routers adjust their maps to keep data flowing smoothly.
 
@@ -236,7 +238,7 @@ In short, routing tables keep track of the entire city’s layout so that no mat
 
 ---
 
-## Traffic, Congestion, and Detours
+## Traffic and Detours
 
 Just like a city has rush hours and traffic jams, the internet sees periods of heavy data flow. When too much data travels the same route, congestion slows everything down. Routers might pick alternative routes (detours) to avoid slowdowns and keep things moving.
 
@@ -244,7 +246,7 @@ This adaptability makes the internet resilient. Even if one road (cable) fails, 
 
 ---
 
-## A Global Neighborhood
+## A Global Newtwork
 
 From your single room, inside your building, on your floor, you can reach another building on the opposite side of the globe. You do this by leveraging all the concepts we covered:
 
@@ -258,7 +260,7 @@ In the end, the internet is just a giant city connecting buildings. While comple
 
 ---
 
-## ISPs: The Utility and Road Builders
+## ISPs as Builders
 
 An ISP is responsible for laying the roads (cables, fiber lines, wireless connections) that link your building to the rest of the city. Without them, you’d be isolated, cut off from all the other buildings and services. Just like you depend on water and electricity companies for everyday needs, you rely on your ISP to deliver internet access.
 
@@ -266,7 +268,7 @@ An ISP is responsible for laying the roads (cables, fiber lines, wireless connec
 
 ---
 
-## Infrastructure and Maintenance
+## Network Maintenance
 
 ISPs maintain and upgrade the infrastructure that keeps data flowing smoothly. When roads wear out or become too crowded, ISPs add new cables, improve existing links, and invest in better equipment. They also monitor traffic patterns and help ensure fair and steady data flow.
 
@@ -274,7 +276,7 @@ This investment and maintenance keep your connection stable and efficient. Witho
 
 ---
 
-## Peering and Interconnection
+## ISP Connections
 
 Imagine multiple utility companies that operate in different parts of the city. To give you access everywhere, they form partnerships and connect their networks at certain points. This process, called peering, ensures that even if you’re signed up with one ISP, you can still reach buildings served by another ISP.
 
@@ -282,7 +284,7 @@ Imagine multiple utility companies that operate in different parts of the city. 
 
 ---
 
-## Different Tiers and Roles
+## ISP Tiers and Roles
 
 Not all ISPs are the same. Some are local providers who focus on getting you connected at home. Others are large “Tier 1” ISPs who provide the backbone infrastructure connecting entire regions or countries. These top-tier ISPs are like massive highway developers, running huge pipes of bandwidth to ensure that everyone else can build their smaller roads off of them.
 
@@ -292,61 +294,61 @@ Not all ISPs are the same. Some are local providers who focus on getting you con
 
 ---
 
-## Enabling Global Communication
+## Global Communication
 
 Ultimately, ISPs are the reason your building can talk to any other building in the world. They maintain and expand the web of roads, highways, and tunnels (fiber, cables, wireless links) that let data travel far and wide. By doing so, they empower you to reach beyond your own four walls, floors, and networks—into the vast city of the internet.
 
 ---
 
-## Network Security: Locking Doors and Guarding Entrances
+## Network Security
 
 Think of network security as setting up locks, guards, and checkpoints throughout your building. Firewalls are like gates that check everyone coming in or going out. They allow only approved visitors (traffic) and block suspicious ones. Encryption is like sealing letters in tamper-proof envelopes, making sure that even if someone intercepts them, they can’t read the contents. By adding these security measures, you prevent break-ins, theft, and damage to your property.
 
 ---
 
-## VPNs and Tunnels: Secret Passages Between Distant Buildings
+## VPNs as Tunnels
 
 A Virtual Private Network (VPN) acts like a hidden passageway that connects your building to another one, far away. Even though these buildings are separated by city blocks (different networks), the VPN tunnel creates a secure, private route. Outsiders see only the regular streets, but you and your partner building use a hidden corridor that keeps your conversations confidential. It’s a way to communicate securely, even in a crowded city.
 
 ---
 
-## Load Balancing and Redundancy: Sharing the Work and Having Backups
+## Load Balancing
 
 Large networks get busy, just like bustling hotel lobbies at check-in time. Load balancers are like extra staff members who guide guests to different reception counters so that no single counter is overwhelmed. This splits the workload evenly, speeding things up and improving service. Redundancy ensures that if one route, staff member, or piece of equipment fails, another is ready to take over. This keeps everything running smoothly, even when problems arise.
 
 ---
 
-## Content Delivery Networks (CDNs): Local Branches for Faster Access
+## CDNs for Faster Access
 
 When you want something delivered quickly, it helps if there’s a local branch nearby. CDNs are like little storage hubs placed around the city. Instead of making you travel across town, the CDN lets you pick up what you need from a closer location. This reduces travel time (latency) and makes the experience faster for everyone. By caching popular content in many places, CDNs help websites load quickly no matter where you are.
 
 ---
 
-## Quality of Service (QoS): Priority Lanes for Important Traffic
+## QoS: Prioritizing Traffic
 
 Not all traffic is equal. Some messages are urgent (video calls), while others are less time-sensitive (emails). QoS acts like special priority lanes on the road. Important vehicles (data packets) get to bypass traffic jams, ensuring smooth, uninterrupted communication. This helps critical services run smoothly while still allowing everyday traffic to flow at a reasonable pace.
 
 ---
 
-## Network Address Translation (NAT): Translating Room Numbers at the Door
+## NAT: Translating Addresses
 
 Your building uses private room numbers internally, but outside visitors rely on your building’s public address. NAT is like having a front desk clerk who translates the building’s single public street address into the correct internal room number. When data arrives from the internet, NAT directs it to the right room. When data leaves your building, NAT replaces the room number with the building’s public address. It’s how multiple rooms share one public-facing identity.
 
 ---
 
-## Network Monitoring and Logging: Keeping Track of Who Comes and Goes
+## Monitoring and Logging
 
 Just as a concierge might note who enters and leaves, network monitoring and logging keep records of data traveling through your building. This can help identify suspicious activity, diagnose problems, and ensure that everything is running as expected. By reviewing these logs, you can find out if someone tried to sneak in, where things got delayed, and what adjustments to make next time.
 
 ---
 
-## Software-Defined Networking: Reconfiguring Rooms and Hallways on the Fly
+## Software-Defined Networking
 
 Usually, changing a building’s layout takes time and money. But SDN is like having the ability to rearrange rooms and hallways instantly with a remote control. Instead of physically rewiring things, you use software to shape how data flows. This gives you agility—if you need a new passage or want to close a certain hallway, you can do it with a few clicks, adapting to changes in real-time.
 
 ---
 
-## IPv4 and IPv6: Different Ways of Numbering Rooms
+## IPv4 vs. IPv6
 
 Imagine a city where every building assigns room numbers to its offices. In the early days, a simple 4-digit system (IPv4) was enough—like rooms numbered `101`, `102`, and so on. But as the city expanded, more buildings sprang up, and they began running out of unique room numbers.
 
@@ -359,13 +361,13 @@ To bridge this gap, special translators (called dual-stack systems or protocol t
 
 ---
 
-## Network Topologies: Mapping the Rooms, Floors, and Buildings
+## Network Topologies
 
 A network topology is like the blueprint that shows how rooms connect to each other, how floors are laid out, and how buildings link to the city. Some designs arrange rooms in a line (bus topology), others form loops (ring), or branch out like trees (star or hierarchical). The way you arrange connections can affect speed, reliability, and how easy it is to add more floors or rooms. Choosing the right topology ensures that your building runs efficiently, is easy to manage, and scales as you grow.
 
 ---
 
-## Cloud Computing: Staying at a Hotel
+## Cloud Computing as a Hotel
 
 ![cloud-computing-hotel](/img/hotel-1.png)
 
@@ -373,15 +375,15 @@ Running your own building means handling everything: cleaning, repairs, utilitie
 
 Instead of buying servers and managing data centers, you rent computing power, storage, and services from a cloud provider. They handle the maintenance, so you can focus on your applications.
 
-### Flexible and On-Demand Resources
+### Cloud Flexibility
 
 Need more space? Book a bigger room. Hosting an event? Reserve a ballroom. Cloud computing gives you the same flexibility. Scale up or down based on your needs, paying only for what you use. Testing a small app? Use minimal resources. Running a major data analysis? Expand instantly—no new hardware needed.
 
-### No Maintenance Worries
+### No Maintenance Hassles
 
 In a hotel, you don’t fix windows or change light bulbs. That’s hotel staff’s job. In the cloud, the provider handles server maintenance, security updates, and hardware upgrades. You just use the service.
 
-### Access to Premium Services
+### Premium Cloud Services
 
 Hotels offer pools, gyms, and room service. Cloud providers offer databases, AI tools, and security services. Pick what you need and pay only for the extras you use.
 
@@ -389,15 +391,16 @@ Hotels offer pools, gyms, and room service. Cloud providers offer databases, AI 
 
 Hotels charge by the night. No lease, no mortgage. Cloud computing works the same way. You pay for what you use, with no upfront costs. Simple and flexible.
 
-### Effortless Scalability
+### Cloud Scalability
 
 Got extra guests? Hotels can give you more rooms. Cloud computing works just as smoothly. Need more computing power? Scale up without scrambling for more servers.
 
-### Global Accessibility
+### Global Cloud Access
 
 Hotels are everywhere, and so are cloud data centers. Just like you can check into a hotel in any city and expect familiar rooms, services, and payment methods, cloud platforms provide a consistent experience no matter where they are. Whether you're deploying an app in Tokyo or New York, the tools and environment feel the same. Cloud providers handle the behind-the-scenes work, so your services run smoothly worldwide—just like hotel staff quietly ensuring your stay is comfortable, no matter the location.
 
-### Security and Reliability
+
+### Cloud Security
 
 Hotels have security cameras, safes, and staff to keep guests safe. Cloud providers offer firewalls, encryption, and backups to protect your data. Even when things go wrong, your services stay up and running.
 
