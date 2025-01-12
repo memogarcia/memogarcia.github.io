@@ -4,7 +4,7 @@ date: 2024-12-20T01:53:23+01:00
 draft: false
 ---
 
-I'm writing this for the version of me back in university who struggled to grasp networking concepts. This isn't a full map of the networking world, but it's a starting point. If you're also finding it tricky to understand some of the ideas that make the internet works, I hope this helps.
+I'm writing this for the version of me back in university who struggled to grasp networking concepts. This isn't a full map of the networking world, but it's a starting point. If you're also finding it tricky to understand some of the ideas that make the internet work, I hope this helps.
 
 I’m sticking with analogies here instead of going deep into technical terms—you can find those easily anywhere. I just enjoy looking at the world from different perspectives. It’s fascinating how many connections you can spot when you approach things from a new angle.
 
