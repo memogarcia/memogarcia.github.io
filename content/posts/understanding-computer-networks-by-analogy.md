@@ -4,13 +4,13 @@ date: 2024-12-20T01:53:23+01:00
 draft: false
 ---
 
-I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this, just know this isn’t a complete map of the networking world. Instead, it offers a new way to look at it. If you are also struggling with these concepts I hope you find this analogy helpful.
+I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this and you are also struggling with these concepts, just know this isn’t a complete map of the "networking world" it is simply a different way to see it. I hope you find this analogy helpful.
 
 I've decided to stick with analogies here instead of going deep into technical terms—you can find those easily anywhere, because I enjoy looking at the world from different perspectives. It’s fascinating how many connections you can make when you approach things from a new angle.
 
-I get that analogies have their limits and sometimes you have to stretch things to make them work. In those cases, maybe it’s better to stick to first principles. But honestly, I find analogies more fun, especially for abstract concepts like computer networks.
+I understand that analogies have their limits and sometimes you have to stretch things to make them work. In those cases, maybe it’s better to stick to first principles. But honestly, I find analogies more fun, especially for abstract concepts like computer networks.
 
-I want to emphasize that this analogy isn’t meant to be an exact representation of the "world of networking". It’s simply a learning tool to help view computer networks from a different perspective.
+Finally, I want to emphasize that this analogy isn’t meant to be an exact representation of the "world of networking". It’s simply a learning tool to help view computer networks from a different perspective.
 
 ## Networks as buildings
 
