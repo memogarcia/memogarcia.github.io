@@ -33,9 +33,6 @@ languages:
         - name: Books
           url: books
           weight: 6
-        - name: DevOps
-          url: devops
-          weight: 7
         - name: About
           url: about
           weight: 8

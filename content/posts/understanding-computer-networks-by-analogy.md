@@ -16,7 +16,7 @@ I get that analogies have their limits and sometimes you have to stretch things 
 
 ## Networks as buildings
 
-![Networks as buildings](../img/networks-1.png)
+![Networks as buildings](/img/networks-1.png)
 
 Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.
 
@@ -30,7 +30,7 @@ Think of a building with many rooms connected by hallways and staircases. Each r
 
 ## Subnets as floors
 
-![Subnets as floors](../img/subnets-1.png)
+![Subnets as floors](/img/subnets-1.png)
 
 Now, if you want to limit communication to certain areas, you can divide the building into floors. Each floor acts as a subnet, allowing rooms on the same floor to communicate freely while restricting access to other floors. This is similar to creating subnetworks in a computer network, where groups of computers can talk to each other but not to other groups.
 
