@@ -155,6 +155,7 @@ Imagine that each room has multiple little mailboxes or service windows, each de
 - **Port = Specific Service Window in that Room**  
 
 For example:  
+
 - **Port 80 or 443:** Where the room offers a web service to visitors.  
 - **Port 25:** Where the room handles incoming mail.  
 - **Port 22:** Where the room provides a secure way to connect and manage it (SSH).
@@ -190,6 +191,8 @@ You use the HTTPS protocol, saying “I’d like the homepage, please.” The oc
 ---
 
 ## The Internet: A City of Buildings
+
+![Internet as cities](/img/internet-1.png)
 
 If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:
 
@@ -303,19 +306,13 @@ When you want something delivered quickly, it helps if there’s a local branch 
 
 ---
 
-## Cloud Computing: Renting Rooms in Someone Else’s Building
-
-Sometimes you don’t need to build your own floors or maintain your own rooms. You can rent space in someone else’s massive skyscraper where they handle all the maintenance and services. Cloud computing lets you pay for what you use, scale up if you need more space, and scale down when you don’t. It’s like having access to a fully-staffed, well-maintained building without needing to construct anything yourself.
-
----
-
 ## Quality of Service (QoS): Priority Lanes for Important Traffic
 
 Not all traffic is equal. Some messages are urgent (video calls), while others are less time-sensitive (emails). QoS acts like special priority lanes on the road. Important vehicles (data packets) get to bypass traffic jams, ensuring smooth, uninterrupted communication. This helps critical services run smoothly while still allowing everyday traffic to flow at a reasonable pace.
 
 ---
 
-## NAT (Network Address Translation): Translating Room Numbers at the Door
+## Network Address Translation (NAT): Translating Room Numbers at the Door
 
 Your building uses private room numbers internally, but outside visitors rely on your building’s public address. NAT is like having a front desk clerk who translates the building’s single public street address into the correct internal room number. When data arrives from the internet, NAT directs it to the right room. When data leaves your building, NAT replaces the room number with the building’s public address. It’s how multiple rooms share one public-facing identity.
 
@@ -327,7 +324,7 @@ Just as a concierge might note who enters and leaves, network monitoring and log
 
 ---
 
-## Software-Defined Networking (SDN): Reconfiguring Rooms and Hallways on the Fly
+## Software-Defined Networking: Reconfiguring Rooms and Hallways on the Fly
 
 Usually, changing a building’s layout takes time and money. But SDN is like having the ability to rearrange rooms and hallways instantly with a remote control. Instead of physically rewiring things, you use software to shape how data flows. This gives you agility—if you need a new passage or want to close a certain hallway, you can do it with a few clicks, adapting to changes in real-time.
 
@@ -342,3 +339,54 @@ Early on, buildings used a certain numbering system for rooms (IPv4), but as the
 ## Network Topologies: Mapping the Rooms, Floors, and Buildings
 
 A network topology is like the blueprint that shows how rooms connect to each other, how floors are laid out, and how buildings link to the city. Some designs arrange rooms in a line (bus topology), others form loops (ring), or branch out like trees (star or hierarchical). The way you arrange connections can affect speed, reliability, and how easy it is to add more floors or rooms. Choosing the right topology ensures that your building runs efficiently, is easy to manage, and scales as you grow.
+
+
+## Cloud Computing: Staying at a Hotel
+
+![cloud-computing-hotel](/img/hotel-1.png)
+
+If you are running your own building—you're responsible for everything: cleaning, repairs, utilities, and security. Now, imagine checking into a hotel instead. You get a comfortable room, daily housekeeping, room service, and even security, all without lifting a finger. Cloud computing works much the same way.
+
+Instead of buying servers and managing data centers, you rent computing power, storage, and services from a cloud provider. They handle the infrastructure so you can focus on what matters most—your applications.
+
+### Flexible and On-Demand Resources
+
+Need more space? Book a bigger room. Hosting an event? Reserve a conference hall. Cloud computing offers the same flexibility. You can scale up or down based on demand, paying only for what you need. Testing a small app? Use minimal resources. Running a massive data analysis? Expand instantly without buying new hardware.
+
+### No Maintenance Worries
+
+At a hotel, you don’t fix leaky faucets or replace light bulbs. The staff handles it. Cloud providers take care of server maintenance, security patches, and hardware upgrades. You don’t need to worry about downtime or technical upkeep.
+
+### Access to Premium Services
+
+Hotels offer gyms, pools, and room service. Cloud platforms provide databases, machine learning tools, and security services. You choose what you need, paying only for the extras you use.
+
+### Pay-as-You-Go Convenience
+
+Hotels charge per night—you’re not signing a lease. Cloud computing charges by usage. No upfront investment in expensive hardware. You pay as you go, making it easy to manage costs.
+
+### Effortless Scalability
+
+Imagine needing more rooms for a sudden group of guests. The hotel adjusts your reservation. In the cloud, scaling is just as easy. Handle sudden traffic spikes or growing data needs without scrambling for new equipment.
+
+### Global Accessibility
+
+Hotels exist worldwide, and so do cloud data centers. Deploy applications closer to your users, improving speed and performance, no matter where they are.
+
+### Security and Reliability
+
+Hotels provide security cameras, safes, and trained staff. Cloud providers offer firewalls, encryption, and disaster recovery. Your data stays secure, and services remain available even when problems arise.
+
+In short, cloud computing is like staying at a hotel: all the comfort and resources you need, without the stress of ownership. You get to focus on enjoying your stay—or in this case, building great applications.
+
+### Cloud Networking
+
+Earlier, we compared traditional networks to buildings with rooms, floors, and hallways, where data moves between rooms through managed routes. In that setup, you build and maintain the entire structure, from door locks to hallway lighting. You're in full control but also responsible for maintenance, repairs, and upgrades.
+
+Cloud networking, however, is like staying in a hotel where the hallways are  designed and maintained. You don't need to worry about cleaning the halls or fixing broken elevators. These internal pathways  connect your room  to others without you managing the infrastructure.
+
+The key difference is control versus convenience. In traditional networks, you build and manage every connection. In the cloud, the provider manages the complex network, ensuring speed, security, and scalability, freeing you to focus on your core services.
+
+## Conclusion
+
+In the end, analogies serve as helpful guides—not substitutes for technical details. They’re here to make the bigger concepts feel less overwhelming. This way, computer networks become more than just cables and code—they transform into something you can visualize: rooms, corridors, entire neighborhoods working together. Once you grasp this layout, it’s much easier to understand how data travels and how everything clicks into place.
