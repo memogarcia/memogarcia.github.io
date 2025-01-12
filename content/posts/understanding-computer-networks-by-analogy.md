@@ -11,9 +11,12 @@ I’m sticking with analogies here instead of going deep into technical terms—
 I get that analogies have their limits and sometimes you have to stretch things to make them work. In those cases, maybe it’s better to stick to first principles. But honestly, I find this approach more fun.
 
 > For me, analogies are a powerful way to make sense of the world, especially when I’m working with abstract concepts like computer networks.
+
 > I want to emphasize that this analogy isn’t meant to be an exact representation of the topics discussed here. It’s simply a learning tool to help you view networks from a different perspective.
 
 ## Networks as buildings
+
+![Networks as buildings](../img/networks-1.png)
 
 Think of a building with many rooms connected by hallways and staircases. Each room represents a computer, and its room number is like an IP address. Just as people move between rooms, data moves between computers. In this setup, rooms (computers) can communicate directly with each other using network protocols, which are like different languages—some rooms might “speak” Japanese, others Spanish, and so on.
 
@@ -26,6 +29,8 @@ Think of a building with many rooms connected by hallways and staircases. Each r
 ---
 
 ## Subnets as floors
+
+![Subnets as floors](../img/subnets-1.png)
 
 Now, if you want to limit communication to certain areas, you can divide the building into floors. Each floor acts as a subnet, allowing rooms on the same floor to communicate freely while restricting access to other floors. This is similar to creating subnetworks in a computer network, where groups of computers can talk to each other but not to other groups.
 
@@ -70,7 +75,7 @@ Think of the switch as the floor manager. If you want to send a message to Room 
 
 Switches are efficient because they only work within a single floor (or subnet). They don’t worry about what’s happening on other floors or in the rest of the building—they stick to managing traffic in their own space.
 
-- In networking terms: A switch connects devices on the same local network (LAN) and uses MAC addresses to figure out where to send data packets.
+- A switch connects devices on the same local network (LAN) and uses MAC addresses to figure out where to send data packets.
 
 ---
 
@@ -80,7 +85,7 @@ When you need to send a message to Room 504 on a different floor, the floor mana
 
 The router has a detailed map of the building (a routing table) that helps it decide the best way to send your message. It chooses the fastest or most efficient elevator (gateway) to move your message to Floor 5. Once it gets there, the floor manager on Floor 5 takes over to deliver the message to Room 504.
 
-- In networking terms: A router connects different subnets or networks and uses IP addresses to determine the best route for your data.
+- A router connects different subnets or networks and uses IP addresses to determine the best route for your data.
 
 ---
 
@@ -88,7 +93,7 @@ The router has a detailed map of the building (a routing table) that helps it de
 
 Elevators act as gateways connecting the floors. They don’t care about the contents of your message—they just move it to the correct floor. Once the elevator delivers your message, the floor manager on the destination floor takes over to ensure it reaches the right room.
 
-- In networking terms: Gateways link different networks or subnets and ensure data is transferred correctly, even when moving between entirely different systems or protocols.
+- Gateways link different networks or subnets and ensure data is transferred correctly, even when moving between entirely different systems or protocols.
 
 ---
 
@@ -122,7 +127,7 @@ Imagine you want to send a letter to “Hotel Sunrise” in another city, but yo
 
 DNS acts like a giant, public directory for computer names. Instead of memorizing an IP address like 203.0.113.5, you can remember a simple name like “memo.mx.” When you send mail, your building staff (your network and DNS servers) will look up that name and find the correct address, so your message can be delivered.
 
-- In networking terms: DNS translates human-friendly names (like websites) into IP addresses. It’s like a global phonebook for the internet.
+- DNS translates human-friendly names (like websites) into IP addresses. It’s like a global phonebook for the internet.
 
 ---
 
@@ -184,7 +189,7 @@ You use the HTTPS protocol, saying “I’d like the homepage, please.” The oc
 
 ---
 
-## The Internet: A Vast City of Buildings
+## The Internet: A City of Buildings
 
 If your building is one network, then imagine the internet as a massive city packed with countless buildings of all shapes and sizes: schools, offices, hotels, libraries, and more. Each building represents a different network:
 
@@ -238,7 +243,7 @@ In the end, the internet is just a giant city connecting infinite buildings. Whi
 
 An ISP is responsible for laying the roads (cables, fiber lines, wireless connections) that link your building to the rest of the city. Without them, you’d be isolated, cut off from all the other buildings and services. Just like you depend on water and electricity companies for everyday needs, you rely on your ISP to deliver internet access.
 
-- **In networking terms:** Your ISP provides the “last mile” connection, the pipeline that brings data from the global internet (the city) straight to your building’s doorstep.
+- Your ISP provides the “last mile” connection, the pipeline that brings data from the global internet (the city) straight to your building’s doorstep.
 
 ---
 
@@ -254,7 +259,7 @@ This investment and maintenance keep your connection stable and efficient. Witho
 
 Imagine multiple utility companies that operate in different parts of the city. To give you access everywhere, they form partnerships and connect their networks at certain points. This process, called peering, ensures that even if you’re signed up with one ISP, you can still reach buildings served by another ISP.
 
-- **In networking terms:** ISPs build or lease connections to each other at Internet Exchange Points (IXPs). These “meeting places” let traffic flow smoothly across different networks, giving you access to content and services from all over the city and beyond.
+- ISPs build or lease connections to each other at Internet Exchange Points (IXPs). These “meeting places” let traffic flow smoothly across different networks, giving you access to content and services from all over the city and beyond.
 
 ---
 
