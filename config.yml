@@ -32,7 +32,7 @@ languages:
           weight: 5
         - name: Startup
           url: startup
-          weight: 5
+          weight: 6
         - name: Books
           url: books
           weight: 7
