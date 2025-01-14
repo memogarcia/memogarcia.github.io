@@ -27,12 +27,15 @@ languages:
     weight: 1
     menu:
       main:
-        - name: Thinking
-          url: thinking
+        - name: $DAYJOB
+          url: dayjob
           weight: 5
+        - name: Startup
+          url: startup
+          weight: 6
         - name: Books
           url: books
-          weight: 6
+          weight: 7
         - name: About
           url: about
           weight: 8
