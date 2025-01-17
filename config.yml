@@ -29,9 +29,12 @@ languages:
       main:
         - name: $DAYJOB
           url: dayjob
-          weight: 5
+          weight: 4
         - name: Startup
           url: startup
+          weight: 5
+        - name: YouTube
+          url: youtube
           weight: 6
         - name: Books
           url: books
