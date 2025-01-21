@@ -420,3 +420,9 @@ In the end, cloud computing is like staying at a hotel: all the comfort and reso
 ## Conclusion
 
 In the end, analogies serve as helpful guides—not substitutes for technical details. They’re here to make the bigger concepts feel less overwhelming. This way, computer networks become more than just cables and code—they transform into something you can visualize: rooms, corridors, entire neighborhoods working together. Once you grasp this layout, it’s much easier to understand how data travels and how everything clicks into place.
+
+---
+
+## License
+
+*This draft is shared under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/). The final published version may contain expanded content and updates not included here.*
