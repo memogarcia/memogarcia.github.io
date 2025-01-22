@@ -10,7 +10,18 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 20 Dec 2024 01:53:23 +0100</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 22 Jan 2025 00:03:30 +0100</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Behavior-driven development with LLMs</title>
+      <link>https://memo.mx/posts/bdd-with-llms/</link>
+      <pubDate>Wed, 22 Jan 2025 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/bdd-with-llms/</guid>
+      <description>It is tempting to tell an LLM, “Build me a CRUD API in FastAPI,” and watch it do its thing. And sure, it’s amazing that:
+LLMs can very vague requirements, and That we are able to “talk” to computers this way However, this tend to very a very imperative and not so repetable approach. This makes things “difficult” to predict and validate against an expected outcome.
+It also makes difficult to test different LLMs on the same task to validate correctness, speed and price.</description>
+    </item>
+    
     <item>
       <title>Understanding Computer Networks by Analogy</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
