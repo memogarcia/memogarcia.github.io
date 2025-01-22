@@ -1,11 +1,17 @@
-# Plan
+# Plan | Update book layout
 
 ## Objectives
 
-1. Based in the networks-by-analogy-editor.md suggestions, update the post to include the license at the end of the file
-2. Based on the writing style in the networks-by-analogy-editor.md suggestions update Book Outline
+- Add mapping table between concepts and analogies
+- Add more depth into each chapter
+- Add diagrams and tables for better visualization
+- Improve analogies (ipv4, ipv6)
+- Add practical examples
+- Improve terminology
+
 
 ## Context
 
 /add content/posts/understanding-computer-networks-by-analogy.md
+
 /add aider/specs/networks-by-analogy-editor.md
