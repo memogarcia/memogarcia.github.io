@@ -52,6 +52,10 @@ Feature: CRUD API to manage users
 
 When we write prompts like this, we give the LLM a clear target, making it easier to confirm whether the output matches our expectations.
 
+## How to use the prompt plan
+
+Just pass the plan to the LLM, if you are using [Aider AI](https://aider.chat) you can "copy-paste" the `prompt plan` directly into the terminal session.
+
 ## LLM limitations
 
 Besides the well known hallucination issues with LLMs there some huge limitations to them:
