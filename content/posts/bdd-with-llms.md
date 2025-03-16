@@ -4,83 +4,68 @@ date: 2025-01-22T00:03:30+01:00
 draft: false
 ---
 
-It is tempting to tell an LLM, “Build me a CRUD API in FastAPI,” and watch it do its thing. And sure, it’s amazing that:
+It's tempting to simply tell an LLM something like, "Build me a CRUD API in FastAPI," and watch it get to work. It's impressive because:
 
-1.	LLMs can very vague requirements, and
-2.	 That we are able to “talk” to computers this way
+1. LLMs can deal with vague instructions.
+2. We can "talk" naturally to computers.
 
-However, this tend to very a very imperative and not so repetable approach. This makes things “difficult” to predict and validate against an expected outcome.
+However, this approach is very imperative and hard to repeat consistently. It makes outcomes difficult to predict or verify.
 
-It also makes difficult to test different LLMs on the same task to validate correctness, speed and price.
+It helps to structure your prompts clearly, and that's exactly where `Behavior-Driven Development (BDD)` comes in handy. BDD gives you a structured way to prompt your LLM by:
 
-This is where **Behavior-Driven Development (BDD)**, The idea is to leverage it in order to gives us a structured, testable approach to prompting, this will help us to:
-
-1. Be precise on the outcome.
-2. Set clear requirements and constraints for the LLM to work with.
-3. Document the process in a declarative way.
+1. Clearly defining what you expect.
+2. Setting explicit requirements and boundaries.
+3. Documenting the process clearly and simply.
 
 ## Creating a prompt plan using BDD
 
-A “prompt plan” is basically a blueprint for your LLM. For example:
+A "prompt plan" is basically a roadmap for your LLM. Here's an example:
 
 ```bash
-Feature: CRUD API to manage users
-  As a system administrator, I want to manage users by performing create, read, update, and delete (CRUD) operations
-  using a RESTful API, so that user data is efficiently managed.
+Feature: CRUD API for managing users
 
-  Context:
-    Files to be added:
-      - main.py
-      - users.py
-    Constraints:
-      - Language: Python 3.13
-      - Libraries: httpx, fastapi, pydantic, uvicorn, tortoise-orm
+Background:
+  We're building a REST API using FastAPI.
 
-  Scenario: Create a user
-    Given an API endpoint for creating a user at "/users"
-    When a user sends a POST request to the endpoint with valid user data:
-      | Field      | Value       |
-      | username   | test_user   |
-      | email      | test@test.com |
-      | password   | securePass123 |
-    Then the API should return a response with:
-      | Field      | Value       |
-      | username   | test_user   |
-      | email      | test@test.com |
-    And the user should be saved in the database
+Context:
+  - Endpoint base: "/users"
+  - Language: Python 3.13
+  - Libraries: httpx, fastapi, pydantic, uvicorn, tortoise-orm
+
+Scenario: Creating a new user
+  Given there's an endpoint for creating users at "/users"
+  When a POST request is made with these details:
+    - email: user@example.com
+    - password: secure_pass
+  Then the API returns a 201 status and user info
+  And the user is stored in the database
 ```
 
-When we write prompts like this, we give the LLM a clear target, making it easier to confirm whether the output matches our expectations.
+When you structure prompts like this, the LLM knows exactly what success looks like, making it easy to verify results.
 
 ## How to use the prompt plan
 
-Just pass the plan to the LLM, if you are using [Aider AI](https://aider.chat) you can "copy-paste" the `prompt plan` directly into the terminal session.
+Pass your prompt directly to the LLM. Clear prompts mean clear results. You'll quickly know whether the output matches expectations.
 
 ## LLM limitations
 
-Besides the well known hallucination issues with LLMs there some huge limitations to them:
+Besides the well known hallucination issues with LLMs there some huge limitations:
 
-1. Context size, Even with newer models offering larger “windows” for text, there’s still a limit to how much they can process at once.
-2. Context awareness, LLMs typically start fresh every time you prompt them. They don’t automatically know your entire codebase or environment. Unless you restate your requirements, they may miss critical details or propose solutions that conflict with your existing system.
+1. Context size: Even newer models have limits to how much information they can handle at once.
+2. Context awareness: LLMs start fresh with every prompt, so restating context clearly is essential.
 
-These limitations don’t make LLMs any less impressive—they just mean we need a solid plan, like BDD, to get consistent and testable results. 
+## Tips for Better Results
 
-## Other tips
-
-### Bad input, bad output
-
-1. Unless this is what you are looking for, don’t let LLMs assume stuff.
-2. Give as much detail and description of the outcome as possible.
-3. Set some personality to your LLMs by setting writing styles and tone of voice.
+1. Don't let LLMs make assumptions unless you intentionally want them to.
+2. Clearly describe your expectations.
+3. Define the style or personality if it matters.
 
 ### ChatGPT is not the only game in town
 
-There are several options out there—self-hosted models, Claude, DeepSeek (depending on your situation).
-
-### Editor
-
-Using something like VSCode with Copilot (or similar tools) places the LLM right in your development workflow. That can be more convenient than copying prompts into a separate tool.
+You can also explore other models like Claude, DeepSeek, or even self-hosted solutions. Pick what suits your use case best.
 
 ### Have a clear goal in mind
 
-Methods like Test-Driven Development (TDD) and Behavior-Driven Development (BDD) can keep your LLM prompts focused. Know what you want to achieve from the start, then build the prompts around those specific outcomes.
+Techniques like BDD or TDD help keep prompts clear and goal-focused. Define exactly what you want to achieve, then craft your prompts around those specific outcomes.
+
+Using a structured method like this ensures results that are predictable, repeatable, and much easier to validate.
