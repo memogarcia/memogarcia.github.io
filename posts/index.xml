@@ -17,9 +17,9 @@
       <pubDate>Wed, 22 Jan 2025 00:03:30 +0100</pubDate>
       
       <guid>https://memo.mx/posts/bdd-with-llms/</guid>
-      <description>It is tempting to tell an LLM, “Build me a CRUD API in FastAPI,” and watch it do its thing. And sure, it’s amazing that:
-LLMs can very vague requirements, and That we are able to “talk” to computers this way However, this tend to very a very imperative and not so repetable approach. This makes things “difficult” to predict and validate against an expected outcome.
-It also makes difficult to test different LLMs on the same task to validate correctness, speed and price.</description>
+      <description>It&amp;rsquo;s tempting to simply tell an LLM something like, &amp;ldquo;Build me a CRUD API in FastAPI,&amp;rdquo; and watch it get to work. It&amp;rsquo;s impressive because:
+LLMs can deal with vague instructions. We can &amp;ldquo;talk&amp;rdquo; naturally to computers. However, this approach is very imperative and hard to repeat consistently. It makes outcomes difficult to predict or verify.
+It helps to structure your prompts clearly, and that&amp;rsquo;s exactly where Behavior-Driven Development (BDD) comes in handy.</description>
     </item>
     
     <item>
@@ -38,8 +38,24 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
       <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this and you are also struggling with these concepts, just know this isn’t a complete map of the &amp;ldquo;networking world&amp;rdquo; it is simply a different way to see it. I hope you find this analogy helpful.
-I&amp;rsquo;ve decided to stick with analogies here instead of going deep into technical terms—you can find those easily anywhere, because I enjoy looking at the world from different perspectives.</description>
+      <description>TODO: Add an intro here
+Add: A brief outline of chapters and target audience (students, career changers, hobbyists).
+Clarify: How analogies simplify learning but don’t replace technical study.
+Part 1: Building the Foundation
+Part 2: Moving Around The City
+Part 3: Hotels In The Clouds &amp;amp; Future Cities
+Part 5: Becoming An Architect
+Part 5: Appendices
+I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Networks by Analogy | Appendices</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</link>
+      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</guid>
+      <description>Concept mapping table Concept Analogy Network Building Computer Room IP Address Room Number Subnet Floor Network Protocol Language Switch Floor Manager Router Building Concierge Gateway Elevator MAC Address Unique Door ID Bandwidth Hall Width Private IP Internal Room Number Public IP Building Street Address DNS Public Directory TCP Registered Mail Service UDP Untracked Mail Service Port Service-Specific Mail Slot HTTP/HTTPS Web Service Language SMTP/FTP/SSH Specialized Service Languages Data Packet Envelope with Metadata Checksum Data Integrity Check Internet City of Buildings ISP Road/Utility Builder Firewall Security Gate/Guard VPN Hidden Passageway Load Balancer Extra Reception Staff CDN Local Storage Hub QoS Priority Lane NAT Front Desk Clerk Routing Table Building/City Map IPv4 Limited Address System IPv6 Unlimited Address System Network Topology Building Blueprint Cloud Computing Rented Office Space Cloud Provider Property Manager Scalability (Cloud) Flexible Office Expansion Network Interface Door VLAN Private Hallway Dual-Stack System Translator for Old/New Address Systems Software-Defined Networking Virtual Architect License This draft is shared under CC BY-NC-ND 4.</description>
     </item>
     
     <item>

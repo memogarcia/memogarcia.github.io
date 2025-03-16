@@ -4,6 +4,23 @@ date: 2024-12-20T01:53:23+01:00
 draft: false
 ---
 
+TODO: Add an intro here
+
+* **Add:** A brief outline of chapters and target audience (students, career changers, hobbyists).
+* **Clarify:** How analogies simplify learning but don’t replace technical study.
+
+
+* [Part 1: Building the Foundation](./understanding-computer-networks-by-analogy-chapter-1.md)
+
+* [Part 2: Moving Around The City](./understanding-computer-networks-by-analogy-chapter-2.md)
+
+* [Part 3: Hotels In The Clouds & Future Cities](./understanding-computer-networks-by-analogy-chapter-3.md)
+
+* [Part 5: Becoming An Architect](./understanding-computer-networks-by-analogy-chapter-4.md)
+
+* [Part 5: Appendices](./understanding-computer-networks-by-analogy-appendices.md)
+
+
 I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this and you are also struggling with these concepts, just know this isn’t a complete map of the "networking world" it is simply a different way to see it. I hope you find this analogy helpful.
 
 I've decided to stick with analogies here instead of going deep into technical terms—you can find those easily anywhere, because I enjoy looking at the world from different perspectives. It’s fascinating how many connections you can make when you approach things from a new angle.
@@ -13,6 +30,11 @@ I understand that analogies have their limits and sometimes you have to stretch 
 Finally, I want to emphasize that this analogy isn’t meant to be an exact representation of the "world of networking". It’s simply a learning tool to help view computer networks from a different perspective.
 
 ## Networks as Buildings
+
+TODO:
+* **Enhance:** Compare building types (schools, hospitals) to network types (LAN, WAN, data centers).
+* **Visual Aid:** Include a diagram of a building with labeled floors (subnets), rooms (devices), and elevators (gateways).
+
 
 ![Networks as buildings](/img/networks-1.png)
 
@@ -29,6 +51,10 @@ Components of the Building Analogy:
 ---
 
 ## Designing Network Floors
+
+TODO:
+* **Example:** A company’s departments as subnets (HR on Floor 2, Engineering on Floor 3).
+* **Technical Tie-In:** Briefly explain subnet masks as “floor plans” determining room capacity.
 
 ![Subnets as floors](/img/subnets-1.png)
 
@@ -52,6 +78,10 @@ Identifying a room becomes easier: Room 101 is on Floor 1, Room 1. Similarly, a 
 
 ## Computers as Rooms
 
+TODO:
+* **Storytelling:** Describe a day in the life of “Room 101” sending/receiving mail (data).
+* **Expand:** Network interfaces (doors) as Wi-Fi, Ethernet, Bluetooth.
+
 Each room represents a computer. It has specific purposes based on its occupants and their tasks. Rooms have doors for entry and exit, which correspond to network interfaces.
 
 ### Multiple Doors
@@ -68,6 +98,9 @@ Each door has a unique identifier, like a MAC address, ensuring the right person
 - If a door (interface) is locked or broken, the room becomes inaccessible to outsiders (network failure or misconfiguration). 
 
 ---
+
+Comparison Table:** Switches (floor managers) vs. Routers (concierges) with OSI layers.
+* **Add:** ARP as the switch’s “guest list” linking room numbers (IPs) to doors (MACs).
 
 ## Switches as Floor Managers
 
@@ -88,6 +121,9 @@ The router has a detailed map of the building (a routing table) that helps it de
   - A router connects different subnets or networks and uses IP addresses to determine the best route for your data.
 
 ---
+
+**Clarify:** NAT as the front desk translating private/public addresses.
+* **Example:** DNS hierarchy as a city directory with local, regional, and global tiers.
 
 ## Gateways as Elevators
 
@@ -133,8 +169,11 @@ DNS acts like a giant, public directory for computer names. Instead of memorizin
   - DNS translates human-friendly names (like websites) into IP addresses. It’s like a global phonebook for the internet.
 
 ---
+* **Use Case:** Streaming video (UDP) vs. file downloads (TCP).
+* **Table:** Common ports (80/HTTP, 443/HTTPS) and their “mailbox” purposes.
 
 ## TCP vs. UDP
+
 
 When you send something to another room or building, how it’s packaged and delivered matters. In networking, messages are sent in packets—little bundles of data. The two most common ways to send these packets are TCP and UDP, which work like different types of mail services.
 
@@ -207,6 +246,8 @@ Once you’re at the correct room (IP address), you ask at the mailbox labeled �
 You use the HTTPS protocol, saying “I’d like the homepage, please.” The occupant understands and hands you the requested webpage data.
 
 ---
+**Metaphor:** ISPs as road builders, IXPs as highway intersections.
+* **Visual:** Map of a city with buildings (networks) connected by roads (cables).
 
 ## The Internet: A City of Buildings
 
