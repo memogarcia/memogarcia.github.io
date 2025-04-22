@@ -118,9 +118,9 @@ def main():
     Execute a subprocess from python
     """
     cmd = args.subprocess
-    outs, errrs = run_subprocess(cmd)
-    if errrs:
-        print(errrs)
+    outs, errs = run_subprocess(cmd)
+    if errs:
+        print(errs)
         sys.exit()
     else:
         print(outs.strip())

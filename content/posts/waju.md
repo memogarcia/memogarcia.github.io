@@ -55,7 +55,7 @@ Once in the void, you can only move back to the road by rolling a `1` and only a
 * Each turn you roll two dice, and you get two movements
   * For each die:
       * If you roll `1` or `6`, you roll again. And repeat as many times as you roll `1` or `6`.
-      * Only reroll after you finish your available movements.
+      * Only re-roll after you finish your available movements.
 * You can spend a movement to take to the road a marble by rolling a `1` or `6` with any of your dice.
   * If you don't have any marble on the road and you don't roll a `1` or `6` your turn pass.
 * You can choose to spend the die in only the following ways:
@@ -63,12 +63,12 @@ Once in the void, you can only move back to the road by rolling a `1` and only a
       * For instance, use the sum of two dice to move one marble forward.
   * Spend one die in one marble and the second one in another marble.
       * For instance, spend one movement to take a marble out of your home and the second one to move forward **another** marble.
-  * You **cannot** chose to spend two dice on the same marble in two movements on the same roll.
-      * If you reroll due to a `1` or `6` you can choose to move _that_ marble again
-  * Taking out a marble from your home spends a movement and you **cannot* move that marble again until your next turn or a reroll.
+  * You **cannot** choose to spend two dice on the same marble in two movements on the same roll.
+      * If you re-roll due to a `1` or `6` you can choose to move _that_ marble again
+  * Taking out a marble from your home spends a movement and you **cannot** move that marble again until your next turn or a re-roll.
     * If you don't have any other marble to move, you can spend two separate movements in one marble.
-* You **cannot** chose to spend only one die per roll.
-  * Only if you reroll one die due to `1` or `6`.
+* You **cannot** choose to spend only one die per roll.
+  * Only if you re-roll one die due to `1` or `6`.
 * You can **only** move your marbles forward clockwise.
 * You **cannot** jump or stay in the same spot as one of your marbles.
 * If you put one of your marbles on the same spot as one of the other players, the other player's marble **must** go to their respective home.
@@ -78,7 +78,7 @@ Once in the void, you can only move back to the road by rolling a `1` and only a
     * For instance, you **should** spend a movement to take a marble from home (if you have) to the road instead of bouncing.
 * For each marble you have, move them forward on the road for one lap and place them in your goal spots.
   * Other players **cannot** put their marbles on your goal spots.
-      * _are you safe?_
+      * _Are you safe?_
 * You **win** if you put all your marbles on your goal.
 
 ## Schematics

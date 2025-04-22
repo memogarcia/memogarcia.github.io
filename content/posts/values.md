@@ -15,9 +15,9 @@ embrace
         fasting
 
     people
-        stronger toguether
+        stronger together
             people are more willing to take risks if they trust their team
-            sacriface for others
+            sacrifice for others
 
 stoic
     low expectations -> high rewards
@@ -32,19 +32,19 @@ authenticity
     say no when you mean it
     understand WHY you do things, not only how
     form your own opinions
-    the fact that you have an opinion, doesnt make it better than someone else
+    the fact that you have an opinion, doesn't make it better than someone else
 
 strive to improve
     don't be afraid to fail
     your enemy should become your teacher
     rival vs competitor
     always learn something new
-        NEVER NEVER NEVER laught at ignorance because is the thing you know who has it but you never know if you have it.
+        NEVER NEVER NEVER laugh at ignorance because is the thing you know who has it but you never know if you have it.
 
 teach
 
 respect
-    empaty
+    empathy
         sonder
     your work
     other people's time
@@ -65,7 +65,7 @@ rest
     disconnect from work
         computers, screens
 
-have a clear vision, don't be obsesed with the road because that could change, your vision should stay the same
+have a clear vision, don't be obsessed with the road because that could change, your vision should stay the same
 
 ===
 
