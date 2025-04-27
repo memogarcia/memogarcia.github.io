@@ -3,10 +3,535 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anki Tools</title>
+    <title>Anki Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Inter font globally */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Prevent scrolling caused by animations */
+            overflow-x: hidden;
+        }
+
+        /* Custom Card Animation */
+        .card-container {
+            position: relative;
+            perspective: 1000px; /* For potential 3D effects if needed later */
+            min-height: 200px; /* Ensure container has height */
+        }
+
+        .card {
+            /* Base styles */
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+            text-align: center;
+            width: 100%;
+            position: absolute; /* Position for animation */
+            top: 0;
+            left: 0;
+            backface-visibility: hidden; /* Hide back during animation if flipping */
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform-origin: center center;
+        }
+
+        /* Initial state for entering card (comes from the right) */
+        .card-enter {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        /* Active state for card */
+        .card-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* State for exiting card (goes to the left) */
+        .card-exit {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        /* Hide elements initially */
+        .back-content {
+            display: none; /* Initially hide back content */
+            margin-top: 1rem; /* Add space above back content */
+            color: #4b5563; /* gray-600 */
+        }
+
+        .card.is-showing-back .back-content {
+            display: block; /* Show back content when card is clicked */
+        }
+
+        /* Ensure consistent height for card elements */
+        .card-main-content {
+            min-height: 60px; /* Adjust as needed */
+            font-size: 3rem; /* text-5xl */
+            font-weight: 600; /* font-semibold */
+            margin-bottom: 0.5rem; /* mb-2 */
+            color: #1f2937; /* gray-800 */
+        }
+        .card-secondary-content {
+            min-height: 24px; /* Adjust as needed */
+            font-size: 1.25rem; /* text-xl */
+            color: #4b5563; /* gray-600 */
+            margin-bottom: 0.25rem; /* mb-1 */
+        }
+        .card-tertiary-content {
+            min-height: 20px; /* Adjust as needed */
+            font-size: 1rem; /* text-base */
+            color: #6b7280; /* gray-500 */
+        }
+
+        /* Progress bar styles */
+        .progress-bar-bg {
+            background-color: #e5e7eb; /* gray-200 */
+            border-radius: 9999px; /* rounded-full */
+            height: 8px;
+            overflow: hidden; /* Ensure inner bar respects rounding */
+        }
+        .progress-bar-fill {
+            background-color: #6366f1; /* indigo-500 */
+            height: 100%;
+            border-radius: 9999px; /* rounded-full */
+            transition: width 0.3s ease-out;
+        }
+
+        /* Styling for file input and select */
+        select, input[type="file"]::file-selector-button {
+             border: 1px solid #d1d5db; /* gray-300 */
+             padding: 0.5rem 1rem;
+             border-radius: 0.375rem; /* rounded-md */
+             background-color: white;
+             cursor: pointer;
+             transition: background-color 0.2s;
+        }
+         input[type="file"]::file-selector-button:hover {
+             background-color: #f9fafb; /* gray-50 */
+         }
+        select:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            border-color: #6366f1; /* indigo-500 */
+            box-shadow: 0 0 0 2px #a5b4fc; /* indigo-300 focus ring */
+        }
+
+        /* Loading indicator */
+        #loading-indicator {
+            display: none; /* Hidden by default */
+        }
+
+        /* Message Area */
+        #message-area {
+            min-height: 24px; /* Reserve space */
+            margin-top: 0.5rem;
+            text-align: center;
+            color: #ef4444; /* red-500 */
+        }
+
+    </style>
 </head>
-<body>
-    <h1>Anki Tools Page</h1>
-    <p>This is a custom HTML page served directly from the static directory.</p>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="app bg-[#6366F1] w-full max-w-sm rounded-3xl shadow-lg overflow-hidden text-white">
+        <header class="p-6">
+            <h1 id="deck-title" class="text-xl font-semibold">Load a Deck</h1>
+            <p id="deck-subtitle" class="text-indigo-200 text-sm">Select JSON file(s)</p>
+        </header>
+
+        <main class="bg-gray-100 p-6 rounded-t-3xl text-gray-800">
+
+            <div class="mb-4 flex flex-col sm:flex-row gap-2 items-center">
+                 <label for="file-input" class="sr-only">Load JSON Deck(s):</label>
+                 <input type="file" id="file-input" accept=".json" multiple class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer flex-grow w-full sm:w-auto"/>
+                 <div id="loading-indicator" class="text-sm text-indigo-600">Loading...</div>
+            </div>
+
+             <div class="mb-4">
+                <label for="deck-select" class="block text-sm font-medium text-gray-700 mb-1">Select Deck:</label>
+                <select id="deck-select" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">-- No decks loaded --</option>
+                </select>
+            </div>
+
+            <div id="message-area"></div>
+
+            <div id="card-container" class="card-container mb-4">
+                <div class="card card-placeholder opacity-50">
+                    <div class="card-main-content text-gray-400 text-3xl">Load Deck</div>
+                    <div class="card-secondary-content text-gray-400"></div>
+                    <div class="card-tertiary-content text-gray-400"></div>
+                    <div class="back-content"></div>
+                 </div>
+            </div>
+
+            <div class="progress mb-4">
+                <div class="progress-bar-bg w-full">
+                    <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <p id="progress-text" class="text-center text-sm text-gray-500 mt-1">0 / 0</p>
+            </div>
+
+            <footer class="controls">
+                <button id="next-button" class="w-full bg-[#6366F1] hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    NEXT CARD
+                </button>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const fileInput = document.getElementById('file-input');
+        const deckSelect = document.getElementById('deck-select');
+        const cardContainer = document.getElementById('card-container');
+        const nextButton = document.getElementById('next-button');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const progressText = document.getElementById('progress-text');
+        const deckTitle = document.getElementById('deck-title');
+        const deckSubtitle = document.getElementById('deck-subtitle');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const messageArea = document.getElementById('message-area');
+
+        // --- State Variables ---
+        let decks = {}; // Object to store loaded decks { filename: cards_array }
+        let currentDeck = [];
+        let currentCardIndex = 0;
+        let isShowingBack = false;
+        let activeCardElement = null; // Reference to the currently displayed card div
+
+        // --- Utility Functions ---
+        /**
+         * Shuffles array in place.
+         * @param {Array} array items An array containing the items.
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        /** Clears messages */
+        function clearMessage() {
+            messageArea.textContent = '';
+        }
+
+        /** Displays a message to the user */
+        function showMessage(message, isError = false) {
+             messageArea.textContent = message;
+             messageArea.style.color = isError ? '#ef4444' : '#1f2937'; // red-500 for error, gray-800 for info
+        }
+
+        // --- Core Logic ---
+
+        /** Reads and parses selected JSON files */
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (!files.length) {
+                console.log('No files selected.');
+                return;
+            }
+
+            loadingIndicator.style.display = 'inline'; // Show loading
+            clearMessage();
+            nextButton.disabled = true; // Disable button while loading
+
+            let filesProcessed = 0;
+            const totalFiles = files.length;
+            decks = {}; // Reset decks
+
+            Array.from(files).forEach(file => {
+                if (file.type !== 'application/json') {
+                     console.warn(`Skipping non-JSON file: ${file.name}`);
+                     showMessage(`Skipped non-JSON file: ${file.name}`, true);
+                     filesProcessed++;
+                     if (filesProcessed === totalFiles) finishLoading();
+                     return; // Skip non-JSON files
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    try {
+                        const content = JSON.parse(e.target.result);
+                        // Basic validation: Check if it's an array
+                        if (!Array.isArray(content)) {
+                            throw new Error('JSON root must be an array of cards.');
+                        }
+                        // Optional: Deeper validation of card structure can be added here
+                        // e.g., check if each item has 'front' and 'back' objects
+
+                        decks[file.name] = content; // Store deck by filename
+                        console.log(`Loaded deck: ${file.name} with ${content.length} cards.`);
+
+                    } catch (error) {
+                        console.error(`Error parsing JSON file ${file.name}:`, error);
+                         showMessage(`Error in ${file.name}: ${error.message}`, true);
+                    } finally {
+                         filesProcessed++;
+                         if (filesProcessed === totalFiles) finishLoading();
+                    }
+                };
+
+                reader.onerror = function(e) {
+                    console.error(`Error reading file ${file.name}:`, e);
+                    showMessage(`Error reading file ${file.name}`, true);
+                    filesProcessed++;
+                    if (filesProcessed === totalFiles) finishLoading();
+                };
+
+                reader.readAsText(file);
+            });
+        }
+
+        /** Updates UI after files are processed */
+        function finishLoading() {
+             loadingIndicator.style.display = 'none'; // Hide loading
+             populateDeckSelect();
+             if (Object.keys(decks).length > 0) {
+                 // Automatically select the first loaded deck
+                 deckSelect.selectedIndex = 1; // Select the first actual deck
+                 handleDeckChange();
+             } else {
+                 resetUI(); // Reset if no valid decks were loaded
+                 showMessage('No valid JSON decks loaded.', true);
+             }
+        }
+
+
+        /** Populates the deck selection dropdown */
+        function populateDeckSelect() {
+            // Clear existing options except the placeholder
+            deckSelect.innerHTML = '<option value="">-- Select a Deck --</option>';
+
+            const deckNames = Object.keys(decks);
+            if (deckNames.length === 0) {
+                 deckSelect.disabled = true;
+                 return;
+            }
+
+            deckSelect.disabled = false;
+            deckNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = `${name} (${decks[name].length} cards)`;
+                deckSelect.appendChild(option);
+            });
+        }
+
+        /** Handles deck selection change */
+        function handleDeckChange() {
+            const selectedDeckName = deckSelect.value;
+            clearMessage();
+
+            if (selectedDeckName && decks[selectedDeckName]) {
+                currentDeck = [...decks[selectedDeckName]]; // Create a copy
+                shuffleArray(currentDeck); // Shuffle the selected deck
+                currentCardIndex = 0;
+                isShowingBack = false;
+                updateDeckInfo(selectedDeckName);
+                displayCard(true); // Display the first card with entry animation
+                nextButton.disabled = currentDeck.length <= 0; // Disable if deck is empty
+            } else {
+                resetUI();
+            }
+        }
+
+        /** Updates the header title and subtitle */
+        function updateDeckInfo(deckName) {
+            // Attempt to extract a cleaner title (e.g., remove .json)
+            const title = deckName.replace(/\.json$/i, '').replace(/_/g, ' ');
+            deckTitle.textContent = title;
+            deckSubtitle.textContent = `Deck: ${deckName}`; // Or keep it simple
+        }
+
+
+        /** Resets the UI to initial state */
+        function resetUI() {
+             currentDeck = [];
+             currentCardIndex = 0;
+             isShowingBack = false;
+             cardContainer.innerHTML = `
+                 <div class="card card-placeholder opacity-50">
+                    <div class="card-main-content text-gray-400 text-3xl">Load Deck</div>
+                    <div class="card-secondary-content text-gray-400"></div>
+                    <div class="card-tertiary-content text-gray-400"></div>
+                    <div class="back-content"></div>
+                 </div>`; // Show placeholder
+             activeCardElement = cardContainer.querySelector('.card'); // Update reference
+             updateProgress();
+             nextButton.disabled = true;
+             deckTitle.textContent = 'Load a Deck';
+             deckSubtitle.textContent = 'Select JSON file(s)';
+             if (deckSelect.options.length <= 1) { // Only placeholder exists
+                deckSelect.disabled = true;
+             }
+        }
+
+        /** Creates the HTML for a card */
+        function createCardElement(cardData) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card'; // Base class
+
+            const front = cardData.front || {};
+            const back = cardData.back || {};
+
+            // --- Card Content ---
+            // Main content (e.g., Kanji)
+            const mainContent = document.createElement('div');
+            mainContent.className = 'card-main-content';
+            mainContent.textContent = front.main || ''; // Handle missing data
+            cardDiv.appendChild(mainContent);
+
+            // Secondary content (e.g., Reading)
+            const secondaryContent = document.createElement('div');
+            secondaryContent.className = 'card-secondary-content';
+            secondaryContent.textContent = front.secondary || '';
+            cardDiv.appendChild(secondaryContent);
+
+            // Tertiary content (e.g., Romaji)
+            const tertiaryContent = document.createElement('div');
+            tertiaryContent.className = 'card-tertiary-content';
+            tertiaryContent.textContent = front.tertiary || '';
+            cardDiv.appendChild(tertiaryContent);
+
+            // --- Back Content (Hidden initially) ---
+            const backContentDiv = document.createElement('div');
+            backContentDiv.className = 'back-content'; // Initially hidden by CSS
+
+            const backMain = document.createElement('div');
+            backMain.className = 'text-lg font-medium text-gray-700'; // Style as needed
+            backMain.textContent = back.main || '';
+            backContentDiv.appendChild(backMain);
+
+            const backSecondary = document.createElement('div');
+            backSecondary.className = 'text-base text-gray-600 mt-1';
+            backSecondary.textContent = back.secondary || '';
+            backContentDiv.appendChild(backSecondary);
+
+            const backTertiary = document.createElement('div');
+            backTertiary.className = 'text-sm text-gray-500 mt-1';
+            backTertiary.textContent = back.tertiary || '';
+            backContentDiv.appendChild(backTertiary);
+
+            cardDiv.appendChild(backContentDiv);
+
+
+            // --- Click Listener for Revealing Back ---
+            cardDiv.addEventListener('click', () => {
+                isShowingBack = !isShowingBack;
+                cardDiv.classList.toggle('is-showing-back', isShowingBack);
+            });
+
+            return cardDiv;
+        }
+
+        /** Displays the current card with animation */
+        function displayCard(isInitial = false) {
+            if (currentDeck.length === 0 || currentCardIndex >= currentDeck.length) {
+                // Handle end of deck or empty deck
+                cardContainer.innerHTML = `
+                 <div class="card card-placeholder opacity-80">
+                    <div class="card-main-content text-indigo-600 text-2xl">Deck Complete!</div>
+                    <div class="card-secondary-content text-gray-500">Load another or reshuffle.</div>
+                 </div>`;
+                activeCardElement = null;
+                nextButton.textContent = 'RESTART DECK'; // Change button text
+                updateProgress(); // Update progress to show completion
+                return;
+            }
+
+            nextButton.textContent = 'NEXT CARD'; // Ensure button text is correct
+
+            const cardData = currentDeck[currentCardIndex];
+            const newCardElement = createCardElement(cardData);
+            isShowingBack = false; // Reset flip state for new card
+
+            // --- Animation Logic ---
+            const oldCardElement = activeCardElement;
+
+            // Add new card, initially positioned for entry
+            newCardElement.classList.add('card-enter');
+            cardContainer.appendChild(newCardElement);
+
+            // Force reflow to ensure transition is applied
+            void newCardElement.offsetWidth;
+
+            // Animate out old card (if exists)
+            if (oldCardElement && !isInitial) {
+                oldCardElement.classList.remove('card-active');
+                oldCardElement.classList.add('card-exit');
+                // Remove old card after animation completes
+                oldCardElement.addEventListener('transitionend', () => {
+                     // Check if the element still exists before removing
+                     if (oldCardElement.parentNode === cardContainer) {
+                        cardContainer.removeChild(oldCardElement);
+                     }
+                }, { once: true }); // Ensure listener fires only once
+            } else if (oldCardElement && isInitial) {
+                 // If it's the initial load, just remove the placeholder immediately or fade it out
+                 oldCardElement.style.opacity = '0';
+                 oldCardElement.addEventListener('transitionend', () => {
+                    if (oldCardElement.parentNode === cardContainer) {
+                        cardContainer.removeChild(oldCardElement);
+                    }
+                 }, { once: true });
+            }
+
+
+            // Animate in new card
+            newCardElement.classList.remove('card-enter');
+            newCardElement.classList.add('card-active');
+
+            activeCardElement = newCardElement; // Update active card reference
+
+            updateProgress();
+        }
+
+        /** Updates the progress bar and text */
+        function updateProgress() {
+            const totalCards = currentDeck.length;
+            // If deck is complete, show index as total, otherwise current index + 1
+            const currentNumber = (totalCards > 0 && currentCardIndex >= totalCards) ? totalCards : currentCardIndex + 1;
+            const progressPercentage = totalCards > 0 ? (currentNumber / totalCards) * 100 : 0;
+
+            progressBarFill.style.width = `${progressPercentage}%`;
+            progressText.textContent = totalCards > 0 ? `${currentNumber} / ${totalCards}` : '0 / 0';
+        }
+
+        /** Handles the "NEXT CARD" button click */
+        function handleNextCard() {
+             clearMessage(); // Clear any previous messages
+            if (currentDeck.length === 0) return; // Do nothing if no deck
+
+            // If deck was completed, restart it
+            if (currentCardIndex >= currentDeck.length) {
+                shuffleArray(currentDeck); // Reshuffle
+                currentCardIndex = 0;
+                displayCard(true); // Show first card again
+                return;
+            }
+
+
+            // Move to the next card index
+            currentCardIndex++;
+            displayCard(); // Display the next card with animation
+        }
+
+        // --- Event Listeners ---
+        fileInput.addEventListener('change', handleFileSelect);
+        deckSelect.addEventListener('change', handleDeckChange);
+        nextButton.addEventListener('click', handleNextCard);
+
+        // --- Initial Setup ---
+        resetUI(); // Initialize the UI on page load
+
+    </script>
 </body>
 </html>
