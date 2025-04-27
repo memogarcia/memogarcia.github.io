@@ -27,6 +27,9 @@ languages:
     weight: 1
     menu:
       main:
+        - name: Tools
+          url: tools
+          weight: 3
         - name: $DAYJOB
           url: dayjob
           weight: 4
