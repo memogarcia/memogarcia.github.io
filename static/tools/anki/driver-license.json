@@ -1,0 +1,146 @@
+[
+    {
+        "front": {
+            "main": "What does this sign mean?",
+            "secondary": "Red triangle, white background, black border, downward pointing.",
+            "tertiary": "止まれ"
+        },
+        "back": {
+            "main": "Stop (Tomare)",
+            "secondary": "You must come to a complete stop before the stop line.",
+            "tertiary": "Regulatory Sign"
+        }
+    },
+    {
+        "front": {
+            "main": "What is the maximum speed limit on general roads if no sign is posted?",
+            "secondary": "Applies to standard passenger cars.",
+            "tertiary": "一般道路 (Ippan Douro)"
+        },
+        "back": {
+            "main": "60 km/h",
+            "secondary": "Unless otherwise indicated by signs.",
+            "tertiary": "Speed Limit Rule"
+        }
+    },
+    {
+        "front": {
+            "main": "True or False: You can park within 5 meters of a fire hydrant.",
+            "secondary": "",
+            "tertiary": "Parking Rule"
+        },
+        "back": {
+            "main": "False",
+            "secondary": "Parking is prohibited within 5 meters of a fire hydrant or its designated area.",
+            "tertiary": "No Parking Zone"
+        }
+    },
+    {
+        "front": {
+            "main": "What does a solid yellow line in the center of the road mean?",
+            "secondary": "Single solid yellow line.",
+            "tertiary": "Road Marking"
+        },
+        "back": {
+            "main": "No overtaking by crossing the line.",
+            "secondary": "You cannot cross the yellow line to overtake.",
+            "tertiary": "Overtaking Rule"
+        }
+    },
+    {
+        "front": {
+            "main": "What is the legal blood alcohol concentration (BAC) limit for driving in Japan?",
+            "secondary": "",
+            "tertiary": "飲酒運転 (Inshu Unten)"
+        },
+        "back": {
+            "main": "0.03% (or 0.15 mg/L breath)",
+            "secondary": "However, driving with *any* amount of alcohol that impairs ability is illegal. Zero tolerance is the safest approach.",
+            "tertiary": "DUI/DWI Law"
+        }
+    },
+    {
+        "front": {
+            "main": "When turning left at an intersection, where should you position your vehicle beforehand?",
+            "secondary": "",
+            "tertiary": "Intersection Rule"
+        },
+        "back": {
+            "main": "As close as possible to the left edge of the road.",
+            "secondary": "This prevents motorcycles or bicycles from passing on your left.",
+            "tertiary": "Left Turn Procedure"
+        }
+    },
+    {
+        "front": {
+            "main": "What does this sign mean?",
+            "secondary": "Blue circle, white arrow pointing straight ahead.",
+            "tertiary": ""
+        },
+        "back": {
+            "main": "Go Straight Only",
+            "secondary": "You must proceed straight ahead; turns are prohibited.",
+            "tertiary": "Mandatory Direction Sign"
+        }
+    },
+    {
+        "front": {
+            "main": "True or False: You must always yield to pedestrians crossing at a crosswalk.",
+            "secondary": "横断歩道 (Oudanhodou)",
+            "tertiary": "Pedestrian Safety"
+        },
+        "back": {
+            "main": "True",
+            "secondary": "Pedestrians have the right-of-way at marked crosswalks.",
+            "tertiary": "Right-of-Way Rule"
+        }
+    },
+    {
+        "front": {
+            "main": "What is the minimum following distance you should keep on an expressway?",
+            "secondary": "高速道路 (Kousoku Douro)",
+            "tertiary": "Safety Distance"
+        },
+        "back": {
+            "main": "Sufficient distance to stop safely (often cited as 'speed in km/h = distance in meters').",
+            "secondary": "E.g., At 100 km/h, maintain at least 100 meters. Increase in bad weather.",
+            "tertiary": "Following Distance Guideline"
+        }
+    },
+    {
+        "front": {
+            "main": "Can you use a mobile phone while driving?",
+            "secondary": "Holding it in your hand.",
+            "tertiary": "携帯電話 (Keitai Denwa)"
+        },
+        "back": {
+            "main": "No",
+            "secondary": "Using a handheld mobile phone while driving is illegal. Hands-free use is generally permitted but still discouraged if distracting.",
+            "tertiary": "Distracted Driving Law"
+        }
+    },
+    {
+        "front": {
+            "main": "What does a flashing yellow traffic light mean?",
+            "secondary": "",
+            "tertiary": "Traffic Signal"
+        },
+        "back": {
+            "main": "Proceed with caution.",
+            "secondary": "Slow down, check for traffic and pedestrians, and proceed only when safe.",
+            "tertiary": "Signal Meaning"
+        }
+    },
+    {
+        "front": {
+            "main": "True or False: You must stop before crossing railroad tracks, even if the barriers are up and no lights are flashing.",
+            "secondary": "踏切 (Fumikiri)",
+            "tertiary": "Railroad Crossing Rule"
+        },
+        "back": {
+            "main": "True",
+            "secondary": "Always stop, look both ways, and listen before crossing railroad tracks.",
+            "tertiary": "Safety Procedure"
+        }
+    }
+]
