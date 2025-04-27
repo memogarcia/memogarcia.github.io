@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,22 +20,29 @@
         /* Custom Card Animation */
         .card-container {
             position: relative;
-            perspective: 1000px; /* For potential 3D effects if needed later */
-            min-height: 200px; /* Ensure container has height */
+            perspective: 1000px;
+            /* For potential 3D effects if needed later */
+            min-height: 200px;
+            /* Ensure container has height */
         }
 
         .card {
             /* Base styles */
             background-color: white;
-            border-radius: 0.75rem; /* rounded-xl */
-            padding: 1.5rem; /* p-6 */
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            padding: 1.5rem;
+            /* p-6 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            /* shadow-md */
             text-align: center;
             width: 100%;
-            position: absolute; /* Position for animation */
+            position: absolute;
+            /* Position for animation */
             top: 0;
             left: 0;
-            backface-visibility: hidden; /* Hide back during animation if flipping */
+            backface-visibility: hidden;
+            /* Hide back during animation if flipping */
             transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
             transform-origin: center center;
         }
@@ -59,83 +67,118 @@
 
         /* Hide elements initially */
         .back-content {
-            display: none; /* Initially hide back content */
-            margin-top: 1rem; /* Add space above back content */
-            color: #4b5563; /* gray-600 */
+            display: none;
+            /* Initially hide back content */
+            margin-top: 1rem;
+            /* Add space above back content */
+            color: #4b5563;
+            /* gray-600 */
         }
 
         .card.is-showing-back .back-content {
-            display: block; /* Show back content when card is clicked */
+            display: block;
+            /* Show back content when card is clicked */
         }
 
         /* Ensure consistent height for card elements */
         .card-main-content {
-            min-height: 60px; /* Adjust as needed */
-            font-size: 3rem; /* text-5xl */
-            font-weight: 600; /* font-semibold */
-            margin-bottom: 0.5rem; /* mb-2 */
-            color: #1f2937; /* gray-800 */
+            min-height: 60px;
+            /* Adjust as needed */
+            font-size: 3rem;
+            /* text-5xl */
+            font-weight: 600;
+            /* font-semibold */
+            margin-bottom: 0.5rem;
+            /* mb-2 */
+            color: #1f2937;
+            /* gray-800 */
         }
+
         .card-secondary-content {
-            min-height: 24px; /* Adjust as needed */
-            font-size: 1.25rem; /* text-xl */
-            color: #4b5563; /* gray-600 */
-            margin-bottom: 0.25rem; /* mb-1 */
+            min-height: 24px;
+            /* Adjust as needed */
+            font-size: 1.25rem;
+            /* text-xl */
+            color: #4b5563;
+            /* gray-600 */
+            margin-bottom: 0.25rem;
+            /* mb-1 */
         }
+
         .card-tertiary-content {
-            min-height: 20px; /* Adjust as needed */
-            font-size: 1rem; /* text-base */
-            color: #6b7280; /* gray-500 */
+            min-height: 20px;
+            /* Adjust as needed */
+            font-size: 1rem;
+            /* text-base */
+            color: #6b7280;
+            /* gray-500 */
         }
 
         /* Progress bar styles */
         .progress-bar-bg {
-            background-color: #e5e7eb; /* gray-200 */
-            border-radius: 9999px; /* rounded-full */
+            background-color: #e5e7eb;
+            /* gray-200 */
+            border-radius: 9999px;
+            /* rounded-full */
             height: 8px;
-            overflow: hidden; /* Ensure inner bar respects rounding */
+            overflow: hidden;
+            /* Ensure inner bar respects rounding */
         }
+
         .progress-bar-fill {
-            background-color: #6366f1; /* indigo-500 */
+            background-color: #6366f1;
+            /* indigo-500 */
             height: 100%;
-            border-radius: 9999px; /* rounded-full */
+            border-radius: 9999px;
+            /* rounded-full */
             transition: width 0.3s ease-out;
         }
 
         /* Styling for file input and select */
-        select, input[type="file"]::file-selector-button {
-             border: 1px solid #d1d5db; /* gray-300 */
-             padding: 0.5rem 1rem;
-             border-radius: 0.375rem; /* rounded-md */
-             background-color: white;
-             cursor: pointer;
-             transition: background-color 0.2s;
+        select,
+        input[type="file"]::file-selector-button {
+            border: 1px solid #d1d5db;
+            /* gray-300 */
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            /* rounded-md */
+            background-color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
-         input[type="file"]::file-selector-button:hover {
-             background-color: #f9fafb; /* gray-50 */
-         }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: #f9fafb;
+            /* gray-50 */
+        }
+
         select:focus {
             outline: 2px solid transparent;
             outline-offset: 2px;
-            border-color: #6366f1; /* indigo-500 */
-            box-shadow: 0 0 0 2px #a5b4fc; /* indigo-300 focus ring */
+            border-color: #6366f1;
+            /* indigo-500 */
+            box-shadow: 0 0 0 2px #a5b4fc;
+            /* indigo-300 focus ring */
         }
 
         /* Loading indicator */
         #loading-indicator {
-            display: none; /* Hidden by default */
+            display: none;
+            /* Hidden by default */
         }
 
         /* Message Area */
         #message-area {
-            min-height: 24px; /* Reserve space */
+            min-height: 24px;
+            /* Reserve space */
             margin-top: 0.5rem;
             text-align: center;
-            color: #ef4444; /* red-500 */
+            color: #ef4444;
+            /* red-500 */
         }
-
     </style>
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
     <div class="app bg-[#6366F1] w-full max-w-sm rounded-3xl shadow-lg overflow-hidden text-white">
@@ -147,14 +190,16 @@
         <main class="bg-gray-100 p-6 rounded-t-3xl text-gray-800">
 
             <div class="mb-4 flex flex-col sm:flex-row gap-2 items-center">
-                 <label for="file-input" class="sr-only">Load JSON Deck(s):</label>
-                 <input type="file" id="file-input" accept=".json" multiple class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer flex-grow w-full sm:w-auto"/>
-                 <div id="loading-indicator" class="text-sm text-indigo-600">Loading...</div>
+                <label for="file-input" class="sr-only">Load JSON Deck(s):</label>
+                <input type="file" id="file-input" accept=".json" multiple
+                    class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer flex-grow w-full sm:w-auto" />
+                <div id="loading-indicator" class="text-sm text-indigo-600">Loading...</div>
             </div>
 
-             <div class="mb-4">
+            <div class="mb-4">
                 <label for="deck-select" class="block text-sm font-medium text-gray-700 mb-1">Select Deck:</label>
-                <select id="deck-select" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <select id="deck-select"
+                    class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     <option value="">-- No decks loaded --</option>
                 </select>
             </div>
@@ -167,7 +212,7 @@
                     <div class="card-secondary-content text-gray-400"></div>
                     <div class="card-tertiary-content text-gray-400"></div>
                     <div class="back-content"></div>
-                 </div>
+                </div>
             </div>
 
             <div class="progress mb-4">
@@ -178,7 +223,8 @@
             </div>
 
             <footer class="controls">
-                <button id="next-button" class="w-full bg-[#6366F1] hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                <button id="next-button"
+                    class="w-full bg-[#6366F1] hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 ease-in-out shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
                     NEXT CARD
                 </button>
             </footer>
@@ -224,8 +270,8 @@
 
         /** Displays a message to the user */
         function showMessage(message, isError = false) {
-             messageArea.textContent = message;
-             messageArea.style.color = isError ? '#ef4444' : '#1f2937'; // red-500 for error, gray-800 for info
+            messageArea.textContent = message;
+            messageArea.style.color = isError ? '#ef4444' : '#1f2937'; // red-500 for error, gray-800 for info
         }
 
         // --- Core Logic ---
@@ -248,16 +294,16 @@
 
             Array.from(files).forEach(file => {
                 if (file.type !== 'application/json') {
-                     console.warn(`Skipping non-JSON file: ${file.name}`);
-                     showMessage(`Skipped non-JSON file: ${file.name}`, true);
-                     filesProcessed++;
-                     if (filesProcessed === totalFiles) finishLoading();
-                     return; // Skip non-JSON files
+                    console.warn(`Skipping non-JSON file: ${file.name}`);
+                    showMessage(`Skipped non-JSON file: ${file.name}`, true);
+                    filesProcessed++;
+                    if (filesProcessed === totalFiles) finishLoading();
+                    return; // Skip non-JSON files
                 }
 
                 const reader = new FileReader();
 
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     try {
                         const content = JSON.parse(e.target.result);
                         // Basic validation: Check if it's an array
@@ -272,14 +318,14 @@
 
                     } catch (error) {
                         console.error(`Error parsing JSON file ${file.name}:`, error);
-                         showMessage(`Error in ${file.name}: ${error.message}`, true);
+                        showMessage(`Error in ${file.name}: ${error.message}`, true);
                     } finally {
-                         filesProcessed++;
-                         if (filesProcessed === totalFiles) finishLoading();
+                        filesProcessed++;
+                        if (filesProcessed === totalFiles) finishLoading();
                     }
                 };
 
-                reader.onerror = function(e) {
+                reader.onerror = function (e) {
                     console.error(`Error reading file ${file.name}:`, e);
                     showMessage(`Error reading file ${file.name}`, true);
                     filesProcessed++;
@@ -292,16 +338,16 @@
 
         /** Updates UI after files are processed */
         function finishLoading() {
-             loadingIndicator.style.display = 'none'; // Hide loading
-             populateDeckSelect();
-             if (Object.keys(decks).length > 0) {
-                 // Automatically select the first loaded deck
-                 deckSelect.selectedIndex = 1; // Select the first actual deck
-                 handleDeckChange();
-             } else {
-                 resetUI(); // Reset if no valid decks were loaded
-                 showMessage('No valid JSON decks loaded.', true);
-             }
+            loadingIndicator.style.display = 'none'; // Hide loading
+            populateDeckSelect();
+            if (Object.keys(decks).length > 0) {
+                // Automatically select the first loaded deck
+                deckSelect.selectedIndex = 1; // Select the first actual deck
+                handleDeckChange();
+            } else {
+                resetUI(); // Reset if no valid decks were loaded
+                showMessage('No valid JSON decks loaded.', true);
+            }
         }
 
 
@@ -312,8 +358,8 @@
 
             const deckNames = Object.keys(decks);
             if (deckNames.length === 0) {
-                 deckSelect.disabled = true;
-                 return;
+                deckSelect.disabled = true;
+                return;
             }
 
             deckSelect.disabled = false;
@@ -354,24 +400,24 @@
 
         /** Resets the UI to initial state */
         function resetUI() {
-             currentDeck = [];
-             currentCardIndex = 0;
-             isShowingBack = false;
-             cardContainer.innerHTML = `
+            currentDeck = [];
+            currentCardIndex = 0;
+            isShowingBack = false;
+            cardContainer.innerHTML = `
                  <div class="card card-placeholder opacity-50">
                     <div class="card-main-content text-gray-400 text-3xl">Load Deck</div>
                     <div class="card-secondary-content text-gray-400"></div>
                     <div class="card-tertiary-content text-gray-400"></div>
                     <div class="back-content"></div>
                  </div>`; // Show placeholder
-             activeCardElement = cardContainer.querySelector('.card'); // Update reference
-             updateProgress();
-             nextButton.disabled = true;
-             deckTitle.textContent = 'Load a Deck';
-             deckSubtitle.textContent = 'Select JSON file(s)';
-             if (deckSelect.options.length <= 1) { // Only placeholder exists
+            activeCardElement = cardContainer.querySelector('.card'); // Update reference
+            updateProgress();
+            nextButton.disabled = true;
+            deckTitle.textContent = 'Load a Deck';
+            deckSubtitle.textContent = 'Select JSON file(s)';
+            if (deckSelect.options.length <= 1) { // Only placeholder exists
                 deckSelect.disabled = true;
-             }
+            }
         }
 
         /** Creates the HTML for a card */
@@ -469,19 +515,19 @@
                 oldCardElement.classList.add('card-exit');
                 // Remove old card after animation completes
                 oldCardElement.addEventListener('transitionend', () => {
-                     // Check if the element still exists before removing
-                     if (oldCardElement.parentNode === cardContainer) {
-                        cardContainer.removeChild(oldCardElement);
-                     }
-                }, { once: true }); // Ensure listener fires only once
-            } else if (oldCardElement && isInitial) {
-                 // If it's the initial load, just remove the placeholder immediately or fade it out
-                 oldCardElement.style.opacity = '0';
-                 oldCardElement.addEventListener('transitionend', () => {
+                    // Check if the element still exists before removing
                     if (oldCardElement.parentNode === cardContainer) {
                         cardContainer.removeChild(oldCardElement);
                     }
-                 }, { once: true });
+                }, { once: true }); // Ensure listener fires only once
+            } else if (oldCardElement && isInitial) {
+                // If it's the initial load, just remove the placeholder immediately or fade it out
+                oldCardElement.style.opacity = '0';
+                oldCardElement.addEventListener('transitionend', () => {
+                    if (oldCardElement.parentNode === cardContainer) {
+                        cardContainer.removeChild(oldCardElement);
+                    }
+                }, { once: true });
             }
 
 
@@ -507,7 +553,7 @@
 
         /** Handles the "NEXT CARD" button click */
         function handleNextCard() {
-             clearMessage(); // Clear any previous messages
+            clearMessage(); // Clear any previous messages
             if (currentDeck.length === 0) return; // Do nothing if no deck
 
             // If deck was completed, restart it
@@ -534,4 +580,5 @@
 
     </script>
 </body>
+
 </html>
