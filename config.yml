@@ -1,6 +1,6 @@
 baseURL: "https://memo.mx"
 title: Memo Garcia
-paginate: 5000
+# paginate: 5000 # Deprecated
 theme: PaperMod
 
 publishDir: .
@@ -55,7 +55,7 @@ params:
   description: "Memo's personal blog"
   author: "Memo Garcia"
 
-  defaultTheme: auto
+  defaultTheme: dark # Changed from auto to dark
   # disableThemeToggle: true
   ShowShareButtons: false
   ShowReadingTime: true
@@ -94,6 +94,9 @@ params:
 
   assets:
     disableHLJS: true
+    # Update theme colors to match cyberpunk palette
+    theme_color: "#0d0221"
+    msapplication_TileColor: "#0d0221"
 
 markup:
   defaultMarkdownHandler: goldmark
@@ -109,6 +112,9 @@ markup:
     # anchorLineNos: true
     # lineNos: true
 
+pagination:
+  pagerSize: 5000
+
 privacy:
   vimeo:
     disabled: false
@@ -116,8 +122,6 @@ privacy:
 
   twitter:
     disabled: false
-    enableDNT: true
-    simple: true
 
   instagram:
     disabled: false
@@ -130,8 +134,7 @@ privacy:
 services:
   instagram:
     disableInlineCSS: true
-  twitter:
-    disableInlineCSS: true
+  twitter: {} # Was disableInlineCSS: true, which is deprecated in Hugo v0.141.0
 
 ignoreLogs:
   - "err-youtube-remote"

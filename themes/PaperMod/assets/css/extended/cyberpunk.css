@@ -1,0 +1,187 @@
+/*
+Cyberpunk Theme Styles for PaperMod
+Inspired by Cyberpunk 2077
+*/
+
+/*
+Note: For custom fonts like 'Orbitron', 'Turret Road', 'Audiowide', 'Share Tech Mono',
+you'll need to import them. For example, using Google Fonts, add the following
+to your `layouts/partials/extend_head.html`:
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@400;700&family=Share+Tech+Mono&family=Turret+Road:wght@400;700&display=swap" rel="stylesheet">
+*/
+
+body.dark {
+    --cyber-bg: #0A0A0F; /* Very dark, almost black with a hint of blue/purple */
+    --cyber-surface: #14141E; /* Slightly lighter dark surface */
+    --cyber-primary-text: #E0E0E0; /* Light grey for readability */
+    --cyber-secondary-text: #7A7A8C; /* Muted grey/blue for secondary info */
+    
+    --cyber-yellow: #FCEE0A; /* Iconic Cyberpunk Yellow */
+    --cyber-cyan: #07F8F8;   /* Bright Cyan */
+    --cyber-magenta: #F900F9; /* Bright Magenta/Hot Pink */
+
+    --cyber-border: var(--cyber-cyan); /* Using cyan for borders as a primary accent */
+    --cyber-link: var(--cyber-yellow);
+    --cyber-link-hover: var(--cyber-magenta);
+    --cyber-code-bg: #101015; /* Darker than surface for code blocks */
+    --cyber-code-text: var(--cyber-primary-text);
+    --cyber-header-bg: #0F0F14; /* Slightly different from main bg for depth */
+
+    --theme: var(--cyber-bg);
+    --entry: var(--cyber-surface);
+    --primary: var(--cyber-primary-text);
+    --secondary: var(--cyber-secondary-text);
+    --tertiary: var(--cyber-link); /* Use for less important links or highlights */
+    --content: var(--cyber-primary-text);
+    --hljs-bg: var(--cyber-code-bg);
+    --code-bg: var(--cyber-code-bg);
+    --border: var(--cyber-border);
+
+    font-family: 'Share Tech Mono', 'Orbitron', 'Audiowide', 'Turret Road', monospace, sans-serif;
+    background-color: var(--theme);
+    color: var(--primary);
+}
+
+body.dark .header {
+    background: var(--cyber-header-bg);
+    /* border-bottom: 1px solid var(--cyber-border); */ /* Removed header bottom border */
+}
+
+body.dark .logo a,
+body.dark .menu a {
+    color: var(--primary);
+}
+
+body.dark .logo a:hover,
+body.dark .menu a:hover,
+body.dark .menu a.active {
+    color: var(--cyber-yellow);
+}
+
+body.dark a {
+    color: var(--cyber-link);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+body.dark a:hover {
+    color: var(--cyber-link-hover);
+}
+
+body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
+    color: var(--cyber-yellow); /* Changed to yellow for primary header emphasis */
+}
+
+body.dark .post-content h1, 
+body.dark .post-content h2,
+body.dark .post-content h3,
+body.dark .post-content h4,
+body.dark .post-content h5,
+body.dark .post-content h6 {
+    border-bottom: 1px solid var(--cyber-cyan); /* Cyan for content header underlines */
+}
+
+
+body.dark .post-meta {
+    color: var(--cyber-secondary-text);
+}
+
+body.dark .button, body.dark button, body.dark input[type=submit] {
+    background-color: transparent;
+    color: var(--cyber-cyan);
+    border: 1px solid var(--cyber-cyan);
+    padding: 8px 15px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark .button:hover, body.dark button:hover, body.dark input[type=submit]:hover {
+    background-color: var(--cyber-cyan);
+    color: var(--cyber-bg);
+}
+
+body.dark #theme-toggle svg {
+    color: var(--cyber-cyan);
+}
+body.dark #theme-toggle:hover svg {
+    color: var(--cyber-yellow);
+}
+
+/* Specifically remove border from theme-toggle button */
+body.dark #theme-toggle {
+    border: none;
+    box-shadow: none; /* Also remove shadow if any was applied by general button styles */
+}
+
+body.dark code {
+    background: var(--code-bg);
+    color: var(--cyber-code-text);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    border: 1px solid var(--cyber-magenta); /* Changed border to magenta */
+    font-family: 'Share Tech Mono', monospace;
+}
+
+body.dark pre {
+    background: var(--hljs-bg);
+    border: 1px solid var(--cyber-border); /* Uses --cyber-cyan now */
+    padding: 1em;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+body.dark pre code {
+    border: none;
+    background: transparent; /* Code inside pre should inherit pre's background */
+}
+
+body.dark .post-entry {
+    background: var(--entry);
+    border: 1px solid var(--cyber-border); /* Uses --cyber-cyan now */
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+body.dark .footer {
+    border-top: 1px solid var(--cyber-border);
+    padding-top: 10px;
+    color: var(--cyber-secondary-text);
+}
+
+/* Style scrollbars for webkit browsers */
+body.dark::-webkit-scrollbar {
+    width: 10px;
+}
+body.dark::-webkit-scrollbar-track {
+    background: var(--cyber-surface);
+}
+body.dark::-webkit-scrollbar-thumb {
+    background: var(--cyber-magenta); /* Changed to magenta */
+    border-radius: 5px;
+    border: 1px solid var(--cyber-cyan);
+}
+body.dark::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-yellow);
+}
+
+/* Table styling */
+body.dark table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+}
+body.dark th, body.dark td {
+    border: 1px solid var(--cyber-cyan);
+    padding: 0.5em;
+    text-align: left;
+}
+body.dark th {
+    background-color: var(--cyber-surface);
+    color: var(--cyber-yellow); /* Changed to yellow */
+}
+body.dark tr:nth-child(even) {
+    background-color: rgba(7, 248, 248, 0.05); /* Faint cyan for even rows */
+}
+body.dark tr:hover {
+    background-color: rgba(249, 0, 249, 0.1); /* Faint magenta on hover */
+}
