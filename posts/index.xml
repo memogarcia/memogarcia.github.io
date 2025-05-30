@@ -17,9 +17,9 @@
       <pubDate>Wed, 22 Jan 2025 00:03:30 +0100</pubDate>
       
       <guid>https://memo.mx/posts/bdd-with-llms/</guid>
-      <description>It&amp;rsquo;s tempting to simply tell an LLM something like, &amp;ldquo;Build me a CRUD API in FastAPI,&amp;rdquo; and watch it get to work. It&amp;rsquo;s impressive because:
-LLMs can deal with vague instructions. We can &amp;ldquo;talk&amp;rdquo; naturally to computers. However, this approach is very imperative and hard to repeat consistently. It makes outcomes difficult to predict or verify.
-It helps to structure your prompts clearly, and that&amp;rsquo;s exactly where Behavior-Driven Development (BDD) comes in handy.</description>
+      <description>Have you ever asked an LLM, &amp;ldquo;Build me a CRUD API in FastAPI,&amp;rdquo; and just hoped for the best? LLMs are great at taking broad requests and letting us talk to computers like they’re people. But that freeform style can bring surprises and make it tough to get the same result twice.
+Behavior-Driven Development, or BDD, offers a clear framework. It guides you to:
+Define exactly what you expect Set clear boundaries for the solution Keep everything documented in plain language Creating a prompt plan using BDD A &amp;ldquo;prompt plan&amp;rdquo; is basically a roadmap for your LLM.</description>
     </item>
     
     <item>
