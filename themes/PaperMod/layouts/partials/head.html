@@ -139,52 +139,32 @@ resources.Minify }}
             display: none;
         }
     </style>
-    {{- /* Apply Cyberpunk dark theme if default is dark, or if auto and OS is dark */}}
-    {{- if or (eq site.Params.defaultTheme "dark") (and (ne site.Params.defaultTheme "light") (ne site.Params.defaultTheme "dark")) }}
-    <style {{ if and (ne site.Params.defaultTheme "light") (ne site.Params.defaultTheme "dark") }}media="(prefers-color-scheme: dark)"{{ end }}>
-        :root {
-            --theme: #0A0A0F; /* Very dark, almost black */
-            --entry: #14141E; /* Slightly lighter dark surface */
-            --primary: #E0E0E0; /* Light grey for readability */
-            --secondary: #7A7A8C; /* Muted grey/blue */
-            --tertiary: #FCEE0A; /* Cyberpunk Yellow for links */
-            --content: #E0E0E0;
-            --hljs-bg: #101015; /* Darker code background */
-            --code-bg: #101015;
-            --border: #07F8F8; /* Bright Cyan for borders */
-            --cyber-yellow: #FCEE0A;
-            --cyber-magenta: #F900F9; /* For link hover or other accents */
-            --cyber-cyan: #07F8F8;
-        }
+    {{- if (and (ne site.Params.defaultTheme "light") (ne site.Params.defaultTheme "dark")) }}
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
 
-        body {
-            background-color: var(--theme);
-            color: var(--primary);
-            font-family: 'Share Tech Mono', 'Orbitron', 'Audiowide', 'Turret Road', monospace, sans-serif; /* Basic font stack for noscript */
-        }
+            .list {
+                background: var(--theme);
+            }
 
-        .list {
-            background: var(--theme);
-        }
-        .header {
-            background: var(--entry); 
-            border-bottom: 1px solid var(--border); /* Cyan border */
-        }
-        .logo a, .menu a {
-            color: var(--primary);
-        }
-        a {
-            color: var(--tertiary); /* Yellow links */
-        }
-        a:hover {
-            color: var(--cyber-magenta); /* Magenta link hover */
-        }
-        h1, h2, h3, h4, h5, h6 {
-            color: var(--cyber-yellow); /* Yellow for headers */
-        }
-        code, pre {
-            background: var(--code-bg);
-            border: 1px solid var(--cyber-magenta); /* Magenta border for code */
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
         }
     </style>
     {{- end }}
