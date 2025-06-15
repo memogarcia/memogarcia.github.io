@@ -6,20 +6,6 @@ draft: false
 
 TODO: Add an intro here
 
-* **Add:** A brief outline of chapters and target audience (students, career changers, hobbyists).
-* **Clarify:** How analogies simplify learning but don’t replace technical study.
-
-
-* [Part 1: Building the Foundation](./understanding-computer-networks-by-analogy-chapter-1.md)
-
-* [Part 2: Moving Around The City](./understanding-computer-networks-by-analogy-chapter-2.md)
-
-* [Part 3: Hotels In The Clouds & Future Cities](./understanding-computer-networks-by-analogy-chapter-3.md)
-
-* [Part 5: Becoming An Architect](./understanding-computer-networks-by-analogy-chapter-4.md)
-
-* [Part 5: Appendices](./understanding-computer-networks-by-analogy-appendices.md)
-
 
 I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this and you are also struggling with these concepts, just know this isn’t a complete map of the "networking world" it is simply a different way to see it. I hope you find this analogy helpful.
 
