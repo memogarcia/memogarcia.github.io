@@ -37,8 +37,8 @@ draft: false
 | QoS                          | Priority Lane                            |
 | NAT                          | Front Desk Clerk                         |
 | Routing Table                | Building/City Map                        |
-| IPv4                         | Limited Address System                   |
-| IPv6                         | Unlimited Address System                 |
+| IPv4                         | Limited Address System,                  |
+| IPv6                         | Unlimited Address System,                |
 | Network Topology             | Building Blueprint                       |
 | Cloud Computing              | Rented Office Space                      |
 | Cloud Provider               | Property Manager                         |
