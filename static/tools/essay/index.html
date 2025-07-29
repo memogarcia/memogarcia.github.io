@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essay - Writing Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <svg class="logo" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span class="brand-name">essay</span>
+            <span class="beta-tag">beta.</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Plans</a>
+            <a href="#" class="nav-link">Media</a>
+            <a href="#" class="nav-link">Writing Guide</a>
+            <a href="#" class="nav-link">Login</a>
+            <button class="try-free-btn">Try Essay free</button>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <input type="text" class="essay-title" placeholder="Essay title" value="Ideas for my essay">
+                <div class="sidebar-actions">
+                    <button class="icon-btn share-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="16 6 12 2 8 6" stroke="currentColor" stroke-width="2"/>
+                            <line x1="12" y1="2" x2="12" y2="15" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Share
+                    </button>
+                    <button class="icon-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="1" fill="currentColor"/>
+                            <circle cx="12" cy="5" r="1" fill="currentColor"/>
+                            <circle cx="12" cy="19" r="1" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="document-content">
+                <div class="document-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="doc-icon">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2"/>
+                        <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="doc-title">Essay title</span>
+                </div>
+                
+                <div class="outline-section">
+                    <ul class="outline-list">
+                        <li>The role of editing in the writing process</li>
+                        <li>
+                            Discussing how revision and editing can transform a rough draft into a polished piece of writing
+                            <ul>
+                                <li>What are some common editing techniques?</li>
+                                <li>What are the benefits of splitting up different editing phases?</li>
+                            </ul>
+                        </li>
+                        <li>
+                            How does writing reflect cultural identity?
+                            <ul>
+                                <li>Some examples of how writers in the past have reflected their cultural background and heritage in their writing</li>
+                            </ul>
+                        </li>
+                        <li>
+                            How to different cultural backgrounds use storytelling to maintain identity, community, and tradition
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="step-icon">✓</div>
+                    <h3>Brainstorm ideas</h3>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">✓</div>
+                    <h3>Collect and organize research</h3>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">✓</div>
+                    <h3>Build an outline to structure your argument</h3>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">✓</div>
+                    <h3>Connect notes and research to the outline</h3>
+                </div>
+            </div>
+
+            <button class="try-essay-btn">Try Essay for free</button>
+
+            <p class="description">
+                Organize your research with Notes, plan your project with Outline, and structure your ideas
+                with ease. Essay incorporates unique tools that allow you to connect your notes and
+                research directly to your outline, making it easier to develop and refine your arguments.
+            </p>
+        </main>
+
+        <!-- Modals for different features -->
+        <div id="brainstorm-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Brainstorm Ideas</h2>
+                <textarea id="brainstorm-input" placeholder="Start typing your ideas..."></textarea>
+                <div class="modal-actions">
+                    <button class="btn-secondary close-modal">Cancel</button>
+                    <button class="btn-primary save-brainstorm">Save Ideas</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="research-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Add Research</h2>
+                <input type="text" id="research-title" placeholder="Research title">
+                <textarea id="research-content" placeholder="Add your research notes..."></textarea>
+                <input type="url" id="research-url" placeholder="Source URL (optional)">
+                <div class="modal-actions">
+                    <button class="btn-secondary close-modal">Cancel</button>
+                    <button class="btn-primary save-research">Save Research</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="outline-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Edit Outline</h2>
+                <div id="outline-editor">
+                    <!-- Outline items will be dynamically added here -->
+                </div>
+                <button class="add-outline-item">+ Add Section</button>
+                <div class="modal-actions">
+                    <button class="btn-secondary close-modal">Cancel</button>
+                    <button class="btn-primary save-outline">Save Outline</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
