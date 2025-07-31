@@ -12,6 +12,9 @@ class PomodoroTimer {
         this.bindEvents();
         this.updateDisplay();
         this.loadHistory();
+        
+        // Initially hide timer and show setup
+        this.showSetupView();
     }
     
     initElements() {
@@ -24,6 +27,9 @@ class PomodoroTimer {
         this.pauseBtn = document.getElementById('pauseBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.historyDiv = document.getElementById('history');
+        this.timerDisplayContainer = document.querySelector('.timer-display');
+        this.setupSection = document.querySelector('.setup-section');
+        this.statsSection = document.querySelector('.stats');
     }
     
     bindEvents() {
@@ -31,6 +37,18 @@ class PomodoroTimer {
         this.pauseBtn.addEventListener('click', () => this.pause());
         this.resetBtn.addEventListener('click', () => this.reset());
         this.durationInput.addEventListener('change', () => this.updateDuration());
+    }
+    
+    showTimerView() {
+        this.timerDisplayContainer.style.display = 'block';
+        this.setupSection.style.display = 'none';
+        this.statsSection.style.display = 'none';
+    }
+    
+    showSetupView() {
+        this.timerDisplayContainer.style.display = 'none';
+        this.setupSection.style.display = 'block';
+        this.statsSection.style.display = 'block';
     }
     
     updateDuration() {
@@ -53,6 +71,8 @@ class PomodoroTimer {
             this.topicInput.disabled = true;
             this.durationInput.disabled = true;
             this.statusDisplay.textContent = 'Working...';
+            
+            this.showTimerView();
             
             this.interval = setInterval(() => this.tick(), 1000);
         }
@@ -85,6 +105,8 @@ class PomodoroTimer {
         this.currentTopicDisplay.textContent = '';
         this.statusDisplay.textContent = 'Ready';
         this.updateDisplay();
+        
+        this.showSetupView();
     }
     
     tick() {
