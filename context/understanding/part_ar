@@ -1,0 +1,250 @@
+ Efficiency: Smaller units of data can be routed through the network and interwoven with others’ packets. If one packet gets lost, you just resend that one, not the entire file.
+
+ Parallelism: Packets can take different routes to the destination if needed and potentially arrive out of order but faster than if forced in a single file stream. The analogy: if sending 50 couriers on bicycles through a city might actually get all parts of your message there faster than one truck carrying the whole load, especially if the roads have varying traffic.
+
+ Avoiding single points of failure: If one giant message is lost or corrupted, you lose everything. If one out of 50 packets is lost, you just recover that one packet.
+
+At the network layer (IP), each packet is independent. It’s like each envelope knows the final address but not necessarily that it’s part of a multi-envelope set (the assembly is often handled at the transport layer like TCP). Still, the idea stands: data gets chopped into manageable chunks.
+
+On receiving end:
+
+ The packets arrive (often out of order: you might get envelope 1, then 3, then 2, then 5, then 4).
+
+ The network stack (like TCP if it’s a TCP stream) will reorder them by sequence number, check none are missing (and if some are, request a resend), and then pass the fully reassembled data to the application.
+
+It’s quite magical: you send a large file, and it might traverse the network via dozens of routers, broken into dozens of packets, and in the end it comes together perfectly (most of the time).
+
+One more thing: remember the elevator and route analogy. It might be that not all packets strictly take the same path. If one route becomes slow or congested, some packets might detour. This is like sending some envelopes through one mail route and others through another route if the first is jammed. As long as they eventually get there, the content can be reassembled.
+
+So the packet headers act like the envelope’s address label and also include a “fragile, handle with care” note or a tracking number etc. The network equipment (switches, routers) only look at these headers (particularly addresses) to do their job. They don’t necessarily need to see the content (and often can’t, if it’s encrypted or if they operate at a lower layer like a switch just looking at MACs).
+
+To sum up: No single big message goes as one blob; it’s sliced into many packets that zip through the network and regroup at the destination.
+Technical Perspective: In technical terms, what we’re describing is the process of packetization. For example, on an Ethernet network using IP/TCP:
+
+ The Maximum Transmission Unit (MTU) might be around 1500 bytes for Ethernet. If you have more data than that to send at once, it will be split into multiple IP packets. Each IP packet has an IP header (with source IP, destination IP, etc.)
+ . For TCP, each packet will also have a TCP header (with source port, destination port, sequence number, acknowledgment number, etc.). The payload of each packet is a segment of your application data.
+
+ Each packet gets a sequence number at the TCP layer which helps the receiver put them in order. IP also has an identifier and fragment offset if fragmentation occurs at the IP layer (which is another form of splitting if a router needs to break a packet due to MTU limits).
+
+ Error checking: IP header has a checksum for the header; TCP/UDP have a checksum covering their header + data, which allows detection of corruption in transit. If a checksum doesn’t match, the packet is discarded (like a letter that was damaged).
+
+ If one packet is lost (didn’t arrive, likely detected by missing sequence in TCP, or by not being acknowledged), TCP will trigger a retransmission of that packet.
+
+ The reassembly is handled by the TCP layer (or by the application if using UDP and the application cares to reassemble or has its own sequencing). That’s why by the time the data reaches the application, it’s as if it was one continuous stream (for TCP).
+
+ The network layer (IP) treats each packet independently, which is why they could take different routes. This is due to dynamic routing decisions or load balancing across multiple links. There’s no guarantee packet 1 and packet 2 follow the same path through the internet, they might converge at the destination.
+
+ The benefit is resilience: if some router on one path goes down mid-transfer, later packets can be routed around it, and maybe only a few packets were lost and need resending, versus losing the entire transfer.
+
+ The metadata in packet headers that we mentioned includes things like Source IP, Destination IP, Protocol (TCP/UDP), Source Port, Destination Port, Sequence Number, Acknowledgment Number, Flags (like SYN, ACK, FIN for TCP control), Window size (for TCP flow control), plus lower layer addresses (MAC addresses in the Ethernet header when on that local link), etc. We can think of these as all the notes on an envelope that ensure it’s delivered correctly and can be tracked in sequence.
+
+To put some numbers: IPv4 addresses are 32-bit (which we’ll discuss in IPv4 vs IPv6), ports are 16-bit, sequence number is 32-bit in TCP, etc. These all go into the header overhead of each packet. But thanks to these, we manage to send massive amounts of information accurately over a global network that doesn’t guarantee reliability underneath – it’s the transport and higher protocols that build reliability on top of the unreliable or connectionless IP layer.
+
+One could say the internet is packet-switched, meaning it routes individual packets, as opposed to circuit-switched networks (like old telephone systems) which set up a dedicated path for the whole conversation. Packet-switching is why the internet scales and is robust: those packets can route around issues, share paths, and optimize usage of lines.
+Putting It All Together: Delivering Data Correctly
+
+That was a lot of concepts! Let’s recap by walking through an everyday action: loading a webpage – say, you in Room 101 (your laptop) want to visit https://memo.mx (a website on some server across the internet).
+
+Here’s the journey, combining many concepts we’ve discussed:
+
+ Find the Address (DNS Lookup): First, your computer doesn’t know what IP address memo.mx corresponds to. So it asks the DNS (the public directory). This might involve contacting a DNS server which replies with, for example, “memo.mx is at 203.0.113.5”. Now you have the building’s address (public IP of the web server’s network)
+
+ Establish a Connection (TCP Handshake): Your browser wants to use HTTPS (secure web, which uses TCP under the hood). So your computer (Room 101) prepares to send a request to 203.0.113.5 on port 443 (the web service mailbox for HTTPS). It will go through the steps: if that server is outside your local network, the packets will go to your router (gateway) and then out to the internet, eventually reaching the destination building’s router, then the server. But since it’s TCP, first there’s a handshake: a SYN packet (like “hello, can we talk?”) from you, a SYN-ACK back from the server (“hello, yes let’s talk”), and an ACK from you (“great, thanks”). Now a reliable connection is established.
+
+ Send the Request (HTTP Protocol): Your browser now sends an HTTP request over that connection: essentially a message that says “GET / (the homepage) HTTP/1.1 Host: memo.mx” along with other headers. This is like saying at the door “I’d like the homepage, please.” The server at memo.mx (in its data center or hosting environment) has a web server program listening on port 443 that receives this request.
+
+ Server Responds: The web server processes the request. It might retrieve the homepage content (maybe it’s a file or generated dynamically) and then sends back an HTTP response. This response includes status code “200 OK” and the content of the homepage (HTML, images, etc., possibly broken into multiple pieces). If the content is large, it will be split into many packets, each labeled and sent out.
+
+ Data Travels Back: Those packets leave the server’s network, traverse the internet routers (perhaps going through some big ISPs, undersea cables, who knows) and eventually reach your ISP, then your home router, and then your computer. Since this is TCP, your computer acknowledges packets as they come, and if any are missing, it will notice and they might be retransmitted.
+
+ Arrive at the Right Room and Mailbox: The packets carrying the web page data arrive at your laptop (Room 101) – specifically they are delivered to the browser application via port 443 connection that was established. Your laptop reassembles the data in the right order (thanks to sequence numbers and TCP’s work) and now the browser has the HTML content.
+
+ Render the Page: The browser then takes that HTML and renders the webpage for you. It might find references to other resources (like images, CSS, JS files) and for each of those, it may make additional requests (possibly repeating DNS lookups if they are on other domains, opening new TCP connections or reusing existing ones, etc.). Each of those resources will similarly be fetched via the network. Often multiple requests can happen in parallel.
+
+ Closing connections: When done, the TCP connection is closed (via a FIN handshake sequence) to free up resources.
+
+From your perspective, you just typed a web address and moments later the page showed up. But behind the scenes: DNS (public directory) found the server’s address, your router and many other routers cooperated to route packets between your device and the server (city roads, concierges), the server’s and your device’s TCP stack ensured nothing was lost or corrupted (registered mail service), ports made sure the data got to the right program on each side (mailboxes), and protocols (HTTP) made sure both sides understood the request and response (common language).
+
+The whole dance relies on every component working in concert.
+
+ If DNS fails, you can’t find the building.
+
+ If your router/gateway is down, you can’t leave your building.
+
+ If a major internet cable is cut, perhaps routers find another route or things slow down (traffic jam/detour).
+
+ If the server is down or not listening (nobody at that address or no one picks up on port 443), you get an error.
+
+ If there’s a firewall blocking port 443 somewhere, your packets might be stopped like a security checkpoint refusing entry (more on security soon).
+
+ But in normal cases, it’s seamless and quick.
+
+This shows how all those pieces – addressing, routing, protocols, ports, etc. – come together to deliver data correctly.
+
+(By now, hopefully, the idea of networks as buildings/cities has given you an intuitive feel for what’s happening when you see that progress bar slowly filling or that email leaving your outbox. There’s a whole journey taking place!)
+Technical Perspective: The above description maps to technical steps:
+
+ DNS resolution: likely your stub resolver contacting a recursive resolver, which in turn queries the DNS hierarchy. This uses UDP (or TCP if needed) on port 53. Once resolved, your OS has the IP cached for the domain (with a TTL).
+
+ TCP handshake: Three-way handshake (SYN, SYN-ACK, ACK) with the server’s IP on port 443. This includes negotiating sequence numbers and possibly TCP options (like window scaling, etc.). Since it’s HTTPS, actually your client then initiates a TLS handshake within this TCP connection, exchanging certificates, etc., to establish an encrypted session.
+
+ HTTP request/response: assuming HTTP/1.1 or HTTP/2 over TLS. The request is sent, the server responds. If HTTP/2 is used, multiple requests could even be multiplexed on one connection. If HTTP/1.1, maybe multiple connections in parallel are used by the browser (browsers often open a few concurrent connections).
+
+ Packet flows: underlying all this, the data travels as IP packets. Maybe your request is small enough to be one packet, the response might be many packets. Each hop (router) uses routing tables to forward towards the destination. If any link is congested, TCP’s congestion control kicks in to slow down. If any packet lost, TCP fast retransmit might resend it.
+
+ Ports and delivery: your OS had chosen a source port for the TCP connection (like 50000). The server sees src port 50000 dst port 443. The reply goes to your IP src 443 dst 50000. Your OS knows port 50000 is tied to that browser connection and thus passes the data to the right socket.
+
+ Reassembly: TCP reorders any out-of-order segments and passes a clean data stream to the HTTP layer in the browser.
+
+ Rendering: beyond networking, but the browser parses HTML, possibly triggers more GET requests for resources, etc., which then rinse and repeat the networking steps (maybe to the same server or others like CDN domains).
+
+ Connection closing: typically via FIN from either side or both once done (or might be kept alive for reuse for a short time).
+
+ All components: If something fails, e.g., DNS times out, you get a “Server not found” error. If TCP can’t connect, maybe “Connection timed out”. If it connects but no response, maybe “HTTP 500” or such depending on where it fails. Each part (application layer, transport, network, link) can produce different failure symptoms. But when all goes right, it’s invisible to the user.
+
+By understanding each piece of the analogy and technical process, you’re better equipped to diagnose where an issue might be (is it my DNS? my local network? the remote server? etc.) as well as appreciate the marvel that is data networking – a lot of moving parts working together so you can read your memes and emails across the globe in a blink.
+The Internet: A City of Buildings
+
+Analogy: The entire internet visualized as a vast cityscape of interconnected buildings (networks) linked by roads (communication lines). We’ve been focusing on a single building so far, but in reality, the world is filled with millions of “buildings” (networks) all interconnected. The internet is like a massive metropolis – a city that spans the entire globe, full of buildings of all sizes and purposes
+
+Think of each building as one network:
+
+ Some buildings are small homes or shops – analogous to a home network or a small office network. They might only have a handful of rooms/devices.
+
+ Some buildings are gigantic skyscrapers – like the networks of large corporations, data centers, or major cloud providers, hosting thousands of servers (rooms) and complex internal structures.
+
+ There are specialized buildings: a library building might represent a university network, a bank vault building might be a secure banking network, a shopping mall could be an e-commerce network. On the internet, you have all sorts of specialized networks (gaming networks, streaming networks, etc., each optimized for certain tasks).
+
+All these diverse buildings are connected by roads, highways, and bridges. In the world of the internet, the “roads” are the physical and wireless links: fiber optic cables running under the ocean, telephone lines, satellite links, Wi-Fi signals, etc. These are what connect one network to another. Just like roads connect buildings and let vehicles carry mail or people around, these data links carry packets between networks.
+
+Imagine looking at a map of a city at night with lights representing buildings and roads connecting them. The internet is similar, though on a much grander scale:
+
+ Local roads might be the smaller-scale connections (like the cable from your home router to your ISP, or the Wi-Fi and Ethernet connecting machines in an office).
+
+ Highways are like the backbone connections, maybe fiber lines that run between cities or under oceans connecting continents.
+
+ Bridges could be special links like satellite connections or cross-ocean cables bridging big gaps.
+
+With so many “buildings” and such a huge “city,” how do we ever find anything? It would be like trying to find one specific apartment in a metropolis of 10 million buildings! This is where our navigation tools – addresses, directories (DNS), and routers acting like traffic control – are crucial on a larger scale.
+
+Key point: The internet has no single central building or central road – it’s a network of networks
+cs.utexas.edu
+. Each network (building) often belongs to an entity (an individual, a company, an institution, an ISP, etc.), and they agree to connect their networks following common standards (like using IP, BGP for inter-network routing, etc.) so that data can flow between them.
+
+So, when you send data from your device in your home network to a server in another country, you’re essentially sending a message from your little building, through the streets, onto the highway, possibly switching highways, exiting into another neighborhood, and finally arriving at the destination building overseas. You rely on things analogous to traffic signs, maps, and postal services at the city scale – which in internet terms are routing protocols, address schemes, and ISP infrastructures – to get it there.
+
+The complexity is astounding, but like a city, it’s somewhat organized: There are major “hubs” where data tends to flow (like Internet Exchange Points, analogous to major postal centers or highway interchanges), and there are smaller routes connecting out-of-the-way “villages” (maybe a remote network connecting via a few hops to the nearest big hub).
+
+In the next sections, we’ll talk about how data is routed through this city (routers as our maps and traffic cops on the journey), and who builds and maintains these roads (ISPs), etc.
+
+But as an image, hold the thought: The internet = a global city of networks
+, all cooperating (most of the time) to deliver data anywhere it needs to go.
+Technical Perspective: The internet being a “network of networks” is not just a metaphor, it’s the literal definition. Each building = an autonomous system (AS) or just a local network. The connections between networks are managed by Internet Service Providers (ISPs) and governed by protocols like BGP (Border Gateway Protocol), which is the “routing protocol of the internet” that lets one network announce to others what destinations (IP prefixes) it can deliver to. There’s hierarchy (though somewhat flattening in recent times) in how networks connect:
+
+ Your home network connects to a local ISP (maybe a regional provider).
+
+ That ISP might connect to a larger national ISP or directly to major exchange points.
+
+ Large content providers (like Google, Netflix, etc.) have their own global networks (their own “buildings” and highways) which peer with ISPs.
+
+ At certain locations called Internet Exchange Points (IXPs), many networks meet to swap traffic (like a big interchange in a highway system)
+
+ There are also submarine cables connecting continents, which are like the trans-oceanic highways.
+
+ The city has no single mayor: no one entity controls the whole internet, but many coordinate via standardization bodies (IETF, ICANN for addresses and names, etc.) to keep it running smoothly.
+
+The scale: There are billions of devices (rooms) and hundreds of thousands of networks (buildings). IP addressing (IPv4 and IPv6) provides the addressing scheme to uniquely identify each endpoint globally (like unique building + room combos globally for public addresses), which is why we needed IPv6 as IPv4 addresses ran out.
+
+Data traveling through the internet often passes through multiple autonomous systems; each hop is a router at the edge of one network passing it to a router at the edge of another. You might traceroute a packet and see 10-15 hops through different providers and locations.
+
+Reliability: The packet-switched design and redundant paths make the internet resilient. Even if part of the “city” suffers a power outage (say a major fiber is cut in a region), routers recalc routes and find detours if possible (though with some slowdown, analogous to traffic being re-routed around an accident).
+
+So, conceptually, seeing the internet as a huge city is helpful to appreciate that your data doesn’t magically teleport from point A to B – it travels through a complex web of infrastructure, akin to navigating a huge sprawling metropolis with many stops, intersections, and signs along the way.
+Routers as City Maps
+
+We already saw routers as building concierges guiding between floors. When we scale up to the city (internet), routers take on an even more crucial role: they become the map-keepers of the internet.
+
+Imagine driving in a massive city. At every major intersection, you might have signs or traffic lights. In networking, routers act a bit like those intersection guides – but smarter. Instead of static signs, they dynamically exchange information and decide the best path for each packet.
+
+Inside your building (local network), your router had a simple job: know where Floor 5 is, know where Floor 3 is, etc. But in the city, a router (especially those big core routers in ISPs) needs to know about thousands of networks (like thousands of buildings addresses) or at least how to reach them.
+
+Routers in the internet are connected to each other forming a web. They share with each other what they know via routing protocols:
+
+ One router might tell its neighbor, “Hey, I have a route to Network A over here, through me.” The neighbor updates its map.
+
+ They communicate through protocols like BGP (between organizations) or OSPF/RIP (within an organization) to keep their maps current.
+
+So when a packet arrives at a router, the router essentially looks at its internal “city map” (the routing table) and says: Destination is Building X? According to my map, the fastest (or configured) route to that is via Road Y – so I’ll forward the packet to the next router down Road Y. Each router repeats this process, so the packet is handed off like a baton from one to the next, moving closer to the destination.
+
+The idea of routing tables is key – it’s like each router has a GPS with the latest traffic info. If a road (connection) goes down, routers detect it (maybe via neighbors not talking anymore, akin to hearing that a highway is closed) and they update their maps to avoid that route
+. If a new road is built (a new link between networks comes up), they learn a new route and might take advantage of it if it’s better.
+
+So routers in aggregate ensure that even if the city roads are complicated, you (as a data packet) don’t have to figure out the whole path from start to finish; you just rely on the routers at each step to point you in the right direction. That’s akin to driving and at each intersection having a sign that directs you toward the district you’re aiming for, rather than memorizing the entire route.
+
+Another way to visualize: if the internet is a city, the routers are like distribution centers or post offices that know where to send mail next. A local post office might not know the exact carrier route for the destination, but it knows to send this batch of mail to the central processing center; the central one knows to send it to the right regional center, and so on. Each step is guided by a “routing” decision until it reaches the post office nearest the destination, which then knows the local route.
+
+In simpler analogies: routers in the global context act like a chain of street signs and direction pointers
+. Without them, your packet would be lost in the city. With them, even if one route is blocked, often another route can be found (maybe longer, but it gets there).
+
+So next time you’re streaming a video, realize that dozens of routers across various countries might be collaborating to get those video packets to you quickly. They are constantly updating their maps (especially at the big scale, BGP updates when networks change paths, etc.) to ensure the city’s data traffic flows efficiently.
+Technical Perspective: At the global scale, routers use protocols like BGP (Border Gateway Protocol) to exchange reachability information. BGP essentially allows networks (Autonomous Systems) to advertise “I can reach these IP prefixes” to other networks. It’s often compared to a vectoring system for routes – it’s not purely shortest path like road distance; policies and path preferences come into play. However, conceptually each router ends up with a routing table entry for every network prefix it might need to send traffic to (or a default route for smaller routers). High-end routers can have routing tables with on the order of >800,000 IPv4 routes (as of mid-2020s) plus a bunch of IPv6 routes. They use this table to perform a longest prefix match on destination IP of each packet and decide which interface to send it out on (which is the next hop towards that destination). This is done extremely fast in hardware (TCAMs and such for lookup).
+
+Inside a large network (like within an ISP or large enterprise), IGPs (Interior Gateway Protocols) like OSPF or IS-IS might be used to propagate routes internally, and those are more akin to having the detailed map of the company's own roads. BGP is more like inter-company exchange of routes (the big highway map).
+
+Routers also implement various algorithms for picking routes: some prefer the shortest AS path (BGP’s default is basically that), others consider link costs or speeds. They can also detect failures via keepalive messages and routing protocol signals, and then recalc routes typically within seconds (sometimes faster, sometimes a bit slower for BGP).
+
+In summary, think of the internet’s routing system as a combination of millions of “street signs” (the routing entries) and agreements like “if you see traffic for my area, send it my way and I’ll handle it from there” (peering agreements between networks).
+
+One last point: In a city, if too many cars try to use one road at once, you get a jam. On the internet, if too much data tries to use one link at once, you get congestion (packets queue up, and if queue is full, new ones get dropped). This is where routers might also act like traffic police by implementing QoS or traffic shaping, and protocols like TCP react to drops by slowing down. So the routing system plus these congestion control mechanisms are what keep the internet running relatively smoothly even during peak usage times – akin to smart traffic lights and perhaps metering ramps on highways to prevent total gridlock.
+
+Next, let’s talk more about those traffic jams and detours.
+Routing Tables
+
+To expand a bit on the routers’ map analogy: the actual “map” inside each router is the routing table. If you’ve ever used a paper map or a mapping app with a list of directions, a routing table is somewhat like that but in a very abstract way.
+
+A routing table is basically a list of known destinations (or destination patterns) and instructions on how to reach them. In the city sense:
+
+ Destination could be a particular building or a street.
+
+ Instruction might be “take the 5th Avenue till Main St, then turn...” – but routers simplify this by just telling the next hop (the next intersection or the next post office to hand off to).
+
+In more concrete terms, an entry in a routing table might say:
+
+ Destination: 203.0.113.0/24 (this denotes an entire network of addresses, similar to saying “all addresses on Elm Street block”).
+
+ Next Hop: via 198.51.100.4 (this is the IP address of a neighboring router that knows how to get to that network).
+
+ Possibly also Interface: eth0 (meaning send out on a specific interface/port).
+
+So when a router gets a packet, it looks up the destination IP in its routing table. The routing table is sorted by specificity – it finds the most specific matching route (longest prefix match). For instance, a router might know a general route for “anywhere in that city goes east” but a more specific route for “this particular district in that city goes north first then east.” It will pick the specific one if available.
+
+To the analogy: if you have a map, you might have a general idea “to get to any address with ZIP code 12345, head along Highway X.” But if you have a detailed map for one neighborhood in that ZIP, you might go a slightly optimized way once you identify the exact street.
+
+Routers keep these tables updated via those routing protocols we mentioned:
+
+ If a road closes, the entry might be removed or changed (e.g., “destination Elm Street now unreachable or now via a different neighbor”).
+
+ If a new faster road opens, maybe a new entry appears preferring a new next hop.
+
+Because these tables are the key to navigation, updating them quickly when things change is crucial. This is why there’s a lot of engineering in routing protocols to converge (update all routers with changes) as fast as possible to avoid black holes or loops.
+
+Think of a scenario: A main fiber line between two cities goes down suddenly (like a main highway closed). The routers that used that as the next hop to some set of destinations will notice and “erase” those routes, or find alternatives. During that update period (maybe a few seconds or more, depending), some packets might be lost or find no route – akin to travelers reaching a “Road Closed” sign and having no detour instructions yet. But soon, alternative routes propagate and packets start flowing a different way (perhaps through another city). That’s like your GPS finding a new route when it detects traffic.
+
+Routing tables can be very large – on the order of hundreds of thousands of entries for internet backbone routers. But each entry is just a destination prefix (like a network address and mask) and the next hop info, plus perhaps some metrics (like how “far” or what the preference is).
+
+A small analogy from everyday tech: On your own PC or phone, you also have a routing table, albeit tiny. Usually it says “any address not on my local network, send to my default gateway (router).” That’s one entry (the default route). And perhaps one for local network, one for loopback. In a home, your router’s table might be only slightly more complex – mostly forwarding everything to the ISP and handling local ones directly. But an ISP’s router has to differentiate between many, many networks.
+
+In summary, a routing table is like the collection of all known paths a router can use, and picking the best one for each packet is how data finds its target without an explicit end-to-end guide pre-written.
+Technical Perspective: Routing tables in routers contain prefixes (network addresses with subnet masks) and their associated forwarding information (next-hop and outgoing interface). For example:
+
+ 0.0.0.0/0 via 198.51.100.1 on eth0 – this is a default route (matches anything not more specific).
+
+ 203.0.113.0/24 via 198.51.100.4 on eth1 – a specific network route.
+
+ 10.5.0.0/16 dev eth2 – perhaps an internal network reachable directly on a local interface.
+
+Routers perform a longest prefix match on the destination IP of each packet. Modern routers do this in hardware for speed. In the early internet days, routing tables could be managed manually or with simpler protocols (RIP etc.), but with scale, BGP updates these entries dynamically for external routes.
+
+Also, each route might have attributes: in BGP, for instance, there’s local preference, AS path, MED, etc., which influence selection when multiple routes exist for the same prefix. But ultimately once selection is done, one entry is installed in the forwarding table (FIB – forwarding information base).
+
+Routing vs Forwarding: Technically, the “routing table” is sometimes considered the RIB (routing information base) with all known routes, and the “forwarding table” is the subset of routes the router is actively using to forward packets. In many cases, these distinctions aren't visible externally, but it’s good to know internally routers may keep additional info.

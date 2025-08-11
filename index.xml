@@ -10,7 +10,7 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 20 Jun 2025 00:03:30 +0100</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 31 Jul 2025 00:53:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Behavior-driven development with LLMs</title>
       <link>https://memo.mx/posts/bdd-with-llms/</link>
@@ -34,12 +34,53 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
     
     <item>
       <title>Understanding Computer Networks by Analogy</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-formatted/</link>
+      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-formatted/</guid>
+      <description>I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you&amp;rsquo;re reading this and you are also struggling with these concepts, just know this isn&amp;rsquo;t a complete map of the &amp;ldquo;networking world&amp;rdquo;, it is simply a different way to see it. I hope you find this analogy helpful.
+I&amp;rsquo;ve decided to stick with analogies here instead of going deep into technical terms, you can find those easily anywhere, because I enjoy looking at the world from different perspectives.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
       <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
       <description>I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this and you are also struggling with these concepts, just know this isn’t a complete map of the &amp;ldquo;networking world&amp;rdquo;, it is simply a different way to see it. I hope you find this analogy helpful.
 I&amp;rsquo;ve decided to stick with analogies here instead of going deep into technical terms, you can find those easily anywhere, because I enjoy looking at the world from different perspectives.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 1: Building the Foundation</title>
+      <link>https://memo.mx/posts/understanding-networks-by-analogy-1/</link>
+      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-networks-by-analogy-1/</guid>
+      <description>I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you&amp;rsquo;re reading this and you are also struggling with these concepts, just know this isn&amp;rsquo;t a complete map of the &amp;ldquo;networking world&amp;rdquo;, it is simply a different way to see it. I hope you find this analogy helpful.
+I&amp;rsquo;ve decided to stick with analogies here instead of going deep into technical terms, you can find those easily anywhere, because I enjoy looking at the world from different perspectives.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 2: Moving Around the City</title>
+      <link>https://memo.mx/posts/understanding-networks-by-analogy-2/</link>
+      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-networks-by-analogy-2/</guid>
+      <description>This is Part 2 of the series. If you haven&amp;rsquo;t read Part 1: Building the Foundation, start there first.
+The Internet: A City of Buildings Analogy: The entire internet visualized as a vast cityscape of interconnected buildings (networks) linked by roads (communication lines). We&amp;rsquo;ve been focusing on a single building so far, but in reality, the world is filled with millions of &amp;ldquo;buildings&amp;rdquo; (networks) all interconnected. The internet is like a massive metropolis  a city that spans the entire globe, full of buildings of all sizes and purposes.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy - Part 3: Hotels in the Cloud &amp; Future Cities</title>
+      <link>https://memo.mx/posts/understanding-networks-by-analogy-3/</link>
+      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-networks-by-analogy-3/</guid>
+      <description>(Moving into Part 3: Hotels in the Cloud &amp;amp; Future Cities) Network Security
+Now that we have our massive interconnected city, not everyone roaming the streets has good intentions. Just as in a real city you&amp;rsquo;d have locks on your doors, security guards in important buildings, and police at checkpoints, in networks we need security measures to protect data and systems
+Let&amp;rsquo;s translate some common network security elements into our analogy:</description>
     </item>
     
     <item>
@@ -538,6 +579,15 @@ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (
       <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
       
       <guid>https://memo.mx/thinking/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://memo.mx/posts/understanding-networks-by-analogy-4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-networks-by-analogy-4/</guid>
       <description></description>
     </item>
     

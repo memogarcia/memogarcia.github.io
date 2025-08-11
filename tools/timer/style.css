@@ -2,6 +2,19 @@
     --gap: 24px;
     --content-gap: 20px;
     --radius: 8px;
+    --theme: #fff;
+    --entry: #f5f5f5;
+    --primary: #333;
+    --secondary: #666;
+    --tertiary: #999;
+    --content: #000;
+    --border: #e6e6e6;
+    --accent: #5d4e8c;
+    --success: #2a9d8f;
+    --pause: #e76f51;
+}
+
+body.dark {
     --theme: #1d1e20;
     --entry: #2e2e33;
     --primary: #ddd;
@@ -12,21 +25,6 @@
     --accent: #bb86fc;
     --success: #52b788;
     --pause: #f77f00;
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --theme: #fff;
-        --entry: #f5f5f5;
-        --primary: #333;
-        --secondary: #666;
-        --tertiary: #999;
-        --content: #000;
-        --border: #e6e6e6;
-        --accent: #5d4e8c;
-        --success: #2a9d8f;
-        --pause: #e76f51;
-    }
 }
 
 * {
@@ -141,7 +139,7 @@ input:disabled {
 }
 
 .btn {
-    padding: 10px 24px;
+    padding: 12px 24px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     font-size: 14px;
@@ -152,6 +150,11 @@ input:disabled {
     letter-spacing: 1px;
     background: transparent;
     color: var(--primary);
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn:hover:not(:disabled) {
@@ -247,17 +250,86 @@ input:disabled {
     color: var(--tertiary);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
+    }
+    
     .timer {
-        font-size: 56px;
+        font-size: 60px;
     }
     
     .controls {
-        gap: 8px;
+        gap: 12px;
+        flex-wrap: wrap;
     }
     
     .btn {
-        padding: 8px 16px;
-        font-size: 12px;
+        padding: 14px 20px;
+        font-size: 13px;
+        min-height: 44px;
+        min-width: 80px;
     }
+    
+    .theme-toggle {
+        top: 16px;
+        right: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+    
+    .timer {
+        font-size: 48px;
+    }
+    
+    .controls {
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 16px 18px;
+        font-size: 12px;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .theme-toggle {
+        top: 12px;
+        right: 12px;
+    }
+    
+    h1 {
+        font-size: 28px;
+        margin-bottom: 32px;
+    }
+    
+    .current-topic {
+        font-size: 14px;
+    }
+}
+
+.theme-toggle {
+    position: fixed;
+    top: var(--gap);
+    right: var(--gap);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    cursor: pointer;
+    color: var(--primary);
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.theme-toggle:hover {
+    background: var(--entry);
 }
