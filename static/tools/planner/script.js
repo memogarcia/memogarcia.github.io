@@ -3,18 +3,21 @@
 
 class PlanningApp {
     constructor() {
-        this.northStars = [];
+        this.epics = [];
         
         this.tasks = [];
         
         this.people = [];
         
         this.assignments = [];
+        this.dependencies = []; // Array of {fromTaskId, toTaskId, type} objects
         
         this.view = { x: 0, y: 0, scale: 1 };
         this.dragging = null;
         this.dragStartPos = null;
         this.dragOffset = null;
+        this.dependencyMode = false; // Flag for dependency drawing mode
+        this.dependencyStart = null; // Starting task for dependency line
         
         // Constants - will be updated based on screen size
         this.updateConstants();
@@ -164,10 +167,11 @@ class PlanningApp {
     // Persistence methods
     saveToStorage() {
         const data = {
-            northStars: this.northStars,
+            epics: this.epics,
             tasks: this.tasks,
             people: this.people,
             assignments: this.assignments,
+            dependencies: this.dependencies,
             view: this.view
         };
         localStorage.setItem('planner-data', JSON.stringify(data));
@@ -178,10 +182,11 @@ class PlanningApp {
             const stored = localStorage.getItem('planner-data');
             if (stored) {
                 const data = JSON.parse(stored);
-                this.northStars = data.northStars || [];
+                this.epics = data.epics || data.northStars || []; // Support legacy data
                 this.tasks = data.tasks || [];
                 this.people = data.people || [];
                 this.assignments = data.assignments || [];
+                this.dependencies = data.dependencies || [];
                 this.view = data.view || { x: 0, y: 0, scale: 1 };
                 this.render();
             }
@@ -192,12 +197,13 @@ class PlanningApp {
     
     exportData() {
         const data = {
-            northStars: this.northStars,
+            epics: this.epics,
             tasks: this.tasks,
             people: this.people,
             assignments: this.assignments,
+            dependencies: this.dependencies,
             exportDate: new Date().toISOString(),
-            version: '1.0'
+            version: '2.0'
         };
         
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -219,10 +225,11 @@ class PlanningApp {
                 
                 // Validate the data structure
                 if (data && typeof data === 'object') {
-                    this.northStars = data.northStars || [];
+                    this.epics = data.epics || data.northStars || []; // Support legacy data
                     this.tasks = data.tasks || [];
                     this.people = data.people || [];
                     this.assignments = data.assignments || [];
+                    this.dependencies = data.dependencies || [];
                     
                     // Reset view to default
                     this.view = { x: 0, y: 0, scale: 1 };
@@ -246,37 +253,37 @@ class PlanningApp {
         const width = window.innerWidth;
         
         if (width <= 320) {
-            this.NS_HEADER = 56;
-            this.NS_PAD_X = 10;
-            this.NS_PAD_Y = 8;
+            this.EPIC_HEADER = 56;
+            this.EPIC_PAD_X = 10;
+            this.EPIC_PAD_Y = 8;
             this.TASK_W = 180;
             this.TASK_H = 72;
-            this.MIN_NS_W = 200;
-            this.MIN_NS_H = this.NS_HEADER + 100;
+            this.MIN_EPIC_W = 200;
+            this.MIN_EPIC_H = this.EPIC_HEADER + 100;
         } else if (width <= 480) {
-            this.NS_HEADER = 56;
-            this.NS_PAD_X = 12;
-            this.NS_PAD_Y = 10;
+            this.EPIC_HEADER = 56;
+            this.EPIC_PAD_X = 12;
+            this.EPIC_PAD_Y = 10;
             this.TASK_W = 200;
             this.TASK_H = 80;
-            this.MIN_NS_W = 240;
-            this.MIN_NS_H = this.NS_HEADER + 120;
+            this.MIN_EPIC_W = 240;
+            this.MIN_EPIC_H = this.EPIC_HEADER + 120;
         } else if (width <= 640) {
-            this.NS_HEADER = 56;
-            this.NS_PAD_X = 14;
-            this.NS_PAD_Y = 11;
+            this.EPIC_HEADER = 56;
+            this.EPIC_PAD_X = 14;
+            this.EPIC_PAD_Y = 11;
             this.TASK_W = 220;
             this.TASK_H = 88;
-            this.MIN_NS_W = 280;
-            this.MIN_NS_H = this.NS_HEADER + 130;
+            this.MIN_EPIC_W = 280;
+            this.MIN_EPIC_H = this.EPIC_HEADER + 130;
         } else {
-            this.NS_HEADER = 56;
-            this.NS_PAD_X = 16;
-            this.NS_PAD_Y = 12;
+            this.EPIC_HEADER = 56;
+            this.EPIC_PAD_X = 16;
+            this.EPIC_PAD_Y = 12;
             this.TASK_W = 260;
             this.TASK_H = 96;
-            this.MIN_NS_W = 320;
-            this.MIN_NS_H = this.NS_HEADER + 140;
+            this.MIN_EPIC_W = 320;
+            this.MIN_EPIC_H = this.EPIC_HEADER + 140;
         }
     }
     
@@ -310,9 +317,9 @@ class PlanningApp {
             this.updateWorldTransform();
         });
         
-        document.getElementById('add-north-star').addEventListener('click', () => {
-            this.showDialog('New North Star', 'e.g., NPS 60+', (title) => {
-                this.addNorthStar(title);
+        document.getElementById('add-epic').addEventListener('click', () => {
+            this.showDialog('New Epic', 'e.g., User Authentication', (title) => {
+                this.addEpic(title);
             });
         });
         
@@ -326,6 +333,10 @@ class PlanningApp {
             this.showDialog('New Person', 'Name', (name) => {
                 this.addPerson(name);
             });
+        });
+        
+        document.getElementById('dependency-mode').addEventListener('click', () => {
+            this.toggleDependencyMode();
         });
         
         document.getElementById('export-data').addEventListener('click', () => {
@@ -380,11 +391,68 @@ class PlanningApp {
     // Rendering
     render() {
         this.renderPeople();
-        this.renderNorthStars();
+        this.renderEpics();
         this.renderTasks();
         this.renderConnections();
+        this.renderDependencies();
         this.updateUnalignedCount();
         this.updateWorldTransform();
+    }
+    
+    toggleDependencyMode() {
+        this.dependencyMode = !this.dependencyMode;
+        this.dependencyStart = null;
+        
+        const button = document.getElementById('dependency-mode');
+        if (this.dependencyMode) {
+            button.classList.add('btn-active');
+            button.title = 'Exit Dependency Mode (click tasks to connect them)';
+            document.body.style.cursor = 'crosshair';
+        } else {
+            button.classList.remove('btn-active');
+            button.title = 'Draw Dependencies';
+            document.body.style.cursor = '';
+            // Remove any hover states
+            document.querySelectorAll('.task').forEach(task => {
+                task.classList.remove('dependency-hover');
+            });
+        }
+    }
+    
+    renderDependencies() {
+        const svg = document.getElementById('connections');
+        
+        // Remove existing dependency lines
+        svg.querySelectorAll('.dependency-line').forEach(line => line.remove());
+        
+        this.dependencies.forEach(dep => {
+            const fromTask = this.findById(this.tasks, dep.fromTaskId);
+            const toTask = this.findById(this.tasks, dep.toTaskId);
+            
+            if (!fromTask || !toTask) return;
+            
+            const fromPos = this.getTaskAbsolutePosition(fromTask);
+            const toPos = this.getTaskAbsolutePosition(toTask);
+            
+            // Calculate connection points (from right edge to left edge)
+            const x1 = fromPos.x + this.TASK_W;
+            const y1 = fromPos.y + this.TASK_H / 2;
+            const x2 = toPos.x;
+            const y2 = toPos.y + this.TASK_H / 2;
+            
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            
+            // Create curved path for better visual
+            const midX = (x1 + x2) / 2;
+            const pathData = `M ${x1} ${y1} Q ${midX + 20} ${y1} ${midX} ${(y1 + y2) / 2} Q ${midX - 20} ${y2} ${x2} ${y2}`;
+            
+            line.setAttribute('d', pathData);
+            line.setAttribute('class', 'dependency-line');
+            line.setAttribute('data-from', dep.fromTaskId);
+            line.setAttribute('data-to', dep.toTaskId);
+            
+            svg.appendChild(line);
+        });
     }
     
     renderPeople() {
@@ -465,45 +533,45 @@ class PlanningApp {
         }
     }
     
-    renderNorthStars() {
+    renderEpics() {
         const world = document.getElementById('world');
         
-        // Remove existing north stars
-        world.querySelectorAll('.north-star').forEach(el => el.remove());
+        // Remove existing epics
+        world.querySelectorAll('.epic').forEach(el => el.remove());
         
-        this.northStars.forEach(ns => {
-            const nsDiv = document.createElement('div');
-            nsDiv.className = 'north-star';
-            nsDiv.dataset.nsId = ns.id;
-            nsDiv.style.transform = `translate(${ns.x}px, ${ns.y}px)`;
-            nsDiv.style.width = `${ns.w}px`;
-            nsDiv.style.height = `${ns.h}px`;
+        this.epics.forEach(epic => {
+            const epicDiv = document.createElement('div');
+            epicDiv.className = 'epic';
+            epicDiv.dataset.epicId = epic.id;
+            epicDiv.style.transform = `translate(${epic.x}px, ${epic.y}px)`;
+            epicDiv.style.width = `${epic.w}px`;
+            epicDiv.style.height = `${epic.h}px`;
             
-            const nsTasks = this.tasks.filter(t => t.northStarId === ns.id);
+            const epicTasks = this.tasks.filter(t => t.epicId === epic.id);
             const assignedPeopleIds = new Set(
                 this.assignments
-                    .filter(a => nsTasks.some(t => t.id === a.taskId))
+                    .filter(a => epicTasks.some(t => t.id === a.taskId))
                     .map(a => a.personId)
             );
             
-            nsDiv.innerHTML = `
-                <div class="north-star-header" data-drag-type="north-star">
+            epicDiv.innerHTML = `
+                <div class="epic-header" data-drag-type="epic">
                     <i data-lucide="star"></i>
-                    <div class="north-star-title">${ns.title}</div>
-                    <div class="north-star-badges">
-                        <span class="badge">Tasks: ${nsTasks.length}</span>
+                    <div class="epic-title">${epic.title}</div>
+                    <div class="epic-badges">
+                        <span class="badge">Tasks: ${epicTasks.length}</span>
                         <span class="badge">People: ${assignedPeopleIds.size}</span>
                     </div>
-                    <button class="ns-delete-btn" onclick="app.deleteNorthStar('${ns.id}')" title="Delete North Star">
+                    <button class="epic-delete-btn" onclick="app.deleteEpic('${epic.id}')" title="Delete Epic">
                         <i data-lucide="x"></i>
                     </button>
                 </div>
-                <div class="north-star-content" data-ns-content="${ns.id}" style="height: ${ns.h - this.NS_HEADER}px; padding: ${this.NS_PAD_Y}px ${this.NS_PAD_X}px;">
-                    <div class="resize-handle" data-drag-type="resize" data-ns-id="${ns.id}"></div>
+                <div class="epic-content" data-epic-content="${epic.id}" style="height: ${epic.h - this.EPIC_HEADER}px; padding: ${this.EPIC_PAD_Y}px ${this.EPIC_PAD_X}px;">
+                    <div class="resize-handle" data-drag-type="resize" data-epic-id="${epic.id}"></div>
                 </div>
             `;
             
-            world.appendChild(nsDiv);
+            world.appendChild(epicDiv);
         });
         
         // Re-initialize icons
@@ -523,7 +591,7 @@ class PlanningApp {
             const absPos = this.getTaskAbsolutePosition(task);
             const taskAssignments = this.assignments.filter(a => a.taskId === task.id);
             
-            taskDiv.className = `task ${task.northStarId ? 'aligned' : 'unaligned'}`;
+            taskDiv.className = `task ${task.epicId ? 'aligned' : 'unaligned'}`;
             taskDiv.dataset.taskId = task.id;
             taskDiv.dataset.dragType = 'task';
             taskDiv.style.transform = `translate(${absPos.x}px, ${absPos.y}px)`;
@@ -550,7 +618,7 @@ class PlanningApp {
                         }).join('')
                     }
                 </div>
-                ${!task.northStarId ? '<div class="unaligned-status">Unaligned</div>' : ''}
+                ${!task.epicId ? '<div class="unaligned-status">Unaligned</div>' : ''}
             `;
             
             // Add drop event listeners
@@ -570,14 +638,14 @@ class PlanningApp {
         const svg = document.getElementById('connections');
         svg.innerHTML = '';
         
-        this.tasks.filter(t => t.northStarId).forEach(task => {
-            const ns = this.findById(this.northStars, task.northStarId);
-            if (!ns) return;
+        this.tasks.filter(t => t.epicId).forEach(task => {
+            const epic = this.findById(this.epics, task.epicId);
+            if (!epic) return;
             
-            const x1 = ns.x + this.NS_PAD_X + (task.ix || 0) + this.TASK_W / 2;
-            const y1 = ns.y + this.NS_HEADER + this.NS_PAD_Y + (task.iy || 0) + this.TASK_H / 2;
-            const x2 = ns.x + ns.w / 2;
-            const y2 = ns.y + this.NS_HEADER / 2;
+            const x1 = epic.x + this.EPIC_PAD_X + (task.ix || 0) + this.TASK_W / 2;
+            const y1 = epic.y + this.EPIC_HEADER + this.EPIC_PAD_Y + (task.iy || 0) + this.TASK_H / 2;
+            const x2 = epic.x + epic.w / 2;
+            const y2 = epic.y + this.EPIC_HEADER / 2;
             
             const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             line.setAttribute('x1', x1);
@@ -592,7 +660,7 @@ class PlanningApp {
     }
     
     updateUnalignedCount() {
-        const count = this.tasks.filter(t => !t.northStarId).length;
+        const count = this.tasks.filter(t => !t.epicId).length;
         document.getElementById('unaligned-count').textContent = count;
     }
     
@@ -606,16 +674,16 @@ class PlanningApp {
     }
     
     getTaskAbsolutePosition(task) {
-        if (!task.northStarId) {
+        if (!task.epicId) {
             return { x: task.x, y: task.y };
         }
         
-        const ns = this.findById(this.northStars, task.northStarId);
-        if (!ns) return { x: task.x, y: task.y };
+        const epic = this.findById(this.epics, task.epicId);
+        if (!epic) return { x: task.x, y: task.y };
         
         return {
-            x: ns.x + this.NS_PAD_X + (task.ix || 0),
-            y: ns.y + this.NS_HEADER + this.NS_PAD_Y + (task.iy || 0)
+            x: epic.x + this.EPIC_PAD_X + (task.ix || 0),
+            y: epic.y + this.EPIC_HEADER + this.EPIC_PAD_Y + (task.iy || 0)
         };
     }
     
@@ -637,10 +705,10 @@ class PlanningApp {
             
             const dragType = target.dataset.dragType;
             
-            if (dragType === 'north-star') {
-                this.startDragNorthStar(e, target);
+            if (dragType === 'epic') {
+                this.startDragEpic(e, target);
             } else if (dragType === 'resize') {
-                this.startResizeNorthStar(e, target);
+                this.startResizeEpic(e, target);
             } else if (dragType === 'task') {
                 this.startDragTask(e, target);
             }
@@ -662,10 +730,10 @@ class PlanningApp {
             this.view.y += dy;
             this.updateWorldTransform();
             this.dragStartPos = { x: e.clientX, y: e.clientY };
-        } else if (this.dragging.type === 'north-star') {
-            this.moveNorthStar(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
+        } else if (this.dragging.type === 'epic') {
+            this.moveEpic(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
         } else if (this.dragging.type === 'resize') {
-            this.resizeNorthStar(this.dragging.id, dx, dy);
+            this.resizeEpic(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'task') {
             this.moveTask(this.dragging.id, dx, dy);
         }
@@ -681,28 +749,28 @@ class PlanningApp {
         this.dragOffset = null;
     }
     
-    startDragNorthStar(e, element) {
-        const nsId = element.closest('.north-star').dataset.nsId;
-        const ns = this.findById(this.northStars, nsId);
+    startDragEpic(e, element) {
+        const epicId = element.closest('.epic').dataset.epicId;
+        const epic = this.findById(this.epics, epicId);
         
         this.dragging = {
-            type: 'north-star',
-            id: nsId,
-            startPos: { x: ns.x, y: ns.y }
+            type: 'epic',
+            id: epicId,
+            startPos: { x: epic.x, y: epic.y }
         };
         this.dragStartPos = { x: e.clientX, y: e.clientY };
         
-        element.closest('.north-star').classList.add('dragging');
+        element.closest('.epic').classList.add('dragging');
     }
     
-    startResizeNorthStar(e, element) {
-        const nsId = element.dataset.nsId;
-        const ns = this.findById(this.northStars, nsId);
+    startResizeEpic(e, element) {
+        const epicId = element.dataset.epicId;
+        const epic = this.findById(this.epics, epicId);
         
         this.dragging = {
             type: 'resize',
-            id: nsId,
-            startSize: { w: ns.w, h: ns.h }
+            id: epicId,
+            startSize: { w: epic.w, h: epic.h }
         };
         this.dragStartPos = { x: e.clientX, y: e.clientY };
         
@@ -716,7 +784,7 @@ class PlanningApp {
         this.dragging = {
             type: 'task',
             id: taskId,
-            startPos: task.northStarId ? 
+            startPos: task.epicId ? 
                 { ix: task.ix || 0, iy: task.iy || 0 } : 
                 { x: task.x, y: task.y }
         };
@@ -725,16 +793,16 @@ class PlanningApp {
         element.classList.add('dragging');
     }
     
-    moveNorthStar(nsId, x, y) {
-        const ns = this.findById(this.northStars, nsId);
-        if (!ns) return;
+    moveEpic(epicId, x, y) {
+        const epic = this.findById(this.epics, epicId);
+        if (!epic) return;
         
-        ns.x = x;
-        ns.y = y;
+        epic.x = x;
+        epic.y = y;
         
-        const element = document.querySelector(`[data-ns-id="${nsId}"]`);
+        const element = document.querySelector(`[data-epic-id="${epicId}"]`);
         if (element) {
-            element.closest('.north-star').style.transform = `translate(${x}px, ${y}px)`;
+            element.closest('.epic').style.transform = `translate(${x}px, ${y}px)`;
         }
         
         // Update task positions and connections
@@ -742,28 +810,28 @@ class PlanningApp {
         this.renderConnections();
     }
     
-    resizeNorthStar(nsId, dx, dy) {
-        const ns = this.findById(this.northStars, nsId);
-        if (!ns) return;
+    resizeEpic(epicId, dx, dy) {
+        const epic = this.findById(this.epics, epicId);
+        if (!epic) return;
         
-        const newW = this.clamp(this.dragging.startSize.w + dx, this.MIN_NS_W, 4000);
-        const newH = this.clamp(this.dragging.startSize.h + dy, this.MIN_NS_H, 4000);
+        const newW = this.clamp(this.dragging.startSize.w + dx, this.MIN_EPIC_W, 4000);
+        const newH = this.clamp(this.dragging.startSize.h + dy, this.MIN_EPIC_H, 4000);
         
-        ns.w = newW;
-        ns.h = newH;
+        epic.w = newW;
+        epic.h = newH;
         
         // Clamp tasks within new bounds
-        const maxX = Math.max(0, newW - this.NS_PAD_X * 2 - this.TASK_W);
-        const maxY = Math.max(0, newH - this.NS_HEADER - this.NS_PAD_Y * 2 - this.TASK_H);
+        const maxX = Math.max(0, newW - this.EPIC_PAD_X * 2 - this.TASK_W);
+        const maxY = Math.max(0, newH - this.EPIC_HEADER - this.EPIC_PAD_Y * 2 - this.TASK_H);
         
         this.tasks.forEach(task => {
-            if (task.northStarId === nsId) {
+            if (task.epicId === epicId) {
                 task.ix = this.clamp(task.ix || 0, 0, maxX);
                 task.iy = this.clamp(task.iy || 0, 0, maxY);
             }
         });
         
-        this.renderNorthStars();
+        this.renderEpics();
         this.renderTasks();
         this.renderConnections();
     }
@@ -772,12 +840,12 @@ class PlanningApp {
         const task = this.findById(this.tasks, taskId);
         if (!task) return;
         
-        if (task.northStarId) {
-            const ns = this.findById(this.northStars, task.northStarId);
-            if (!ns) return;
+        if (task.epicId) {
+            const epic = this.findById(this.epics, task.epicId);
+            if (!epic) return;
             
-            const maxX = Math.max(0, ns.w - this.NS_PAD_X * 2 - this.TASK_W);
-            const maxY = Math.max(0, ns.h - this.NS_HEADER - this.NS_PAD_Y * 2 - this.TASK_H);
+            const maxX = Math.max(0, epic.w - this.EPIC_PAD_X * 2 - this.TASK_W);
+            const maxY = Math.max(0, epic.h - this.EPIC_HEADER - this.EPIC_PAD_Y * 2 - this.TASK_H);
             
             task.ix = this.clamp(this.dragging.startPos.ix + dx / this.view.scale, 0, maxX);
             task.iy = this.clamp(this.dragging.startPos.iy + dy / this.view.scale, 0, maxY);
@@ -799,34 +867,34 @@ class PlanningApp {
         const taskId = this.dragging.id;
         const task = this.findById(this.tasks, taskId);
         
-        // Check if dropped on a North Star
+        // Check if dropped on an Epic
         const elements = document.elementsFromPoint(e.clientX, e.clientY);
-        const nsContent = elements.find(el => el.dataset.nsContent);
+        const epicContent = elements.find(el => el.dataset.epicContent);
         
-        if (nsContent && (!task.northStarId || task.northStarId !== nsContent.dataset.nsContent)) {
-            // Align task to North Star
-            const nsId = nsContent.dataset.nsContent;
-            const ns = this.findById(this.northStars, nsId);
+        if (epicContent && (!task.epicId || task.epicId !== epicContent.dataset.epicContent)) {
+            // Align task to Epic
+            const epicId = epicContent.dataset.epicContent;
+            const epic = this.findById(this.epics, epicId);
             const absPos = this.getTaskAbsolutePosition(task);
             
-            const relX = absPos.x - (ns.x + this.NS_PAD_X);
-            const relY = absPos.y - (ns.y + this.NS_HEADER + this.NS_PAD_Y);
+            const relX = absPos.x - (epic.x + this.EPIC_PAD_X);
+            const relY = absPos.y - (epic.y + this.EPIC_HEADER + this.EPIC_PAD_Y);
             
-            const maxX = Math.max(0, ns.w - this.NS_PAD_X * 2 - this.TASK_W);
-            const maxY = Math.max(0, ns.h - this.NS_HEADER - this.NS_PAD_Y * 2 - this.TASK_H);
+            const maxX = Math.max(0, epic.w - this.EPIC_PAD_X * 2 - this.TASK_W);
+            const maxY = Math.max(0, epic.h - this.EPIC_HEADER - this.EPIC_PAD_Y * 2 - this.TASK_H);
             
-            task.northStarId = nsId;
+            task.epicId = epicId;
             task.ix = this.clamp(relX, 0, maxX);
             task.iy = this.clamp(relY, 0, maxY);
             delete task.x;
             delete task.y;
             
-        } else if (!nsContent && task.northStarId) {
+        } else if (!epicContent && task.epicId) {
             // Unalign task
             const absPos = this.getTaskAbsolutePosition(task);
             task.x = absPos.x;
             task.y = absPos.y;
-            delete task.northStarId;
+            delete task.epicId;
             delete task.ix;
             delete task.iy;
         }
@@ -909,9 +977,9 @@ class PlanningApp {
     }
     
     // CRUD operations
-    addNorthStar(title) {
-        const ns = {
-            id: this.generateId('ns'),
+    addEpic(title) {
+        const epic = {
+            id: this.generateId('epic'),
             title: title,
             x: 200 + Math.random() * 400,
             y: 80 + Math.random() * 120,
@@ -919,7 +987,7 @@ class PlanningApp {
             h: 320
         };
         
-        this.northStars.push(ns);
+        this.epics.push(epic);
         this.render();
         this.saveToStorage();
     }
@@ -1005,30 +1073,30 @@ class PlanningApp {
         this.saveToStorage();
     }
     
-    deleteNorthStar(nsId) {
-        const ns = this.findById(this.northStars, nsId);
-        if (!ns) return;
+    deleteEpic(epicId) {
+        const epic = this.findById(this.epics, epicId);
+        if (!epic) return;
         
-        const alignedTasks = this.tasks.filter(t => t.northStarId === nsId);
+        const alignedTasks = this.tasks.filter(t => t.epicId === epicId);
         const confirmMessage = alignedTasks.length > 0 ? 
-            `Are you sure you want to delete "${ns.title}"? This will unalign ${alignedTasks.length} task(s).` :
-            `Are you sure you want to delete "${ns.title}"?`;
+            `Are you sure you want to delete "${epic.title}"? This will unalign ${alignedTasks.length} task(s).` :
+            `Are you sure you want to delete "${epic.title}"?`;
             
         if (!confirm(confirmMessage)) return;
         
         // Unalign tasks
         this.tasks.forEach(task => {
-            if (task.northStarId === nsId) {
+            if (task.epicId === epicId) {
                 const absPos = this.getTaskAbsolutePosition(task);
                 task.x = absPos.x;
                 task.y = absPos.y;
-                delete task.northStarId;
+                delete task.epicId;
                 delete task.ix;
                 delete task.iy;
             }
         });
         
-        this.northStars = this.northStars.filter(n => n.id !== nsId);
+        this.epics = this.epics.filter(e => e.id !== epicId);
         
         this.render();
         this.saveToStorage();
