@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner - Planning Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Top bar -->
+        <div class="top-bar">
+            <div class="app-title">
+                <i data-lucide="star"></i>
+                <span>Planner</span>
+            </div>
+            <div class="controls">
+                <button id="reset-view" class="btn btn-secondary" title="Reset View">
+                    <i data-lucide="crosshair"></i>
+                </button>
+                <button id="zoom-in" class="btn btn-secondary" title="Zoom In">
+                    <i data-lucide="zoom-in"></i>
+                </button>
+                <button id="zoom-out" class="btn btn-secondary" title="Zoom Out">
+                    <i data-lucide="zoom-out"></i>
+                </button>
+                <button id="add-north-star" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    <span>North Star</span>
+                </button>
+                <button id="add-task" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    <span>Task</span>
+                </button>
+                <button id="add-person" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    <span>Person</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- People palette -->
+            <div class="people-palette">
+                <div class="palette-title">People</div>
+                <div id="people-list" class="people-list"></div>
+                <div class="palette-tip">
+                    Tip: drag a <b>name</b> or an <b>activity</b> onto a Task. 
+                    Hold Ctrl + scroll to zoom. Hold Ctrl/Shift and drag background to pan.
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <div class="canvas-container">
+                <div id="canvas" class="canvas">
+                    <svg id="connections" class="connections"></svg>
+                    <div id="world" class="world">
+                        <!-- North stars and tasks will be rendered here -->
+                    </div>
+                </div>
+                <div class="hud">
+                    Unaligned tasks: <span id="unaligned-count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            Drag Tasks into a North Star to align. Drag out to unalign. 
+            Resize via the corner handle. People/Activities → drop onto Tasks.
+        </footer>
+    </div>
+
+    <!-- Dialogs -->
+    <div id="dialog-overlay" class="dialog-overlay hidden">
+        <div class="dialog">
+            <div class="dialog-header">
+                <h3 id="dialog-title">Dialog Title</h3>
+            </div>
+            <div class="dialog-content">
+                <input id="dialog-input" type="text" placeholder="Enter value...">
+            </div>
+            <div class="dialog-footer">
+                <button id="dialog-cancel" class="btn btn-secondary">Cancel</button>
+                <button id="dialog-confirm" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
