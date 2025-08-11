@@ -18,6 +18,8 @@ class PlanningApp {
         this.dragOffset = null;
         this.dependencyMode = false; // Flag for dependency drawing mode
         this.dependencyStart = null; // Starting task for dependency line
+        this.autoAlignMode = false; // Flag for auto-alignment mode
+        this.originalPositions = new Map(); // Store original task positions for restoration
         
         // Constants - will be updated based on screen size
         this.updateConstants();
@@ -339,6 +341,10 @@ class PlanningApp {
         
         document.getElementById('dependency-mode').addEventListener('click', () => {
             this.toggleDependencyMode();
+        });
+        
+        document.getElementById('auto-align').addEventListener('click', () => {
+            this.toggleAutoAlignment();
         });
         
         document.getElementById('export-data').addEventListener('click', () => {
@@ -1304,6 +1310,309 @@ class PlanningApp {
                 }, 1500);
             }
         }
+    }
+    
+    // Auto-Alignment System
+    toggleAutoAlignment() {
+        this.autoAlignMode = !this.autoAlignMode;
+        const button = document.getElementById('auto-align');
+        
+        if (this.autoAlignMode) {
+            // Start auto-alignment
+            button.classList.add('btn-active');
+            button.title = 'Restore Original Layout';
+            this.performAutoAlignment();
+        } else {
+            // Restore original layout
+            button.classList.remove('btn-active');
+            button.title = 'Auto-Align Tasks by Dependencies';
+            this.restoreOriginalLayout();
+        }
+    }
+    
+    performAutoAlignment() {
+        // Check if there are tasks to align
+        if (this.tasks.length === 0) {
+            this.showAutoAlignMessage('No tasks to align', 'error');
+            this.autoAlignMode = false;
+            document.getElementById('auto-align').classList.remove('btn-active');
+            return;
+        }
+        
+        // Check if there are dependencies
+        if (this.dependencies.length === 0) {
+            this.showAutoAlignMessage('No dependencies found. Create task dependencies first.', 'error');
+            this.autoAlignMode = false;
+            document.getElementById('auto-align').classList.remove('btn-active');
+            return;
+        }
+        
+        try {
+            // Store original positions and epic assignments
+            this.storeOriginalPositions();
+            
+            // Temporarily remove tasks from epics for better alignment
+            this.temporarilyUnalignTasks();
+            
+            // Perform topological sort to create layers
+            const layers = this.createDependencyLayers();
+            
+            // Calculate new positions
+            const newPositions = this.calculateAlignedPositions(layers);
+            
+            // Animate tasks to new positions
+            this.animateTasksToPositions(newPositions);
+            
+            this.showAutoAlignMessage(`Successfully aligned ${this.tasks.length} tasks in ${layers.length} layers`, 'success');
+            
+        } catch (error) {
+            console.error('Auto-alignment error:', error);
+            this.showAutoAlignMessage('Error during auto-alignment: ' + error.message, 'error');
+            this.autoAlignMode = false;
+            document.getElementById('auto-align').classList.remove('btn-active');
+        }
+    }
+    
+    storeOriginalPositions() {
+        this.originalPositions.clear();
+        
+        this.tasks.forEach(task => {
+            this.originalPositions.set(task.id, {
+                x: task.x,
+                y: task.y,
+                ix: task.ix,
+                iy: task.iy,
+                epicId: task.epicId
+            });
+        });
+    }
+    
+    temporarilyUnalignTasks() {
+        this.tasks.forEach(task => {
+            if (task.epicId) {
+                // Convert epic-relative position to absolute
+                const absPos = this.getTaskAbsolutePosition(task);
+                task.x = absPos.x;
+                task.y = absPos.y;
+                delete task.ix;
+                delete task.iy;
+                delete task.epicId;
+            }
+        });
+    }
+    
+    createDependencyLayers() {
+        // Create adjacency list and in-degree count
+        const graph = new Map();
+        const inDegree = new Map();
+        const taskIds = new Set(this.tasks.map(t => t.id));
+        
+        // Initialize graph
+        this.tasks.forEach(task => {
+            graph.set(task.id, []);
+            inDegree.set(task.id, 0);
+        });
+        
+        // Build graph from dependencies
+        this.dependencies.forEach(dep => {
+            // Only include dependencies where both tasks exist
+            if (taskIds.has(dep.fromTaskId) && taskIds.has(dep.toTaskId)) {
+                graph.get(dep.fromTaskId).push(dep.toTaskId);
+                inDegree.set(dep.toTaskId, inDegree.get(dep.toTaskId) + 1);
+            }
+        });
+        
+        // Topological sort using Kahn's algorithm
+        const layers = [];
+        const queue = [];
+        
+        // Start with tasks that have no dependencies (in-degree 0)
+        this.tasks.forEach(task => {
+            if (inDegree.get(task.id) === 0) {
+                queue.push(task.id);
+            }
+        });
+        
+        // If no starting points found, there might be isolated cycles or no dependencies at all
+        if (queue.length === 0) {
+            // Find any task as a starting point (this handles the case where all tasks have dependencies in a cycle)
+            if (this.tasks.length > 0) {
+                queue.push(this.tasks[0].id);
+                inDegree.set(this.tasks[0].id, 0);
+            }
+        }
+        
+        while (queue.length > 0) {
+            const currentLayer = [...queue];
+            queue.length = 0; // Clear queue
+            layers.push(currentLayer);
+            
+            currentLayer.forEach(taskId => {
+                const neighbors = graph.get(taskId) || [];
+                neighbors.forEach(neighborId => {
+                    inDegree.set(neighborId, inDegree.get(neighborId) - 1);
+                    if (inDegree.get(neighborId) === 0) {
+                        queue.push(neighborId);
+                    }
+                });
+            });
+        }
+        
+        // Check for circular dependencies
+        const processedTasks = layers.flat().length;
+        if (processedTasks < this.tasks.length) {
+            throw new Error('Circular dependencies detected. Cannot create valid layout.');
+        }
+        
+        return layers;
+    }
+    
+    calculateAlignedPositions(layers) {
+        // Responsive spacing based on screen size
+        const isMobile = window.innerWidth <= 768;
+        const LAYER_SPACING = isMobile ? 160 : 200; // Horizontal spacing between layers
+        const TASK_SPACING = isMobile ? 100 : 120; // Vertical spacing between tasks
+        const MIN_PADDING = isMobile ? 30 : 50; // Minimum padding from edges
+        
+        const positions = new Map();
+        
+        // Get current viewport center
+        const canvas = document.getElementById('canvas');
+        const canvasRect = canvas.getBoundingClientRect();
+        const viewportCenterX = (canvasRect.width / 2) / this.view.scale - this.view.x;
+        const viewportCenterY = (canvasRect.height / 2) / this.view.scale - this.view.y;
+        
+        // Calculate layout dimensions
+        const totalWidth = (layers.length - 1) * LAYER_SPACING;
+        const maxLayerSize = Math.max(...layers.map(layer => layer.length));
+        const totalHeight = (maxLayerSize - 1) * TASK_SPACING;
+        
+        // Calculate starting position (center the layout)
+        const startX = viewportCenterX - totalWidth / 2;
+        const startY = viewportCenterY - totalHeight / 2;
+        
+        // Position tasks in layers
+        layers.forEach((layer, layerIndex) => {
+            const layerX = startX + layerIndex * LAYER_SPACING;
+            const layerHeight = (layer.length - 1) * TASK_SPACING;
+            const layerStartY = startY + (totalHeight - layerHeight) / 2;
+            
+            layer.forEach((taskId, taskIndex) => {
+                const taskY = layerStartY + taskIndex * TASK_SPACING;
+                positions.set(taskId, {
+                    x: Math.max(MIN_PADDING, layerX),
+                    y: Math.max(MIN_PADDING, taskY)
+                });
+            });
+        });
+        
+        return positions;
+    }
+    
+    animateTasksToPositions(newPositions) {
+        const tasks = document.querySelectorAll('.task');
+        
+        // Add animation class to all tasks
+        tasks.forEach(taskEl => {
+            taskEl.classList.add('auto-aligning');
+        });
+        
+        // Update task positions in the data model
+        this.tasks.forEach(task => {
+            const newPos = newPositions.get(task.id);
+            if (newPos) {
+                task.x = newPos.x;
+                task.y = newPos.y;
+            }
+        });
+        
+        // Re-render to apply new positions
+        this.render();
+        this.saveToStorage();
+        
+        // After animation completes, add success animation
+        setTimeout(() => {
+            tasks.forEach(taskEl => {
+                taskEl.classList.remove('auto-aligning');
+                taskEl.classList.add('auto-aligned');
+            });
+            
+            // Remove success animation class after it completes
+            setTimeout(() => {
+                tasks.forEach(taskEl => {
+                    taskEl.classList.remove('auto-aligned');
+                });
+            }, 600);
+        }, 800);
+    }
+    
+    restoreOriginalLayout() {
+        if (this.originalPositions.size === 0) {
+            this.showAutoAlignMessage('No original layout to restore', 'error');
+            return;
+        }
+        
+        try {
+            // Restore original positions and epic assignments
+            this.tasks.forEach(task => {
+                const original = this.originalPositions.get(task.id);
+                if (original) {
+                    task.x = original.x;
+                    task.y = original.y;
+                    task.ix = original.ix;
+                    task.iy = original.iy;
+                    if (original.epicId) {
+                        task.epicId = original.epicId;
+                    }
+                }
+            });
+            
+            // Add animation class
+            const tasks = document.querySelectorAll('.task');
+            tasks.forEach(taskEl => {
+                taskEl.classList.add('auto-aligning');
+            });
+            
+            // Re-render to apply restored positions
+            this.render();
+            this.saveToStorage();
+            
+            // Remove animation class after completion
+            setTimeout(() => {
+                tasks.forEach(taskEl => {
+                    taskEl.classList.remove('auto-aligning');
+                });
+            }, 800);
+            
+            this.showAutoAlignMessage('Layout restored to original positions', 'success');
+            this.originalPositions.clear();
+            
+        } catch (error) {
+            console.error('Restore layout error:', error);
+            this.showAutoAlignMessage('Error restoring layout: ' + error.message, 'error');
+        }
+    }
+    
+    showAutoAlignMessage(message, type = 'info') {
+        // Create or update message element
+        let messageEl = document.getElementById('auto-align-message');
+        if (!messageEl) {
+            messageEl = document.createElement('div');
+            messageEl.id = 'auto-align-message';
+            messageEl.className = 'auto-align-message';
+            document.body.appendChild(messageEl);
+        }
+        
+        messageEl.textContent = message;
+        messageEl.className = `auto-align-message ${type}`;
+        messageEl.style.display = 'block';
+        
+        // Auto-hide after 4 seconds
+        setTimeout(() => {
+            if (messageEl) {
+                messageEl.style.display = 'none';
+            }
+        }, 4000);
     }
     
     renderPeople() {

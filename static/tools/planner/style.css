@@ -249,6 +249,112 @@ body {
     background: #059669;
 }
 
+/* Auto-align button states */
+#auto-align.btn-active {
+    background: #8b5cf6;
+    color: white;
+    border-color: #8b5cf6;
+}
+
+#auto-align.btn-active:hover {
+    background: #7c3aed;
+}
+
+/* Auto-alignment animation classes */
+.task.auto-aligning {
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.task.auto-aligned {
+    animation: auto-align-success 0.6s ease-out;
+}
+
+@keyframes auto-align-success {
+    0% { 
+        transform: scale(1); 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    50% { 
+        transform: scale(1.05); 
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+    }
+    100% { 
+        transform: scale(1); 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Auto-align message styles */
+.auto-align-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border: 1px solid #374151;
+    display: none;
+    max-width: 400px;
+    text-align: center;
+    animation: message-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auto-align-message.success {
+    background: #10b981;
+    border-color: #059669;
+}
+
+.auto-align-message.error {
+    background: #ef4444;
+    border-color: #dc2626;
+}
+
+.auto-align-message.info {
+    background: #3b82f6;
+    border-color: #2563eb;
+}
+
+@keyframes message-appear {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .auto-align-message {
+        top: 60px; /* Account for mobile top bar height */
+        left: 16px;
+        right: 16px;
+        max-width: none;
+        transform: none;
+        font-size: 13px;
+        padding: 10px 16px;
+    }
+    
+    @keyframes message-appear {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
 /* Main content */
 .main-content {
     display: flex;
