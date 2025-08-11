@@ -31,8 +31,10 @@ class PlanningApp {
     }
     
     setupSidebarToggle() {
-        // Load sidebar state
-        const sidebarCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+        // Load sidebar state - on mobile, default to collapsed for more canvas space
+        const isMobile = window.innerWidth <= 480;
+        const defaultCollapsed = isMobile ? 'true' : 'false';
+        const sidebarCollapsed = localStorage.getItem('sidebar-collapsed') ?? defaultCollapsed === 'true';
         const sidebar = document.getElementById('people-palette');
         
         if (sidebarCollapsed) {
@@ -45,6 +47,118 @@ class PlanningApp {
             const isCollapsed = sidebar.classList.contains('collapsed');
             localStorage.setItem('sidebar-collapsed', isCollapsed.toString());
         });
+    }
+    
+    setupMobileOptimizations() {
+        const isMobile = window.innerWidth <= 768;
+        const isTouchDevice = 'ontouchstart' in window;
+        
+        if (isMobile || isTouchDevice) {
+            // Prevent zoom on double tap
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function (event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            
+            // Improve scrolling on mobile
+            document.body.style.webkitOverflowScrolling = 'touch';
+            
+            // Add touch feedback with better performance
+            const addTouchFeedback = (element) => {
+                let touchTimeout;
+                
+                element.addEventListener('touchstart', function(e) {
+                    // Clear any existing timeout
+                    if (touchTimeout) clearTimeout(touchTimeout);
+                    
+                    this.style.transform = 'scale(0.97)';
+                    this.style.transition = 'transform 0.1s ease-out';
+                    
+                    // Add a subtle shadow for depth
+                    if (this.classList.contains('btn')) {
+                        this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+                    }
+                }, { passive: true });
+                
+                const resetTransform = function() {
+                    this.style.transform = '';
+                    this.style.transition = '';
+                    this.style.boxShadow = '';
+                };
+                
+                element.addEventListener('touchend', resetTransform, { passive: true });
+                element.addEventListener('touchcancel', resetTransform, { passive: true });
+                
+                // Reset after delay to handle edge cases
+                element.addEventListener('touchstart', () => {
+                    touchTimeout = setTimeout(() => {
+                        resetTransform.call(element);
+                    }, 200);
+                }, { passive: true });
+            };
+            
+            // Apply touch feedback to interactive elements
+            const touchElements = document.querySelectorAll('.btn, .task, .north-star, .person-header, .activity, .sidebar-toggle');
+            touchElements.forEach(addTouchFeedback);
+            
+            // Enhanced mobile canvas interactions
+            const canvas = document.getElementById('canvas');
+            let touchStartTime = 0;
+            let touchStartPos = { x: 0, y: 0 };
+            
+            canvas.addEventListener('touchstart', (e) => {
+                touchStartTime = Date.now();
+                if (e.touches.length === 1) {
+                    touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+            }, { passive: true });
+            
+            // Improve touch scrolling for sidebar
+            const sidebar = document.getElementById('people-palette');
+            if (sidebar) {
+                sidebar.style.webkitOverflowScrolling = 'touch';
+            }
+            
+            // Auto-collapse sidebar on very small screens
+            if (window.innerWidth <= 480) {
+                const sidebarElement = document.getElementById('people-palette');
+                if (sidebarElement && !sidebarElement.classList.contains('collapsed')) {
+                    sidebarElement.classList.add('collapsed');
+                    localStorage.setItem('sidebar-collapsed', 'true');
+                }
+            }
+            
+            // Add haptic feedback for supported devices
+            this.addHapticFeedback();
+        }
+    }
+    
+    addHapticFeedback() {
+        // Add subtle haptic feedback for touch interactions
+        if ('vibrate' in navigator) {
+            const addHaptic = (element, intensity = 10) => {
+                element.addEventListener('touchstart', () => {
+                    navigator.vibrate(intensity);
+                }, { passive: true });
+            };
+            
+            // Light haptic for buttons
+            document.querySelectorAll('.btn').forEach(btn => addHaptic(btn, 5));
+            
+            // Medium haptic for draggable items
+            document.querySelectorAll('.task, .north-star').forEach(item => addHaptic(item, 10));
+            
+            // Strong haptic for delete actions
+            document.querySelectorAll('.task-delete-btn, .person-delete-btn, .ns-delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    navigator.vibrate([20, 50, 20]);
+                });
+            });
+        }
     }
     
     // Persistence methods
@@ -183,6 +297,9 @@ class PlanningApp {
             this.updateWorldTransform();
         });
         
+        // Mobile-specific improvements
+        this.setupMobileOptimizations();
+        
         document.getElementById('zoom-in').addEventListener('click', () => {
             this.view.scale = Math.min(2.2, this.view.scale * 1.12);
             this.updateWorldTransform();
@@ -277,6 +394,8 @@ class PlanningApp {
         this.people.forEach(person => {
             const personDiv = document.createElement('div');
             personDiv.className = 'person-card';
+            personDiv.setAttribute('data-person-name', person.name);
+            personDiv.setAttribute('title', person.name); // Fallback tooltip
             personDiv.innerHTML = `
                 <div class="person-header" draggable="true" data-type="person" data-person-id="${person.id}">
                     <i data-lucide="user"></i>
@@ -309,6 +428,40 @@ class PlanningApp {
         // Re-initialize icons for the new content
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
+        }
+        
+        // Setup touch tooltips for collapsed sidebar
+        this.setupTouchTooltips();
+    }
+    
+    setupTouchTooltips() {
+        // Add click/touch tooltip functionality for mobile devices
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        if (isTouchDevice) {
+            document.querySelectorAll('.person-card').forEach(card => {
+                let tooltipTimeout;
+                
+                const showTooltip = () => {
+                    // Add a temporary class to show tooltip
+                    card.classList.add('show-tooltip');
+                    clearTimeout(tooltipTimeout);
+                    
+                    // Hide tooltip after 2 seconds
+                    tooltipTimeout = setTimeout(() => {
+                        card.classList.remove('show-tooltip');
+                    }, 2000);
+                };
+                
+                card.addEventListener('touchstart', showTooltip, { passive: true });
+                card.addEventListener('click', (e) => {
+                    const sidebar = document.getElementById('people-palette');
+                    if (sidebar && sidebar.classList.contains('collapsed')) {
+                        e.preventDefault();
+                        showTooltip();
+                    }
+                });
+            });
         }
     }
     
