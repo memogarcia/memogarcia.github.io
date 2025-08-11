@@ -1,6 +1,17 @@
 :root {
     --gap: 24px;
     --radius: 8px;
+    --theme: #fff;
+    --entry: #f5f5f5;
+    --primary: #333;
+    --secondary: #666;
+    --tertiary: #999;
+    --content: #000;
+    --border: #e6e6e6;
+    --accent: #5d4e8c;
+}
+
+body.dark {
     --theme: #1d1e20;
     --entry: #2e2e33;
     --primary: #ddd;
@@ -9,19 +20,6 @@
     --content: #fff;
     --border: #333;
     --accent: #bb86fc;
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --theme: #fff;
-        --entry: #f5f5f5;
-        --primary: #333;
-        --secondary: #666;
-        --tertiary: #999;
-        --content: #000;
-        --border: #e6e6e6;
-        --accent: #5d4e8c;
-    }
 }
 
 * {
@@ -81,6 +79,11 @@ h1 {
     border-radius: var(--radius);
     font-size: 16px;
     cursor: pointer;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .reminders {
@@ -120,11 +123,18 @@ h1 {
     color: var(--tertiary);
     cursor: pointer;
     font-size: 18px;
-    padding: 4px;
+    padding: 12px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
 }
 
 .delete-btn:hover {
     color: var(--secondary);
+    background: var(--entry);
 }
 
 .no-reminders {
@@ -134,17 +144,102 @@ h1 {
     padding: 20px;
 }
 
-@media (max-width: 600px) {
+.theme-toggle {
+    position: fixed;
+    top: var(--gap);
+    right: var(--gap);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    cursor: pointer;
+    color: var(--primary);
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.theme-toggle:hover {
+    background: var(--entry);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
+    }
+    
+    .theme-toggle {
+        top: 16px;
+        right: 16px;
+    }
+    
     h1 {
         font-size: 28px;
+        margin-bottom: 20px;
     }
 
     .input-group {
         flex-direction: column;
+        gap: 16px;
+        margin-bottom: 32px;
     }
 
     .input-group input,
     .input-group button {
         width: 100%;
+        padding: 16px;
+        font-size: 16px;
+        min-height: 44px;
+    }
+    
+    .reminder-item {
+        padding: 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .reminder-info {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+    
+    .theme-toggle {
+        top: 12px;
+        right: 12px;
+    }
+    
+    .container {
+        max-width: none;
+    }
+    
+    h1 {
+        font-size: 24px;
+        margin-bottom: 16px;
+    }
+    
+    .input-group {
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .reminder-item {
+        padding: 12px;
+    }
+    
+    .reminder-text {
+        font-size: 16px;
+    }
+    
+    .reminder-time {
+        font-size: 13px;
     }
 }

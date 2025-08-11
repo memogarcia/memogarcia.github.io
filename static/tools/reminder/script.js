@@ -5,6 +5,24 @@ const listEl = document.getElementById('reminders');
 
 let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
 
+// Theme toggle functionality
+const pref = localStorage.getItem('pref-theme');
+if (pref === 'dark') {
+    document.body.classList.add('dark');
+} else if (pref === 'light') {
+    document.body.classList.remove('dark');
+}
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+    if (document.body.classList.contains('dark')) {
+        document.body.classList.remove('dark');
+        localStorage.setItem('pref-theme', 'light');
+    } else {
+        document.body.classList.add('dark');
+        localStorage.setItem('pref-theme', 'dark');
+    }
+});
+
 function save() {
     localStorage.setItem('reminders', JSON.stringify(reminders));
 }
