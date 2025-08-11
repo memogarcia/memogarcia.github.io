@@ -16,8 +16,9 @@ class PlanningApp {
         this.dragging = null;
         this.dragStartPos = null;
         this.dragOffset = null;
-        this.dependencyMode = false; // Flag for dependency drawing mode
+        this.dependencyCreationMode = false; // Flag for dependency creation state
         this.dependencyStart = null; // Starting task for dependency line
+        this.hoveredTask = null; // Currently hovered task for dependency creation
         this.autoAlignMode = false; // Flag for auto-alignment mode
         this.originalPositions = new Map(); // Store original task positions for restoration
         
@@ -339,9 +340,6 @@ class PlanningApp {
             });
         });
         
-        document.getElementById('dependency-mode').addEventListener('click', () => {
-            this.toggleDependencyMode();
-        });
         
         document.getElementById('auto-align').addEventListener('click', () => {
             this.toggleAutoAlignment();
@@ -405,53 +403,223 @@ class PlanningApp {
         this.renderDependencies();
         this.updateUnalignedCount();
         this.updateWorldTransform();
+        
+        // Setup hover handlers for new dependency system
+        setTimeout(() => this.setupTaskHoverHandlers(), 100);
     }
     
-    toggleDependencyMode() {
-        this.dependencyMode = !this.dependencyMode;
-        this.dependencyStart = null;
-        this.clearDependencyDragState();
+    initializeDependencyCreation() {
+        // Initialize hover-based dependency creation system
+        this.setupTaskHoverHandlers();
+    }
+    
+    setupTaskHoverHandlers() {
+        // This will be called after tasks are rendered to add hover handlers
+        const tasks = document.querySelectorAll('.task, .epic');
+        tasks.forEach(taskEl => {
+            this.addHoverDependencyHandlers(taskEl);
+        });
+    }
+    
+    addHoverDependencyHandlers(taskEl) {
+        let hoverTimeout;
+        let dependencyOverlay;
         
-        const button = document.getElementById('dependency-mode');
-        const indicator = document.getElementById('dependency-mode-indicator');
-        const indicatorText = document.getElementById('dependency-mode-text');
+        const showDependencyOverlay = () => {
+            if (dependencyOverlay) return; // Already shown
+            
+            dependencyOverlay = document.createElement('div');
+            dependencyOverlay.className = 'dependency-overlay';
+            
+            // Add connection points
+            const inputPoint = document.createElement('div');
+            inputPoint.className = 'dependency-point input-point';
+            inputPoint.setAttribute('data-type', 'input');
+            inputPoint.innerHTML = '←';
+            
+            const outputPoint = document.createElement('div');
+            outputPoint.className = 'dependency-point output-point';
+            outputPoint.setAttribute('data-type', 'output');
+            outputPoint.innerHTML = '→';
+            
+            dependencyOverlay.appendChild(inputPoint);
+            dependencyOverlay.appendChild(outputPoint);
+            taskEl.appendChild(dependencyOverlay);
+            
+            // Add click handlers for dependency creation
+            this.addDependencyPointHandlers(taskEl, inputPoint, outputPoint);
+        };
         
-        if (this.dependencyMode) {
-            button.classList.add('btn-active');
-            button.title = 'Exit Dependency Mode (ESC to exit)';
-            document.body.classList.add('dependency-mode-active');
-            document.body.style.cursor = 'crosshair';
-            
-            // Show indicator
-            indicator.classList.add('active');
-            indicatorText.textContent = 'Drag from yellow output port to green input port';
-            
-            // Add escape key handler
-            this.dependencyEscapeHandler = (e) => {
-                if (e.key === 'Escape') {
-                    this.toggleDependencyMode();
-                }
-            };
-            document.addEventListener('keydown', this.dependencyEscapeHandler);
-            
-        } else {
-            button.classList.remove('btn-active');
-            button.title = 'Draw Dependencies';
-            document.body.classList.remove('dependency-mode-active');
-            document.body.style.cursor = '';
-            
-            // Hide indicator
-            indicator.classList.remove('active', 'success', 'error');
-            
-            // Remove escape key handler
-            if (this.dependencyEscapeHandler) {
-                document.removeEventListener('keydown', this.dependencyEscapeHandler);
-                this.dependencyEscapeHandler = null;
+        const hideDependencyOverlay = () => {
+            if (dependencyOverlay) {
+                dependencyOverlay.remove();
+                dependencyOverlay = null;
             }
-            
-            // Clean up all dependency states
-            this.clearDependencyDragState();
+        };
+        
+        taskEl.addEventListener('mouseenter', () => {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = setTimeout(showDependencyOverlay, 300); // Show after 300ms hover
+        });
+        
+        taskEl.addEventListener('mouseleave', () => {
+            clearTimeout(hoverTimeout);
+            setTimeout(hideDependencyOverlay, 200); // Hide after 200ms delay
+        });
+    }
+    
+    addDependencyPointHandlers(taskEl, inputPoint, outputPoint) {
+        const taskId = taskEl.dataset.taskId || taskEl.dataset.epicId;
+        
+        const startDependencyCreation = (isOutput) => {
+            if (this.dependencyCreationMode && this.dependencyStart) {
+                // Complete dependency if we're already in creation mode
+                this.completeDependencyCreation(taskId, isOutput);
+            } else {
+                // Start dependency creation
+                this.startDependencyCreation(taskId, isOutput);
+            }
+        };
+        
+        inputPoint.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startDependencyCreation(false);
+        });
+        
+        outputPoint.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startDependencyCreation(true);
+        });
+    }
+    
+    startDependencyCreation(taskId, isOutput) {
+        this.dependencyCreationMode = true;
+        this.dependencyStart = { taskId, isOutput };
+        
+        // Visual feedback
+        document.body.classList.add('dependency-creation-active');
+        
+        // Show instruction overlay
+        this.showDependencyInstruction(isOutput);
+        
+        // Add escape handler
+        this.dependencyEscapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.cancelDependencyCreation();
+            }
+        };
+        document.addEventListener('keydown', this.dependencyEscapeHandler);
+    }
+    
+    completeDependencyCreation(targetTaskId, isInput) {
+        if (!this.dependencyStart) return;
+        
+        const { taskId: sourceTaskId, isOutput } = this.dependencyStart;
+        
+        // Validate dependency direction
+        if (isOutput === isInput) {
+            this.showDependencyError('Invalid connection: output must connect to input');
+            return;
         }
+        
+        let fromTaskId, toTaskId;
+        if (isOutput) {
+            fromTaskId = sourceTaskId;
+            toTaskId = targetTaskId;
+        } else {
+            fromTaskId = targetTaskId;
+            toTaskId = sourceTaskId;
+        }
+        
+        // Check for existing dependency
+        if (this.dependencies.some(d => d.fromTaskId === fromTaskId && d.toTaskId === toTaskId)) {
+            this.showDependencyError('Dependency already exists');
+            return;
+        }
+        
+        // Check for circular dependency
+        if (this.wouldCreateCircularDependency(fromTaskId, toTaskId)) {
+            this.showDependencyError('Would create circular dependency');
+            return;
+        }
+        
+        // Create dependency
+        this.dependencies.push({
+            fromTaskId,
+            toTaskId,
+            type: 'blocks'
+        });
+        
+        this.cancelDependencyCreation();
+        this.render();
+        this.saveToStorage();
+        
+        this.showDependencySuccess('Dependency created successfully');
+    }
+    
+    cancelDependencyCreation() {
+        this.dependencyCreationMode = false;
+        this.dependencyStart = null;
+        
+        document.body.classList.remove('dependency-creation-active');
+        this.hideDependencyInstruction();
+        
+        if (this.dependencyEscapeHandler) {
+            document.removeEventListener('keydown', this.dependencyEscapeHandler);
+            this.dependencyEscapeHandler = null;
+        }
+    }
+    
+    showDependencyInstruction(isOutput) {
+        const instruction = document.createElement('div');
+        instruction.className = 'dependency-instruction';
+        instruction.id = 'dependency-instruction';
+        
+        const text = isOutput ? 
+            'Click on an input point (←) to complete the dependency' : 
+            'Click on an output point (→) to complete the dependency';
+            
+        instruction.innerHTML = `
+            <div class="dependency-instruction-content">
+                <span>${text}</span>
+                <small>Press Esc to cancel</small>
+            </div>
+        `;
+        
+        document.body.appendChild(instruction);
+    }
+    
+    hideDependencyInstruction() {
+        const instruction = document.getElementById('dependency-instruction');
+        if (instruction) {
+            instruction.remove();
+        }
+    }
+    
+    showDependencyError(message) {
+        this.showDependencyMessage(message, 'error');
+    }
+    
+    showDependencySuccess(message) {
+        this.showDependencyMessage(message, 'success');
+    }
+    
+    showDependencyMessage(message, type) {
+        const existingMessage = document.getElementById('dependency-message');
+        if (existingMessage) existingMessage.remove();
+        
+        const messageEl = document.createElement('div');
+        messageEl.className = `dependency-message dependency-${type}`;
+        messageEl.id = 'dependency-message';
+        messageEl.textContent = message;
+        
+        document.body.appendChild(messageEl);
+        
+        setTimeout(() => {
+            if (messageEl.parentNode) {
+                messageEl.remove();
+            }
+        }, 3000);
     }
     
     clearDependencyDragState() {
@@ -505,7 +673,7 @@ class PlanningApp {
             // Add long press detection for better mobile UX
             let touchTimeout;
             port.addEventListener('touchstart', (e) => {
-                if (!this.dependencyMode) return;
+                if (!this.dependencyCreationMode) return;
                 
                 touchTimeout = setTimeout(() => {
                     // Show help tooltip on long press
@@ -539,7 +707,7 @@ class PlanningApp {
     }
     
     handlePortMouseDown(e, taskId, port) {
-        if (!this.dependencyMode) return;
+        if (!this.dependencyCreationMode) return;
         
         e.preventDefault();
         e.stopPropagation();
@@ -557,7 +725,7 @@ class PlanningApp {
     }
     
     handlePortTouchStart(e, taskId, port) {
-        if (!this.dependencyMode) return;
+        if (!this.dependencyCreationMode) return;
         
         e.preventDefault();
         e.stopPropagation();
@@ -826,7 +994,7 @@ class PlanningApp {
         indicatorText.textContent = 'Dependency created successfully!';
         
         setTimeout(() => {
-            if (this.dependencyMode) {
+            if (this.dependencyCreationMode) {
                 indicator.classList.remove('success');
                 indicatorText.textContent = 'Drag from yellow output port to green input port';
             }
@@ -841,7 +1009,7 @@ class PlanningApp {
         indicatorText.textContent = message;
         
         setTimeout(() => {
-            if (this.dependencyMode) {
+            if (this.dependencyCreationMode) {
                 indicator.classList.remove('error');
                 indicatorText.textContent = 'Drag from yellow output port to green input port';
             }
@@ -882,7 +1050,7 @@ class PlanningApp {
     
     // Port hover methods
     handlePortMouseEnter(e, taskId, port) {
-        if (!this.dependencyMode) return;
+        if (!this.dependencyCreationMode) return;
         
         port.style.transform = port.dataset.portType === 'input' ? 
             'translateY(-50%) scale(1.2)' : 
@@ -890,7 +1058,7 @@ class PlanningApp {
     }
     
     handlePortMouseLeave(e, taskId, port) {
-        if (!this.dependencyMode) return;
+        if (!this.dependencyCreationMode) return;
         
         if (!port.classList.contains('drag-source') && 
             !port.classList.contains('drag-target-valid') && 
@@ -901,7 +1069,7 @@ class PlanningApp {
     
     // Keyboard accessibility methods
     handlePortKeyDown(e, taskId, port) {
-        if (!this.dependencyMode) return;
+        if (!this.dependencyCreationMode) return;
         
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -914,7 +1082,7 @@ class PlanningApp {
     }
     
     handlePortFocus(e, taskId, port) {
-        if (!this.dependencyMode) return;
+        if (!this.dependencyCreationMode) return;
         
         // Highlight the port and task
         port.style.transform = port.dataset.portType === 'input' ? 
@@ -923,7 +1091,7 @@ class PlanningApp {
     }
     
     handlePortBlur(e, taskId, port) {
-        if (!this.dependencyMode) return;
+        if (!this.dependencyCreationMode) return;
         
         port.style.transform = 'translateY(-50%) scale(1)';
     }
@@ -1090,7 +1258,7 @@ class PlanningApp {
         this.clearDependencyDragState();
         
         // Update indicator
-        if (this.dependencyMode) {
+        if (this.dependencyCreationMode) {
             const indicator = document.getElementById('dependency-mode-indicator');
             const indicatorText = document.getElementById('dependency-mode-text');
             indicatorText.textContent = 'Drag from yellow output port to green input port';
@@ -1298,12 +1466,12 @@ class PlanningApp {
             const indicator = document.getElementById('dependency-mode-indicator');
             const indicatorText = document.getElementById('dependency-mode-text');
             
-            if (this.dependencyMode) {
+            if (this.dependencyCreationMode) {
                 indicator.classList.add('success');
                 indicatorText.textContent = 'Dependency deleted';
                 
                 setTimeout(() => {
-                    if (this.dependencyMode) {
+                    if (this.dependencyCreationMode) {
                         indicator.classList.remove('success');
                         indicatorText.textContent = 'Drag from yellow output port to green input port';
                     }
@@ -1757,19 +1925,6 @@ class PlanningApp {
             taskDiv.style.transform = `translate(${absPos.x}px, ${absPos.y}px)`;
             
             taskDiv.innerHTML = `
-                <!-- Connection Ports -->
-                <div class="connection-port input" 
-                     data-port-type="input" 
-                     data-task-id="${task.id}"
-                     tabindex="0"
-                     role="button"
-                     aria-label="Input connection port for ${task.title}"></div>
-                <div class="connection-port output" 
-                     data-port-type="output" 
-                     data-task-id="${task.id}"
-                     tabindex="0"
-                     role="button"
-                     aria-label="Output connection port for ${task.title}"></div>
                 
                 <div class="task-header" onclick="app.openDetailsPanel('task', '${task.id}')" style="cursor: pointer;">
                     <i data-lucide="target"></i>

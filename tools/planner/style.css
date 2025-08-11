@@ -1623,6 +1623,184 @@ body {
     border-color: #1f2937 transparent transparent transparent;
 }
 
+/* New hover-based dependency system */
+.dependency-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    opacity: 0;
+    animation: dependency-overlay-appear 0.2s ease-out forwards;
+}
+
+@keyframes dependency-overlay-appear {
+    to {
+        opacity: 1;
+    }
+}
+
+.dependency-point {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.dependency-point:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.input-point {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    left: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.input-point:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+.output-point {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.output-point:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+/* Dependency creation active state */
+.dependency-creation-active .task,
+.dependency-creation-active .epic {
+    transition: all 0.2s ease;
+}
+
+.dependency-creation-active .task:hover,
+.dependency-creation-active .epic:hover {
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Dependency instruction overlay */
+.dependency-instruction {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(31, 41, 55, 0.95);
+    backdrop-filter: blur(8px);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    animation: instruction-appear 0.3s ease-out;
+}
+
+@keyframes instruction-appear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.dependency-instruction-content {
+    text-align: center;
+}
+
+.dependency-instruction-content span {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.dependency-instruction-content small {
+    display: block;
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* Dependency messages */
+.dependency-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1001;
+    animation: message-slide-in 0.3s ease-out;
+}
+
+@keyframes message-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.dependency-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.dependency-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Mobile improvements for dependency points */
+@media (max-width: 768px) {
+    .dependency-point {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+    
+    .input-point {
+        left: -14px;
+    }
+    
+    .output-point {
+        right: -14px;
+    }
+    
+    .dependency-instruction {
+        margin: 0 20px;
+        max-width: calc(100vw - 40px);
+    }
+}
+
 /* Touch-friendly improvements */
 @media (pointer: coarse) {
     /* Larger touch targets for touch devices */
