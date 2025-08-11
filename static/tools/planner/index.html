@@ -50,12 +50,19 @@
 
         <div class="main-content">
             <!-- People palette -->
-            <div class="people-palette">
-                <div class="palette-title">People</div>
-                <div id="people-list" class="people-list"></div>
-                <div class="palette-tip">
-                    Tip: drag a <b>name</b> or an <b>activity</b> onto a Task. 
-                    Hold Ctrl + scroll to zoom. Hold Ctrl/Shift and drag background to pan.
+            <div class="people-palette" id="people-palette">
+                <div class="palette-header">
+                    <div class="palette-title">People</div>
+                    <button id="sidebar-toggle" class="sidebar-toggle" title="Toggle sidebar">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+                </div>
+                <div class="palette-content">
+                    <div id="people-list" class="people-list"></div>
+                    <div class="palette-tip">
+                        Tip: drag a <b>name</b> or an <b>activity</b> onto a Task. 
+                        Hold Ctrl + scroll to zoom. Hold Ctrl/Shift and drag background to pan.
+                    </div>
                 </div>
             </div>
 

@@ -27,6 +27,24 @@ class PlanningApp {
         
         this.init();
         this.loadFromStorage();
+        this.setupSidebarToggle();
+    }
+    
+    setupSidebarToggle() {
+        // Load sidebar state
+        const sidebarCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+        const sidebar = document.getElementById('people-palette');
+        
+        if (sidebarCollapsed) {
+            sidebar.classList.add('collapsed');
+        }
+        
+        // Setup toggle button
+        document.getElementById('sidebar-toggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebar-collapsed', isCollapsed.toString());
+        });
     }
     
     // Persistence methods
