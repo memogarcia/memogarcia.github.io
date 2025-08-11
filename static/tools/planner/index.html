@@ -37,6 +37,14 @@
                     <i data-lucide="plus"></i>
                     <span>Person</span>
                 </button>
+                <button id="export-data" class="btn btn-secondary" title="Export Plan">
+                    <i data-lucide="download"></i>
+                    <span>Export</span>
+                </button>
+                <button id="import-data" class="btn btn-secondary" title="Import Plan">
+                    <i data-lucide="upload"></i>
+                    <span>Import</span>
+                </button>
             </div>
         </div>
 
@@ -86,6 +94,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Hidden file input for imports -->
+    <input type="file" id="file-input" accept=".json" style="display: none;">
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="script.js"></script>
