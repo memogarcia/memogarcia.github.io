@@ -11,6 +11,11 @@
     --secondary: #64748b;
     --border: #e2e8f0;
     --topbar-bg: rgba(255, 255, 255, 0.8);
+    --port-input-color: #10b981;
+    --port-output-color: #3b82f6;
+    --port-border-color: #ffffff;
+    --connection-line-color: #3b82f6;
+    --connection-line-highlight: #10b981;
 }
 
 body.dark {
@@ -20,6 +25,11 @@ body.dark {
     --secondary: #999;
     --border: #333;
     --topbar-bg: rgba(46, 46, 51, 0.8);
+    --port-input-color: #10b981;
+    --port-output-color: #60a5fa;
+    --port-border-color: #2e2e33;
+    --connection-line-color: #60a5fa;
+    --connection-line-highlight: #34d399;
 }
 
 body {
@@ -1135,33 +1145,55 @@ body {
 /* Connection Ports */
 .connection-port {
     position: absolute;
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background: #3b82f6;
-    border: 2px solid var(--entry);
+    background: var(--port-output-color);
+    border: 2px solid var(--port-border-color);
     cursor: crosshair;
     opacity: 0;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 10;
     pointer-events: none;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 2px 12px rgba(59, 130, 246, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.2);
 }
 
 .connection-port.input {
-    left: -6px;
+    left: -8px;
     top: 50%;
     transform: translateY(-50%);
-    background: #10b981;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    background: var(--port-input-color);
+    box-shadow: 0 2px 12px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(16, 185, 129, 0.2);
+}
+
+.connection-port.input::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--port-border-color);
 }
 
 .connection-port.output {
-    right: -6px;
+    right: -8px;
     top: 50%;
     transform: translateY(-50%);
-    background: #f59e0b;
-    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    background: var(--port-output-color);
+    box-shadow: 0 2px 12px rgba(59, 130, 246, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+
+.connection-port.output::after {
+    content: "→";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--port-border-color);
 }
 
 /* Port visibility in dependency mode */
@@ -1172,16 +1204,16 @@ body {
 
 /* Port hover states */
 .connection-port:hover {
-    transform: translateY(-50%) scale(1.2);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+    transform: translateY(-50%) scale(1.25);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.6), 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
 .connection-port.input:hover {
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.6), 0 0 0 2px rgba(16, 185, 129, 0.3);
 }
 
 .connection-port.output:hover {
-    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.5);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.6), 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
 /* Active states during drag */
@@ -1222,19 +1254,20 @@ body {
 
 /* Live preview connection line */
 .dependency-preview-line {
-    stroke: #3b82f6;
-    stroke-width: 2;
-    stroke-dasharray: 8,4;
+    stroke: var(--connection-line-color);
+    stroke-width: 3;
+    stroke-dasharray: 10,5;
     fill: none;
-    opacity: 0.8;
+    opacity: 0.9;
     pointer-events: none;
     z-index: 5;
-    animation: dash 1.5s linear infinite;
+    animation: dash 2s linear infinite;
+    filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
 }
 
 @keyframes dash {
     to {
-        stroke-dashoffset: -24;
+        stroke-dashoffset: -30;
     }
 }
 
@@ -1315,26 +1348,28 @@ body {
 
 /* Enhanced dependency lines */
 .dependency-line {
-    stroke: #6366f1;
-    stroke-width: 2;
+    stroke: var(--connection-line-color);
+    stroke-width: 3;
     fill: none;
     marker-end: url(#arrowhead);
-    opacity: 0.8;
-    transition: all 0.2s ease;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    opacity: 0.9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 2px 6px rgba(59, 130, 246, 0.2));
 }
 
 .dependency-line:hover {
-    stroke-width: 3;
+    stroke-width: 4;
     opacity: 1;
-    filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.3));
+    filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.4));
+    stroke: #2563eb;
 }
 
 .dependency-line.highlighted {
-    stroke: #f59e0b;
-    stroke-width: 3;
+    stroke: var(--connection-line-highlight);
+    stroke-width: 4;
     opacity: 1;
-    animation: line-highlight 1s ease-in-out;
+    animation: line-highlight 1.2s ease-in-out;
+    filter: drop-shadow(0 4px 12px rgba(16, 185, 129, 0.4));
 }
 
 @keyframes line-highlight {
@@ -1392,17 +1427,22 @@ body {
 /* Mobile and touch optimizations */
 @media (max-width: 768px) {
     .connection-port {
-        width: 16px;
-        height: 16px;
+        width: 20px;
+        height: 20px;
         border-width: 3px;
     }
     
     .connection-port.input {
-        left: -8px;
+        left: -10px;
     }
     
     .connection-port.output {
-        right: -8px;
+        right: -10px;
+    }
+    
+    .connection-port.input::after,
+    .connection-port.output::after {
+        font-size: 12px;
     }
     
     .snap-preview {
@@ -1420,25 +1460,31 @@ body {
 
 @media (pointer: coarse) {
     .connection-port {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         border-width: 3px;
     }
     
     .connection-port.input {
-        left: -10px;
+        left: -11px;
     }
     
     .connection-port.output {
-        right: -10px;
+        right: -11px;
+    }
+    
+    .connection-port.input::after,
+    .connection-port.output::after {
+        font-size: 13px;
+        font-weight: 900;
     }
     
     .dependency-preview-line {
-        stroke-width: 3;
+        stroke-width: 4;
     }
     
     .dependency-line {
-        stroke-width: 3;
+        stroke-width: 4;
     }
 }
 
