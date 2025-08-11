@@ -19,6 +19,8 @@ class PlanningApp {
         this.dependencyCreationMode = false; // Flag for dependency creation state
         this.dependencyStart = null; // Starting task for dependency line
         this.hoveredTask = null; // Currently hovered task for dependency creation
+        this.isDraggingDependency = false; // Flag for drag operation
+        this.dependencyDragState = null; // State during dependency drag
         this.autoAlignMode = false; // Flag for auto-alignment mode
         this.originalPositions = new Map(); // Store original task positions for restoration
         
@@ -431,27 +433,21 @@ class PlanningApp {
             dependencyOverlay = document.createElement('div');
             dependencyOverlay.className = 'dependency-overlay';
             
-            // Add connection points
-            const inputPoint = document.createElement('div');
-            inputPoint.className = 'dependency-point input-point';
-            inputPoint.setAttribute('data-type', 'input');
-            inputPoint.innerHTML = '←';
+            // Add single draggable dependency handle
+            const dependencyHandle = document.createElement('div');
+            dependencyHandle.className = 'dependency-handle';
+            dependencyHandle.innerHTML = '⟷';
+            dependencyHandle.title = 'Drag to create dependency';
             
-            const outputPoint = document.createElement('div');
-            outputPoint.className = 'dependency-point output-point';
-            outputPoint.setAttribute('data-type', 'output');
-            outputPoint.innerHTML = '→';
-            
-            dependencyOverlay.appendChild(inputPoint);
-            dependencyOverlay.appendChild(outputPoint);
+            dependencyOverlay.appendChild(dependencyHandle);
             taskEl.appendChild(dependencyOverlay);
             
-            // Add click handlers for dependency creation
-            this.addDependencyPointHandlers(taskEl, inputPoint, outputPoint);
+            // Add drag handlers for dependency creation
+            this.addDependencyDragHandlers(taskEl, dependencyHandle);
         };
         
         const hideDependencyOverlay = () => {
-            if (dependencyOverlay) {
+            if (dependencyOverlay && !this.isDraggingDependency) {
                 dependencyOverlay.remove();
                 dependencyOverlay = null;
             }
@@ -459,141 +455,245 @@ class PlanningApp {
         
         taskEl.addEventListener('mouseenter', () => {
             clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(showDependencyOverlay, 300); // Show after 300ms hover
+            hoverTimeout = setTimeout(showDependencyOverlay, 200); // Show after 200ms hover
         });
         
         taskEl.addEventListener('mouseleave', () => {
             clearTimeout(hoverTimeout);
-            setTimeout(hideDependencyOverlay, 200); // Hide after 200ms delay
+            if (!this.isDraggingDependency) {
+                setTimeout(hideDependencyOverlay, 150); // Hide after 150ms delay
+            }
         });
     }
     
-    addDependencyPointHandlers(taskEl, inputPoint, outputPoint) {
-        const taskId = taskEl.dataset.taskId || taskEl.dataset.epicId;
+    addDependencyDragHandlers(taskEl, dependencyHandle) {
+        const sourceId = taskEl.dataset.taskId || taskEl.dataset.epicId;
+        const sourceType = taskEl.dataset.taskId ? 'task' : 'epic';
         
-        const startDependencyCreation = (isOutput) => {
-            if (this.dependencyCreationMode && this.dependencyStart) {
-                // Complete dependency if we're already in creation mode
-                this.completeDependencyCreation(taskId, isOutput);
-            } else {
-                // Start dependency creation
-                this.startDependencyCreation(taskId, isOutput);
-            }
+        let isDragging = false;
+        let dragStartPos = null;
+        let dragLine = null;
+        
+        // Mouse events
+        dependencyHandle.addEventListener('mousedown', (e) => {
+            this.startDependencyDrag(e, sourceId, sourceType, dependencyHandle);
+        });
+        
+        // Touch events for mobile
+        dependencyHandle.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            this.startDependencyDrag({
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                preventDefault: () => {},
+                stopPropagation: () => {}
+            }, sourceId, sourceType, dependencyHandle);
+        }, { passive: false });
+    }
+    
+    startDependencyDrag(e, sourceId, sourceType, handle) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        this.isDraggingDependency = true;
+        this.dependencyDragState = {
+            sourceId,
+            sourceType,
+            startPos: { x: e.clientX, y: e.clientY },
+            handle
         };
         
-        inputPoint.addEventListener('click', (e) => {
-            e.stopPropagation();
-            startDependencyCreation(false);
-        });
-        
-        outputPoint.addEventListener('click', (e) => {
-            e.stopPropagation();
-            startDependencyCreation(true);
-        });
-    }
-    
-    startDependencyCreation(taskId, isOutput) {
-        this.dependencyCreationMode = true;
-        this.dependencyStart = { taskId, isOutput };
-        
         // Visual feedback
-        document.body.classList.add('dependency-creation-active');
+        document.body.classList.add('dependency-dragging');
+        handle.classList.add('dragging');
         
-        // Show instruction overlay
-        this.showDependencyInstruction(isOutput);
+        // Create drag line
+        this.createDependencyDragLine(e.clientX, e.clientY);
+        
+        // Add document-level move and end handlers
+        const handleMouseMove = (e) => this.updateDependencyDrag(e);
+        const handleMouseUp = (e) => this.finishDependencyDrag(e, handleMouseMove, handleMouseUp);
+        const handleTouchMove = (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            this.updateDependencyDrag({ clientX: touch.clientX, clientY: touch.clientY });
+        };
+        const handleTouchEnd = (e) => {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            this.finishDependencyDrag({ clientX: touch.clientX, clientY: touch.clientY }, handleTouchMove, handleTouchEnd);
+        };
+        
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd, { passive: false });
         
         // Add escape handler
         this.dependencyEscapeHandler = (e) => {
             if (e.key === 'Escape') {
-                this.cancelDependencyCreation();
+                this.cancelDependencyDrag(handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd);
             }
         };
         document.addEventListener('keydown', this.dependencyEscapeHandler);
     }
     
-    completeDependencyCreation(targetTaskId, isInput) {
-        if (!this.dependencyStart) return;
+    createDependencyDragLine(startX, startY) {
+        // Remove existing drag line
+        const existingLine = document.getElementById('dependency-drag-line');
+        if (existingLine) existingLine.remove();
         
-        const { taskId: sourceTaskId, isOutput } = this.dependencyStart;
+        // Create SVG line
+        const svg = document.getElementById('connections');
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.id = 'dependency-drag-line';
+        line.setAttribute('class', 'dependency-drag-line');
+        line.setAttribute('x1', startX);
+        line.setAttribute('y1', startY);
+        line.setAttribute('x2', startX);
+        line.setAttribute('y2', startY);
+        line.setAttribute('stroke', '#3b82f6');
+        line.setAttribute('stroke-width', '3');
+        line.setAttribute('stroke-dasharray', '8,4');
+        line.setAttribute('marker-end', 'url(#arrowhead)');
         
-        // Validate dependency direction
-        if (isOutput === isInput) {
-            this.showDependencyError('Invalid connection: output must connect to input');
-            return;
+        svg.appendChild(line);
+    }
+    
+    updateDependencyDrag(e) {
+        if (!this.isDraggingDependency || !this.dependencyDragState) return;
+        
+        const line = document.getElementById('dependency-drag-line');
+        if (line) {
+            line.setAttribute('x2', e.clientX);
+            line.setAttribute('y2', e.clientY);
         }
         
-        let fromTaskId, toTaskId;
-        if (isOutput) {
-            fromTaskId = sourceTaskId;
-            toTaskId = targetTaskId;
-        } else {
-            fromTaskId = targetTaskId;
-            toTaskId = sourceTaskId;
+        // Highlight potential drop targets
+        this.updateDragTargetHighlight(e.clientX, e.clientY);
+    }
+    
+    updateDragTargetHighlight(x, y) {
+        // Clear existing highlights
+        document.querySelectorAll('.task, .epic').forEach(el => {
+            el.classList.remove('dependency-drop-target', 'dependency-drop-invalid');
+        });
+        
+        // Find element under cursor
+        const elementUnder = document.elementFromPoint(x, y);
+        const targetEl = elementUnder?.closest('.task, .epic');
+        
+        if (targetEl) {
+            const targetId = targetEl.dataset.taskId || targetEl.dataset.epicId;
+            const sourceId = this.dependencyDragState.sourceId;
+            
+            // Don't allow self-dependency
+            if (targetId === sourceId) {
+                targetEl.classList.add('dependency-drop-invalid');
+                return;
+            }
+            
+            // Check for existing dependency
+            const existingDep = this.dependencies.find(d => 
+                d.fromTaskId === sourceId && d.toTaskId === targetId
+            );
+            
+            if (existingDep) {
+                targetEl.classList.add('dependency-drop-invalid');
+                return;
+            }
+            
+            // Check for circular dependency
+            if (this.wouldCreateCircularDependency(sourceId, targetId)) {
+                targetEl.classList.add('dependency-drop-invalid');
+                return;
+            }
+            
+            // Valid drop target
+            targetEl.classList.add('dependency-drop-target');
+        }
+    }
+    
+    finishDependencyDrag(e, mouseMoveHandler, mouseUpHandler, touchMoveHandler, touchEndHandler) {
+        if (!this.isDraggingDependency || !this.dependencyDragState) return;
+        
+        const { sourceId, sourceType } = this.dependencyDragState;
+        
+        // Find drop target
+        const elementUnder = document.elementFromPoint(e.clientX, e.clientY);
+        const targetEl = elementUnder?.closest('.task, .epic');
+        const targetId = targetEl?.dataset.taskId || targetEl?.dataset.epicId;
+        
+        // Clean up
+        this.cleanupDependencyDrag(mouseMoveHandler, mouseUpHandler, touchMoveHandler, touchEndHandler);
+        
+        // Create dependency if valid target
+        if (targetId && targetId !== sourceId) {
+            this.createDependency(sourceId, targetId);
+        }
+    }
+    
+    cancelDependencyDrag(mouseMoveHandler, mouseUpHandler, touchMoveHandler, touchEndHandler) {
+        this.cleanupDependencyDrag(mouseMoveHandler, mouseUpHandler, touchMoveHandler, touchEndHandler);
+    }
+    
+    cleanupDependencyDrag(mouseMoveHandler, mouseUpHandler, touchMoveHandler, touchEndHandler) {
+        this.isDraggingDependency = false;
+        this.dependencyDragState = null;
+        
+        // Clean up visual state
+        document.body.classList.remove('dependency-dragging');
+        document.querySelectorAll('.dependency-handle').forEach(h => h.classList.remove('dragging'));
+        document.querySelectorAll('.task, .epic').forEach(el => {
+            el.classList.remove('dependency-drop-target', 'dependency-drop-invalid');
+        });
+        
+        // Remove drag line
+        const dragLine = document.getElementById('dependency-drag-line');
+        if (dragLine) dragLine.remove();
+        
+        // Remove event listeners
+        if (mouseMoveHandler) document.removeEventListener('mousemove', mouseMoveHandler);
+        if (mouseUpHandler) document.removeEventListener('mouseup', mouseUpHandler);
+        if (touchMoveHandler) document.removeEventListener('touchmove', touchMoveHandler);
+        if (touchEndHandler) document.removeEventListener('touchend', touchEndHandler);
+        
+        if (this.dependencyEscapeHandler) {
+            document.removeEventListener('keydown', this.dependencyEscapeHandler);
+            this.dependencyEscapeHandler = null;
         }
         
+        // Re-setup hover handlers after drag
+        setTimeout(() => this.setupTaskHoverHandlers(), 100);
+    }
+    
+    createDependency(fromId, toId) {
         // Check for existing dependency
-        if (this.dependencies.some(d => d.fromTaskId === fromTaskId && d.toTaskId === toTaskId)) {
+        if (this.dependencies.some(d => d.fromTaskId === fromId && d.toTaskId === toId)) {
             this.showDependencyError('Dependency already exists');
             return;
         }
         
         // Check for circular dependency
-        if (this.wouldCreateCircularDependency(fromTaskId, toTaskId)) {
+        if (this.wouldCreateCircularDependency(fromId, toId)) {
             this.showDependencyError('Would create circular dependency');
             return;
         }
         
         // Create dependency
         this.dependencies.push({
-            fromTaskId,
-            toTaskId,
+            fromTaskId: fromId,
+            toTaskId: toId,
             type: 'blocks'
         });
         
-        this.cancelDependencyCreation();
         this.render();
         this.saveToStorage();
-        
         this.showDependencySuccess('Dependency created successfully');
-    }
-    
-    cancelDependencyCreation() {
-        this.dependencyCreationMode = false;
-        this.dependencyStart = null;
         
-        document.body.classList.remove('dependency-creation-active');
-        this.hideDependencyInstruction();
-        
-        if (this.dependencyEscapeHandler) {
-            document.removeEventListener('keydown', this.dependencyEscapeHandler);
-            this.dependencyEscapeHandler = null;
-        }
-    }
-    
-    showDependencyInstruction(isOutput) {
-        const instruction = document.createElement('div');
-        instruction.className = 'dependency-instruction';
-        instruction.id = 'dependency-instruction';
-        
-        const text = isOutput ? 
-            'Click on an input point (←) to complete the dependency' : 
-            'Click on an output point (→) to complete the dependency';
-            
-        instruction.innerHTML = `
-            <div class="dependency-instruction-content">
-                <span>${text}</span>
-                <small>Press Esc to cancel</small>
-            </div>
-        `;
-        
-        document.body.appendChild(instruction);
-    }
-    
-    hideDependencyInstruction() {
-        const instruction = document.getElementById('dependency-instruction');
-        if (instruction) {
-            instruction.remove();
-        }
+        // If tasks are aligned in epics, apply Gantt chart behavior
+        this.applyGanttBehavior(fromId, toId);
     }
     
     showDependencyError(message) {
@@ -620,6 +720,87 @@ class PlanningApp {
                 messageEl.remove();
             }
         }, 3000);
+    }
+    
+    applyGanttBehavior(fromId, toId) {
+        const fromTask = this.findById(this.tasks, fromId);
+        const toTask = this.findById(this.tasks, toId);
+        
+        // Only apply Gantt behavior if both tasks are aligned in epics
+        if (!fromTask?.epicId || !toTask?.epicId) return;
+        
+        const fromEpic = this.findById(this.epics, fromTask.epicId);
+        const toEpic = this.findById(this.epics, toTask.epicId);
+        
+        if (!fromEpic || !toEpic) return;
+        
+        // Calculate positions based on dependency
+        const TASK_WIDTH = 200;
+        const TASK_HEIGHT = 120;
+        const GANTT_SPACING = 50; // Horizontal spacing between dependent tasks
+        
+        // Get absolute positions
+        const fromPos = this.getTaskAbsolutePosition(fromTask);
+        const toPos = this.getTaskAbsolutePosition(toTask);
+        
+        // If tasks are in the same epic, arrange horizontally
+        if (fromTask.epicId === toTask.epicId) {
+            const newToX = fromPos.x + TASK_WIDTH + GANTT_SPACING;
+            
+            // Update the dependent task's relative position within the epic
+            toTask.x = newToX - fromEpic.x;
+            toTask.y = toTask.y; // Keep same vertical position
+            
+            // Ensure the epic is wide enough to contain both tasks
+            const minEpicWidth = (newToX - fromEpic.x) + TASK_WIDTH + 40; // 40px margin
+            if (fromEpic.w < minEpicWidth) {
+                fromEpic.w = minEpicWidth;
+            }
+        } else {
+            // Tasks are in different epics - arrange epics horizontally
+            const newEpicX = fromEpic.x + fromEpic.w + GANTT_SPACING;
+            
+            // Move the target epic to the right of the source epic
+            const deltaX = newEpicX - toEpic.x;
+            toEpic.x = newEpicX;
+            
+            // Also move any other tasks that depend on the moved epic
+            this.adjustDependentEpics(toEpic.id, deltaX);
+        }
+        
+        this.render();
+        this.saveToStorage();
+    }
+    
+    adjustDependentEpics(movedEpicId, deltaX) {
+        // Find all tasks in the moved epic that have dependents
+        const movedEpicTasks = this.tasks.filter(t => t.epicId === movedEpicId);
+        
+        movedEpicTasks.forEach(task => {
+            // Find all tasks that depend on this task
+            const dependentTasks = this.dependencies
+                .filter(d => d.fromTaskId === task.id)
+                .map(d => this.findById(this.tasks, d.toTaskId))
+                .filter(t => t && t.epicId && t.epicId !== movedEpicId);
+            
+            // Group dependents by epic and move those epics further right if needed
+            const dependentEpics = [...new Set(dependentTasks.map(t => t.epicId))];
+            
+            dependentEpics.forEach(epicId => {
+                const epic = this.findById(this.epics, epicId);
+                if (epic) {
+                    const movedEpic = this.findById(this.epics, movedEpicId);
+                    const minX = movedEpic.x + movedEpic.w + 50; // 50px spacing
+                    
+                    if (epic.x < minX) {
+                        const additionalDelta = minX - epic.x;
+                        epic.x = minX;
+                        // Recursively adjust dependents of this epic
+                        this.adjustDependentEpics(epic.id, additionalDelta);
+                    }
+                }
+            });
+        });
     }
     
     clearDependencyDragState() {

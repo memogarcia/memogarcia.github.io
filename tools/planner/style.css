@@ -1623,7 +1623,7 @@ body {
     border-color: #1f2937 transparent transparent transparent;
 }
 
-/* New hover-based dependency system */
+/* New drag-based dependency system */
 .dependency-overlay {
     position: absolute;
     top: 0;
@@ -1641,89 +1641,76 @@ body {
     }
 }
 
-.dependency-point {
+.dependency-handle {
     position: absolute;
-    width: 24px;
-    height: 24px;
+    top: 50%;
+    right: -16px;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
-    cursor: pointer;
+    cursor: grab;
     pointer-events: auto;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
     z-index: 10;
+    border: 2px solid white;
 }
 
-.dependency-point:hover {
-    transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+.dependency-handle:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
 }
 
-.input-point {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    left: -12px;
-    top: 50%;
-    transform: translateY(-50%);
+.dependency-handle:active,
+.dependency-handle.dragging {
+    cursor: grabbing;
+    transform: translateY(-50%) scale(1.2);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.8);
+    background: linear-gradient(135deg, #6d28d9, #5b21b6);
 }
 
-.input-point:hover {
-    background: linear-gradient(135deg, #059669, #047857);
+/* Dependency drag states */
+.dependency-dragging {
+    user-select: none;
+    cursor: grabbing !important;
 }
 
-.output-point {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    right: -12px;
-    top: 50%;
-    transform: translateY(-50%);
+.dependency-drag-line {
+    stroke: #8b5cf6;
+    stroke-width: 3;
+    stroke-dasharray: 8,4;
+    pointer-events: none;
+    opacity: 0.8;
+    animation: dependency-drag-pulse 1s ease-in-out infinite alternate;
 }
 
-.output-point:hover {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+@keyframes dependency-drag-pulse {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
 }
 
-/* Dependency creation active state */
-.dependency-creation-active .task,
-.dependency-creation-active .epic {
-    transition: all 0.2s ease;
+/* Drop target states */
+.dependency-drop-target {
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.5) !important;
+    transform: translateY(-2px) scale(1.02);
+    border: 2px solid #10b981;
+    border-radius: 8px;
 }
 
-.dependency-creation-active .task:hover,
-.dependency-creation-active .epic:hover {
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-    transform: translateY(-2px);
-}
-
-/* Dependency instruction overlay */
-.dependency-instruction {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(31, 41, 55, 0.95);
-    backdrop-filter: blur(8px);
-    color: white;
-    padding: 16px 24px;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-    animation: instruction-appear 0.3s ease-out;
-}
-
-@keyframes instruction-appear {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
+.dependency-drop-invalid {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5) !important;
+    transform: translateY(-2px) scale(1.02);
+    border: 2px solid #ef4444;
+    border-radius: 8px;
 }
 
 .dependency-instruction-content {
