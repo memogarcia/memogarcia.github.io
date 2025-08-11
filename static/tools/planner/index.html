@@ -26,15 +26,15 @@
                 <button id="zoom-out" class="btn btn-secondary" title="Zoom Out">
                     <i data-lucide="zoom-out"></i>
                 </button>
-                <button id="add-epic" class="btn btn-primary">
+                <button id="add-epic" class="btn btn-primary" title="Add Epic (Ctrl+E)">
                     <i data-lucide="plus"></i>
                     <span>Epic</span>
                 </button>
-                <button id="add-task" class="btn btn-primary">
+                <button id="add-task" class="btn btn-primary" title="Add Task (Ctrl+T)">
                     <i data-lucide="plus"></i>
                     <span>Task</span>
                 </button>
-                <button id="add-person" class="btn btn-primary">
+                <button id="add-person" class="btn btn-primary" title="Add Person (Ctrl+P)">
                     <i data-lucide="plus"></i>
                     <span>Person</span>
                 </button>
@@ -159,6 +159,17 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="details-section details-actions">
+                    <button id="epic-save-btn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Save Changes
+                    </button>
+                    <button id="epic-delete-btn" class="btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Delete Epic
+                    </button>
+                </div>
                 
                 <div class="details-section">
                     <div class="details-section-title">Tasks in Epic</div>
@@ -212,6 +223,17 @@
                             <option value="high">High</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="details-section details-actions">
+                    <button id="task-save-btn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Save Changes
+                    </button>
+                    <button id="task-delete-btn" class="btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Delete Task
+                    </button>
                 </div>
 
                 <div class="details-section">
@@ -274,6 +296,17 @@
                         <label class="details-field-label">Email</label>
                         <input type="email" class="details-field-input" id="person-email-input" placeholder="email@example.com">
                     </div>
+                </div>
+
+                <div class="details-section details-actions">
+                    <button id="person-save-btn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Save Changes
+                    </button>
+                    <button id="person-delete-btn" class="btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Delete Person
+                    </button>
                 </div>
 
                 <div class="details-section">
