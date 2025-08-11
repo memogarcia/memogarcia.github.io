@@ -26,6 +26,88 @@ class PlanningApp {
         });
         
         this.init();
+        this.loadFromStorage();
+    }
+    
+    // Persistence methods
+    saveToStorage() {
+        const data = {
+            northStars: this.northStars,
+            tasks: this.tasks,
+            people: this.people,
+            assignments: this.assignments,
+            view: this.view
+        };
+        localStorage.setItem('planner-data', JSON.stringify(data));
+    }
+    
+    loadFromStorage() {
+        try {
+            const stored = localStorage.getItem('planner-data');
+            if (stored) {
+                const data = JSON.parse(stored);
+                this.northStars = data.northStars || [];
+                this.tasks = data.tasks || [];
+                this.people = data.people || [];
+                this.assignments = data.assignments || [];
+                this.view = data.view || { x: 0, y: 0, scale: 1 };
+                this.render();
+            }
+        } catch (error) {
+            console.error('Error loading from storage:', error);
+        }
+    }
+    
+    exportData() {
+        const data = {
+            northStars: this.northStars,
+            tasks: this.tasks,
+            people: this.people,
+            assignments: this.assignments,
+            exportDate: new Date().toISOString(),
+            version: '1.0'
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `planner-export-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    importData(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                
+                // Validate the data structure
+                if (data && typeof data === 'object') {
+                    this.northStars = data.northStars || [];
+                    this.tasks = data.tasks || [];
+                    this.people = data.people || [];
+                    this.assignments = data.assignments || [];
+                    
+                    // Reset view to default
+                    this.view = { x: 0, y: 0, scale: 1 };
+                    
+                    this.render();
+                    this.saveToStorage();
+                    
+                    alert('Plan imported successfully!');
+                } else {
+                    alert('Invalid file format. Please select a valid plan export file.');
+                }
+            } catch (error) {
+                console.error('Error importing data:', error);
+                alert('Error importing file. Please check the file format.');
+            }
+        };
+        reader.readAsText(file);
     }
     
     updateConstants() {
@@ -111,6 +193,21 @@ class PlanningApp {
             });
         });
         
+        document.getElementById('export-data').addEventListener('click', () => {
+            this.exportData();
+        });
+        
+        document.getElementById('import-data').addEventListener('click', () => {
+            document.getElementById('file-input').click();
+        });
+        
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                this.importData(e.target.files[0]);
+                e.target.value = ''; // Clear the input
+            }
+        });
+        
         // Canvas events
         const canvas = document.getElementById('canvas');
         canvas.addEventListener('wheel', this.handleWheel.bind(this));
@@ -167,6 +264,9 @@ class PlanningApp {
                     <i data-lucide="user"></i>
                     <span class="person-name">${person.name}</span>
                     <span class="activity-count">${person.activities.length}</span>
+                    <button class="person-delete-btn" onclick="app.deletePerson('${person.id}')" title="Delete Person">
+                        <i data-lucide="x"></i>
+                    </button>
                 </div>
                 <div class="activities-list">
                     ${person.activities.map(activity => `
@@ -223,6 +323,9 @@ class PlanningApp {
                         <span class="badge">Tasks: ${nsTasks.length}</span>
                         <span class="badge">People: ${assignedPeopleIds.size}</span>
                     </div>
+                    <button class="ns-delete-btn" onclick="app.deleteNorthStar('${ns.id}')" title="Delete North Star">
+                        <i data-lucide="x"></i>
+                    </button>
                 </div>
                 <div class="north-star-content" data-ns-content="${ns.id}" style="height: ${ns.h - this.NS_HEADER}px; padding: ${this.NS_PAD_Y}px ${this.NS_PAD_X}px;">
                     <div class="resize-handle" data-drag-type="resize" data-ns-id="${ns.id}"></div>
@@ -258,6 +361,9 @@ class PlanningApp {
                 <div class="task-header">
                     <i data-lucide="target"></i>
                     <span>Task</span>
+                    <button class="task-delete-btn" onclick="app.deleteTask('${task.id}')" title="Delete Task">
+                        <i data-lucide="x"></i>
+                    </button>
                 </div>
                 <div class="task-title" title="${task.title}">${task.title}</div>
                 <div class="task-assignments">
@@ -558,6 +664,7 @@ class PlanningApp {
         document.querySelector(`[data-task-id="${taskId}"]`)?.classList.remove('dragging');
         
         this.render();
+        this.saveToStorage();
     }
     
     handleDragStart(e) {
@@ -624,6 +731,7 @@ class PlanningApp {
             
             this.renderTasks();
             this.renderNorthStars();
+            this.saveToStorage();
         } catch (error) {
             console.error('Error handling drop:', error);
         }
@@ -642,6 +750,7 @@ class PlanningApp {
         
         this.northStars.push(ns);
         this.render();
+        this.saveToStorage();
     }
     
     addTask(title) {
@@ -654,6 +763,7 @@ class PlanningApp {
         
         this.tasks.push(task);
         this.render();
+        this.saveToStorage();
     }
     
     addPerson(name) {
@@ -665,6 +775,7 @@ class PlanningApp {
         
         this.people.push(person);
         this.render();
+        this.saveToStorage();
     }
     
     addActivity(personId, text) {
@@ -677,6 +788,7 @@ class PlanningApp {
         });
         
         this.renderPeople();
+        this.saveToStorage();
     }
     
     addActivityFromInput(input) {
@@ -696,6 +808,59 @@ class PlanningApp {
         this.assignments = this.assignments.filter(a => a.activityId !== activityId);
         
         this.render();
+        this.saveToStorage();
+    }
+    
+    deleteTask(taskId) {
+        if (!confirm('Are you sure you want to delete this task?')) return;
+        
+        this.tasks = this.tasks.filter(t => t.id !== taskId);
+        this.assignments = this.assignments.filter(a => a.taskId !== taskId);
+        
+        this.render();
+        this.saveToStorage();
+    }
+    
+    deletePerson(personId) {
+        const person = this.findById(this.people, personId);
+        if (!person) return;
+        
+        if (!confirm(`Are you sure you want to delete ${person.name}? This will remove all their activities and assignments.`)) return;
+        
+        this.people = this.people.filter(p => p.id !== personId);
+        this.assignments = this.assignments.filter(a => a.personId !== personId);
+        
+        this.render();
+        this.saveToStorage();
+    }
+    
+    deleteNorthStar(nsId) {
+        const ns = this.findById(this.northStars, nsId);
+        if (!ns) return;
+        
+        const alignedTasks = this.tasks.filter(t => t.northStarId === nsId);
+        const confirmMessage = alignedTasks.length > 0 ? 
+            `Are you sure you want to delete "${ns.title}"? This will unalign ${alignedTasks.length} task(s).` :
+            `Are you sure you want to delete "${ns.title}"?`;
+            
+        if (!confirm(confirmMessage)) return;
+        
+        // Unalign tasks
+        this.tasks.forEach(task => {
+            if (task.northStarId === nsId) {
+                const absPos = this.getTaskAbsolutePosition(task);
+                task.x = absPos.x;
+                task.y = absPos.y;
+                delete task.northStarId;
+                delete task.ix;
+                delete task.iy;
+            }
+        });
+        
+        this.northStars = this.northStars.filter(n => n.id !== nsId);
+        
+        this.render();
+        this.saveToStorage();
     }
     
     // Dialog handling
