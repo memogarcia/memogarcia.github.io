@@ -37,6 +37,7 @@ class PlanningApp {
         this.loadFromStorage();
         this.setupSidebarToggle();
         this.setupDetailsPanel();
+        this.setupGlobalKeyboardShortcuts();
     }
     
     setupSidebarToggle() {
@@ -1994,10 +1995,6 @@ class PlanningApp {
                         </div>
                     `).join('')}
                 </div>
-                <div class="add-activity">
-                    <input type="text" placeholder="Add activity..." data-person-id="${person.id}" onkeydown="if(event.key==='Enter') app.addActivityFromInput(this)">
-                    <button class="btn btn-primary" onclick="app.addActivityFromInput(this.previousElementSibling)">Add</button>
-                </div>
             `;
             container.appendChild(personDiv);
         });
@@ -2691,13 +2688,61 @@ class PlanningApp {
         panel.setAttribute('aria-modal', 'true');
         panel.setAttribute('aria-labelledby', 'details-panel-title');
         
+        // Setup action button handlers
+        this.setupDetailActionHandlers();
+        
         // Initial state - show empty state
         this.showEmptyDetailsState();
+    }
+    
+    setupDetailActionHandlers() {
+        // Epic action buttons
+        document.getElementById('epic-save-btn')?.addEventListener('click', () => this.saveEpicDetails());
+        document.getElementById('epic-delete-btn')?.addEventListener('click', () => this.deleteEpicFromDetails());
+        
+        // Task action buttons  
+        document.getElementById('task-save-btn')?.addEventListener('click', () => this.saveTaskDetails());
+        document.getElementById('task-delete-btn')?.addEventListener('click', () => this.deleteTaskFromDetails());
+        
+        // Person action buttons
+        document.getElementById('person-save-btn')?.addEventListener('click', () => this.savePersonDetails());
+        document.getElementById('person-delete-btn')?.addEventListener('click', () => this.deletePersonFromDetails());
+    }
+    
+    setupGlobalKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Only trigger shortcuts when not in input fields and panel is not open
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || 
+                document.getElementById('details-panel').classList.contains('open')) {
+                return;
+            }
+            
+            // Ctrl/Cmd + E for Epic
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                this.createEpic();
+            }
+            
+            // Ctrl/Cmd + T for Task  
+            if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+                e.preventDefault();
+                this.createTask();
+            }
+            
+            // Ctrl/Cmd + P for Person
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                this.createPerson();
+            }
+        });
     }
     
     openDetailsPanel(type, itemId) {
         // Store current focus for restoration later
         this.storePreviousFocus();
+        
+        // Store current item details for save/delete operations
+        this.currentDetailsItem = { type, id: itemId };
         
         const panel = document.getElementById('details-panel');
         const overlay = document.getElementById('details-overlay');
@@ -2752,24 +2797,24 @@ class PlanningApp {
         
         // Update panel title
         const titleEl = document.getElementById('details-panel-title');
-        const titleIcon = titleEl.querySelector('i');
-        const titleText = titleEl.querySelector('span');
+        const titleIcon = titleEl?.querySelector('i');
+        const titleText = titleEl?.querySelector('span');
         
         switch (type) {
             case 'epic':
                 this.loadEpicDetails(itemId);
-                titleIcon.setAttribute('data-lucide', 'star');
-                titleText.textContent = 'Epic Details';
+                if (titleIcon) titleIcon.setAttribute('data-lucide', 'star');
+                if (titleText) titleText.textContent = 'Epic Details';
                 break;
             case 'task':
                 this.loadTaskDetails(itemId);
-                titleIcon.setAttribute('data-lucide', 'target');
-                titleText.textContent = 'Task Details';
+                if (titleIcon) titleIcon.setAttribute('data-lucide', 'target');
+                if (titleText) titleText.textContent = 'Task Details';
                 break;
             case 'person':
                 this.loadPersonDetails(itemId);
-                titleIcon.setAttribute('data-lucide', 'user');
-                titleText.textContent = 'Person Details';
+                if (titleIcon) titleIcon.setAttribute('data-lucide', 'user');
+                if (titleText) titleText.textContent = 'Person Details';
                 break;
             default:
                 this.showEmptyDetailsState();
@@ -2794,10 +2839,15 @@ class PlanningApp {
         document.getElementById('empty-details-template').classList.remove('hidden');
         
         const titleEl = document.getElementById('details-panel-title');
-        const titleIcon = titleEl.querySelector('i');
-        const titleText = titleEl.querySelector('span');
-        titleIcon.setAttribute('data-lucide', 'info');
-        titleText.textContent = 'Details';
+        const titleIcon = titleEl?.querySelector('i');
+        const titleText = titleEl?.querySelector('span');
+        
+        if (titleIcon) {
+            titleIcon.setAttribute('data-lucide', 'info');
+        }
+        if (titleText) {
+            titleText.textContent = 'Details';
+        }
         
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
@@ -3105,6 +3155,104 @@ class PlanningApp {
     restorePreviousFocus() {
         if (this.previousFocusElement && typeof this.previousFocusElement.focus === 'function') {
             this.previousFocusElement.focus();
+        }
+    }
+    
+    // Details Panel Save/Delete Methods
+    saveEpicDetails() {
+        const epic = this.epics.find(e => e.id === this.currentDetailsItem?.id);
+        if (!epic) return;
+        
+        const title = document.getElementById('epic-title-input').value.trim();
+        const description = document.getElementById('epic-description-input').value.trim();
+        const status = document.getElementById('epic-status-input').value;
+        
+        if (!title) {
+            alert('Epic title is required');
+            return;
+        }
+        
+        epic.title = title;
+        epic.description = description;
+        epic.status = status;
+        epic.modifiedAt = new Date().toISOString();
+        
+        this.render();
+        this.saveToStorage();
+        alert('Epic updated successfully');
+    }
+    
+    deleteEpicFromDetails() {
+        if (!this.currentDetailsItem?.id) return;
+        
+        if (confirm('Are you sure you want to delete this epic? This will also remove all tasks within it.')) {
+            this.deleteEpic(this.currentDetailsItem.id);
+            this.closeDetailsPanel();
+        }
+    }
+    
+    saveTaskDetails() {
+        const task = this.tasks.find(t => t.id === this.currentDetailsItem?.id);
+        if (!task) return;
+        
+        const title = document.getElementById('task-title-input').value.trim();
+        const description = document.getElementById('task-description-input').value.trim();
+        const status = document.getElementById('task-status-input').value;
+        const priority = document.getElementById('task-priority-input').value;
+        
+        if (!title) {
+            alert('Task title is required');
+            return;
+        }
+        
+        task.title = title;
+        task.description = description;
+        task.status = status;
+        task.priority = priority;
+        task.modifiedAt = new Date().toISOString();
+        
+        this.render();
+        this.saveToStorage();
+        alert('Task updated successfully');
+    }
+    
+    deleteTaskFromDetails() {
+        if (!this.currentDetailsItem?.id) return;
+        
+        if (confirm('Are you sure you want to delete this task?')) {
+            this.deleteTask(this.currentDetailsItem.id);
+            this.closeDetailsPanel();
+        }
+    }
+    
+    savePersonDetails() {
+        const person = this.people.find(p => p.id === this.currentDetailsItem?.id);
+        if (!person) return;
+        
+        const name = document.getElementById('person-name-input').value.trim();
+        const role = document.getElementById('person-role-input').value.trim();
+        const email = document.getElementById('person-email-input').value.trim();
+        
+        if (!name) {
+            alert('Person name is required');
+            return;
+        }
+        
+        person.name = name;
+        person.role = role;
+        person.email = email;
+        
+        this.render();
+        this.saveToStorage();
+        alert('Person updated successfully');
+    }
+    
+    deletePersonFromDetails() {
+        if (!this.currentDetailsItem?.id) return;
+        
+        if (confirm('Are you sure you want to delete this person? This will remove all assignments.')) {
+            this.deletePerson(this.currentDetailsItem.id);
+            this.closeDetailsPanel();
         }
     }
 }

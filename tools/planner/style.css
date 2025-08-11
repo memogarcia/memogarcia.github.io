@@ -259,6 +259,24 @@ body {
     background: #059669;
 }
 
+.btn-danger {
+    background: #ef4444;
+    color: var(--entry);
+    border-color: #ef4444;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.details-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
 /* Auto-align button states */
 #auto-align.btn-active {
     background: #8b5cf6;
