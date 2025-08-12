@@ -183,24 +183,33 @@ class PomodoroTimer {
     
     loadHistory() {
         this.historyDiv.innerHTML = '';
-        
+
         if (this.sessions.length === 0) {
-            this.historyDiv.innerHTML = '<p class="no-sessions">No sessions yet</p>';
+            const p = document.createElement('p');
+            p.className = 'no-sessions';
+            p.textContent = 'No sessions yet';
+            this.historyDiv.appendChild(p);
             return;
         }
-        
+
         this.sessions.forEach(session => {
             const date = new Date(session.completedAt);
             const dateStr = date.toLocaleDateString();
             const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
+
             const sessionEl = document.createElement('div');
             sessionEl.className = 'session-item';
-            sessionEl.innerHTML = `
-                <div class="session-topic">${session.topic}</div>
-                <div class="session-meta">${session.duration} min • ${dateStr} ${timeStr}</div>
-            `;
-            
+
+            const topicEl = document.createElement('div');
+            topicEl.className = 'session-topic';
+            topicEl.textContent = String(session.topic || 'Focus Session');
+
+            const metaEl = document.createElement('div');
+            metaEl.className = 'session-meta';
+            metaEl.textContent = `${session.duration} min • ${dateStr} ${timeStr}`;
+
+            sessionEl.appendChild(topicEl);
+            sessionEl.appendChild(metaEl);
             this.historyDiv.appendChild(sessionEl);
         });
     }
@@ -208,8 +217,4 @@ class PomodoroTimer {
 
 document.addEventListener('DOMContentLoaded', () => {
     new PomodoroTimer();
-    
-    if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-    }
 });
