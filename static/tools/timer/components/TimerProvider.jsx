@@ -156,10 +156,7 @@ function TimerProvider({ children }) {
             document.body.classList.remove('dark');
         }
 
-        // Request notification permission
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
+        // Defer Notification.requestPermission() to a user action (e.g., Start)
 
         // Keyboard shortcuts - will be setup later after actions are defined
     }, []);
@@ -291,6 +288,10 @@ function TimerProvider({ children }) {
         startTimer: () => {
             if (!state.isRunning) {
                 dispatch({ type: ACTIONS.START_TIMER });
+                if ('Notification' in window && Notification.permission === 'default') {
+                    // Request permission on user action
+                    Notification.requestPermission();
+                }
             }
         },
 
