@@ -34,7 +34,7 @@ function TimerControls() {
             'button',
             {
                 id: 'startBtn',
-                className: 'btn btn-start',
+                className: 'btn btn-success btn-start',
                 onClick: handleStart,
                 disabled: !canStart()
             },
@@ -44,7 +44,7 @@ function TimerControls() {
             'button',
             {
                 id: 'pauseBtn',
-                className: 'btn btn-pause',
+                className: 'btn btn-warning btn-pause',
                 onClick: handlePauseResume,
                 disabled: !canPause() && !canResume()
             },

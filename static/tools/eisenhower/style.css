@@ -1,25 +1,9 @@
 /* Modern Eisenhower Matrix inspired by shadcn-ui */
+/* Import shared design system */
+@import url('../shared-design-system.css');
 
+/* Eisenhower-specific overrides and additions */
 :root {
-    --gap: 24px;
-    --radius: 8px;
-    
-    /* Theme colors matching planner */
-    --theme: #f8fafc;
-    --entry: #ffffff;
-    --primary: #334155;
-    --secondary: #64748b;
-    --border: #e2e8f0;
-    --muted-foreground: #64748b;
-    --accent: #f1f5f9;
-    --accent-foreground: #0f172a;
-    
-    /* Action colors */
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    --success: #10b981;
-    --success-foreground: #ffffff;
-    
     /* Extremely subtle quadrant colors - barely noticeable */
     --urgent-important: #fefefe;
     --urgent-important-border: #f8f8f8;
@@ -29,23 +13,9 @@
     --urgent-border: #f8f8f8;
     --neither: #fefefe;
     --neither-border: #f8f8f8;
-    
-    /* Shadows */
-    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 body.dark {
-    --theme: #1d1e20;
-    --entry: #2e2e33;
-    --primary: #ddd;
-    --secondary: #999;
-    --border: #333;
-    --muted-foreground: #999;
-    --accent: #374151;
-    --accent-foreground: #f9fafb;
-    
     --urgent-important: #2a2a2a;
     --urgent-important-border: #3a3a3a;
     --important: #2a2a2a;
@@ -56,10 +26,8 @@ body.dark {
     --neither-border: #3a3a3a;
 }
 
+/* Eisenhower-specific body styles - inherits from shared design system */
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--theme);
-    color: var(--primary);
     margin: 0;
 }
 
@@ -67,32 +35,17 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.back-link {
-    display: inline-block;
-    margin-bottom: 1rem;
-    color: var(--muted-foreground);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.15s ease;
-    padding: 0.5rem 0;
-}
-
-.back-link:hover {
-    color: var(--primary);
-    text-decoration: none;
-}
+/* Header styles inherited from shared design system */
 
 h1 {
     margin: 0;
-    font-size: 2.25rem;
+    font-size: var(--font-size-4xl);
     font-weight: 700;
     color: var(--primary);
     letter-spacing: -0.025em;
@@ -271,7 +224,7 @@ body.dark .quadrant[data-quadrant="neither"] {
 .task-list {
     /* Card content styles inspired by shadcn-ui */
     flex: 1;
-    padding: 1.5rem;
+    padding: 0.75rem 1.5rem 1.5rem 1.5rem;  /* Reduced top padding from 1.5rem to 0.75rem */
     overflow-y: auto;
     min-height: 200px;
 }
@@ -279,7 +232,7 @@ body.dark .quadrant[data-quadrant="neither"] {
 .empty-state {
     text-align: center;
     color: var(--muted-foreground);
-    margin-top: 3rem;
+    margin-top: 1.5rem;  /* Reduced from 3rem to 1.5rem */
     font-size: 0.875rem;
     font-weight: 400;
 }
@@ -813,47 +766,4 @@ body.dark .quadrant[data-quadrant="neither"] {
     }
 }
 
-/* Theme toggle button */
-.theme-toggle {
-    position: fixed;
-    top: var(--gap);
-    right: var(--gap);
-    background: var(--entry);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.75rem;
-    cursor: pointer;
-    color: var(--primary);
-    width: 2.75rem;
-    height: 2.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    font-size: 1.125rem;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-xs);
-}
-
-.theme-toggle:hover {
-    background: var(--accent);
-    color: var(--accent-foreground);
-    box-shadow: var(--shadow-sm);
-}
-
-.theme-toggle:focus-visible {
-    ring: 3px;
-    ring-color: rgb(59 130 246 / 0.5);
-    border-color: rgb(59 130 246);
-    outline: none;
-}
-
-@media (max-width: 768px) {
-    .theme-toggle {
-        top: 1rem;
-        right: 1rem;
-        width: 2.5rem;
-        height: 2.5rem;
-        font-size: 1rem;
-    }
-}
+/* Theme toggle styles inherited from shared design system */
