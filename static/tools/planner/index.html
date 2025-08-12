@@ -26,6 +26,10 @@
                 <button id="zoom-out" class="btn btn-secondary" title="Zoom Out">
                     <i data-lucide="zoom-out"></i>
                 </button>
+                <button id="add-north-star" class="btn btn-primary" title="Add North Star (Ctrl+N)">
+                    <i data-lucide="star"></i>
+                    <span>North Star</span>
+                </button>
                 <button id="add-epic" class="btn btn-primary" title="Add Epic (Ctrl+E)">
                     <i data-lucide="plus"></i>
                     <span>Epic</span>
@@ -87,7 +91,12 @@
                     </div>
                 </div>
                 <div class="hud">
-                    Unaligned tasks: <span id="unaligned-count">0</span>
+                    <div class="hud-item">
+                        Unaligned tasks: <span id="unaligned-count">0</span>
+                    </div>
+                    <div class="hud-item">
+                        Strategic alignment: <span id="strategic-alignment">0%</span>
+                    </div>
                 </div>
                 
                 <!-- Snap preview indicator -->
@@ -139,6 +148,88 @@
         </div>
         
         <div id="details-panel-content" class="details-panel-content">
+            <!-- North Star Details Template -->
+            <div id="north-star-details-template" class="hidden">
+                <div class="details-section">
+                    <div class="details-field">
+                        <label class="details-field-label">Title</label>
+                        <input type="text" class="details-field-input" id="ns-title-input" placeholder="North Star title">
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Objective</label>
+                        <textarea class="details-field-input details-field-textarea" id="ns-objective-input" placeholder="What strategic outcome does this North Star achieve?"></textarea>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Success Metrics</label>
+                        <textarea class="details-field-input details-field-textarea" id="ns-metrics-input" placeholder="Key metrics to measure success (one per line)"></textarea>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Timeframe</label>
+                        <input type="text" class="details-field-input" id="ns-timeframe-input" placeholder="Q1-Q3 2024">
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Status</label>
+                        <select class="details-field-input" id="ns-status-input">
+                            <option value="active">Active</option>
+                            <option value="achieved">Achieved</option>
+                            <option value="paused">Paused</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Priority</label>
+                        <select class="details-field-input" id="ns-priority-input">
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="details-section details-actions">
+                    <button id="ns-save-btn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Save Changes
+                    </button>
+                    <button id="ns-delete-btn" class="btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Delete North Star
+                    </button>
+                </div>
+                
+                <div class="details-section">
+                    <div class="details-section-title">Aligned Epics</div>
+                    <div id="ns-epics-list" class="details-task-list">
+                        <!-- Epic items will be populated here -->
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Strategic Metrics</div>
+                    <div class="details-field">
+                        <label class="details-field-label">Epic Alignment</label>
+                        <div class="details-field-value" id="ns-epic-alignment">0 of 0 epics aligned</div>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Task Coverage</label>
+                        <div class="details-field-value" id="ns-task-coverage">0 tasks contributing</div>
+                    </div>
+                </div>
+                
+                <div class="details-section">
+                    <div class="details-section-title">Metadata</div>
+                    <div class="details-field">
+                        <label class="details-field-label">Created</label>
+                        <div class="details-field-value" id="ns-created-date">-</div>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Last Modified</label>
+                        <div class="details-field-value" id="ns-modified-date">-</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Epic Details Template -->
             <div id="epic-details-template" class="hidden">
                 <div class="details-section">
