@@ -1,15 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 
-* {
+*, *::before, *::after {
     box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: rgb(var(--color-border));
 }
 
 :root {
-    /* Core spacing and radius */
+    /* Enhanced spacing system matching Writer */
     --gap: 24px;
     --radius: 8px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
     
-    /* Cyberpunk-inspired light theme */
+    /* Writer-inspired color system */
     --color-bg: 255 255 255;
     --color-bg-secondary: 249 249 249;
     --color-text: 0 0 0;
@@ -17,6 +24,19 @@
     --color-text-muted: 107 114 128;
     --color-border: 229 229 229;
     --color-hover: 247 247 247;
+    
+    /* Accent system matching Writer */
+    --color-accent: 16 163 127;
+    --color-accent-foreground: 255 255 255;
+    --color-accent-muted: 16 163 127;
+    
+    /* Enhanced semantic colors */
+    --color-primary: var(--color-text);
+    --color-primary-foreground: var(--color-bg);
+    --color-secondary: var(--color-text-secondary);
+    --color-muted: var(--color-text-muted);
+    --color-destructive: 239 68 68;
+    --color-destructive-foreground: 255 255 255;
     
     /* Legacy mappings for compatibility */
     --theme: rgb(var(--color-bg));
@@ -26,10 +46,10 @@
     --border: rgb(var(--color-border));
     --topbar-bg: rgba(var(--color-bg) / 0.8);
     
-    /* Cyberpunk accent colors */
-    --cyberpunk-teal: #10a37f;
-    --cyberpunk-teal-dark: #13c989;
-    --cyberpunk-teal-light: rgb(16 163 127 / 0.1);
+    /* Enhanced accent colors */
+    --cyberpunk-teal: rgb(var(--color-accent));
+    --cyberpunk-teal-dark: rgb(19 201 137);
+    --cyberpunk-teal-light: rgb(var(--color-accent) / 0.1);
     
     /* Port colors updated for cyberpunk theme */
     --port-input-color: var(--cyberpunk-teal);
@@ -43,7 +63,7 @@
 }
 
 body.dark {
-    /* Enhanced cyberpunk dark theme */
+    /* Enhanced cyberpunk dark theme matching Writer */
     --color-bg: 33 33 33;
     --color-bg-secondary: 44 44 44;
     --color-text: 255 255 255;
@@ -51,6 +71,13 @@ body.dark {
     --color-text-muted: 156 163 175;
     --color-border: 68 68 68;
     --color-hover: 55 55 55;
+    
+    /* Enhanced semantic colors for dark */
+    --color-primary: var(--color-text);
+    --color-primary-foreground: var(--color-bg);
+    --color-secondary: var(--color-text-secondary);
+    --color-muted: var(--color-text-muted);
+    --color-accent-foreground: var(--color-bg);
     
     /* Legacy mappings */
     --theme: rgb(var(--color-bg));
@@ -63,7 +90,7 @@ body.dark {
 }
 
 body.sepia {
-    /* Reading-optimized sepia theme */
+    /* Reading-optimized sepia theme matching Writer */
     --color-bg: 251 248 241;
     --color-bg-secondary: 247 243 234;
     --color-text: 62 51 41;
@@ -71,6 +98,13 @@ body.sepia {
     --color-text-muted: 122 102 82;
     --color-border: 226 218 203;
     --color-hover: 241 235 223;
+    
+    /* Enhanced semantic colors for sepia */
+    --color-primary: var(--color-text);
+    --color-primary-foreground: var(--color-bg);
+    --color-secondary: var(--color-text-secondary);
+    --color-muted: var(--color-text-muted);
+    --color-accent-foreground: var(--color-bg);
     
     /* Legacy mappings */
     --theme: rgb(var(--color-bg));
@@ -131,7 +165,48 @@ body {
 .controls {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.75rem;
+}
+
+/* Control groups and separators */
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.control-group-primary {
+    position: relative;
+}
+
+.control-separator {
+    width: 1px;
+    height: 1.5rem;
+    background: rgb(var(--color-border));
+    margin: 0 0.25rem;
+}
+
+/* Enhanced button spacing within groups */
+.control-group .btn {
+    border-radius: var(--radius-md);
+}
+
+.control-group .btn:first-child {
+    border-top-right-radius: var(--radius-sm);
+    border-bottom-right-radius: var(--radius-sm);
+}
+
+.control-group .btn:last-child {
+    border-top-left-radius: var(--radius-sm);
+    border-bottom-left-radius: var(--radius-sm);
+}
+
+.control-group .btn:not(:first-child):not(:last-child) {
+    border-radius: var(--radius-sm);
+}
+
+.control-group .btn + .btn {
+    margin-left: -1px;
 }
 
 @media (max-width: 768px) {
@@ -295,96 +370,292 @@ body {
     }
 }
 
+/* Enhanced button system inspired by shadcn/ui */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     white-space: nowrap;
-    border-radius: var(--radius);
-    font-size: 14px;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
     font-weight: 500;
     font-family: var(--font-system);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     outline: none;
     cursor: pointer;
-    border: 1px solid var(--border);
+    position: relative;
     
     /* Default size */
-    height: 2.5rem;
-    padding: 0.625rem 1rem;
+    height: 2.25rem;
+    padding: 0.5rem 1rem;
     min-width: 80px;
     
     /* Default variant - outline */
-    background: var(--entry);
-    color: var(--primary);
+    background: rgb(var(--color-bg));
+    color: rgb(var(--color-text));
+    border: 1px solid rgb(var(--color-border));
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    
+    /* Icon sizing */
+    & [data-lucide] {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+    }
 }
 
 .btn:hover:not(:disabled) {
     background: rgb(var(--color-hover));
-    color: var(--primary);
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
+    border-color: rgb(var(--color-text-secondary));
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
 }
 
 .btn:focus-visible {
-    outline: 2px solid var(--cyberpunk-teal);
+    outline: 2px solid rgb(var(--color-accent));
     outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgb(16 163 127 / 0.1);
+    border-color: rgb(var(--color-accent));
+    box-shadow: 0 0 0 3px rgb(var(--color-accent) / 0.2);
 }
 
 .btn:active:not(:disabled) {
-    transform: translateY(1px);
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transform: scale(0.98);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
 }
 
 .btn:disabled {
     pointer-events: none;
     opacity: 0.5;
+    cursor: not-allowed;
 }
 
+/* Button variants */
 .btn-primary {
-    background: var(--cyberpunk-teal);
-    color: white;
-    border-color: var(--cyberpunk-teal);
+    background: rgb(var(--color-accent));
+    color: rgb(var(--color-accent-foreground));
+    border-color: rgb(var(--color-accent));
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: var(--cyberpunk-teal-dark);
-    border-color: var(--cyberpunk-teal-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(16, 163, 127, 0.3), 0 4px 6px -4px rgba(16, 163, 127, 0.3);
+    background: rgb(19 201 137);
+    border-color: rgb(19 201 137);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:focus-visible {
+    box-shadow: 0 0 0 3px rgb(var(--color-accent) / 0.2);
 }
 
 .btn-secondary {
-    padding: 6px 8px;
-    min-width: 60px;
+    background: rgb(var(--color-bg-secondary));
+    color: rgb(var(--color-text-secondary));
+    border-color: rgb(var(--color-border));
     height: 2rem;
+    padding: 0.25rem 0.75rem;
+    min-width: 60px;
+    font-size: 0.8125rem;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: rgb(var(--color-hover));
+    color: rgb(var(--color-text));
 }
 
 .btn-active {
-    background: var(--cyberpunk-teal);
-    color: white;
-    border-color: var(--cyberpunk-teal);
+    background: rgb(var(--color-accent));
+    color: rgb(var(--color-accent-foreground));
+    border-color: rgb(var(--color-accent));
 }
 
 .btn-active:hover:not(:disabled) {
-    background: var(--cyberpunk-teal-dark);
-    border-color: var(--cyberpunk-teal-dark);
+    background: rgb(19 201 137);
+    border-color: rgb(19 201 137);
 }
 
 .btn-danger {
-    background: #ef4444;
-    color: white;
-    border-color: #ef4444;
+    background: rgb(var(--color-destructive));
+    color: rgb(var(--color-destructive-foreground));
+    border-color: rgb(var(--color-destructive));
 }
 
 .btn-danger:hover:not(:disabled) {
-    background: #dc2626;
-    border-color: #dc2626;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3), 0 2px 4px -2px rgba(239, 68, 68, 0.3);
+    background: rgb(220 38 38);
+    border-color: rgb(220 38 38);
+    box-shadow: 0 2px 4px 0 rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger:focus-visible {
+    box-shadow: 0 0 0 3px rgb(var(--color-destructive) / 0.2);
+}
+
+/* Card Components (shadcn/ui inspired) */
+.card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgb(var(--color-border));
+    background: rgb(var(--color-bg));
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1;
+    color: rgb(var(--color-text));
+    font-family: var(--font-system);
+}
+
+.card-description {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: rgb(var(--color-text-muted));
+}
+
+.card-content {
+    padding: 0 1.5rem;
+    padding-bottom: 1.5rem;
+    flex: 1;
+}
+
+.card-footer {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgb(var(--color-border));
+}
+
+/* Empty State Card */
+.empty-state-card {
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+
+.empty-state-icon {
+    margin: 0 auto 1rem auto;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgb(var(--color-bg-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-icon [data-lucide] {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: rgb(var(--color-text-muted));
+}
+
+.empty-state-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: rgb(var(--color-text));
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+    font-size: 0.875rem;
+    color: rgb(var(--color-text-muted));
+    margin-bottom: 1.5rem;
+    max-width: 28rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Enhanced transitions and micro-interactions */
+.palette-content, .timeline-content {
+    padding: 1rem;
+}
+
+.palette-content .card,
+.timeline-content .card {
+    margin-bottom: 1rem;
+}
+
+/* Smooth transitions for interactive elements */
+.epic, .task, .north-star {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.epic:hover, .task:hover, .north-star:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced sidebar transitions */
+.people-palette, .timeline-sidebar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Improved focus states */
+*:focus-visible {
+    outline: 2px solid rgb(var(--color-accent));
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Enhanced app title */
+.app-title {
+    transition: color 0.2s ease;
+}
+
+.app-title:hover {
+    color: rgb(var(--color-accent));
+}
+
+/* Smooth control separator animations */
+.control-separator {
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Enhanced palette tips styling */
+.palette-tip {
+    font-size: 0.8125rem;
+    color: rgb(var(--color-text-muted));
+    background: rgb(var(--color-bg-secondary));
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border: 1px solid rgb(var(--color-border));
+    line-height: 1.4;
+}
+
+/* Loading states */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Enhanced empty state animations */
+.empty-state {
+    animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
 }
 
 .details-actions {

@@ -703,11 +703,65 @@ export class PlanningApp {
         this.renderTasks();
         this.renderConnections();
         this.renderDependencies();
+        this.renderEmptyState();
         this.updateTimelineSidebar();
         this.updateUnalignedCount();
         this.updateStrategicAlignment();
         this.updateWorldTransform();
         this.updateSelectionStyles();
+    }
+
+    renderEmptyState() {
+        const world = document.getElementById('world');
+        const existingEmptyState = world.querySelector('.empty-state');
+        
+        // Remove existing empty state
+        if (existingEmptyState) {
+            existingEmptyState.remove();
+        }
+        
+        // Check if we have any content
+        const hasContent = this.northStars.length > 0 || this.epics.length > 0 || this.tasks.length > 0;
+        
+        if (!hasContent) {
+            const emptyStateDiv = document.createElement('div');
+            emptyStateDiv.className = 'empty-state';
+            emptyStateDiv.innerHTML = `
+                <div class="card empty-state-card">
+                    <div class="empty-state-icon">
+                        <i data-lucide="compass"></i>
+                    </div>
+                    <div class="empty-state-title">Welcome to Planner</div>
+                    <div class="empty-state-description">
+                        Create your first North Star to define strategic objectives, then add Epics and Tasks to break down the work.
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="app.addNorthStar()">
+                            <i data-lucide="star"></i>
+                            <span>Create North Star</span>
+                        </button>
+                        <button class="btn" onclick="app.addEpic()">
+                            <i data-lucide="plus"></i>
+                            <span>Add Epic</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Center the empty state in the viewport
+            emptyStateDiv.style.position = 'absolute';
+            emptyStateDiv.style.top = '50%';
+            emptyStateDiv.style.left = '50%';
+            emptyStateDiv.style.transform = 'translate(-50%, -50%)';
+            emptyStateDiv.style.zIndex = '1';
+            
+            world.appendChild(emptyStateDiv);
+            
+            // Re-initialize icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
     }
     
     initializeDependencyCreation() {
@@ -2312,6 +2366,41 @@ export class PlanningApp {
     
     renderPeople() {
         const container = document.getElementById('people-list');
+        
+        if (this.people.length === 0) {
+            // Show empty state card
+            container.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Team</div>
+                        <div class="card-description">Manage people and assignments</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="empty-state-icon">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="empty-state-title" style="font-size: 1rem; margin-bottom: 0.5rem;">No people added</div>
+                            <div class="empty-state-description" style="font-size: 0.8125rem;">
+                                Add team members to assign tasks and track workload.
+                            </div>
+                            <button class="btn btn-primary" onclick="app.addPerson()" style="margin-top: 1rem;">
+                                <i data-lucide="user-plus"></i>
+                                <span>Add Person</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Re-initialize icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            return;
+        }
+        
+        // Clear container and render people
         container.innerHTML = '';
         
         this.people.forEach(person => {

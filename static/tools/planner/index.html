@@ -16,43 +16,58 @@
                 <span>Planner</span>
             </div>
             <div class="controls">
-                <button id="reset-view" class="btn btn-secondary" title="Reset View">
-                    <i data-lucide="crosshair"></i>
-                </button>
-                <button id="zoom-in" class="btn btn-secondary" title="Zoom In">
-                    <i data-lucide="zoom-in"></i>
-                </button>
-                <button id="zoom-out" class="btn btn-secondary" title="Zoom Out">
-                    <i data-lucide="zoom-out"></i>
-                </button>
-                <button id="add-north-star" class="btn btn-primary" title="Add North Star (Ctrl+N)">
-                    <i data-lucide="star"></i>
-                    <span>North Star</span>
-                </button>
-                <button id="add-epic" class="btn btn-primary" title="Add Epic (Ctrl+E)">
-                    <i data-lucide="plus"></i>
-                    <span>Epic</span>
-                </button>
-                <button id="add-task" class="btn btn-primary" title="Add Task (Ctrl+T)">
-                    <i data-lucide="plus"></i>
-                    <span>Task</span>
-                </button>
-                <button id="add-person" class="btn btn-primary" title="Add Person (Ctrl+P)">
-                    <i data-lucide="plus"></i>
-                    <span>Person</span>
-                </button>
-                <button id="auto-align" class="btn btn-secondary" title="Auto-Align Tasks by Dependencies">
-                    <i data-lucide="git-branch"></i>
-                    <span>Auto-Align</span>
-                </button>
-                <button id="export-data" class="btn btn-secondary" title="Export Plan">
-                    <i data-lucide="download"></i>
-                    <span>Export</span>
-                </button>
-                <button id="import-data" class="btn btn-secondary" title="Import Plan">
-                    <i data-lucide="upload"></i>
-                    <span>Import</span>
-                </button>
+                <!-- View Controls -->
+                <div class="control-group">
+                    <button id="reset-view" class="btn btn-secondary" title="Reset View">
+                        <i data-lucide="crosshair"></i>
+                    </button>
+                    <button id="zoom-in" class="btn btn-secondary" title="Zoom In">
+                        <i data-lucide="zoom-in"></i>
+                    </button>
+                    <button id="zoom-out" class="btn btn-secondary" title="Zoom Out">
+                        <i data-lucide="zoom-out"></i>
+                    </button>
+                </div>
+
+                <div class="control-separator"></div>
+
+                <!-- Create Items -->
+                <div class="control-group control-group-primary">
+                    <button id="add-north-star" class="btn btn-primary" title="Add North Star (Ctrl+N)">
+                        <i data-lucide="star"></i>
+                        <span>North Star</span>
+                    </button>
+                    <button id="add-epic" class="btn btn-primary" title="Add Epic (Ctrl+E)">
+                        <i data-lucide="plus"></i>
+                        <span>Epic</span>
+                    </button>
+                    <button id="add-task" class="btn btn-primary" title="Add Task (Ctrl+T)">
+                        <i data-lucide="plus"></i>
+                        <span>Task</span>
+                    </button>
+                    <button id="add-person" class="btn btn-primary" title="Add Person (Ctrl+P)">
+                        <i data-lucide="plus"></i>
+                        <span>Person</span>
+                    </button>
+                </div>
+
+                <div class="control-separator"></div>
+
+                <!-- Actions -->
+                <div class="control-group">
+                    <button id="auto-align" class="btn btn-secondary" title="Auto-Align Tasks by Dependencies">
+                        <i data-lucide="git-branch"></i>
+                        <span>Auto-Align</span>
+                    </button>
+                    <button id="export-data" class="btn btn-secondary" title="Export Plan">
+                        <i data-lucide="download"></i>
+                        <span>Export</span>
+                    </button>
+                    <button id="import-data" class="btn btn-secondary" title="Import Plan">
+                        <i data-lucide="upload"></i>
+                        <span>Import</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -144,7 +159,25 @@
                         <i data-lucide="chevron-left"></i>
                     </button>
                 </div>
-                <div id="timeline-content" class="timeline-content"></div>
+                <div id="timeline-content" class="timeline-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Timeline</div>
+                            <div class="card-description">Track progress over time</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="empty-state-icon">
+                                <i data-lucide="calendar"></i>
+                            </div>
+                            <div style="text-align: center;">
+                                <div class="empty-state-title" style="font-size: 1rem; margin-bottom: 0.5rem;">No timelines set</div>
+                                <div class="empty-state-description" style="font-size: 0.8125rem;">
+                                    Add dates to your tasks and epics to see timeline visualization here.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- External toggle for timeline sidebar when collapsed -->
