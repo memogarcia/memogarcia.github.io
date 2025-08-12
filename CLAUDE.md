@@ -1,6 +1,6 @@
 # CLAUDE
 
-NEVER RUN `hugo commands`!! 
+NEVER RUN `hugo commands`!!
 
 ## Repository Specifications
 
@@ -10,17 +10,6 @@ NEVER RUN `hugo commands`!!
 - **Theme**: PaperMod with custom cyberpunk styling
 - **Deployment**: Static site generation with GitHub Pages
 
-### Build Commands
-```bash
-# Development server
-hugo server -D
-
-# Production build
-hugo --minify
-
-# Theme updates
-git submodule update --remote --merge
-```
 
 ### Content Structure
 - **Posts**: `/content/posts/` - Technical blog posts and articles

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writer Components Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #6366f1; }
+    </style>
+</head>
+<body>
+    <h1>Writer Tool Components Test</h1>
+    
+    <div class="test-section">
+        <h2>Component Loading Test</h2>
+        <div id="component-status">
+            <p class="info">Testing component loading...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>React Test</h2>
+        <div id="react-test">
+            <p class="info">Testing React rendering...</p>
+        </div>
+    </div>
+
+    <!-- React and Babel -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function TestComponent() {
+            const [count, setCount] = useState(0);
+            
+            return React.createElement(
+                'div',
+                null,
+                React.createElement(
+                    'p',
+                    { className: 'success' },
+                    `✓ React is working! Count: ${count}`
+                ),
+                React.createElement(
+                    'button',
+                    {
+                        onClick: () => setCount(count + 1),
+                        style: {
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            border: '1px solid #ddd',
+                            background: '#10b981',
+                            color: 'white',
+                            cursor: 'pointer'
+                        }
+                    },
+                    'Increment'
+                )
+            );
+        }
+
+        // Test component loading
+        function testComponents() {
+            const components = [
+                'Tabs', 'TabsList', 'TabsTrigger', 'TabsContent',
+                'ToastContainer', 'Toast',
+                'SanitizedMarkdown',
+                'ToolsSidebar',
+                'SearchBar', 
+                'SettingsModal',
+                'ClipboardPanel',
+                'TableOfContents',
+                'HistoryPanel'
+            ];
+            
+            const statusDiv = document.getElementById('component-status');
+            let html = '';
+            let allGood = true;
+            
+            components.forEach(comp => {
+                const exists = window[comp] !== undefined;
+                const status = exists ? '✓' : '✗';
+                const className = exists ? 'success' : 'error';
+                html += `<p class="${className}">${status} ${comp}</p>`;
+                if (!exists) allGood = false;
+            });
+            
+            if (allGood) {
+                html += '<p class="success"><strong>✓ All components loaded successfully!</strong></p>';
+            } else {
+                html += '<p class="error"><strong>✗ Some components failed to load</strong></p>';
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // Render test component
+        document.addEventListener('DOMContentLoaded', () => {
+            const root = ReactDOM.createRoot(document.getElementById('react-test'));
+            root.render(React.createElement(TestComponent));
+            
+            // Test components after a delay to ensure they're loaded
+            setTimeout(testComponents, 1000);
+        });
+    </script>
+
+    <!-- Load all the utility and component files -->
+    <script type="text/babel" src="utils/uuid.js"></script>
+    <script type="text/babel" src="utils/debounce.js"></script>
+    <script type="text/babel" src="utils/validation.js"></script>
+    <script type="text/babel" src="utils/storage.js"></script>
+    <script type="text/babel" src="utils/cn.js"></script>
+    <script type="text/babel" src="utils/textParser.js"></script>
+    <script type="text/babel" src="utils/exportUtils.js"></script>
+    <script type="text/babel" src="utils/highlightText.js"></script>
+    <script type="text/babel" src="utils/markdownRenderer.js"></script>
+    
+    <script type="text/babel" src="hooks/useToast.js"></script>
+    <script type="text/babel" src="hooks/useUndoRedo.js"></script>
+    
+    <script type="text/babel" src="store/index.js"></script>
+    
+    <script type="text/babel" src="components/ui/Tabs.jsx"></script>
+    <script type="text/babel" src="components/ui/Toast.jsx"></script>
+    <script type="text/babel" src="components/SanitizedMarkdown.jsx"></script>
+    
+    <script type="text/babel" src="components/ClipboardPanel.jsx"></script>
+    <script type="text/babel" src="components/TableOfContents.jsx"></script>
+    <script type="text/babel" src="components/HistoryPanel.jsx"></script>
+    <script type="text/babel" src="components/ToolsSidebar.jsx"></script>
+    <script type="text/babel" src="components/SearchBar.jsx"></script>
+    <script type="text/babel" src="components/SettingsModal.jsx"></script>
+</body>
+</html>

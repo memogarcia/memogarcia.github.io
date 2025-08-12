@@ -17,7 +17,7 @@ function PomodoroTimer() {
     useEffect(() => {
         window.getTimerStats = getStats;
         
-        console.log('Pomodoro Timer React loaded. Available console commands:');
+        console.log('Timer React loaded. Available console commands:');
         console.log('- getTimerStats() - Get timer statistics');
     }, [getStats]);
 
@@ -48,7 +48,7 @@ function PomodoroTimer() {
                 React.createElement(
                     'h1',
                     null,
-                    'Pomodoro Timer'
+                    'Timer'
                 )
             ),
             
@@ -99,7 +99,7 @@ function initializeApp() {
         const root = ReactDOM.createRoot(rootElement);
         root.render(React.createElement(App));
         
-        console.log('Pomodoro Timer React app initialized successfully');
+        console.log('Timer React app initialized successfully');
         return true;
     } catch (error) {
         console.error('App initialization failed:', error);
