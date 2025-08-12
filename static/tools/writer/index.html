@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writer - Structured Writing Tool</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- React 18 CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel Standalone for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- DND Kit for drag & drop -->
+    <script src="https://unpkg.com/@dnd-kit/core@6.0.8/dist/umd/index.js"></script>
+    <script src="https://unpkg.com/@dnd-kit/sortable@7.0.2/dist/umd/index.js"></script>
+    <script src="https://unpkg.com/@dnd-kit/utilities@3.2.1/dist/umd/index.js"></script>
+    
+    <!-- Framer Motion for animations -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    
+    <!-- Date-fns for date formatting -->
+    <script src="https://unpkg.com/date-fns@2.30.0/index.js"></script>
+    
+    <!-- React Markdown for preview mode -->
+    <script src="https://unpkg.com/react-markdown@8.0.7/lib/index.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // Theme initialization - load saved preference
+        const savedTheme = localStorage.getItem('pref-theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+        } else if (savedTheme === 'light') {
+            document.body.classList.remove('dark');
+        }
+    </script>
+
+    <!-- Load utilities and core modules first -->
+    <script type="text/babel" src="utils/uuid.js"></script>
+    <script type="text/babel" src="utils/debounce.js"></script>
+    <script type="text/babel" src="utils/validation.js"></script>
+    <script type="text/babel" src="utils/storage.js"></script>
+    <script type="text/babel" src="utils/cn.js"></script>
+    <script type="text/babel" src="utils/textParser.js"></script>
+    <script type="text/babel" src="utils/exportUtils.js"></script>
+    <script type="text/babel" src="utils/highlightText.js"></script>
+    <script type="text/babel" src="utils/markdownRenderer.js"></script>
+    
+    <!-- Load hooks -->
+    <script type="text/babel" src="hooks/useToast.js"></script>
+    <script type="text/babel" src="hooks/useUndoRedo.js"></script>
+    
+    <!-- Load store -->
+    <script type="text/babel" src="store/index.js"></script>
+    
+    <!-- Load React components in dependency order -->
+    <script type="text/babel" src="components/ThemeToggle.jsx"></script>
+    
+    <!-- Placeholder components that need to be created/updated -->
+    <script type="text/babel">
+        // Placeholder components until we migrate the individual components
+        function DocumentsList({ onOpenSettings }) {
+          return React.createElement('div', { 
+            style: { padding: '16px', color: 'var(--text-secondary)' }
+          }, 'Documents List (to be migrated)');
+        }
+        
+        function Editor({ showBorders }) {
+          return React.createElement('div', { 
+            style: { 
+              padding: '16px', 
+              color: 'var(--text-secondary)',
+              border: showBorders ? '1px solid var(--border)' : 'none'
+            }
+          }, 'Editor (to be migrated)');
+        }
+        
+        function ToolsSidebar({ onClose }) {
+          return React.createElement('div', { 
+            style: { padding: '16px', color: 'var(--text-secondary)' }
+          }, 'Tools Sidebar (to be migrated)');
+        }
+        
+        function SearchBar({ isOpen, onClose }) {
+          if (!isOpen) return null;
+          return React.createElement('div', { 
+            style: { 
+              position: 'fixed', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              backgroundColor: 'var(--background)',
+              padding: '16px',
+              zIndex: 1000,
+              borderBottom: '1px solid var(--border)'
+            }
+          }, 'Search Bar (to be migrated)');
+        }
+        
+        function SettingsModal({ isOpen, onClose }) {
+          if (!isOpen) return null;
+          return React.createElement('div', { 
+            style: { 
+              position: 'fixed', 
+              inset: 0, 
+              backgroundColor: 'rgba(0,0,0,0.5)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              zIndex: 1000
+            }
+          }, 
+          React.createElement('div', {
+            style: {
+              backgroundColor: 'var(--background)',
+              padding: '24px',
+              borderRadius: '8px',
+              color: 'var(--text-primary)'
+            }
+          }, 'Settings Modal (to be migrated)'));
+        }
+        
+        function ToastContainer({ toasts, onDismiss }) {
+          if (!toasts || toasts.length === 0) return null;
+          return React.createElement('div', {
+            style: {
+              position: 'fixed',
+              bottom: '16px',
+              right: '16px',
+              zIndex: 2000
+            }
+          }, 
+          toasts.map(toast => 
+            React.createElement('div', {
+              key: toast.id,
+              style: {
+                backgroundColor: toast.variant === 'error' ? '#ef4444' : 
+                              toast.variant === 'success' ? '#10b981' : 'var(--background)',
+                color: 'white',
+                padding: '12px 16px',
+                borderRadius: '6px',
+                marginBottom: '8px',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+              },
+              onClick: () => onDismiss(toast.id)
+            }, 
+            React.createElement('div', { style: { fontWeight: '600' }}, toast.title),
+            toast.description && React.createElement('div', { style: { fontSize: '14px', opacity: 0.9 }}, toast.description)
+            )
+          ));
+        }
+        
+        // Make components globally available
+        window.DocumentsList = DocumentsList;
+        window.Editor = Editor;
+        window.ToolsSidebar = ToolsSidebar;
+        window.SearchBar = SearchBar;
+        window.SettingsModal = SettingsModal;
+        window.ToastContainer = ToastContainer;
+    </script>
+    
+    <!-- Load main App -->
+    <script type="text/babel" src="App.jsx"></script>
+</body>
+</html>

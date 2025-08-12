@@ -1,0 +1,17 @@
+{
+  "name": "planner-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for the Planner application",
+  "main": "e2e-test.js",
+  "scripts": {
+    "test": "node e2e-test.js",
+    "test:headless": "HEADLESS=true node e2e-test.js",
+    "install-deps": "npm install puppeteer"
+  },
+  "keywords": ["testing", "e2e", "puppeteer", "planner"],
+  "author": "Planner Team",
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}

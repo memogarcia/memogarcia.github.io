@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writer Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .test-result {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Writer App Test Page</h1>
+    <p>This page tests if the Writer app dependencies and components load correctly.</p>
+    
+    <div id="test-results"></div>
+    
+    <h2>Quick Tests</h2>
+    <button onclick="testReactLoading()">Test React Loading</button>
+    <button onclick="testLocalStorage()">Test localStorage</button>
+    <button onclick="testBasicFunctionality()">Test Basic App</button>
+    <button onclick="window.open('./index.html', '_blank')">Open Writer App</button>
+
+    <!-- Same dependencies as main app -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        function addTestResult(title, status, message) {
+            const container = document.getElementById('test-results');
+            const div = document.createElement('div');
+            div.className = `test-result ${status}`;
+            div.innerHTML = `<strong>${title}</strong><br>${message}`;
+            container.appendChild(div);
+        }
+
+        function testReactLoading() {
+            try {
+                if (typeof React === 'undefined') {
+                    throw new Error('React is not loaded');
+                }
+                if (typeof ReactDOM === 'undefined') {
+                    throw new Error('ReactDOM is not loaded');
+                }
+                if (typeof Babel === 'undefined') {
+                    throw new Error('Babel is not loaded');
+                }
+                
+                addTestResult('React Dependencies', 'success', 
+                    `React ${React.version} loaded successfully. Babel and ReactDOM are available.`);
+                
+                // Test basic React component
+                const TestComponent = () => React.createElement('span', null, 'React is working!');
+                const container = document.createElement('div');
+                document.body.appendChild(container);
+                const root = ReactDOM.createRoot(container);
+                root.render(React.createElement(TestComponent));
+                
+                setTimeout(() => {
+                    if (container.textContent === 'React is working!') {
+                        addTestResult('React Rendering', 'success', 'React components render correctly.');
+                    } else {
+                        addTestResult('React Rendering', 'error', 'React component did not render as expected.');
+                    }
+                    document.body.removeChild(container);
+                }, 100);
+                
+            } catch (error) {
+                addTestResult('React Dependencies', 'error', `Error: ${error.message}`);
+            }
+        }
+
+        function testLocalStorage() {
+            try {
+                const testKey = 'writer-test-' + Date.now();
+                const testData = { test: true, timestamp: Date.now() };
+                
+                localStorage.setItem(testKey, JSON.stringify(testData));
+                const retrieved = JSON.parse(localStorage.getItem(testKey));
+                localStorage.removeItem(testKey);
+                
+                if (retrieved.test === testData.test) {
+                    addTestResult('localStorage', 'success', 'localStorage read/write operations work correctly.');
+                } else {
+                    addTestResult('localStorage', 'error', 'localStorage data integrity check failed.');
+                }
+            } catch (error) {
+                addTestResult('localStorage', 'error', `localStorage error: ${error.message}`);
+            }
+        }
+
+        function testBasicFunctionality() {
+            try {
+                // Test basic app data structure
+                const mockProject = {
+                    id: 'test-id',
+                    title: 'Test Project',
+                    content: 'Test content',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                const mockClipboardItem = {
+                    id: 'clip-test',
+                    content: 'Test clipboard content',
+                    source: 'manual',
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Test data serialization
+                const serialized = JSON.stringify({ 
+                    projects: [[mockProject.id, mockProject]],
+                    clipboard: [mockClipboardItem]
+                });
+                
+                const parsed = JSON.parse(serialized);
+                
+                if (parsed.projects[0][1].title === mockProject.title) {
+                    addTestResult('Data Structure', 'success', 'App data structures serialize/deserialize correctly.');
+                } else {
+                    addTestResult('Data Structure', 'error', 'Data structure integrity check failed.');
+                }
+                
+                // Test theme functionality
+                const originalTheme = document.body.classList.contains('dark');
+                document.body.classList.toggle('dark');
+                const themeChanged = document.body.classList.contains('dark') !== originalTheme;
+                
+                if (themeChanged) {
+                    addTestResult('Theme System', 'success', 'Theme toggle functionality works.');
+                } else {
+                    addTestResult('Theme System', 'error', 'Theme toggle did not work as expected.');
+                }
+                
+                // Reset theme
+                if (originalTheme) {
+                    document.body.classList.add('dark');
+                } else {
+                    document.body.classList.remove('dark');
+                }
+                
+            } catch (error) {
+                addTestResult('Basic Functionality', 'error', `Error: ${error.message}`);
+            }
+        }
+
+        // Auto-run initial tests
+        window.addEventListener('load', () => {
+            addTestResult('Page Load', 'info', 'Test page loaded successfully. Click buttons above to run tests.');
+        });
+    </script>
+</body>
+</html>

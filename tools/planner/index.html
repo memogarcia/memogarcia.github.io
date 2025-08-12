@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner - Planning Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
+    <div class="app">
+        <!-- Top bar -->
+        <div class="top-bar">
+            <div class="app-title">
+                <i data-lucide="star"></i>
+                <span>Planner</span>
+            </div>
+            <div class="controls">
+                <button id="reset-view" class="btn btn-secondary" title="Reset View">
+                    <i data-lucide="crosshair"></i>
+                </button>
+                <button id="zoom-in" class="btn btn-secondary" title="Zoom In">
+                    <i data-lucide="zoom-in"></i>
+                </button>
+                <button id="zoom-out" class="btn btn-secondary" title="Zoom Out">
+                    <i data-lucide="zoom-out"></i>
+                </button>
+                <button id="add-north-star" class="btn btn-primary" title="Add North Star (Ctrl+N)">
+                    <i data-lucide="star"></i>
+                    <span>North Star</span>
+                </button>
+                <button id="add-epic" class="btn btn-primary" title="Add Epic (Ctrl+E)">
+                    <i data-lucide="plus"></i>
+                    <span>Epic</span>
+                </button>
+                <button id="add-task" class="btn btn-primary" title="Add Task (Ctrl+T)">
+                    <i data-lucide="plus"></i>
+                    <span>Task</span>
+                </button>
+                <button id="add-person" class="btn btn-primary" title="Add Person (Ctrl+P)">
+                    <i data-lucide="plus"></i>
+                    <span>Person</span>
+                </button>
+                <button id="auto-align" class="btn btn-secondary" title="Auto-Align Tasks by Dependencies">
+                    <i data-lucide="git-branch"></i>
+                    <span>Auto-Align</span>
+                </button>
+                <button id="export-data" class="btn btn-secondary" title="Export Plan">
+                    <i data-lucide="download"></i>
+                    <span>Export</span>
+                </button>
+                <button id="import-data" class="btn btn-secondary" title="Import Plan">
+                    <i data-lucide="upload"></i>
+                    <span>Import</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- People palette -->
+            <div class="people-palette" id="people-palette">
+                <div class="palette-header">
+                    <div class="palette-title">People</div>
+                    <button id="sidebar-toggle" class="sidebar-toggle" title="Toggle sidebar">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+                </div>
+                <div class="palette-content">
+                    <div id="people-list" class="people-list"></div>
+                    <div class="palette-tip">
+                        Tip: drag a <b>name</b> or an <b>activity</b> onto a Task. 
+                        Hold Ctrl + scroll to zoom. Hold Ctrl/Shift and drag background to pan.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <div class="canvas-container">
+                <div id="canvas" class="canvas">
+                    <svg id="connections" class="connections">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                                    refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" id="dependency-marker" />
+                            </marker>
+                        </defs>
+                    </svg>
+                    <div id="world" class="world">
+                        <!-- Epics and tasks will be rendered here -->
+                    </div>
+                </div>
+                <div class="hud">
+                    <div class="hud-item">
+                        Unaligned tasks: <span id="unaligned-count">0</span>
+                    </div>
+                    <div class="hud-item">
+                        Strategic alignment: <span id="strategic-alignment">0%</span>
+                    </div>
+                </div>
+                
+                <!-- Snap preview indicator -->
+                <div id="snap-preview" class="snap-preview"></div>
+            </div>
+
+            <!-- Timeline sidebar -->
+            <div class="timeline-sidebar collapsed" id="timeline-sidebar">
+                <div class="timeline-header">
+                    <div class="timeline-title">Timeline</div>
+                    <button id="timeline-toggle" class="sidebar-toggle" title="Toggle timeline">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+                </div>
+                <div id="timeline-content" class="timeline-content"></div>
+            </div>
+
+            <!-- Dependency mode indicator -->
+            <div id="dependency-mode-indicator" class="dependency-mode-indicator">
+                <span id="dependency-mode-text">Drag from output port to input port</span>
+            </div>
+        </div>
+
+        <footer class="footer">
+            Drag Tasks into an Epic to align. Drag out to unalign. 
+            Resize via the corner handle. People/Activities → drop onto Tasks.
+        </footer>
+    </div>
+
+    <!-- Dialogs -->
+    <div id="dialog-overlay" class="dialog-overlay hidden">
+        <div class="dialog">
+            <div class="dialog-header">
+                <h3 id="dialog-title">Dialog Title</h3>
+            </div>
+            <div class="dialog-content">
+                <input id="dialog-input" type="text" placeholder="Enter value...">
+            </div>
+            <div class="dialog-footer">
+                <button id="dialog-cancel" class="btn btn-secondary">Cancel</button>
+                <button id="dialog-confirm" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for imports -->
+    <input type="file" id="file-input" accept=".json" style="display: none;">
+
+    <!-- Details Panel -->
+    <div id="details-overlay" class="details-overlay"></div>
+    <div id="details-panel" class="details-panel">
+        <div class="details-panel-header">
+            <div id="details-panel-title" class="details-panel-title">
+                <i data-lucide="info"></i>
+                <span>Details</span>
+            </div>
+            <button id="details-panel-close" class="details-panel-close" aria-label="Close details panel">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        
+        <div id="details-panel-content" class="details-panel-content">
+            <!-- North Star Details Template -->
+            <div id="north-star-details-template" class="hidden">
+                <div class="details-section">
+                    <div class="details-field">
+                        <label class="details-field-label">Title</label>
+                        <input type="text" class="details-field-input" id="ns-title-input" placeholder="North Star title">
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Objective</label>
+                        <textarea class="details-field-input details-field-textarea" id="ns-objective-input" placeholder="What strategic outcome does this North Star achieve?"></textarea>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Success Metrics</label>
+                        <textarea class="details-field-input details-field-textarea" id="ns-metrics-input" placeholder="Key metrics to measure success (one per line)"></textarea>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Timeframe</label>
+                        <input type="text" class="details-field-input" id="ns-timeframe-input" placeholder="Q1-Q3 2024">
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Status</label>
+                        <select class="details-field-input" id="ns-status-input">
+                            <option value="active">Active</option>
+                            <option value="achieved">Achieved</option>
+                            <option value="paused">Paused</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Priority</label>
+                        <select class="details-field-input" id="ns-priority-input">
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="details-section details-actions">
+                    <button id="ns-save-btn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Save Changes
+                    </button>
+                    <button id="ns-delete-btn" class="btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Delete North Star
+                    </button>
+                </div>
+                
+                <div class="details-section">
+                    <div class="details-section-title">Aligned Epics</div>
+                    <div id="ns-epics-list" class="details-task-list">
+                        <!-- Epic items will be populated here -->
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Strategic Metrics</div>
+                    <div class="details-field">
+                        <label class="details-field-label">Epic Alignment</label>
+                        <div class="details-field-value" id="ns-epic-alignment">0 of 0 epics aligned</div>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Task Coverage</label>
+                        <div class="details-field-value" id="ns-task-coverage">0 tasks contributing</div>
+                    </div>
+                </div>
+                
+                <div class="details-section">
+                    <div class="details-section-title">Metadata</div>
+                    <div class="details-field">
+                        <label class="details-field-label">Created</label>
+                        <div class="details-field-value" id="ns-created-date">-</div>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Last Modified</label>
+                        <div class="details-field-value" id="ns-modified-date">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Epic Details Template -->
+            <div id="epic-details-template" class="hidden">
+                <div class="details-section">
+                    <div class="details-field">
+                        <label class="details-field-label">Title</label>
+                        <input type="text" class="details-field-input" id="epic-title-input" placeholder="Epic title">
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Description</label>
+                        <textarea class="details-field-input details-field-textarea" id="epic-description-input" placeholder="Epic description..."></textarea>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Status</label>
+                        <select class="details-field-input" id="epic-status-input">
+                            <option value="planning">Planning</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Priority</label>
+                        <select class="details-field-input" id="epic-priority-input">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="details-section details-actions">
+                    <button id="epic-save-btn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Save Changes
+                    </button>
+                    <button id="epic-delete-btn" class="btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Delete Epic
+                    </button>
+                </div>
+                
+                <div class="details-section">
+                    <div class="details-section-title">Tasks in Epic</div>
+                    <div id="epic-tasks-list" class="details-task-list">
+                        <!-- Task items will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="details-section">
+                    <div class="details-section-title">Metadata</div>
+                    <div class="details-field">
+                        <label class="details-field-label">Created</label>
+                        <div class="details-field-value" id="epic-created-date">-</div>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Last Modified</label>
+                        <div class="details-field-value" id="epic-modified-date">-</div>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Task Count</label>
+                        <div class="details-field-value" id="epic-task-count">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Details Template -->
+            <div id="task-details-template" class="hidden">
+                <div class="details-section">
+                    <div class="details-field">
+                        <label class="details-field-label">Title</label>
+                        <input type="text" class="details-field-input" id="task-title-input" placeholder="Task title">
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Description</label>
+                        <textarea class="details-field-input details-field-textarea" id="task-description-input" placeholder="Task description..."></textarea>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Status</label>
+                        <select class="details-field-input" id="task-status-input">
+                            <option value="todo">To Do</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="done">Done</option>
+                            <option value="blocked">Blocked</option>
+                        </select>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Priority</label>
+                        <select class="details-field-input" id="task-priority-input">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="details-section details-actions">
+                    <button id="task-save-btn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Save Changes
+                    </button>
+                    <button id="task-delete-btn" class="btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Delete Task
+                    </button>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Assignment</div>
+                    <div id="task-assignee-info" class="details-assignee">
+                        <div class="details-assignee-avatar" id="task-assignee-avatar">?</div>
+                        <div class="details-assignee-info">
+                            <div class="details-assignee-name" id="task-assignee-name">No assignment</div>
+                            <div class="details-assignee-role" id="task-assignee-role">Click to assign</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Epic</div>
+                    <div class="details-field">
+                        <label class="details-field-label">Parent Epic</label>
+                        <div class="details-field-value" id="task-parent-epic">Not assigned to epic</div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Comments</div>
+                    <div id="task-comments" class="details-comments">
+                        <div class="details-comment">
+                            <div class="details-comment-header">
+                                <span class="details-comment-author">System</span>
+                                <span class="details-comment-time">Just now</span>
+                            </div>
+                            <div class="details-comment-body">Task created</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Metadata</div>
+                    <div class="details-field">
+                        <label class="details-field-label">Created</label>
+                        <div class="details-field-value" id="task-created-date">-</div>
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Last Modified</label>
+                        <div class="details-field-value" id="task-modified-date">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Person Details Template -->
+            <div id="person-details-template" class="hidden">
+                <div class="details-section">
+                    <div class="details-field">
+                        <label class="details-field-label">Name</label>
+                        <input type="text" class="details-field-input" id="person-name-input" placeholder="Person name">
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Role</label>
+                        <input type="text" class="details-field-input" id="person-role-input" placeholder="Job title or role">
+                    </div>
+                    <div class="details-field">
+                        <label class="details-field-label">Email</label>
+                        <input type="email" class="details-field-input" id="person-email-input" placeholder="email@example.com">
+                    </div>
+                </div>
+
+                <div class="details-section details-actions">
+                    <button id="person-save-btn" class="btn btn-primary">
+                        <i data-lucide="save"></i>
+                        Save Changes
+                    </button>
+                    <button id="person-delete-btn" class="btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Delete Person
+                    </button>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Workload</div>
+                    <div class="details-workload-bar">
+                        <div class="details-workload-fill" id="person-workload-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="details-workload-text" id="person-workload-text">0 tasks assigned</div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Assigned Tasks</div>
+                    <div id="person-tasks-list" class="details-task-list">
+                        <!-- Task items will be populated here -->
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-section-title">Activities</div>
+                    <div id="person-activities" class="details-activity-list">
+                        <div class="details-activity-item">
+                            <div class="details-activity-icon">
+                                <i data-lucide="user-plus"></i>
+                            </div>
+                            <div class="details-activity-content">
+                                <div class="details-activity-text">Person added to project</div>
+                                <div class="details-activity-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State Template -->
+            <div id="empty-details-template" class="hidden">
+                <div class="details-empty-state">
+                    <div class="details-empty-icon">
+                        <i data-lucide="info"></i>
+                    </div>
+                    <div class="details-empty-title">Select an item</div>
+                    <div class="details-empty-message">Click on an epic, task, or person to view and edit details</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const pref = localStorage.getItem('pref-theme');
+        if (pref === 'dark') {
+            document.body.classList.add('dark');
+        } else if (pref === 'light') {
+            document.body.classList.remove('dark');
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            if (document.body.classList.contains('dark')) {
+                document.body.classList.remove('dark');
+                localStorage.setItem('pref-theme', 'light');
+            } else {
+                document.body.classList.add('dark');
+                localStorage.setItem('pref-theme', 'dark');
+            }
+        });
+    </script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

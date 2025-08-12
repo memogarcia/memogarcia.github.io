@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eisenhower Matrix</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
+    <div class="container">
+        <div class="header">
+            <a href="/tools/" class="back-link">← Back to Tools</a>
+        </div>
+
+        <div class="matrix-container">
+            <!-- Urgent & Important -->
+            <div class="quadrant quadrant-urgent-important" data-quadrant="urgent-important">
+                <div class="quadrant-header">
+                    <div class="quadrant-info">
+                        <h2 class="quadrant-title">Urgent & Important</h2>
+                        <p class="quadrant-subtitle">Focus on these first</p>
+                        <span class="task-count" data-count="urgent-important">Do First • <span class="count">0</span> tasks</span>
+                    </div>
+                    <button class="add-task-btn" data-quadrant="urgent-important" aria-label="Add urgent and important task">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="task-list" data-quadrant="urgent-important">
+                    <div class="empty-state">
+                        <p>Do these first</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Not Urgent & Important -->
+            <div class="quadrant quadrant-important" data-quadrant="important">
+                <div class="quadrant-header">
+                    <div class="quadrant-info">
+                        <h2 class="quadrant-title">Not Urgent & Important</h2>
+                        <p class="quadrant-subtitle">Schedule these</p>
+                        <span class="task-count" data-count="important">Schedule • <span class="count">0</span> tasks</span>
+                    </div>
+                    <button class="add-task-btn" data-quadrant="important" aria-label="Add important task">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="task-list" data-quadrant="important">
+                    <div class="empty-state">
+                        <p>Schedule these</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Urgent & Unimportant -->
+            <div class="quadrant quadrant-urgent" data-quadrant="urgent">
+                <div class="quadrant-header">
+                    <div class="quadrant-info">
+                        <h2 class="quadrant-title">Urgent & Unimportant</h2>
+                        <p class="quadrant-subtitle">Delegate these</p>
+                        <span class="task-count" data-count="urgent">Delegate • <span class="count">0</span> tasks</span>
+                    </div>
+                    <button class="add-task-btn" data-quadrant="urgent" aria-label="Add urgent task">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="task-list" data-quadrant="urgent">
+                    <div class="empty-state">
+                        <p>Delegate these</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Not Urgent & Unimportant -->
+            <div class="quadrant quadrant-neither" data-quadrant="neither">
+                <div class="quadrant-header">
+                    <div class="quadrant-info">
+                        <h2 class="quadrant-title">Not Urgent & Unimportant</h2>
+                        <p class="quadrant-subtitle">Eliminate these</p>
+                        <span class="task-count" data-count="neither">Eliminate • <span class="count">0</span> tasks</span>
+                    </div>
+                    <button class="add-task-btn" data-quadrant="neither" aria-label="Add task">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="task-list" data-quadrant="neither">
+                    <div class="empty-state">
+                        <p>Eliminate these</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add Task</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="task-input">Task Description</label>
+                    <input type="text" id="task-input" placeholder="Enter your task..." maxlength="200">
+                </div>
+                <div class="input-group">
+                    <label for="task-notes">Notes (optional)</label>
+                    <textarea id="task-notes" placeholder="Additional notes..." rows="3" maxlength="500"></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="cancel-task">Cancel</button>
+                <button class="btn btn-primary" id="save-task">Add Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div id="edit-task-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Task</h3>
+                <button class="modal-close" id="edit-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="edit-task-input">Task Description</label>
+                    <input type="text" id="edit-task-input" placeholder="Enter your task..." maxlength="200">
+                </div>
+                <div class="input-group">
+                    <label for="edit-task-notes">Notes (optional)</label>
+                    <textarea id="edit-task-notes" placeholder="Additional notes..." rows="3" maxlength="500"></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="edit-task-quadrant">Move to Quadrant</label>
+                    <select id="edit-task-quadrant">
+                        <option value="urgent-important">Urgent & Important</option>
+                        <option value="important">Not Urgent & Important</option>
+                        <option value="urgent">Urgent & Unimportant</option>
+                        <option value="neither">Not Urgent & Unimportant</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="delete-task">Delete</button>
+                <button class="btn btn-outline" id="cancel-edit">Cancel</button>
+                <button class="btn btn-primary" id="save-edit">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modal-backdrop"></div>
+
+    <script>
+        // Theme toggle functionality
+        const pref = localStorage.getItem('pref-theme');
+        if (pref === 'dark') {
+            document.body.classList.add('dark');
+        } else if (pref === 'light') {
+            document.body.classList.remove('dark');
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            if (document.body.classList.contains('dark')) {
+                document.body.classList.remove('dark');
+                localStorage.setItem('pref-theme', 'light');
+            } else {
+                document.body.classList.add('dark');
+                localStorage.setItem('pref-theme', 'dark');
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
