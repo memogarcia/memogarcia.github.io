@@ -13,7 +13,7 @@ const STORAGE_KEYS = {
 // Check if we're running in the browser
 const isClient = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
 
-export const storage = {
+const storage = {
   // Documents
   saveDocuments: (documents) => {
     if (!isClient) return;
@@ -88,3 +88,6 @@ export const storage = {
     });
   },
 };
+
+// Make available globally
+window.storage = storage;
