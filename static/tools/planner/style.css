@@ -827,6 +827,148 @@ body {
     z-index: 1;
 }
 
+/* North Star */
+.north-star {
+    position: absolute;
+    border: 3px solid rgba(251, 191, 36, 0.9);
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+    user-select: none;
+    z-index: 1; /* Behind epics but above canvas */
+}
+
+@media (max-width: 640px) {
+    .north-star {
+        border-radius: 16px;
+        min-width: 320px;
+        min-height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .north-star {
+        border-radius: 12px;
+        min-width: 280px;
+        min-height: 100px;
+    }
+}
+
+.north-star-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 16px;
+    cursor: grab;
+    border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.north-star-header:active {
+    cursor: grabbing;
+}
+
+.north-star-info {
+    flex: 1;
+}
+
+.north-star-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #b45309;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 4px;
+}
+
+.north-star-metrics {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+}
+
+.north-star-delete-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.north-star:hover .north-star-delete-btn {
+    opacity: 1;
+}
+
+.north-star-delete-btn:hover {
+    background: #ef4444;
+    color: white;
+    transform: scale(1.05);
+}
+
+.north-star-content {
+    position: relative;
+    padding: 16px 20px;
+    min-height: 60px;
+}
+
+.north-star-objective {
+    font-size: 13px;
+    color: var(--secondary);
+    line-height: 1.4;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* Priority badges for North Stars */
+.badge.priority-critical {
+    background: #dc2626;
+    color: white;
+}
+
+.badge.priority-high {
+    background: #ea580c;
+    color: white;
+}
+
+.badge.priority-medium {
+    background: #2563eb;
+    color: white;
+}
+
+.badge.priority-low {
+    background: #16a34a;
+    color: white;
+}
+
+/* Status badges for North Stars */
+.badge.status-active {
+    background: #16a34a;
+    color: white;
+}
+
+.badge.status-achieved {
+    background: #6366f1;
+    color: white;
+}
+
+.badge.status-paused {
+    background: #d97706;
+    color: white;
+}
+
+.badge.status-cancelled {
+    background: #6b7280;
+    color: white;
+}
+
 /* Epic */
 .epic {
     position: absolute;
@@ -1076,10 +1218,21 @@ body {
     right: 12px;
     background: rgba(255, 255, 255, 0.8);
     border-radius: 6px;
-    padding: 4px 8px;
+    padding: 6px 10px;
     font-size: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.hud-item {
+    white-space: nowrap;
+}
+
+body.dark .hud {
+    background: rgba(46, 46, 51, 0.9);
 }
 
 /* Footer */

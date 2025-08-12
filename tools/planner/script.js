@@ -3,6 +3,8 @@
 
 class PlanningApp {
     constructor() {
+        this.northStars = []; // Array of strategic objectives
+        
         this.epics = [];
         
         this.tasks = [];
@@ -174,6 +176,7 @@ class PlanningApp {
     // Persistence methods
     saveToStorage() {
         const data = {
+            northStars: this.northStars,
             epics: this.epics,
             tasks: this.tasks,
             people: this.people,
@@ -189,6 +192,7 @@ class PlanningApp {
             const stored = localStorage.getItem('planner-data');
             if (stored) {
                 const data = JSON.parse(stored);
+                this.northStars = data.northStars || [];
                 this.epics = data.epics || data.northStars || []; // Support legacy data
                 this.tasks = data.tasks || [];
                 this.people = data.people || [];
@@ -204,13 +208,14 @@ class PlanningApp {
     
     exportData() {
         const data = {
+            northStars: this.northStars,
             epics: this.epics,
             tasks: this.tasks,
             people: this.people,
             assignments: this.assignments,
             dependencies: this.dependencies,
             exportDate: new Date().toISOString(),
-            version: '2.0'
+            version: '2.1'
         };
         
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -232,6 +237,7 @@ class PlanningApp {
                 
                 // Validate the data structure
                 if (data && typeof data === 'object') {
+                    this.northStars = data.northStars || [];
                     this.epics = data.epics || data.northStars || []; // Support legacy data
                     this.tasks = data.tasks || [];
                     this.people = data.people || [];
@@ -325,6 +331,12 @@ class PlanningApp {
             this.updateWorldTransform();
         });
         
+        document.getElementById('add-north-star').addEventListener('click', () => {
+            this.showDialog('New North Star', 'e.g., Improve Customer Retention by 25%', (title) => {
+                this.addNorthStar(title);
+            });
+        });
+
         document.getElementById('add-epic').addEventListener('click', () => {
             this.showDialog('New Epic', 'e.g., User Authentication', (title) => {
                 this.addEpic(title);
@@ -400,11 +412,13 @@ class PlanningApp {
     // Rendering
     render() {
         this.renderPeople();
+        this.renderNorthStars();
         this.renderEpics();
         this.renderTasks();
         this.renderConnections();
         this.renderDependencies();
         this.updateUnalignedCount();
+        this.updateStrategicAlignment();
         this.updateWorldTransform();
         
         // Setup hover handlers for new dependency system
@@ -2039,6 +2053,56 @@ class PlanningApp {
         }
     }
     
+    renderNorthStars() {
+        const world = document.getElementById('world');
+        
+        // Remove existing north stars
+        world.querySelectorAll('.north-star').forEach(el => el.remove());
+        
+        this.northStars.forEach(northStar => {
+            const nsDiv = document.createElement('div');
+            nsDiv.className = 'north-star';
+            nsDiv.dataset.northStarId = northStar.id;
+            nsDiv.dataset.dragType = 'north-star';
+            nsDiv.style.transform = `translate(${northStar.x}px, ${northStar.y}px)`;
+            nsDiv.style.width = `${northStar.w}px`;
+            nsDiv.style.height = `${northStar.h}px`;
+            
+            const alignedEpics = this.epics.filter(e => e.northStarId === northStar.id);
+            const totalTasks = alignedEpics.reduce((sum, epic) => {
+                return sum + this.tasks.filter(t => t.epicId === epic.id).length;
+            }, 0) + this.tasks.filter(t => t.northStarId === northStar.id && !t.epicId).length;
+            
+            nsDiv.innerHTML = `
+                <div class="north-star-header" data-drag-type="north-star" onclick="app.openDetailsPanel('north-star', '${northStar.id}')" style="cursor: pointer;">
+                    <div class="north-star-info">
+                        <div class="north-star-title">${northStar.title}</div>
+                        <div class="north-star-metrics">
+                            <span class="badge priority-${northStar.priority}">${northStar.priority}</span>
+                            <span class="badge">Epics: ${alignedEpics.length}</span>
+                            <span class="badge">Tasks: ${totalTasks}</span>
+                            <span class="badge status-${northStar.status}">${northStar.status}</span>
+                        </div>
+                    </div>
+                    <button class="north-star-delete-btn" onclick="event.stopPropagation(); app.deleteNorthStar('${northStar.id}')" title="Delete North Star">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <div class="north-star-content" data-north-star-content="${northStar.id}">
+                    <div class="north-star-objective">${northStar.objective || 'Define strategic objective...'}</div>
+                    <div class="resize-handle" data-drag-type="resize" data-north-star-id="${northStar.id}"></div>
+                </div>
+            `;
+            
+            world.appendChild(nsDiv);
+        });
+        
+        // Re-initialize icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
     renderEpics() {
         const world = document.getElementById('world');
         
@@ -2173,6 +2237,31 @@ class PlanningApp {
         const count = this.tasks.filter(t => !t.epicId).length;
         document.getElementById('unaligned-count').textContent = count;
     }
+
+    updateStrategicAlignment() {
+        const totalTasks = this.tasks.length;
+        if (totalTasks === 0) {
+            document.getElementById('strategic-alignment').textContent = '0%';
+            return;
+        }
+        
+        // Count tasks with strategic alignment (via epic or directly)
+        const alignedTasks = this.tasks.filter(task => {
+            // Direct alignment to North Star
+            if (task.northStarId) return true;
+            
+            // Inherited alignment via Epic
+            if (task.epicId) {
+                const epic = this.findById(this.epics, task.epicId);
+                return epic && epic.northStarId;
+            }
+            
+            return false;
+        });
+        
+        const percentage = Math.round((alignedTasks.length / totalTasks) * 100);
+        document.getElementById('strategic-alignment').textContent = `${percentage}%`;
+    }
     
     updateWorldTransform() {
         const world = document.getElementById('world');
@@ -2215,10 +2304,16 @@ class PlanningApp {
             
             const dragType = target.dataset.dragType;
             
-            if (dragType === 'epic') {
+            if (dragType === 'north-star') {
+                this.startDragNorthStar(e, target);
+            } else if (dragType === 'epic') {
                 this.startDragEpic(e, target);
             } else if (dragType === 'resize') {
-                this.startResizeEpic(e, target);
+                if (target.dataset.northStarId) {
+                    this.startResizeNorthStar(e, target);
+                } else {
+                    this.startResizeEpic(e, target);
+                }
             } else if (dragType === 'task') {
                 this.startDragTask(e, target);
             }
@@ -2240,8 +2335,12 @@ class PlanningApp {
             this.view.y += dy;
             this.updateWorldTransform();
             this.dragStartPos = { x: e.clientX, y: e.clientY };
+        } else if (this.dragging.type === 'north-star') {
+            this.moveNorthStar(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
         } else if (this.dragging.type === 'epic') {
             this.moveEpic(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
+        } else if (this.dragging.type === 'resize-north-star') {
+            this.resizeNorthStar(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'resize') {
             this.resizeEpic(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'task') {
@@ -2252,6 +2351,8 @@ class PlanningApp {
     handleCanvasMouseUp(e) {
         if (this.dragging?.type === 'task') {
             this.handleTaskDragEnd(e);
+        } else if (this.dragging?.type === 'epic') {
+            this.handleEpicDragEnd(e);
         }
         
         this.dragging = null;
@@ -2302,6 +2403,34 @@ class PlanningApp {
         
         element.classList.add('dragging');
     }
+
+    startDragNorthStar(e, element) {
+        const northStarId = element.closest('.north-star').dataset.northStarId;
+        const northStar = this.findById(this.northStars, northStarId);
+        
+        this.dragging = {
+            type: 'north-star',
+            id: northStarId,
+            startPos: { x: northStar.x, y: northStar.y }
+        };
+        this.dragStartPos = { x: e.clientX, y: e.clientY };
+        
+        element.closest('.north-star').classList.add('dragging');
+    }
+
+    startResizeNorthStar(e, element) {
+        const northStarId = element.dataset.northStarId;
+        const northStar = this.findById(this.northStars, northStarId);
+        
+        this.dragging = {
+            type: 'resize-north-star',
+            id: northStarId,
+            startPos: { w: northStar.w, h: northStar.h }
+        };
+        this.dragStartPos = { x: e.clientX, y: e.clientY };
+        
+        element.classList.add('dragging');
+    }
     
     moveEpic(epicId, x, y) {
         const epic = this.findById(this.epics, epicId);
@@ -2317,6 +2446,22 @@ class PlanningApp {
         
         // Update task positions and connections
         this.renderTasks();
+        this.renderConnections();
+    }
+
+    moveNorthStar(northStarId, x, y) {
+        const northStar = this.findById(this.northStars, northStarId);
+        if (!northStar) return;
+        
+        northStar.x = x;
+        northStar.y = y;
+        
+        const element = document.querySelector(`[data-north-star-id="${northStarId}"]`);
+        if (element) {
+            element.closest('.north-star').style.transform = `translate(${x}px, ${y}px)`;
+        }
+        
+        // Update connections
         this.renderConnections();
     }
     
@@ -2344,6 +2489,22 @@ class PlanningApp {
         this.renderEpics();
         this.renderTasks();
         this.renderConnections();
+    }
+
+    resizeNorthStar(northStarId, dx, dy) {
+        const northStar = this.findById(this.northStars, northStarId);
+        if (!northStar) return;
+        
+        const MIN_NS_W = 400;
+        const MIN_NS_H = 120;
+        
+        const newW = this.clamp(this.dragging.startPos.w + dx, MIN_NS_W, 1200);
+        const newH = this.clamp(this.dragging.startPos.h + dy, MIN_NS_H, 400);
+        
+        northStar.w = newW;
+        northStar.h = newH;
+        
+        this.renderNorthStars();
     }
     
     moveTask(taskId, dx, dy) {
@@ -2411,6 +2572,32 @@ class PlanningApp {
         
         // Remove dragging class
         document.querySelector(`[data-task-id="${taskId}"]`)?.classList.remove('dragging');
+        
+        this.render();
+        this.saveToStorage();
+    }
+
+    handleEpicDragEnd(e) {
+        const epicId = this.dragging.id;
+        const epic = this.findById(this.epics, epicId);
+        
+        // Check if dropped on a North Star
+        const elements = document.elementsFromPoint(e.clientX, e.clientY);
+        const northStarContent = elements.find(el => el.dataset.northStarContent);
+        
+        if (northStarContent && (!epic.northStarId || epic.northStarId !== northStarContent.dataset.northStarContent)) {
+            // Align epic to North Star
+            const northStarId = northStarContent.dataset.northStarContent;
+            epic.northStarId = northStarId;
+            epic.modifiedAt = Date.now();
+        } else if (!northStarContent && epic.northStarId) {
+            // Unalign epic from North Star (dropped outside any North Star)
+            delete epic.northStarId;
+            epic.modifiedAt = Date.now();
+        }
+        
+        // Remove dragging class
+        document.querySelector(`[data-epic-id="${epicId}"]`)?.closest('.epic')?.classList.remove('dragging');
         
         this.render();
         this.saveToStorage();
@@ -2487,6 +2674,28 @@ class PlanningApp {
     }
     
     // CRUD operations
+    addNorthStar(title) {
+        const northStar = {
+            id: this.generateId('ns'),
+            title: title,
+            objective: '',
+            successMetrics: '',
+            timeframe: '',
+            status: 'active',
+            priority: 'high',
+            x: 50 + Math.random() * 300,
+            y: 30 + Math.random() * 80,
+            w: 600,
+            h: 180,
+            createdAt: Date.now(),
+            modifiedAt: Date.now()
+        };
+        
+        this.northStars.push(northStar);
+        this.render();
+        this.saveToStorage();
+    }
+
     addEpic(title) {
         const epic = {
             id: this.generateId('epic'),
@@ -2624,6 +2833,141 @@ class PlanningApp {
         this.render();
         this.saveToStorage();
     }
+
+    deleteNorthStar(northStarId) {
+        const northStar = this.findById(this.northStars, northStarId);
+        if (!northStar) return;
+        
+        const alignedEpics = this.epics.filter(e => e.northStarId === northStarId);
+        const confirmMessage = alignedEpics.length > 0 ? 
+            `Are you sure you want to delete "${northStar.title}"? This will unalign ${alignedEpics.length} epic(s).` :
+            `Are you sure you want to delete "${northStar.title}"?`;
+            
+        if (!confirm(confirmMessage)) return;
+        
+        // Unalign epics
+        this.epics.forEach(epic => {
+            if (epic.northStarId === northStarId) {
+                delete epic.northStarId;
+                epic.modifiedAt = Date.now();
+            }
+        });
+        
+        // Also unalign any directly aligned tasks
+        this.tasks.forEach(task => {
+            if (task.northStarId === northStarId) {
+                delete task.northStarId;
+                task.modifiedAt = Date.now();
+            }
+        });
+        
+        this.northStars = this.northStars.filter(ns => ns.id !== northStarId);
+        
+        this.render();
+        this.saveToStorage();
+    }
+
+    // North Star helper functions
+    loadNorthStarEpics(northStarId) {
+        const epicsContainer = document.getElementById('ns-epics-list');
+        const alignedEpics = this.epics.filter(epic => epic.northStarId === northStarId);
+        
+        if (alignedEpics.length === 0) {
+            epicsContainer.innerHTML = '<p style="color: #64748b; font-size: 13px;">No epics aligned to this North Star</p>';
+            return;
+        }
+        
+        epicsContainer.innerHTML = alignedEpics.map(epic => `
+            <div class="details-task-item" onclick="app.openDetailsPanel('epic', '${epic.id}')" tabindex="0">
+                <div class="details-task-status ${epic.status === 'done' ? 'done' : ''}">
+                    ${epic.status === 'done' ? '<i data-lucide="check"></i>' : ''}
+                </div>
+                <span class="details-task-title">${epic.title}</span>
+            </div>
+        `).join('');
+        
+        // Re-initialize icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    updateNorthStarMetrics(northStarId) {
+        const alignedEpics = this.epics.filter(e => e.northStarId === northStarId);
+        const totalEpics = this.epics.length;
+        
+        const alignedTasks = alignedEpics.reduce((sum, epic) => {
+            return sum + this.tasks.filter(t => t.epicId === epic.id).length;
+        }, 0) + this.tasks.filter(t => t.northStarId === northStarId && !t.epicId).length;
+        
+        document.getElementById('ns-epic-alignment').textContent = 
+            `${alignedEpics.length} of ${totalEpics} epics aligned`;
+        document.getElementById('ns-task-coverage').textContent = 
+            `${alignedTasks} tasks contributing`;
+    }
+
+    saveNorthStarDetails() {
+        const northStar = this.northStars.find(ns => ns.id === this.currentDetailsItem?.id);
+        if (!northStar) return;
+        
+        const title = document.getElementById('ns-title-input').value.trim();
+        const objective = document.getElementById('ns-objective-input').value.trim();
+        const metrics = document.getElementById('ns-metrics-input').value.trim();
+        const timeframe = document.getElementById('ns-timeframe-input').value.trim();
+        const status = document.getElementById('ns-status-input').value;
+        const priority = document.getElementById('ns-priority-input').value;
+        
+        if (!title) {
+            alert('North Star title is required');
+            return;
+        }
+        
+        northStar.title = title;
+        northStar.objective = objective;
+        northStar.successMetrics = metrics;
+        northStar.timeframe = timeframe;
+        northStar.status = status;
+        northStar.priority = priority;
+        northStar.modifiedAt = Date.now();
+        
+        this.render();
+        this.saveToStorage();
+        alert('North Star updated successfully');
+    }
+
+    deleteNorthStarFromDetails() {
+        if (!this.currentDetailsItem?.id) return;
+        
+        if (confirm('Are you sure you want to delete this North Star? This will unalign any connected epics.')) {
+            this.deleteNorthStar(this.currentDetailsItem.id);
+            this.closeDetailsPanel();
+        }
+    }
+    
+    // Shortcut helper functions
+    createNorthStar() {
+        this.showDialog('New North Star', 'e.g., Improve Customer Retention by 25%', (title) => {
+            this.addNorthStar(title);
+        });
+    }
+
+    createEpic() {
+        this.showDialog('New Epic', 'e.g., User Authentication', (title) => {
+            this.addEpic(title);
+        });
+    }
+
+    createTask() {
+        this.showDialog('New Task', 'Short title', (title) => {
+            this.addTask(title);
+        });
+    }
+
+    createPerson() {
+        this.showDialog('New Person', 'Name', (name) => {
+            this.addPerson(name);
+        });
+    }
     
     // Dialog handling
     showDialog(title, placeholder, callback) {
@@ -2696,6 +3040,10 @@ class PlanningApp {
     }
     
     setupDetailActionHandlers() {
+        // North Star action buttons
+        document.getElementById('ns-save-btn')?.addEventListener('click', () => this.saveNorthStarDetails());
+        document.getElementById('ns-delete-btn')?.addEventListener('click', () => this.deleteNorthStarFromDetails());
+
         // Epic action buttons
         document.getElementById('epic-save-btn')?.addEventListener('click', () => this.saveEpicDetails());
         document.getElementById('epic-delete-btn')?.addEventListener('click', () => this.deleteEpicFromDetails());
@@ -2715,6 +3063,12 @@ class PlanningApp {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || 
                 document.getElementById('details-panel').classList.contains('open')) {
                 return;
+            }
+            
+            // Ctrl/Cmd + N for North Star
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                this.createNorthStar();
             }
             
             // Ctrl/Cmd + E for Epic
@@ -2801,9 +3155,14 @@ class PlanningApp {
         const titleText = titleEl?.querySelector('span');
         
         switch (type) {
+            case 'north-star':
+                this.loadNorthStarDetails(itemId);
+                if (titleIcon) titleIcon.setAttribute('data-lucide', 'star');
+                if (titleText) titleText.textContent = 'North Star Details';
+                break;
             case 'epic':
                 this.loadEpicDetails(itemId);
-                if (titleIcon) titleIcon.setAttribute('data-lucide', 'star');
+                if (titleIcon) titleIcon.setAttribute('data-lucide', 'folder');
                 if (titleText) titleText.textContent = 'Epic Details';
                 break;
             case 'task':
@@ -2828,6 +3187,7 @@ class PlanningApp {
     }
     
     hideAllDetailsTemplates() {
+        document.getElementById('north-star-details-template').classList.add('hidden');
         document.getElementById('epic-details-template').classList.add('hidden');
         document.getElementById('task-details-template').classList.add('hidden');
         document.getElementById('person-details-template').classList.add('hidden');
@@ -2854,6 +3214,70 @@ class PlanningApp {
         }
     }
     
+    loadNorthStarDetails(northStarId) {
+        const northStar = this.northStars.find(ns => ns.id === northStarId);
+        if (!northStar) return;
+        
+        const template = document.getElementById('north-star-details-template');
+        template.classList.remove('hidden');
+        
+        // Store current north star for saving changes
+        this.currentDetailsItem = { type: 'north-star', id: northStarId };
+        
+        // Populate fields
+        document.getElementById('ns-title-input').value = northStar.title || '';
+        document.getElementById('ns-objective-input').value = northStar.objective || '';
+        document.getElementById('ns-metrics-input').value = northStar.successMetrics || '';
+        document.getElementById('ns-timeframe-input').value = northStar.timeframe || '';
+        document.getElementById('ns-status-input').value = northStar.status || 'active';
+        document.getElementById('ns-priority-input').value = northStar.priority || 'high';
+        
+        // Add real-time updating
+        const titleInput = document.getElementById('ns-title-input');
+        const objectiveInput = document.getElementById('ns-objective-input');
+        const metricsInput = document.getElementById('ns-metrics-input');
+        const timeframeInput = document.getElementById('ns-timeframe-input');
+        const statusInput = document.getElementById('ns-status-input');
+        const priorityInput = document.getElementById('ns-priority-input');
+        
+        const updateNorthStar = () => {
+            northStar.title = titleInput.value;
+            northStar.objective = objectiveInput.value;
+            northStar.successMetrics = metricsInput.value;
+            northStar.timeframe = timeframeInput.value;
+            northStar.status = statusInput.value;
+            northStar.priority = priorityInput.value;
+            northStar.modifiedAt = Date.now();
+            
+            this.render();
+            this.saveToStorage();
+        };
+        
+        titleInput.addEventListener('input', updateNorthStar);
+        objectiveInput.addEventListener('input', updateNorthStar);
+        metricsInput.addEventListener('input', updateNorthStar);
+        timeframeInput.addEventListener('input', updateNorthStar);
+        statusInput.addEventListener('change', updateNorthStar);
+        priorityInput.addEventListener('change', updateNorthStar);
+        
+        // Update metadata
+        document.getElementById('ns-created-date').textContent = 
+            new Date(northStar.createdAt).toLocaleDateString();
+        document.getElementById('ns-modified-date').textContent = 
+            new Date(northStar.modifiedAt).toLocaleDateString();
+            
+        // Load aligned epics
+        this.loadNorthStarEpics(northStarId);
+        
+        // Update strategic metrics
+        this.updateNorthStarMetrics(northStarId);
+        
+        // Re-initialize icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
     loadEpicDetails(epicId) {
         const epic = this.epics.find(e => e.id === epicId);
         if (!epic) return;
