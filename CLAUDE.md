@@ -18,10 +18,23 @@ NEVER RUN `hugo commands`!!
 - **Context**: `/context/understanding/` - Ignore this
 
 ### Interactive Tools
+- **Writer**: React/TypeScript text editor (Vite-built app)
 - **Planner**: Project management canvas tool
 - **Timer**: Pomodoro/focus timer
 - **Reminder**: Task reminder system  
 - **Eisenhower**: Priority matrix tool
+
+### Deployment Notes
+
+#### Writer Tool (React/Vite App)
+- **Build required**: The writer tool is a React/TypeScript app that must be built before deployment
+- **Build command**: `npm run build` (creates `/dist` folder)
+- **Deployment process**: 
+  1. Build the app: `npm run build` in `/static/tools/writer/`
+  2. Copy built assets to main directory: `cp -r dist/assets ./`
+  3. Update `index.html` to reference built assets instead of `/src/main.tsx`
+- **Critical**: Never reference `/src/main.tsx` in production - causes MIME type errors
+- **Assets location**: Built JavaScript and CSS files in `/tools/writer/assets/`
 
 ## Specialized Agents for This Repository
 

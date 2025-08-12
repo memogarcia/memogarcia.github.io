@@ -154,13 +154,6 @@ body {
         display: none;
     }
     
-    .theme-toggle {
-        top: 1rem;
-        right: 1rem;
-        width: 2.5rem;
-        height: 2.5rem;
-        font-size: 1rem;
-    }
     
     .sidebar-toggle {
         width: 36px;
@@ -191,14 +184,6 @@ body {
         min-width: 70px;
     }
     
-    .theme-toggle {
-        top: 0.75rem;
-        right: 0.75rem;
-        width: 2.25rem;
-        height: 2.25rem;
-        font-size: 0.875rem;
-        padding: 0.5rem;
-    }
     
     .sidebar-toggle {
         width: 40px;
@@ -3147,35 +3132,5 @@ select:focus-visible {
     }
 }
 
-.theme-toggle {
-    position: fixed;
-    top: var(--gap);
-    right: var(--gap);
-    background: var(--entry);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px;
-    cursor: pointer;
-    color: var(--primary);
-    width: 2.75rem;
-    height: 2.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    font-size: 1.125rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
 
-.theme-toggle:hover {
-    background: rgb(var(--color-hover));
-    color: var(--primary);
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-}
 
-.theme-toggle:focus-visible {
-    outline: 2px solid var(--cyberpunk-teal);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgb(16 163 127 / 0.1);
-}
