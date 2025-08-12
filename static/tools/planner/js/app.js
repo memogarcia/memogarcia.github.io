@@ -73,7 +73,6 @@ export class PlanningApp {
                 defaultWidth: 320,
                 element: document.getElementById('people-palette'),
                 toggle: document.getElementById('sidebar-toggle'),
-                externalToggle: document.getElementById('people-external-toggle'),
                 resizeHandle: document.getElementById('people-resize-handle')
             },
             timeline: {
@@ -82,7 +81,6 @@ export class PlanningApp {
                 defaultWidth: 280,
                 element: document.getElementById('timeline-sidebar'),
                 toggle: document.getElementById('timeline-toggle'),
-                externalToggle: document.getElementById('timeline-external-toggle'),
                 resizeHandle: document.getElementById('timeline-resize-handle')
             }
         };
@@ -136,29 +134,23 @@ export class PlanningApp {
         // Set collapsed state
         if (sidebar.collapsed) {
             sidebar.element.classList.add('collapsed');
-            if (sidebar.externalToggle) {
-                sidebar.externalToggle.style.display = 'flex';
-            }
             if (sidebar.toggle) {
                 sidebar.toggle.setAttribute('aria-expanded', 'false');
                 sidebar.toggle.setAttribute('aria-label', `Show ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
-                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-right' : 'chevron-left');
+                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'panel-left-open' : 'panel-right-open');
                 }
             }
         } else {
             sidebar.element.classList.remove('collapsed');
             sidebar.element.style.width = `${sidebar.width}px`;
-            if (sidebar.externalToggle) {
-                sidebar.externalToggle.style.display = 'none';
-            }
             if (sidebar.toggle) {
                 sidebar.toggle.setAttribute('aria-expanded', 'true');
                 sidebar.toggle.setAttribute('aria-label', `Collapse ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
-                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-left' : 'chevron-right');
+                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'panel-left-close' : 'panel-right-close');
                 }
             }
         }
@@ -168,12 +160,6 @@ export class PlanningApp {
             sidebar.toggle.replaceWith(sidebar.toggle.cloneNode(true));
             sidebar.toggle = sidebar.element.querySelector('.sidebar-toggle');
             sidebar.toggle.addEventListener('click', () => this.toggleSidebar(sidebarKey));
-        }
-        
-        if (sidebar.externalToggle) {
-            sidebar.externalToggle.replaceWith(sidebar.externalToggle.cloneNode(true));
-            sidebar.externalToggle = document.getElementById(sidebarKey === 'people' ? 'people-external-toggle' : 'timeline-external-toggle');
-            sidebar.externalToggle.addEventListener('click', () => this.toggleSidebar(sidebarKey));
         }
 
         // Update Lucide icons
@@ -195,9 +181,6 @@ export class PlanningApp {
         if (sidebar.collapsed) {
             // Collapsing
             sidebar.element.classList.add('collapsed');
-            if (sidebar.externalToggle) {
-                sidebar.externalToggle.style.display = 'flex';
-            }
             
             // Update toggle button
             if (sidebar.toggle) {
@@ -205,16 +188,13 @@ export class PlanningApp {
                 sidebar.toggle.setAttribute('aria-label', `Show ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
-                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-right' : 'chevron-left');
+                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'panel-left-open' : 'panel-right-open');
                 }
             }
         } else {
             // Expanding
             sidebar.element.classList.remove('collapsed');
             sidebar.element.style.width = `${sidebar.width}px`;
-            if (sidebar.externalToggle) {
-                sidebar.externalToggle.style.display = 'none';
-            }
             
             // Update toggle button
             if (sidebar.toggle) {
@@ -222,7 +202,7 @@ export class PlanningApp {
                 sidebar.toggle.setAttribute('aria-label', `Collapse ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
-                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-left' : 'chevron-right');
+                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'panel-left-close' : 'panel-right-close');
                 }
             }
         }
