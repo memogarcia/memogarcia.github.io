@@ -73,7 +73,8 @@ export class PlanningApp {
                 defaultWidth: 320,
                 element: document.getElementById('people-palette'),
                 toggle: document.getElementById('sidebar-toggle'),
-                resizeHandle: document.getElementById('people-resize-handle')
+                resizeHandle: document.getElementById('people-resize-handle'),
+                externalToggle: null  // Removed but keeping property to prevent errors
             },
             timeline: {
                 collapsed: true,
@@ -81,7 +82,8 @@ export class PlanningApp {
                 defaultWidth: 280,
                 element: document.getElementById('timeline-sidebar'),
                 toggle: document.getElementById('timeline-toggle'),
-                resizeHandle: document.getElementById('timeline-resize-handle')
+                resizeHandle: document.getElementById('timeline-resize-handle'),
+                externalToggle: null  // Removed but keeping property to prevent errors
             }
         };
 
