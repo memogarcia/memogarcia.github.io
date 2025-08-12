@@ -48,7 +48,7 @@ export class PlanningApp {
 
         this.init();
         this.loadFromStorage();
-        this.setupSidebarToggle();
+        this.setupEnhancedSidebars();
         this.setupDetailsPanel();
         this.setupGlobalKeyboardShortcuts();
     }
@@ -64,23 +64,323 @@ export class PlanningApp {
             .replace(/'/g, '&#39;');
     }
     
-    setupSidebarToggle() {
-        // Load sidebar state - on mobile, default to collapsed for more canvas space
+    setupEnhancedSidebars() {
+        // Initialize sidebar state and dimensions
+        this.sidebarState = {
+            people: {
+                collapsed: false,
+                width: parseInt(localStorage.getItem('people-sidebar-width')) || 320,
+                defaultWidth: 320,
+                element: document.getElementById('people-palette'),
+                toggle: document.getElementById('sidebar-toggle'),
+                externalToggle: document.getElementById('people-external-toggle'),
+                resizeHandle: document.getElementById('people-resize-handle')
+            },
+            timeline: {
+                collapsed: true,
+                width: parseInt(localStorage.getItem('timeline-sidebar-width')) || 280,
+                defaultWidth: 280,
+                element: document.getElementById('timeline-sidebar'),
+                toggle: document.getElementById('timeline-toggle'),
+                externalToggle: document.getElementById('timeline-external-toggle'),
+                resizeHandle: document.getElementById('timeline-resize-handle')
+            }
+        };
+
+        // Load saved states
         const isMobile = window.innerWidth <= 480;
-        const defaultCollapsed = isMobile ? 'true' : 'false';
-        const sidebarCollapsed = ((localStorage.getItem('sidebar-collapsed') ?? defaultCollapsed) === 'true');
-        const sidebar = document.getElementById('people-palette');
+        const peopleCollapsed = localStorage.getItem('people-sidebar-collapsed') === 'true' || (isMobile && localStorage.getItem('people-sidebar-collapsed') === null);
+        const timelineCollapsed = localStorage.getItem('timeline-sidebar-collapsed') !== 'false';
+
+        this.sidebarState.people.collapsed = peopleCollapsed;
+        this.sidebarState.timeline.collapsed = timelineCollapsed;
+
+        // Initialize sidebar states
+        this.initializeSidebar('people');
+        this.initializeSidebar('timeline');
+
+        // Setup resize functionality
+        this.setupSidebarResize('people');
+        this.setupSidebarResize('timeline');
+
+        // Setup accessibility features
+        this.setupSidebarKeyboardNavigation();
+    }
+
+    initializeSidebar(sidebarKey) {
+        const sidebar = this.sidebarState[sidebarKey];
         
-        if (sidebarCollapsed) {
-            sidebar.classList.add('collapsed');
+        // Set initial width
+        if (!sidebar.collapsed) {
+            sidebar.element.style.width = `${sidebar.width}px`;
+        }
+
+        // Set collapsed state
+        if (sidebar.collapsed) {
+            sidebar.element.classList.add('collapsed');
+            sidebar.externalToggle.style.display = 'flex';
+            if (sidebar.toggle) {
+                sidebar.toggle.setAttribute('aria-expanded', 'false');
+                const icon = sidebar.toggle.querySelector('i');
+                if (icon) {
+                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-right' : 'chevron-left');
+                }
+            }
+        } else {
+            sidebar.element.classList.remove('collapsed');
+            sidebar.externalToggle.style.display = 'none';
+            if (sidebar.toggle) {
+                sidebar.toggle.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // Setup toggle event listeners
+        if (sidebar.toggle) {
+            sidebar.toggle.addEventListener('click', () => this.toggleSidebar(sidebarKey));
         }
         
-        // Setup toggle button
-        document.getElementById('sidebar-toggle').addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            const isCollapsed = sidebar.classList.contains('collapsed');
-            localStorage.setItem('sidebar-collapsed', isCollapsed.toString());
+        sidebar.externalToggle.addEventListener('click', () => this.toggleSidebar(sidebarKey));
+
+        // Update Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    toggleSidebar(sidebarKey) {
+        const sidebar = this.sidebarState[sidebarKey];
+        const wasCollapsed = sidebar.collapsed;
+        
+        sidebar.collapsed = !wasCollapsed;
+        
+        if (sidebar.collapsed) {
+            // Collapsing
+            sidebar.element.classList.add('collapsed');
+            sidebar.externalToggle.style.display = 'flex';
+            
+            // Update toggle button
+            if (sidebar.toggle) {
+                sidebar.toggle.setAttribute('aria-expanded', 'false');
+                sidebar.toggle.setAttribute('aria-label', `Show ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
+                const icon = sidebar.toggle.querySelector('i');
+                if (icon) {
+                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-right' : 'chevron-left');
+                }
+            }
+        } else {
+            // Expanding
+            sidebar.element.classList.remove('collapsed');
+            sidebar.element.style.width = `${sidebar.width}px`;
+            sidebar.externalToggle.style.display = 'none';
+            
+            // Update toggle button
+            if (sidebar.toggle) {
+                sidebar.toggle.setAttribute('aria-expanded', 'true');
+                sidebar.toggle.setAttribute('aria-label', `Collapse ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
+                const icon = sidebar.toggle.querySelector('i');
+                if (icon) {
+                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-left' : 'chevron-right');
+                }
+            }
+        }
+
+        // Save state
+        localStorage.setItem(`${sidebarKey}-sidebar-collapsed`, sidebar.collapsed.toString());
+        
+        // Update Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        // Trigger haptic feedback on supported devices
+        if ('vibrate' in navigator) {
+            navigator.vibrate(50);
+        }
+
+        // Announce sidebar state change to screen readers
+        this.announceSidebarState(sidebarKey, sidebar.collapsed);
+    }
+
+    setupSidebarResize(sidebarKey) {
+        const sidebar = this.sidebarState[sidebarKey];
+        const handle = sidebar.resizeHandle;
+        
+        if (!handle) return;
+
+        let isResizing = false;
+        let startX = 0;
+        let startWidth = 0;
+
+        // Mouse events
+        handle.addEventListener('mousedown', (e) => {
+            if (sidebar.collapsed) return;
+            
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.width;
+            
+            handle.classList.add('dragging');
+            sidebar.element.classList.add('resizing');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+            
+            e.preventDefault();
         });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            
+            const deltaX = sidebarKey === 'people' ? (e.clientX - startX) : (startX - e.clientX);
+            const newWidth = Math.max(48, Math.min(sidebarKey === 'people' ? 500 : 400, startWidth + deltaX));
+            
+            sidebar.width = newWidth;
+            sidebar.element.style.width = `${newWidth}px`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (!isResizing) return;
+            
+            isResizing = false;
+            handle.classList.remove('dragging');
+            sidebar.element.classList.remove('resizing');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+            
+            // Save width
+            localStorage.setItem(`${sidebarKey}-sidebar-width`, sidebar.width.toString());
+        });
+
+        // Touch events for mobile
+        handle.addEventListener('touchstart', (e) => {
+            if (sidebar.collapsed) return;
+            
+            isResizing = true;
+            startX = e.touches[0].clientX;
+            startWidth = sidebar.width;
+            
+            handle.classList.add('dragging');
+            sidebar.element.classList.add('resizing');
+            
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isResizing) return;
+            
+            const deltaX = sidebarKey === 'people' ? (e.touches[0].clientX - startX) : (startX - e.touches[0].clientX);
+            const newWidth = Math.max(48, Math.min(sidebarKey === 'people' ? 500 : 400, startWidth + deltaX));
+            
+            sidebar.width = newWidth;
+            sidebar.element.style.width = `${newWidth}px`;
+            
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+            if (!isResizing) return;
+            
+            isResizing = false;
+            handle.classList.remove('dragging');
+            sidebar.element.classList.remove('resizing');
+            
+            // Save width
+            localStorage.setItem(`${sidebarKey}-sidebar-width`, sidebar.width.toString());
+            
+            // Haptic feedback
+            if ('vibrate' in navigator) {
+                navigator.vibrate(25);
+            }
+        });
+    }
+
+    // Accessibility: Announce sidebar state changes to screen readers
+    announceSidebarState(sidebarKey, collapsed) {
+        const sidebarName = sidebarKey === 'people' ? 'People' : 'Timeline';
+        const state = collapsed ? 'collapsed' : 'expanded';
+        const message = `${sidebarName} sidebar ${state}`;
+        
+        // Create or update the announcement element
+        let announcer = document.getElementById('sidebar-announcer');
+        if (!announcer) {
+            announcer = document.createElement('div');
+            announcer.id = 'sidebar-announcer';
+            announcer.className = 'sr-only';
+            announcer.setAttribute('aria-live', 'polite');
+            announcer.setAttribute('aria-atomic', 'true');
+            document.body.appendChild(announcer);
+        }
+        
+        // Clear and set the announcement
+        announcer.textContent = '';
+        setTimeout(() => {
+            announcer.textContent = message;
+        }, 100);
+    }
+
+    // Enhanced keyboard navigation for sidebars
+    setupSidebarKeyboardNavigation() {
+        // Add keyboard support for resize handles
+        Object.keys(this.sidebarState).forEach(sidebarKey => {
+            const handle = this.sidebarState[sidebarKey].resizeHandle;
+            if (handle) {
+                handle.setAttribute('tabindex', '0');
+                handle.setAttribute('role', 'separator');
+                handle.setAttribute('aria-orientation', 'vertical');
+                handle.setAttribute('aria-label', `Resize ${sidebarKey === 'people' ? 'People' : 'Timeline'} sidebar`);
+                
+                handle.addEventListener('keydown', (e) => {
+                    if (this.sidebarState[sidebarKey].collapsed) return;
+                    
+                    let newWidth = this.sidebarState[sidebarKey].width;
+                    const step = e.shiftKey ? 50 : 10;
+                    
+                    switch (e.key) {
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            newWidth = Math.max(48, newWidth - (sidebarKey === 'people' ? step : -step));
+                            break;
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            newWidth = Math.min(sidebarKey === 'people' ? 500 : 400, newWidth + (sidebarKey === 'people' ? step : -step));
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            newWidth = this.sidebarState[sidebarKey].defaultWidth;
+                            break;
+                        case 'Escape':
+                            handle.blur();
+                            return;
+                        default:
+                            return;
+                    }
+                    
+                    this.sidebarState[sidebarKey].width = newWidth;
+                    this.sidebarState[sidebarKey].element.style.width = `${newWidth}px`;
+                    localStorage.setItem(`${sidebarKey}-sidebar-width`, newWidth.toString());
+                    
+                    // Announce the new width
+                    this.announceWidthChange(sidebarKey, newWidth);
+                });
+            }
+        });
+    }
+
+    // Announce width changes for accessibility
+    announceWidthChange(sidebarKey, width) {
+        const sidebarName = sidebarKey === 'people' ? 'People' : 'Timeline';
+        const message = `${sidebarName} sidebar width: ${width} pixels`;
+        
+        let announcer = document.getElementById('width-announcer');
+        if (!announcer) {
+            announcer = document.createElement('div');
+            announcer.id = 'width-announcer';
+            announcer.className = 'sr-only';
+            announcer.setAttribute('aria-live', 'polite');
+            announcer.setAttribute('aria-atomic', 'true');
+            document.body.appendChild(announcer);
+        }
+        
+        announcer.textContent = message;
     }
     
     setupMobileOptimizations() {
@@ -334,20 +634,6 @@ export class PlanningApp {
             });
         });
 
-        const timelineToggle = document.getElementById('timeline-toggle');
-        if (timelineToggle) {
-            timelineToggle.addEventListener('click', () => {
-                const sidebar = document.getElementById('timeline-sidebar');
-                sidebar.classList.toggle('collapsed');
-                const icon = timelineToggle.querySelector('i');
-                if (sidebar.classList.contains('collapsed')) {
-                    icon.setAttribute('data-lucide', 'chevron-left');
-                } else {
-                    icon.setAttribute('data-lucide', 'chevron-right');
-                }
-                lucide.createIcons();
-            });
-        }
         
         
         document.getElementById('auto-align').addEventListener('click', () => {
@@ -3240,6 +3526,20 @@ export class PlanningApp {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || 
                 document.getElementById('details-panel').classList.contains('open')) {
                 return;
+            }
+            
+            // Ctrl + Arrow Keys for Sidebar Navigation
+            if (e.ctrlKey && !e.shiftKey && !e.altKey) {
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        this.toggleSidebar('people');
+                        return;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        this.toggleSidebar('timeline');
+                        return;
+                }
             }
             
             // Ctrl/Cmd + N for North Star
