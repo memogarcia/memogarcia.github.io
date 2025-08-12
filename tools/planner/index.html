@@ -8,24 +8,29 @@
     <link href="https://unpkg.com/lucide@latest/dist/lucide.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Skip links for keyboard navigation -->
+    <a href="#canvas" class="skip-link">Skip to main canvas</a>
+    <a href="#people-palette" class="skip-link">Skip to people sidebar</a>
+    <a href="#timeline-sidebar" class="skip-link">Skip to timeline sidebar</a>
+    
     <div class="app">
         <!-- Top bar -->
         <div class="top-bar">
             <div class="app-title">
-                <i data-lucide="star"></i>
+                <i aria-hidden="true" data-lucide="star"></i>
                 <span>Planner</span>
             </div>
             <div class="controls">
                 <!-- View Controls -->
                 <div class="control-group">
                     <button id="reset-view" class="btn btn-secondary" title="Reset View">
-                        <i data-lucide="crosshair"></i>
+                        <i aria-hidden="true" data-lucide="crosshair"></i>
                     </button>
                     <button id="zoom-in" class="btn btn-secondary" title="Zoom In">
-                        <i data-lucide="zoom-in"></i>
+                        <i aria-hidden="true" data-lucide="zoom-in"></i>
                     </button>
                     <button id="zoom-out" class="btn btn-secondary" title="Zoom Out">
-                        <i data-lucide="zoom-out"></i>
+                        <i aria-hidden="true" data-lucide="zoom-out"></i>
                     </button>
                 </div>
 
@@ -34,19 +39,19 @@
                 <!-- Create Items -->
                 <div class="control-group control-group-primary">
                     <button id="add-north-star" class="btn btn-primary" title="Add North Star (Ctrl+N)">
-                        <i data-lucide="star"></i>
+                        <i aria-hidden="true" data-lucide="star"></i>
                         <span>North Star</span>
                     </button>
                     <button id="add-epic" class="btn btn-primary" title="Add Epic (Ctrl+E)">
-                        <i data-lucide="plus"></i>
+                        <i aria-hidden="true" data-lucide="plus"></i>
                         <span>Epic</span>
                     </button>
                     <button id="add-task" class="btn btn-primary" title="Add Task (Ctrl+T)">
-                        <i data-lucide="plus"></i>
+                        <i aria-hidden="true" data-lucide="plus"></i>
                         <span>Task</span>
                     </button>
                     <button id="add-person" class="btn btn-primary" title="Add Person (Ctrl+P)">
-                        <i data-lucide="plus"></i>
+                        <i aria-hidden="true" data-lucide="plus"></i>
                         <span>Person</span>
                     </button>
                 </div>
@@ -56,15 +61,15 @@
                 <!-- Actions -->
                 <div class="control-group">
                     <button id="auto-align" class="btn btn-secondary" title="Auto-Align Tasks by Dependencies">
-                        <i data-lucide="git-branch"></i>
+                        <i aria-hidden="true" data-lucide="git-branch"></i>
                         <span>Auto-Align</span>
                     </button>
                     <button id="export-data" class="btn btn-secondary" title="Export Plan">
-                        <i data-lucide="download"></i>
+                        <i aria-hidden="true" data-lucide="download"></i>
                         <span>Export</span>
                     </button>
                     <button id="import-data" class="btn btn-secondary" title="Import Plan">
-                        <i data-lucide="upload"></i>
+                        <i aria-hidden="true" data-lucide="upload"></i>
                         <span>Import</span>
                     </button>
                 </div>
@@ -84,7 +89,7 @@
                             title="Toggle sidebar (Ctrl+←)" 
                             aria-label="Collapse People Sidebar"
                             aria-expanded="true">
-                        <i data-lucide="panel-left-close"></i>
+                        <i aria-hidden="true" data-lucide="panel-left-close"></i>
                     </button>
                 </div>
                 <div class="palette-content">
@@ -147,7 +152,7 @@
                             title="Toggle timeline (Ctrl+→)" 
                             aria-label="Collapse Timeline Sidebar"
                             aria-expanded="false">
-                        <i data-lucide="panel-right-close"></i>
+                        <i aria-hidden="true" data-lucide="panel-right-close"></i>
                     </button>
                 </div>
                 <div id="timeline-content" class="timeline-content">
@@ -158,7 +163,7 @@
                         </div>
                         <div class="card-content">
                             <div class="empty-state-icon">
-                                <i data-lucide="calendar"></i>
+                                <i aria-hidden="true" data-lucide="calendar"></i>
                             </div>
                             <div style="text-align: center;">
                                 <div class="empty-state-title" style="font-size: 1rem; margin-bottom: 0.5rem;">No timelines set</div>
@@ -208,11 +213,11 @@
     <div id="details-panel" class="details-panel">
         <div class="details-panel-header">
             <div id="details-panel-title" class="details-panel-title">
-                <i data-lucide="info"></i>
+                <i aria-hidden="true" data-lucide="info"></i>
                 <span>Details</span>
             </div>
             <button id="details-panel-close" class="details-panel-close" aria-label="Close details panel">
-                <i data-lucide="x"></i>
+                <i aria-hidden="true" data-lucide="x"></i>
             </button>
         </div>
         
@@ -258,11 +263,11 @@
 
                 <div class="details-section details-actions">
                     <button id="ns-save-btn" class="btn btn-primary">
-                        <i data-lucide="save"></i>
+                        <i aria-hidden="true" data-lucide="save"></i>
                         Save Changes
                     </button>
                     <button id="ns-delete-btn" class="btn btn-danger">
-                        <i data-lucide="trash-2"></i>
+                        <i aria-hidden="true" data-lucide="trash-2"></i>
                         Delete North Star
                     </button>
                 </div>
@@ -330,11 +335,11 @@
 
                 <div class="details-section details-actions">
                     <button id="epic-save-btn" class="btn btn-primary">
-                        <i data-lucide="save"></i>
+                        <i aria-hidden="true" data-lucide="save"></i>
                         Save Changes
                     </button>
                     <button id="epic-delete-btn" class="btn btn-danger">
-                        <i data-lucide="trash-2"></i>
+                        <i aria-hidden="true" data-lucide="trash-2"></i>
                         Delete Epic
                     </button>
                 </div>
@@ -395,11 +400,11 @@
 
                 <div class="details-section details-actions">
                     <button id="task-save-btn" class="btn btn-primary">
-                        <i data-lucide="save"></i>
+                        <i aria-hidden="true" data-lucide="save"></i>
                         Save Changes
                     </button>
                     <button id="task-delete-btn" class="btn btn-danger">
-                        <i data-lucide="trash-2"></i>
+                        <i aria-hidden="true" data-lucide="trash-2"></i>
                         Delete Task
                     </button>
                 </div>
@@ -468,11 +473,11 @@
 
                 <div class="details-section details-actions">
                     <button id="person-save-btn" class="btn btn-primary">
-                        <i data-lucide="save"></i>
+                        <i aria-hidden="true" data-lucide="save"></i>
                         Save Changes
                     </button>
                     <button id="person-delete-btn" class="btn btn-danger">
-                        <i data-lucide="trash-2"></i>
+                        <i aria-hidden="true" data-lucide="trash-2"></i>
                         Delete Person
                     </button>
                 </div>
@@ -497,7 +502,7 @@
                     <div id="person-activities" class="details-activity-list">
                         <div class="details-activity-item">
                             <div class="details-activity-icon">
-                                <i data-lucide="user-plus"></i>
+                                <i aria-hidden="true" data-lucide="user-plus"></i>
                             </div>
                             <div class="details-activity-content">
                                 <div class="details-activity-text">Person added to project</div>
@@ -512,7 +517,7 @@
             <div id="empty-details-template" class="hidden">
                 <div class="details-empty-state">
                     <div class="details-empty-icon">
-                        <i data-lucide="info"></i>
+                        <i aria-hidden="true" data-lucide="info"></i>
                     </div>
                     <div class="details-empty-title">Select an item</div>
                     <div class="details-empty-message">Click on an epic, task, or person to view and edit details</div>

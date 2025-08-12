@@ -1,8 +1,6 @@
 ---
-title: "How Istio Handles Requests: A Journey Through the Service Mesh"
-date: 2025-08-12T10:30:00-07:00
-tags: ["istio", "service-mesh", "kubernetes", "devops", "microservices", "networking"]
-description: "A deep dive into how Istio orchestrates request flow in a service mesh, from ingress to service-to-service communication. Learn how Envoy proxies, control plane magic, and traffic management work together to make your microservices actually talk to each other."
+title: "How Istio Handles Requests"
+date: 2025-08-12T00:30:00-07:00
 draft: false
 ---
 
