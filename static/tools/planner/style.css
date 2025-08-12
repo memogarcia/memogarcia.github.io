@@ -917,6 +917,7 @@ body {
     position: relative;
     padding: 16px 20px;
     min-height: 60px;
+    user-select: text;
 }
 
 .north-star-objective {
@@ -1062,6 +1063,7 @@ body {
     border-radius: 12px;
     border: 1px dashed rgba(99, 102, 241, 0.3);
     margin: 16px;
+    user-select: text;
 }
 
 .resize-handle {
@@ -1073,6 +1075,10 @@ body {
     background: rgba(99, 102, 241, 0.6);
     border-radius: 2px;
     cursor: nwse-resize;
+}
+
+.selected {
+    outline: 2px dashed #3b82f6;
 }
 
 /* Task */
