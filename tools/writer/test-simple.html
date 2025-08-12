@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writer Test</title>
+    <style>
+        body { font-family: system-ui; padding: 20px; }
+        .error { color: red; background: #ffe6e6; padding: 10px; margin: 10px 0; }
+        .success { color: green; background: #e6ffe6; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Writer Tool Test</h1>
+    <div id="status">Loading...</div>
+    <div id="output"></div>
+
+    <!-- React CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <script>
+        const { useState } = React;
+        
+        function TestApp() {
+            const [message, setMessage] = useState('React is working!');
+            
+            return React.createElement('div', {},
+                React.createElement('h2', {}, 'React Test'),
+                React.createElement('p', {}, message),
+                React.createElement('button', {
+                    onClick: () => setMessage('Button clicked!')
+                }, 'Test Click')
+            );
+        }
+        
+        // Test if React is working
+        function runTests() {
+            const status = document.getElementById('status');
+            const output = document.getElementById('output');
+            
+            try {
+                // Test 1: React is available
+                if (typeof React === 'undefined') {
+                    throw new Error('React not loaded');
+                }
+                
+                // Test 2: Create a React component
+                const root = ReactDOM.createRoot(output);
+                root.render(React.createElement(TestApp));
+                
+                status.innerHTML = '<div class="success">✓ React is working correctly</div>';
+            } catch (error) {
+                status.innerHTML = '<div class="error">✗ Error: ' + error.message + '</div>';
+                console.error(error);
+            }
+        }
+        
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>

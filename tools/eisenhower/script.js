@@ -689,7 +689,6 @@ class EisenhowerMatrix {
                 <div class="task-content">
                     <div class="task-text">${this.escapeHtml(task.text)}</div>
                     ${task.notes ? `<div class="task-notes">${this.escapeHtml(task.notes)}</div>` : ''}
-                    <div class="task-inbox">Inbox</div>
                 </div>
                 <div class="task-actions">
                     <button class="task-action edit" aria-label="Edit task" title="Edit task">

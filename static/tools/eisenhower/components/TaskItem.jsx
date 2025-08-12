@@ -174,11 +174,6 @@ function TaskItem({ task, onEdit, onDragStart, onDragEnd }) {
                     dangerouslySetInnerHTML: { __html: escapeHtml(task.notes) }
                 }
             ),
-            React.createElement(
-                'div',
-                { className: 'task-inbox' },
-                'Inbox'
-            )
         ),
         
         // Actions

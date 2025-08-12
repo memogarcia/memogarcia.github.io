@@ -242,6 +242,8 @@ body.dark .quadrant[data-quadrant="neither"] {
     overflow-y: auto;
     max-height: calc(100% - 80px);  /* Fixed max height with scrolling, accounting for header */
     min-height: 0;  /* Allow flex to shrink */
+    display: flex;
+    flex-direction: column;  /* Enable order property for completed tasks */
 }
 
 .empty-state {
@@ -254,23 +256,25 @@ body.dark .quadrant[data-quadrant="neither"] {
 
 .task-item {
     display: flex;
-    gap: 0.75rem;
-    padding: 0.875rem 0;
-    border-bottom: 1px solid var(--border-light);
-    transition: all 0.15s ease;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border: none;
+    transition: opacity 0.15s ease;
+    margin-bottom: 0.25rem;
 }
 
 .task-item:last-child {
-    border-bottom: none;
     margin-bottom: 0;
 }
 
-.task-item:hover {
-    background: rgba(255, 255, 255, 0.5);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+.task-item.completed {
+    opacity: 0.5;
+    order: 999;  /* Move completed tasks to bottom */
+}
+
+.task-item.completed .task-text {
+    text-decoration: line-through;
+    color: var(--muted-foreground);
 }
 
 .task-checkbox {
@@ -314,36 +318,23 @@ body.dark .quadrant[data-quadrant="neither"] {
 
 .task-text {
     margin: 0;
-    font-size: 0.875rem;
-    line-height: 1.4;
-    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.3;
+    color: var(--primary);
     word-break: break-word;
 }
 
 .task-notes {
-    margin-top: 0.375rem;
-    color: var(--muted);
-    font-size: 0.75rem;
-    line-height: 1.3;
+    margin-top: 0.125rem;
+    color: var(--muted-foreground);
+    font-size: 0.7rem;
+    line-height: 1.2;
 }
 
-.task-inbox {
-    display: inline-block;
-    padding: 0.125rem 0.375rem;
-    background: var(--border-light);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 0.6875rem;
-    color: var(--muted);
-    margin-top: 0.375rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-}
 
 .task-actions {
     display: flex;
-    gap: 0.25rem;
+    gap: 0.125rem;
     align-items: flex-start;
     opacity: 0;
     transition: opacity 0.15s ease;
@@ -357,9 +348,9 @@ body.dark .quadrant[data-quadrant="neither"] {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--muted);
-    padding: 0.25rem;
-    border-radius: 4px;
+    color: var(--muted-foreground);
+    padding: 0.125rem;
+    border-radius: 3px;
     transition: all 0.15s ease;
     display: flex;
     align-items: center;
@@ -367,8 +358,8 @@ body.dark .quadrant[data-quadrant="neither"] {
 }
 
 .task-action:hover {
-    color: var(--text);
-    background: rgba(0, 0, 0, 0.05);
+    color: var(--primary);
+    background: var(--accent);
 }
 
 /* Drag & drop styles */

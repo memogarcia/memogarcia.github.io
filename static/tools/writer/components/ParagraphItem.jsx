@@ -70,7 +70,7 @@ function ParagraphItem({ paragraph, index }) {
     }
     
     // Calculate distance from selected paragraph for focus effect
-    const selectedIndex = currentDocument?.paragraphs.findIndex(p => p.id === selectedParagraphId) ?? -1;
+    const selectedIndex = currentDocument && currentDocument.paragraphs ? currentDocument.paragraphs.findIndex(p => p.id === selectedParagraphId) : -1;
     const distance = Math.abs(index - selectedIndex);
     
     // Smoother gradient effect like AI Writer
@@ -268,7 +268,7 @@ function ParagraphItem({ paragraph, index }) {
   const handleTextDragStart = useCallback((e) => {
     // Get selected text or full paragraph content
     const selection = window.getSelection();
-    const selectedText = selection?.toString();
+    const selectedText = selection ? selection.toString() : '';
     const textToDrag = selectedText || paragraph.content;
     
     // Set drag data

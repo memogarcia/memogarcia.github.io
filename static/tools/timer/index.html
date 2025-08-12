@@ -8,13 +8,35 @@
     <link rel="stylesheet" href="../shared-design-system.css">
     <link rel="stylesheet" href="style.css">
     <!-- React 18 CDN -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel Standalone for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script>
+        // Error handling for CDN failures
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'SCRIPT' && e.target.src.includes('unpkg.com')) {
+                console.error('CDN loading failed:', e.target.src);
+                document.getElementById('root').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444;">
+                        <h2>Loading Error</h2>
+                        <p>Unable to load required libraries. Please check your internet connection or try refreshing the page.</p>
+                        <p><a href="index-vanilla.html" style="color: #3b82f6;">Switch to basic version</a></p>
+                    </div>
+                `;
+            }
+        });
+    </script>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #64748b;">
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🍅</div>
+                <div>Loading Pomodoro Timer...</div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Theme initialization - load saved preference
@@ -24,6 +46,28 @@
         } else if (savedTheme === 'light') {
             document.body.classList.remove('dark');
         }
+        
+        // Check if React loaded
+        setTimeout(() => {
+            if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+                document.getElementById('root').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444; font-family: system-ui;">
+                        <h2>🚫 Loading Failed</h2>
+                        <p>React libraries could not be loaded. This might be due to:</p>
+                        <ul style="text-align: left; max-width: 400px; margin: 1rem auto;">
+                            <li>Network connectivity issues</li>
+                            <li>CDN unavailability</li>
+                            <li>Ad blockers or content filters</li>
+                        </ul>
+                        <div style="margin-top: 2rem;">
+                            <a href="index-vanilla.html" style="color: #3b82f6; text-decoration: none; background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block;">
+                                🔄 Use Basic Version
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }, 3000);
     </script>
 
     <!-- Load React components -->

@@ -195,7 +195,7 @@ function WriterProvider({ children }) {
     try {
       setIsLoading(true);
       // Documents are already loaded in initialState, but refresh from storage
-      const docs = storage.loadDocuments();
+      const docs = window.storage.loadDocuments();
       setDocuments(docs);
       console.log('Documents loaded:', docs.length);
     } catch (error) {
@@ -249,7 +249,7 @@ function WriterProvider({ children }) {
     }
 
     const newParagraph = {
-      id: uuidv4(),
+      id: window.uuidv4(),
       content: content || '',
       createdAt: new Date(),
       updatedAt: new Date(),

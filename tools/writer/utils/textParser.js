@@ -34,7 +34,7 @@ function smartSplitParagraphs(content) {
       
       lines.forEach((line, index) => {
         const trimmedLine = line.trim();
-        const nextLine = lines[index + 1]?.trim() || '';
+        const nextLine = lines[index + 1] ? lines[index + 1].trim() : '';
         
         // Check if this line is a header
         const isHeader = /^#{1,6}\s+/.test(trimmedLine);

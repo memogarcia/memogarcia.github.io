@@ -487,5 +487,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Export for global access
-window.WriterApp = WriterApp;
+window.WriterMainApp = WriterMainApp;
 window.App = App;

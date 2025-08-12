@@ -4,31 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Writer - Structured Writing Tool</title>
+    <link rel="stylesheet" href="../shared-design-system.css">
     <link rel="stylesheet" href="style.css">
     
     <!-- React 18 CDN -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
     <!-- Babel Standalone for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script>
+        // Error handling for CDN failures
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'SCRIPT' && e.target.src.includes('unpkg.com')) {
+                console.error('CDN loading failed:', e.target.src);
+                document.getElementById('root').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444;">
+                        <h2>Loading Error</h2>
+                        <p>Unable to load required libraries. Please check your internet connection or try refreshing the page.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
     
-    <!-- DND Kit for drag & drop -->
-    <script src="https://unpkg.com/@dnd-kit/core@6.0.8/dist/umd/index.js"></script>
-    <script src="https://unpkg.com/@dnd-kit/sortable@7.0.2/dist/umd/index.js"></script>
-    <script src="https://unpkg.com/@dnd-kit/utilities@3.2.1/dist/umd/index.js"></script>
-    
-    <!-- Framer Motion for animations -->
-    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
-    
-    <!-- Date-fns for date formatting -->
-    <script src="https://unpkg.com/date-fns@2.30.0/index.js"></script>
-    
-    <!-- React Markdown for preview mode -->
-    <script src="https://unpkg.com/react-markdown@8.0.7/lib/index.js"></script>
+    <!-- Optional dependencies - DND Kit for drag & drop -->
+    <script>
+        // Try to load DnD Kit libraries, but don't fail if they're unavailable
+        try {
+            // Load DnD Kit Core
+            const script1 = document.createElement('script');
+            script1.src = 'https://unpkg.com/@dnd-kit/core@6.0.8/dist/umd/index.js';
+            script1.onload = function() {
+                window.DndKitCore = window['@dnd-kit/core'] || {};
+                console.log('DnD Kit Core loaded');
+            };
+            script1.onerror = function() {
+                console.log('DnD Kit Core not available, using fallback');
+                window.DndKitCore = {};
+            };
+            document.head.appendChild(script1);
+            
+            // Load DnD Kit Sortable
+            const script2 = document.createElement('script');
+            script2.src = 'https://unpkg.com/@dnd-kit/sortable@7.0.2/dist/umd/index.js';
+            script2.onload = function() {
+                window.DndKitSortable = window['@dnd-kit/sortable'] || {};
+                console.log('DnD Kit Sortable loaded');
+            };
+            script2.onerror = function() {
+                console.log('DnD Kit Sortable not available, using fallback');
+                window.DndKitSortable = {};
+            };
+            document.head.appendChild(script2);
+            
+            // Load DnD Kit Utilities
+            const script3 = document.createElement('script');
+            script3.src = 'https://unpkg.com/@dnd-kit/utilities@3.2.1/dist/umd/index.js';
+            script3.onload = function() {
+                window.DndKitUtilities = window['@dnd-kit/utilities'] || {};
+                console.log('DnD Kit Utilities loaded');
+            };
+            script3.onerror = function() {
+                console.log('DnD Kit Utilities not available, using fallback');
+                window.DndKitUtilities = {};
+            };
+            document.head.appendChild(script3);
+        } catch (error) {
+            console.log('DnD Kit libraries not available, using fallback');
+            window.DndKitCore = {};
+            window.DndKitSortable = {};
+            window.DndKitUtilities = {};
+        }
+        
+        // Try to load Framer Motion but don't fail if unavailable
+        try {
+            const script4 = document.createElement('script');
+            script4.src = 'https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js';
+            script4.onload = function() {
+                window.FramerMotion = window.framerMotion || {};
+                console.log('Framer Motion loaded');
+            };
+            script4.onerror = function() {
+                console.log('Framer Motion not available, using fallback');
+                window.FramerMotion = {};
+            };
+            document.head.appendChild(script4);
+        } catch (error) {
+            console.log('Framer Motion not available');
+            window.FramerMotion = {};
+        }
+        
+        // Try to load date-fns but don't fail if unavailable
+        try {
+            const script5 = document.createElement('script');
+            script5.src = 'https://unpkg.com/date-fns@2.30.0/index.js';
+            script5.onload = function() {
+                window.dateFns = window.dateFns || {};
+                console.log('Date-fns loaded');
+            };
+            script5.onerror = function() {
+                console.log('Date-fns not available, using fallback');
+                window.dateFns = {};
+            };
+            document.head.appendChild(script5);
+        } catch (error) {
+            console.log('Date-fns not available');
+            window.dateFns = {};
+        }
+    </script>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #64748b;">
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">✍️</div>
+                <div>Loading Writer...</div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Theme initialization - load saved preference
@@ -38,6 +132,28 @@
         } else if (savedTheme === 'light') {
             document.body.classList.remove('dark');
         }
+        
+        // Check if React loaded
+        setTimeout(() => {
+            if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+                document.getElementById('root').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444; font-family: system-ui;">
+                        <h2>🚫 Loading Failed</h2>
+                        <p>React libraries could not be loaded. This might be due to:</p>
+                        <ul style="text-align: left; max-width: 400px; margin: 1rem auto;">
+                            <li>Network connectivity issues</li>
+                            <li>CDN unavailability</li>
+                            <li>Ad blockers or content filters</li>
+                        </ul>
+                        <div style="margin-top: 2rem;">
+                            <button onclick="window.location.reload()" style="color: #3b82f6; text-decoration: none; background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer;">
+                                🔄 Retry
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }, 3000);
     </script>
 
     <!-- Load utilities and core modules first -->
@@ -58,111 +174,29 @@
     <!-- Load store -->
     <script type="text/babel" src="store/index.js"></script>
     
+    <!-- Load UI Components first -->
+    <script type="text/babel" src="components/ui/Tabs.jsx"></script>
+    <script type="text/babel" src="components/ui/Toast.jsx"></script>
+    <script type="text/babel" src="components/SanitizedMarkdown.jsx"></script>
+    
     <!-- Load React components in dependency order -->
     <script type="text/babel" src="components/ThemeToggle.jsx"></script>
     
-    <!-- Placeholder components that need to be created/updated -->
-    <script type="text/babel">
-        // Placeholder components until we migrate the individual components
-        function DocumentsList({ onOpenSettings }) {
-          return React.createElement('div', { 
-            style: { padding: '16px', color: 'var(--text-secondary)' }
-          }, 'Documents List (to be migrated)');
-        }
-        
-        function Editor({ showBorders }) {
-          return React.createElement('div', { 
-            style: { 
-              padding: '16px', 
-              color: 'var(--text-secondary)',
-              border: showBorders ? '1px solid var(--border)' : 'none'
-            }
-          }, 'Editor (to be migrated)');
-        }
-        
-        function ToolsSidebar({ onClose }) {
-          return React.createElement('div', { 
-            style: { padding: '16px', color: 'var(--text-secondary)' }
-          }, 'Tools Sidebar (to be migrated)');
-        }
-        
-        function SearchBar({ isOpen, onClose }) {
-          if (!isOpen) return null;
-          return React.createElement('div', { 
-            style: { 
-              position: 'fixed', 
-              top: 0, 
-              left: 0, 
-              right: 0, 
-              backgroundColor: 'var(--background)',
-              padding: '16px',
-              zIndex: 1000,
-              borderBottom: '1px solid var(--border)'
-            }
-          }, 'Search Bar (to be migrated)');
-        }
-        
-        function SettingsModal({ isOpen, onClose }) {
-          if (!isOpen) return null;
-          return React.createElement('div', { 
-            style: { 
-              position: 'fixed', 
-              inset: 0, 
-              backgroundColor: 'rgba(0,0,0,0.5)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              zIndex: 1000
-            }
-          }, 
-          React.createElement('div', {
-            style: {
-              backgroundColor: 'var(--background)',
-              padding: '24px',
-              borderRadius: '8px',
-              color: 'var(--text-primary)'
-            }
-          }, 'Settings Modal (to be migrated)'));
-        }
-        
-        function ToastContainer({ toasts, onDismiss }) {
-          if (!toasts || toasts.length === 0) return null;
-          return React.createElement('div', {
-            style: {
-              position: 'fixed',
-              bottom: '16px',
-              right: '16px',
-              zIndex: 2000
-            }
-          }, 
-          toasts.map(toast => 
-            React.createElement('div', {
-              key: toast.id,
-              style: {
-                backgroundColor: toast.variant === 'error' ? '#ef4444' : 
-                              toast.variant === 'success' ? '#10b981' : 'var(--background)',
-                color: 'white',
-                padding: '12px 16px',
-                borderRadius: '6px',
-                marginBottom: '8px',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-              },
-              onClick: () => onDismiss(toast.id)
-            }, 
-            React.createElement('div', { style: { fontWeight: '600' }}, toast.title),
-            toast.description && React.createElement('div', { style: { fontSize: '14px', opacity: 0.9 }}, toast.description)
-            )
-          ));
-        }
-        
-        // Make components globally available
-        window.DocumentsList = DocumentsList;
-        window.Editor = Editor;
-        window.ToolsSidebar = ToolsSidebar;
-        window.SearchBar = SearchBar;
-        window.SettingsModal = SettingsModal;
-        window.ToastContainer = ToastContainer;
-    </script>
+    <!-- Core Editor Components -->
+    <script type="text/babel" src="components/SpeechInput.jsx"></script>
+    <script type="text/babel" src="components/EditorHeader.jsx"></script>
+    <script type="text/babel" src="components/ParagraphItem.jsx"></script>
+    <script type="text/babel" src="components/ParagraphList.jsx"></script>
+    <script type="text/babel" src="components/Editor.jsx"></script>
+    <script type="text/babel" src="components/DocumentsList.jsx"></script>
+    
+    <!-- Tools and Modal Components -->
+    <script type="text/babel" src="components/ClipboardPanel.jsx"></script>
+    <script type="text/babel" src="components/TableOfContents.jsx"></script>
+    <script type="text/babel" src="components/HistoryPanel.jsx"></script>
+    <script type="text/babel" src="components/ToolsSidebar.jsx"></script>
+    <script type="text/babel" src="components/SearchBar.jsx"></script>
+    <script type="text/babel" src="components/SettingsModal.jsx"></script>
     
     <!-- Load main App -->
     <script type="text/babel" src="App.jsx"></script>

@@ -29,7 +29,7 @@ function ParagraphList() {
 
   // Auto-select first paragraph in focus mode if none selected
   useEffect(() => {
-    if (editorMode === 'focus' && !selectedParagraphId && currentDocument?.paragraphs && currentDocument.paragraphs.length > 0) {
+    if (editorMode === 'focus' && !selectedParagraphId && currentDocument && currentDocument.paragraphs && currentDocument.paragraphs.length > 0) {
       selectParagraph(currentDocument.paragraphs[0].id);
     }
   }, [editorMode]); // Only run when editorMode changes
@@ -80,9 +80,9 @@ function ParagraphList() {
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
+    if (active.id !== (over ? over.id : null)) {
       const oldIndex = currentDocument.paragraphs.findIndex(p => p.id === active.id);
-      const newIndex = currentDocument.paragraphs.findIndex(p => p.id === over?.id);
+      const newIndex = currentDocument.paragraphs.findIndex(p => p.id === (over ? over.id : null));
       
       if (oldIndex !== -1 && newIndex !== -1) {
         reorderParagraphs(oldIndex, newIndex);
