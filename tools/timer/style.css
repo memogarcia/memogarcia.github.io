@@ -6,6 +6,10 @@
     /* Timer-specific action colors */
     --pause: var(--warning);
     --pause-foreground: var(--warning-foreground);
+    
+    /* Enhanced cyberpunk theme tokens for timer */
+    --timer-glow: 0 0 20px rgb(16 163 127 / 0.3);
+    --timer-accent-gradient: linear-gradient(135deg, var(--cyberpunk-teal), var(--cyberpunk-teal-dark));
 }
 
 /* Timer-specific body styles */
@@ -71,15 +75,39 @@ input[type="number"] {
     min-height: 24px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.current-topic:not(:empty) {
+    color: var(--cyberpunk-teal);
 }
 
 .timer {
     font-size: 72px;
-    font-weight: 200;
+    font-weight: 300;
     color: var(--content);
     font-variant-numeric: tabular-nums;
     line-height: 1;
     letter-spacing: -2px;
+    font-family: 'Inter', var(--font-system);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced timer states */
+.timer.running {
+    color: var(--cyberpunk-teal);
+    text-shadow: var(--timer-glow);
+}
+
+.timer.paused {
+    color: var(--warning);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 .status {
@@ -118,11 +146,21 @@ input[type="number"] {
 
 .btn-pause:hover:not(:disabled) {
     background: rgb(245 158 11 / 0.9);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
 }
 
 .btn-reset {
     /* Use shared outline button variant */
     color: var(--secondary);
+    transition: all 0.2s ease;
+}
+
+.btn-reset:hover:not(:disabled) {
+    color: var(--content);
+    border-color: var(--cyberpunk-teal);
+    background: var(--cyberpunk-teal-light);
+    transform: translateY(-1px);
 }
 
 .stats {
@@ -140,13 +178,25 @@ input[type="number"] {
 
 .shortcuts-info {
     margin-bottom: 20px;
-    padding: 0.5rem 0.75rem;
-    background: var(--accent);
-    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    background: var(--cyberpunk-teal-light);
+    border: 1px solid rgb(16 163 127 / 0.2);
     border-radius: var(--radius);
     font-size: var(--font-size-xs);
     color: var(--muted-foreground);
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.shortcuts-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--timer-accent-gradient);
 }
 
 .shortcuts-info p {
@@ -190,14 +240,21 @@ input[type="number"] {
 
 .session-item:hover {
     background: var(--accent);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-xs);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--cyberpunk-teal-light);
 }
 
 .session-topic {
     font-size: 16px;
     color: var(--primary);
     margin-bottom: 4px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.session-item:hover .session-topic {
+    color: var(--cyberpunk-teal);
 }
 
 .session-meta {
@@ -261,4 +318,45 @@ input[type="number"] {
     }
 }
 
-/* Theme toggle styles inherited from shared design system */
+/* Enhanced theme system with sepia support */
+.theme-toggle {
+    /* Enhanced from shared design system */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Smooth theme transitions */
+* {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+}
+
+/* High contrast mode improvements */
+@media (prefers-contrast: high) {
+    .timer {
+        text-shadow: none;
+    }
+    
+    .timer.running {
+        color: var(--content);
+        font-weight: 600;
+    }
+    
+    .btn:focus-visible {
+        outline-width: 3px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .timer.paused {
+        animation: none;
+    }
+}

@@ -150,10 +150,11 @@ function TimerProvider({ children }) {
         dispatch({ type: ACTIONS.SET_THEME, payload: savedTheme });
         
         // Apply theme to body
+        document.body.classList.remove('dark', 'sepia');
         if (savedTheme === 'dark') {
             document.body.classList.add('dark');
-        } else {
-            document.body.classList.remove('dark');
+        } else if (savedTheme === 'sepia') {
+            document.body.classList.add('sepia');
         }
 
         // Defer Notification.requestPermission() to a user action (e.g., Start)
@@ -315,10 +316,11 @@ function TimerProvider({ children }) {
             dispatch({ type: ACTIONS.SET_THEME, payload: theme });
             
             // Apply theme to body immediately
+            document.body.classList.remove('dark', 'sepia');
             if (theme === 'dark') {
                 document.body.classList.add('dark');
-            } else {
-                document.body.classList.remove('dark');
+            } else if (theme === 'sepia') {
+                document.body.classList.add('sepia');
             }
             
             // Save to localStorage
