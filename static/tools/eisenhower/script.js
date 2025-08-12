@@ -72,6 +72,17 @@ class EisenhowerMatrix {
             }
         });
 
+        // Task edit buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.task-action.edit') || e.target.closest('.task-action.edit')) {
+                const taskItem = e.target.closest('.task-item');
+                if (taskItem) {
+                    const taskId = taskItem.dataset.taskId;
+                    this.openEditTaskModal(taskId);
+                }
+            }
+        });
+
         // Modal events
         this.bindModalEvents();
 
@@ -82,6 +93,19 @@ class EisenhowerMatrix {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeAllModals();
+            }
+        });
+
+        // Keyboard support for checkbox toggling
+        document.addEventListener('keydown', (e) => {
+            const isSpace = e.key === ' ' || e.code === 'Space';
+            const isEnter = e.key === 'Enter';
+            if ((isSpace || isEnter) && e.target.matches('.task-checkbox')) {
+                e.preventDefault();
+                const taskId = e.target.closest('.task-item')?.dataset.taskId;
+                if (taskId) {
+                    this.toggleTaskCompletion(taskId);
+                }
             }
         });
     }
@@ -684,6 +708,7 @@ class EisenhowerMatrix {
                 <div class="task-checkbox ${task.completed ? 'checked' : ''}" 
                      role="checkbox" 
                      aria-checked="${task.completed}"
+                     tabindex="0"
                      aria-label="Mark task as ${task.completed ? 'incomplete' : 'complete'}">
                 </div>
                 <div class="task-content">
