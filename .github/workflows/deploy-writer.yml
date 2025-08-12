@@ -59,17 +59,24 @@ jobs:
       - name: Update Writer production files
         working-directory: ./static/tools/writer
         run: |
+          # Save the development version
+          cp index.html index.dev.html
+          
           # Remove old assets if they exist
           rm -rf ./assets
           # Copy new built assets
           cp -r dist/assets ./
           
-          # Update index.html for production
+          # Use the built index.html for production
           cp dist/index.html index.html
+          
+          # Fix asset paths in production index.html to be relative
+          sed -i 's|href="/assets/|href="./assets/|g' index.html
+          sed -i 's|src="/assets/|src="./assets/|g' index.html
 
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add static/tools/writer/assets static/tools/writer/index.html
+          git add static/tools/writer/assets static/tools/writer/index.html static/tools/writer/index.dev.html
           git diff --staged --quiet || (git commit -m "Build Writer tool - Update production assets [skip ci]" && git push)
