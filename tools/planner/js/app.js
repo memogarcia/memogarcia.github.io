@@ -121,11 +121,6 @@ export class PlanningApp {
             return;
         }
         
-        if (!sidebar.externalToggle) {
-            console.error(`External toggle not found for ${sidebarKey}`);
-            return;
-        }
-        
         // Set initial width
         if (!sidebar.collapsed) {
             sidebar.element.style.width = `${sidebar.width}px`;
