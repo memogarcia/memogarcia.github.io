@@ -53,38 +53,10 @@ label {
     letter-spacing: 0.5px;
 }
 
+/* Inputs now use shared design system .input class */
 input[type="text"],
 input[type="number"] {
-    /* Use shared input styles with timer-specific font size */
-    display: flex;
-    width: 100%;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background: var(--theme);
-    padding: 0.5rem 0.75rem;
-    font-size: 16px;
-    color: var(--primary);
-    transition: all 0.2s ease;
-    font-family: inherit;
-    line-height: 1.25;
-    height: 2.5rem;
-}
-
-input[type="text"]:focus,
-input[type="number"]:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary)20;
-}
-
-input[type="text"]::placeholder,
-input[type="number"]::placeholder {
-    color: var(--muted-foreground);
-}
-
-input:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    font-size: 16px; /* Timer-specific override for better mobile UX */
 }
 
 .timer-display {
@@ -161,9 +133,24 @@ input:disabled {
 
 .stats h3 {
     color: var(--content);
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     font-size: 20px;
     font-weight: 600;
+}
+
+.shortcuts-info {
+    margin-bottom: 20px;
+    padding: 0.5rem 0.75rem;
+    background: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: var(--font-size-xs);
+    color: var(--muted-foreground);
+    text-align: center;
+}
+
+.shortcuts-info p {
+    margin: 0;
 }
 
 .stats-summary {

@@ -64,7 +64,7 @@ h1 {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 1.5rem;
-    min-height: 65vh;
+    height: 70vh;  /* Fixed height instead of min-height */
     margin-top: 2rem;
 }
 
@@ -226,7 +226,8 @@ body.dark .quadrant[data-quadrant="neither"] {
     flex: 1;
     padding: 0.75rem 1.5rem 1.5rem 1.5rem;  /* Reduced top padding from 1.5rem to 0.75rem */
     overflow-y: auto;
-    min-height: 200px;
+    max-height: calc(100% - 80px);  /* Fixed max height with scrolling, accounting for header */
+    min-height: 0;  /* Allow flex to shrink */
 }
 
 .empty-state {

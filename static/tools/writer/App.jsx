@@ -25,7 +25,7 @@ function WriterMainApp() {
     editorMode, 
     setEditorMode, 
     isLoading 
-  } = useWriterStore();
+  } = window.useWriterStore();
 
   // UI State
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
@@ -48,8 +48,8 @@ function WriterMainApp() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Hooks
-  const { toasts, toast, dismiss } = useToast();
-  const { undo, redo } = useUndoRedo();
+  const { toasts, toast, dismiss } = window.useToast();
+  const { undo, redo } = window.useUndoRedo();
 
   // Persist sidebar widths
   useEffect(() => {
@@ -84,7 +84,7 @@ function WriterMainApp() {
         await loadDocuments();
         
         // Get current state after loading
-        const store = useWriterStore.getState ? useWriterStore.getState() : useWriterStore();
+        const store = window.useWriterStore.getState ? window.useWriterStore.getState() : window.useWriterStore();
         const documents = store.documents || [];
         
         // If no documents exist, create a welcome document
@@ -94,7 +94,7 @@ function WriterMainApp() {
           if (welcomeDoc) {
             // Add sample content with a small delay
             setTimeout(() => {
-              const { addParagraphWithoutHistory } = useWriterStore();
+              const { addParagraphWithoutHistory } = window.useWriterStore();
               
               addParagraphWithoutHistory('# Welcome to Writer');
               addParagraphWithoutHistory('This is a **structured writing tool** inspired by Jordan Peterson\'s Essay.app methodology. It helps you organize your thoughts and create well-structured documents.');
@@ -472,7 +472,7 @@ function App() {
   }
 
   return React.createElement(
-    WriterProvider,
+    window.WriterProvider,
     null,
     React.createElement(WriterMainApp)
   );

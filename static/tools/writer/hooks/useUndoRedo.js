@@ -20,7 +20,7 @@ function useUndoRedo() {
   const currentIndexRef = useRef(-1);
   const isInternalUpdateRef = useRef(false);
 
-  const { documents, currentDocument } = useWriterStore();
+  const { documents, currentDocument } = window.useWriterStore();
 
   // Save state to history
   const saveToHistory = () => {

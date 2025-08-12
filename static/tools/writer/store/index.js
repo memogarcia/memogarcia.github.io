@@ -63,7 +63,7 @@ const loadInitialState = () => {
  */
 const addHistoryEntry = (state, action, description, previousValue, newValue) => {
   const entry = {
-    id: uuidv4(),
+    id: window.uuidv4(),
     timestamp: new Date().toISOString(),
     action,
     documentId: state.currentDocument?.id || '',
@@ -105,7 +105,7 @@ function WriterProvider({ children }) {
   // Document actions
   const createDocument = (title) => {
     const newDoc = {
-      id: uuidv4(),
+      id: window.uuidv4(),
       title,
       paragraphs: [],
       createdAt: new Date(),
@@ -130,7 +130,7 @@ function WriterProvider({ children }) {
     }
 
     // Validate and sanitize title
-    const { isValid, sanitized: title, error } = validateTitle(rawTitle);
+    const { isValid, sanitized: title, error } = window.validateTitle(rawTitle);
     if (!isValid) {
       console.error('Invalid title:', error);
       return;
@@ -208,14 +208,14 @@ function WriterProvider({ children }) {
 
   // Paragraph actions
   const addParagraphWithoutHistory = (rawContent, index) => {
-    const { isValid, sanitized: content } = validateParagraph(rawContent);
+    const { isValid, sanitized: content } = window.validateParagraph(rawContent);
     if (!isValid) {
       console.error('Invalid paragraph content');
       return;
     }
 
     const newParagraph = {
-      id: uuidv4(),
+      id: window.uuidv4(),
       content,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -289,7 +289,7 @@ function WriterProvider({ children }) {
       return;
     }
 
-    const { isValid, sanitized: content } = validateParagraph(rawContent);
+    const { isValid, sanitized: content } = window.validateParagraph(rawContent);
     if (!isValid) {
       console.error('Invalid paragraph content');
       return;
@@ -355,7 +355,7 @@ function WriterProvider({ children }) {
     if (!currentDocument) return '';
     
     const newParagraph = {
-      id: uuidv4(),
+      id: window.uuidv4(),
       content,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -404,7 +404,7 @@ function WriterProvider({ children }) {
     if (!currentDocument) return;
     
     const newParagraphs = contents.map(content => ({
-      id: uuidv4(),
+      id: window.uuidv4(),
       content,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -433,7 +433,7 @@ function WriterProvider({ children }) {
   // Clipboard actions
   const addToClipboard = (content, note, sourceParagraphId, sourceDocumentId) => {
     const newItem = {
-      id: uuidv4(),
+      id: window.uuidv4(),
       content,
       note,
       savedAt: new Date(),
@@ -578,13 +578,13 @@ function WriterProvider({ children }) {
 
   useEffect(() => {
     if (!debouncedSaveDocuments.current) {
-      debouncedSaveDocuments.current = debounce((docs) => {
-        storage.saveDocuments(docs);
+      debouncedSaveDocuments.current = window.debounce((docs) => {
+        window.storage.saveDocuments(docs);
       }, 1000);
     }
     if (!debouncedSaveClipboard.current) {
-      debouncedSaveClipboard.current = debounce((clip) => {
-        storage.saveClipboard(clip);
+      debouncedSaveClipboard.current = window.debounce((clip) => {
+        window.storage.saveClipboard(clip);
       }, 500);
     }
   }, []);
@@ -604,9 +604,9 @@ function WriterProvider({ children }) {
 
   useEffect(() => {
     if (currentDocument?.id) {
-      storage.saveCurrentDocumentId(currentDocument.id);
+      window.storage.saveCurrentDocumentId(currentDocument.id);
     } else {
-      storage.saveCurrentDocumentId(null);
+      window.storage.saveCurrentDocumentId(null);
     }
   }, [currentDocument?.id]);
 

@@ -160,6 +160,8 @@ function TimerProvider({ children }) {
         if ('Notification' in window && Notification.permission === 'default') {
             Notification.requestPermission();
         }
+
+        // Keyboard shortcuts - will be setup later after actions are defined
     }, []);
 
     // Timer tick effect
@@ -214,17 +216,29 @@ function TimerProvider({ children }) {
         }
     }, [state.sessions]);
 
-    // Update document title
+    // Update document title and favicon
     useEffect(() => {
         if (state.isRunning && state.view === 'timer') {
             const minutes = Math.floor(state.timeLeft / 60);
             const seconds = state.timeLeft % 60;
             const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             document.title = `${timeString} - ${state.currentTopic}`;
+            
+            // Update favicon based on timer state
+            const favicon = document.querySelector('link[rel="icon"]') || document.querySelector('link[rel="shortcut icon"]');
+            const faviconText = state.isPaused ? '⏸️' : '🍅';
+            if (favicon) {
+                favicon.href = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${faviconText}</text></svg>`;
+            }
         } else {
             document.title = 'Pomodoro Timer';
+            // Reset favicon
+            const favicon = document.querySelector('link[rel="icon"]') || document.querySelector('link[rel="shortcut icon"]');
+            if (favicon) {
+                favicon.href = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍅</text></svg>`;
+            }
         }
-    }, [state.timeLeft, state.isRunning, state.currentTopic, state.view]);
+    }, [state.timeLeft, state.isRunning, state.currentTopic, state.view, state.isPaused]);
 
     // Utility functions
     const playNotificationSound = () => {
@@ -332,6 +346,45 @@ function TimerProvider({ children }) {
             };
         }
     };
+
+    // Keyboard shortcuts effect
+    useEffect(() => {
+        const handleKeyboard = (event) => {
+            // Only handle shortcuts when not typing in input fields
+            if (event.target.tagName === 'INPUT') return;
+            
+            switch (event.code) {
+                case 'Space':
+                    event.preventDefault();
+                    if (state.isRunning) {
+                        if (state.isPaused) {
+                            actions.resumeTimer();
+                        } else {
+                            actions.pauseTimer();
+                        }
+                    } else {
+                        actions.startTimer();
+                    }
+                    break;
+                case 'KeyR':
+                    if (event.ctrlKey || event.metaKey) {
+                        event.preventDefault();
+                        actions.resetTimer();
+                    }
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    actions.resetTimer();
+                    break;
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyboard);
+        
+        return () => {
+            document.removeEventListener('keydown', handleKeyboard);
+        };
+    }, [state.isRunning, state.isPaused]);
 
     const value = {
         ...state,

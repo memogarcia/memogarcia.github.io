@@ -13,6 +13,13 @@ function SessionHistory() {
         { className: 'stats' },
         React.createElement('h3', null, 'Session History'),
         
+        // Keyboard shortcuts info
+        React.createElement(
+            'div',
+            { className: 'shortcuts-info' },
+            React.createElement('p', null, 'Shortcuts: Space (Start/Pause) • Esc/Ctrl+R (Reset)')
+        ),
+        
         // Stats summary (if we want to add it)
         stats.total > 0 && React.createElement(
             'div',

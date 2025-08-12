@@ -13,7 +13,19 @@
     <!-- Babel Standalone for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Note: Additional dependencies like Zustand, Lucide, and DND Kit can be added later when needed -->
+    <!-- DND Kit for drag & drop -->
+    <script src="https://unpkg.com/@dnd-kit/core@6.0.8/dist/umd/index.js"></script>
+    <script src="https://unpkg.com/@dnd-kit/sortable@7.0.2/dist/umd/index.js"></script>
+    <script src="https://unpkg.com/@dnd-kit/utilities@3.2.1/dist/umd/index.js"></script>
+    
+    <!-- Framer Motion for animations -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    
+    <!-- Date-fns for date formatting -->
+    <script src="https://unpkg.com/date-fns@2.30.0/index.js"></script>
+    
+    <!-- React Markdown for preview mode -->
+    <script src="https://unpkg.com/react-markdown@8.0.7/lib/index.js"></script>
 </head>
 <body>
     <div id="root"></div>
@@ -33,6 +45,11 @@
     <script type="text/babel" src="utils/debounce.js"></script>
     <script type="text/babel" src="utils/validation.js"></script>
     <script type="text/babel" src="utils/storage.js"></script>
+    <script type="text/babel" src="utils/cn.js"></script>
+    <script type="text/babel" src="utils/textParser.js"></script>
+    <script type="text/babel" src="utils/exportUtils.js"></script>
+    <script type="text/babel" src="utils/highlightText.js"></script>
+    <script type="text/babel" src="utils/markdownRenderer.js"></script>
     
     <!-- Load hooks -->
     <script type="text/babel" src="hooks/useToast.js"></script>

@@ -31,6 +31,7 @@ function SetupSection() {
             React.createElement('input', {
                 type: 'text',
                 id: 'topic',
+                className: 'input',
                 placeholder: 'What are you working on?',
                 value: topic,
                 onChange: handleTopicChange,
@@ -43,6 +44,8 @@ function SetupSection() {
             React.createElement('input', {
                 type: 'number',
                 id: 'duration',
+                className: 'input',
+                placeholder: 'Duration (minutes)',
                 value: Math.floor(duration / 60),
                 min: '1',
                 max: '60',
