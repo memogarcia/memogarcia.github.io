@@ -196,7 +196,7 @@ body.dark .quadrant[data-quadrant="neither"] {
     align-items: center;
     justify-content: center;
     gap: 2px;
-    whitespace-nowrap;
+    white-space: nowrap;
     border-radius: var(--radius);
     font-size: 0.875rem;
     font-weight: 500;
@@ -225,8 +225,8 @@ body.dark .quadrant[data-quadrant="neither"] {
 }
 
 .add-task-btn:focus-visible {
-    ring: 3px;
-    ring-color: rgb(59 130 246 / 0.5);
+    outline: 2px solid rgb(59 130 246 / 0.6);
+    outline-offset: 2px;
     border-color: rgb(59 130 246);
 }
 
@@ -550,10 +550,9 @@ body.dark .quadrant[data-quadrant="neither"] {
 .input-group input:focus,
 .input-group textarea:focus,
 .input-group select:focus {
-    outline: none;
+    outline: 2px solid rgb(59 130 246 / 0.2);
+    outline-offset: 2px;
     border-color: var(--primary);
-    ring: 3px;
-    ring-color: rgb(59 130 246 / 0.1);
 }
 
 .input-group textarea {
@@ -593,7 +592,7 @@ body.dark .quadrant[data-quadrant="neither"] {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    whitespace-nowrap;
+    white-space: nowrap;
     border-radius: var(--radius);
     font-size: 0.875rem;
     font-weight: 500;
@@ -619,8 +618,8 @@ body.dark .quadrant[data-quadrant="neither"] {
 }
 
 .btn:focus-visible {
-    ring: 3px;
-    ring-color: rgb(59 130 246 / 0.5);
+    outline: 2px solid rgb(59 130 246 / 0.6);
+    outline-offset: 2px;
     border-color: rgb(59 130 246);
 }
 
@@ -670,7 +669,8 @@ body.dark .quadrant[data-quadrant="neither"] {
 }
 
 .btn-danger:focus-visible {
-    ring-color: rgb(239 68 68 / 0.2);
+    outline: 2px solid rgb(239 68 68 / 0.4);
+    outline-offset: 2px;
     border-color: var(--destructive);
 }
 

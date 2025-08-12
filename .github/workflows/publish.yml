@@ -1,4 +1,4 @@
-name: Build and Deploy Hugo Site
+name: Build and Deploy Hugo Site with Writer Tool
 
 on:
   push:
@@ -12,12 +12,42 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'static/tools/writer/package-lock.json'
+
+      - name: Install Writer tool dependencies
+        run: |
+          cd static/tools/writer
+          npm ci
+
+      - name: Build Writer tool
+        run: |
+          cd static/tools/writer
+          npm run build
+          
+      - name: Deploy built Writer assets
+        run: |
+          cd static/tools/writer
+          # Backup current CDN version if it exists
+          if [ -f index.html ]; then
+            cp index.html index-cdn.html
+          fi
+          # Copy built files
+          cp dist/index.html index.html
+          cp -r dist/assets assets/
+          # Clean up dist directory for deployment
+          rm -rf dist src node_modules
+
       - name: Set up Hugo
         uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: "0.128.0"
 
-      - name: Build site
+      - name: Build Hugo site
         run: hugo --minify
 
       - name: Deploy to publish branch

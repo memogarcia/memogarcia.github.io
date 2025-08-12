@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writer - Structured Writing Tool</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+    <link rel="stylesheet" href="../shared-design-system.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- React 18 CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel Standalone for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Working DnD Kit CDN alternatives -->
+    <script src="https://cdn.skypack.dev/@dnd-kit/core@6.1.0?min"></script>
+    <script src="https://cdn.skypack.dev/@dnd-kit/sortable@8.0.0?min"></script>
+    <script src="https://cdn.skypack.dev/@dnd-kit/utilities@3.2.2?min"></script>
+    
+    <!-- Framer Motion from working CDN -->
+    <script src="https://cdn.skypack.dev/framer-motion@10.16.4?min"></script>
+    
+    <!-- Date utilities -->
+    <script>
+        // Date formatting - using built-in Intl API
+        window.dateUtils = {
+            format: function(date, formatStr) {
+                const d = new Date(date);
+                if (formatStr === 'MMM d, yyyy') {
+                    return d.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                }
+                return d.toLocaleDateString();
+            }
+        };
+        console.log('Date utilities loaded');
+    </script>
+    
+    <!-- Initialize libraries after loading -->
+    <script>
+        // Library detection and initialization
+        let librariesReady = false;
+        
+        function updateLoadingStatus(status) {
+            const statusEl = document.getElementById('loading-status');
+            if (statusEl) {
+                statusEl.textContent = status;
+            }
+        }
+        
+        function checkLibrariesReady() {
+            updateLoadingStatus('Checking libraries...');
+            
+            // Initialize DnD Kit - Skypack pattern
+            const dndCore = window['@dnd-kit/core'] || window.DndKit?.Core;
+            const dndSortable = window['@dnd-kit/sortable'] || window.DndKit?.Sortable;  
+            const dndUtilities = window['@dnd-kit/utilities'] || window.DndKit?.Utilities;
+            
+            if (dndCore && dndSortable && dndUtilities) {
+                window.DndKitCore = dndCore;
+                window.DndKitSortable = dndSortable;
+                window.DndKitUtilities = dndUtilities;
+                console.log('✅ DnD Kit loaded from CDN');
+            } else {
+                // Provide working fallbacks
+                window.DndKitCore = {
+                    DndContext: function(props) { 
+                        return React.createElement('div', null, props.children); 
+                    },
+                    useSensor: function() { return null; },
+                    useSensors: function() { return []; },
+                    PointerSensor: function() {},
+                    KeyboardSensor: function() {},
+                    closestCenter: function() { return null; }
+                };
+                
+                window.DndKitSortable = {
+                    SortableContext: function(props) { 
+                        return React.createElement('div', null, props.children); 
+                    },
+                    useSortable: function() { 
+                        return {
+                            attributes: {},
+                            listeners: {},
+                            setNodeRef: function() {},
+                            transform: null,
+                            transition: null,
+                            isDragging: false
+                        };
+                    },
+                    sortableKeyboardCoordinates: function() {},
+                    verticalListSortingStrategy: {}
+                };
+                
+                window.DndKitUtilities = {
+                    CSS: {
+                        Transform: {
+                            toString: function() { return ''; }
+                        }
+                    }
+                };
+                console.log('⚠️ DnD Kit fallback loaded (drag & drop disabled)');
+            }
+
+            // Initialize Framer Motion - Skypack pattern  
+            const framerMotion = window['framer-motion'] || window.Motion || window.framerMotion;
+            
+            if (framerMotion && framerMotion.motion) {
+                window.FramerMotion = framerMotion;
+                window.motion = framerMotion.motion;
+                console.log('✅ Framer Motion loaded from CDN');
+            } else {
+                // Provide working fallbacks
+                window.motion = {
+                    div: function(props) {
+                        return React.createElement('div', {
+                            ...props,
+                            style: {
+                                ...props.style,
+                                transition: 'all 0.2s ease'
+                            }
+                        });
+                    },
+                    AnimatePresence: function(props) {
+                        return props.children;
+                    }
+                };
+                window.FramerMotion = window.motion;
+                console.log('⚠️ Framer Motion fallback loaded');
+            }
+
+            // Check React
+            if (!window.React || !window.ReactDOM) {
+                updateLoadingStatus('React loading failed!');
+                document.getElementById('root').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444; font-family: system-ui;">
+                        <h2>Loading Error</h2>
+                        <p>Unable to load React. Please refresh the page.</p>
+                    </div>
+                `;
+                return false;
+            }
+
+            librariesReady = true;
+            updateLoadingStatus('Libraries ready! Starting app...');
+            console.log('🎉 All libraries initialized!');
+            return true;
+        }
+
+        // Try to detect when Skypack modules are ready
+        let checkAttempts = 0;
+        const maxAttempts = 50; // 5 seconds total
+        
+        function waitForLibraries() {
+            checkAttempts++;
+            
+            if (checkLibrariesReady()) {
+                // Libraries are ready, start the app
+                setTimeout(initializeApp, 100);
+                return;
+            }
+            
+            if (checkAttempts < maxAttempts) {
+                updateLoadingStatus(`Loading libraries... (${checkAttempts}/${maxAttempts})`);
+                setTimeout(waitForLibraries, 100);
+            } else {
+                updateLoadingStatus('Loading with fallbacks...');
+                console.log('⚠️ Using fallback libraries after timeout');
+                checkLibrariesReady(); // Force fallbacks
+                setTimeout(initializeApp, 100);
+            }
+        }
+
+        // Start checking after DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', waitForLibraries);
+        } else {
+            waitForLibraries();
+        }
+        
+        function initializeApp() {
+            updateLoadingStatus('Starting Writer app...');
+            // The app initialization will be handled by the component scripts
+            console.log('📝 Writer app initialization started');
+        }
+
+        // Error handling
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'SCRIPT') {
+                console.warn('Script loading issue:', e.target.src);
+                // Don't show error immediately, let fallbacks handle it
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="root">
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #64748b;">
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">✍️</div>
+                <div>Loading Writer...</div>
+                <div style="margin-top: 1rem; font-size: 0.75rem; opacity: 0.5;" id="loading-status">
+                    Initializing components...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme initialization - load saved preference
+        const savedTheme = localStorage.getItem('pref-theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+        } else if (savedTheme === 'light') {
+            document.body.classList.remove('dark');
+        }
+        
+        // Check if React loaded
+        setTimeout(() => {
+            if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+                document.getElementById('root').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444; font-family: system-ui;">
+                        <h2>🚫 Loading Failed</h2>
+                        <p>React libraries could not be loaded. This might be due to:</p>
+                        <ul style="text-align: left; max-width: 400px; margin: 1rem auto;">
+                            <li>Network connectivity issues</li>
+                            <li>CDN unavailability</li>
+                            <li>Ad blockers or content filters</li>
+                        </ul>
+                        <div style="margin-top: 2rem;">
+                            <button onclick="window.location.reload()" style="color: #3b82f6; text-decoration: none; background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer;">
+                                🔄 Retry
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }, 3000);
+    </script>
+
+    <!-- Load utilities and core modules first -->
+    <script type="text/babel" src="utils/uuid.js"></script>
+    <script type="text/babel" src="utils/debounce.js"></script>
+    <script type="text/babel" src="utils/validation.js"></script>
+    <script type="text/babel" src="utils/storage.js"></script>
+    <script type="text/babel" src="utils/cn.js"></script>
+    <script type="text/babel" src="utils/textParser.js"></script>
+    <script type="text/babel" src="utils/exportUtils.js"></script>
+    <script type="text/babel" src="utils/highlightText.js"></script>
+    <script type="text/babel" src="utils/markdownRenderer.js"></script>
+    
+    <!-- Load hooks -->
+    <script type="text/babel" src="hooks/useToast.js"></script>
+    <script type="text/babel" src="hooks/useUndoRedo.js"></script>
+    
+    <!-- Load store -->
+    <script type="text/babel" src="store/index.js"></script>
+    
+    <!-- Load UI Components first -->
+    <script type="text/babel" src="components/ui/Tabs.jsx"></script>
+    <script type="text/babel" src="components/ui/Toast.jsx"></script>
+    <script type="text/babel" src="components/SanitizedMarkdown.jsx"></script>
+    
+    <!-- Load React components in dependency order -->
+    <script type="text/babel" src="components/ThemeToggle.jsx"></script>
+    
+    <!-- Core Editor Components -->
+    <script type="text/babel" src="components/SpeechInput.jsx"></script>
+    <script type="text/babel" src="components/EditorHeader.jsx"></script>
+    <script type="text/babel" src="components/ParagraphItem.jsx"></script>
+    <script type="text/babel" src="components/ParagraphList.jsx"></script>
+    <script type="text/babel" src="components/Editor.jsx"></script>
+    <script type="text/babel" src="components/DocumentsList.jsx"></script>
+    
+    <!-- Tools and Modal Components -->
+    <script type="text/babel" src="components/ClipboardPanel.jsx"></script>
+    <script type="text/babel" src="components/TableOfContents.jsx"></script>
+    <script type="text/babel" src="components/HistoryPanel.jsx"></script>
+    <script type="text/babel" src="components/ToolsSidebar.jsx"></script>
+    <script type="text/babel" src="components/SearchBar.jsx"></script>
+    <script type="text/babel" src="components/SettingsModal.jsx"></script>
+    
+    <!-- Load main App -->
+    <script type="text/babel" src="App.jsx"></script>
+</body>
+</html>

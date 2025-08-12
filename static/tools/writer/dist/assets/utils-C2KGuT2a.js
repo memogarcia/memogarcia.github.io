@@ -1,0 +1,22 @@
+import{r as e,g as t,R as n}from"./vendor-X31hiD63.js";
+/**
+ * @license lucide-react v0.294.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */var r={xmlns:"http://www.w3.org/2000/svg",width:24,height:24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"};
+/**
+ * @license lucide-react v0.294.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const o=(t,n)=>{const o=e.forwardRef(({color:o="currentColor",size:u=24,strokeWidth:s=2,absoluteStrokeWidth:i,className:a="",children:c,...l},d)=>{return e.createElement("svg",{ref:d,...r,width:u,height:u,stroke:o,strokeWidth:i?24*Number(s)/Number(u):s,className:["lucide",`lucide-${f=t,f.replace(/([a-z0-9])([A-Z])/g,"$1-$2").toLowerCase().trim()}`,a].join(" "),...l},[...n.map(([t,n])=>e.createElement(t,n)),...Array.isArray(c)?c:[c]]);var f});return o.displayName=`${t}`,o},u=o("ChevronLeft",[["path",{d:"m15 18-6-6 6-6",key:"1wnfg3"}]]),s=o("ChevronRight",[["path",{d:"m9 18 6-6-6-6",key:"mthhwq"}]]),i={},a=e=>{let t;const n=new Set,r=(e,r)=>{const o="function"==typeof e?e(t):e;if(!Object.is(o,t)){const e=t;t=(null!=r?r:"object"!=typeof o||null===o)?o:Object.assign({},t,o),n.forEach(n=>n(t,e))}},o=()=>t,u={setState:r,getState:o,getInitialState:()=>s,subscribe:e=>(n.add(e),()=>n.delete(e)),destroy:()=>{"production"!==(i?"production":void 0)&&console.warn("[DEPRECATED] The `destroy` method will be unsupported in a future version. Instead use unsubscribe function returned by subscribe. Everything will be garbage-collected if store is garbage-collected."),n.clear()}},s=t=e(r,o,u);return u};var c={exports:{}},l={},d={exports:{}},f={},v=e;var p="function"==typeof Object.is?Object.is:function(e,t){return e===t&&(0!==e||1/e==1/t)||e!=e&&t!=t},h=v.useState,b=v.useEffect,S=v.useLayoutEffect,g=v.useDebugValue;function y(e){var t=e.getSnapshot;e=e.value;try{var n=t();return!p(e,n)}catch(r){return!0}}var m="undefined"==typeof window||void 0===window.document||void 0===window.document.createElement?function(e,t){return t()}:function(e,t){var n=t(),r=h({inst:{value:n,getSnapshot:t}}),o=r[0].inst,u=r[1];return S(function(){o.value=n,o.getSnapshot=t,y(o)&&u({inst:o})},[e,n,t]),b(function(){return y(o)&&u({inst:o}),e(function(){y(o)&&u({inst:o})})},[e]),g(n),n};f.useSyncExternalStore=void 0!==v.useSyncExternalStore?v.useSyncExternalStore:m,d.exports=f;var E=d.exports,w=e,x=E;
+/**
+ * @license React
+ * use-sync-external-store-shim/with-selector.production.js
+ *
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */var j="function"==typeof Object.is?Object.is:function(e,t){return e===t&&(0!==e||1/e==1/t)||e!=e&&t!=t},k=x.useSyncExternalStore,C=w.useRef,D=w.useEffect,W=w.useMemo,O=w.useDebugValue;l.useSyncExternalStoreWithSelector=function(e,t,n,r,o){var u=C(null);if(null===u.current){var s={hasValue:!1,value:null};u.current=s}else s=u.current;u=W(function(){function e(e){if(!a){if(a=!0,u=e,e=r(e),void 0!==o&&s.hasValue){var t=s.value;if(o(t,e))return i=t}return i=e}if(t=i,j(u,e))return t;var n=r(e);return void 0!==o&&o(t,n)?(u=e,t):(u=e,i=n)}var u,i,a=!1,c=void 0===n?null:n;return[function(){return e(t())},null===c?void 0:function(){return e(c())}]},[t,n,r,o]);var i=k(e,u[0],u[1]);return D(function(){s.hasValue=!0,s.value=i},[i]),O(i),i},c.exports=l;const R=t(c.exports),A={},{useDebugValue:V}=n,{useSyncExternalStoreWithSelector:z}=R;let L=!1;const N=e=>e;const T=e=>{"production"!==(A?"production":void 0)&&"function"!=typeof e&&console.warn("[DEPRECATED] Passing a vanilla store will be unsupported in a future version. Instead use `import { useStore } from 'zustand'`.");const t="function"==typeof e?(e=>e?a(e):a)(e):e,n=(e,n)=>function(e,t=N,n){"production"!==(A?"production":void 0)&&n&&!L&&(console.warn("[DEPRECATED] Use `createWithEqualityFn` instead of `create` or use `useStoreWithEqualityFn` instead of `useStore`. They can be imported from 'zustand/traditional'. https://github.com/pmndrs/zustand/discussions/1937"),L=!0);const r=z(e.subscribe,e.getState,e.getServerState||e.getInitialState,t,n);return V(r),r}(t,e,n);return Object.assign(n,t),n},I=e=>e?T(e):T;export{s as C,u as a,I as c};
