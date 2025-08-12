@@ -87,13 +87,20 @@ export class PlanningApp {
             }
         };
 
-        // Load saved states
+        // Load saved states and respect initial HTML state
         const isMobile = window.innerWidth <= 480;
-        const peopleCollapsed = localStorage.getItem('people-sidebar-collapsed') === 'true' || (isMobile && localStorage.getItem('people-sidebar-collapsed') === null);
-        const timelineCollapsed = localStorage.getItem('timeline-sidebar-collapsed') !== 'false';
+        
+        // Check if sidebars are already collapsed in HTML
+        const peopleHtmlCollapsed = this.sidebarState.people.element?.classList.contains('collapsed');
+        const timelineHtmlCollapsed = this.sidebarState.timeline.element?.classList.contains('collapsed');
+        
+        const peopleCollapsed = peopleHtmlCollapsed ?? (localStorage.getItem('people-sidebar-collapsed') === 'true' || (isMobile && localStorage.getItem('people-sidebar-collapsed') === null));
+        // Timeline starts collapsed by default (as set in HTML) unless specifically set to false
+        const timelineCollapsed = timelineHtmlCollapsed ?? (localStorage.getItem('timeline-sidebar-collapsed') !== 'false');
 
         this.sidebarState.people.collapsed = peopleCollapsed;
         this.sidebarState.timeline.collapsed = timelineCollapsed;
+        
 
         // Initialize sidebar states
         this.initializeSidebar('people');
@@ -110,6 +117,17 @@ export class PlanningApp {
     initializeSidebar(sidebarKey) {
         const sidebar = this.sidebarState[sidebarKey];
         
+        // Validate elements exist
+        if (!sidebar.element) {
+            console.error(`Sidebar element not found for ${sidebarKey}`);
+            return;
+        }
+        
+        if (!sidebar.externalToggle) {
+            console.error(`External toggle not found for ${sidebarKey}`);
+            return;
+        }
+        
         // Set initial width
         if (!sidebar.collapsed) {
             sidebar.element.style.width = `${sidebar.width}px`;
@@ -118,9 +136,12 @@ export class PlanningApp {
         // Set collapsed state
         if (sidebar.collapsed) {
             sidebar.element.classList.add('collapsed');
-            sidebar.externalToggle.style.display = 'flex';
+            if (sidebar.externalToggle) {
+                sidebar.externalToggle.style.display = 'flex';
+            }
             if (sidebar.toggle) {
                 sidebar.toggle.setAttribute('aria-expanded', 'false');
+                sidebar.toggle.setAttribute('aria-label', `Show ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
                     icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-right' : 'chevron-left');
@@ -128,9 +149,17 @@ export class PlanningApp {
             }
         } else {
             sidebar.element.classList.remove('collapsed');
-            sidebar.externalToggle.style.display = 'none';
+            sidebar.element.style.width = `${sidebar.width}px`;
+            if (sidebar.externalToggle) {
+                sidebar.externalToggle.style.display = 'none';
+            }
             if (sidebar.toggle) {
                 sidebar.toggle.setAttribute('aria-expanded', 'true');
+                sidebar.toggle.setAttribute('aria-label', `Collapse ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
+                const icon = sidebar.toggle.querySelector('i');
+                if (icon) {
+                    icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'chevron-left' : 'chevron-right');
+                }
             }
         }
 
@@ -155,14 +184,20 @@ export class PlanningApp {
 
     toggleSidebar(sidebarKey) {
         const sidebar = this.sidebarState[sidebarKey];
-        const wasCollapsed = sidebar.collapsed;
+        if (!sidebar || !sidebar.element) {
+            console.error(`Sidebar not found: ${sidebarKey}`);
+            return;
+        }
         
+        const wasCollapsed = sidebar.collapsed;
         sidebar.collapsed = !wasCollapsed;
         
         if (sidebar.collapsed) {
             // Collapsing
             sidebar.element.classList.add('collapsed');
-            sidebar.externalToggle.style.display = 'flex';
+            if (sidebar.externalToggle) {
+                sidebar.externalToggle.style.display = 'flex';
+            }
             
             // Update toggle button
             if (sidebar.toggle) {
@@ -177,7 +212,9 @@ export class PlanningApp {
             // Expanding
             sidebar.element.classList.remove('collapsed');
             sidebar.element.style.width = `${sidebar.width}px`;
-            sidebar.externalToggle.style.display = 'none';
+            if (sidebar.externalToggle) {
+                sidebar.externalToggle.style.display = 'none';
+            }
             
             // Update toggle button
             if (sidebar.toggle) {
