@@ -57,11 +57,28 @@
         </div>
 
         <div class="main-content">
+            <!-- External toggle for people palette when collapsed -->
+            <button id="people-external-toggle" class="external-toggle external-toggle-left" 
+                    title="Show People Sidebar (Ctrl+←)" 
+                    aria-label="Show People Sidebar"
+                    aria-describedby="people-sidebar-help"
+                    tabindex="0"
+                    style="display: none;">
+                <i data-lucide="chevron-right"></i>
+                <span class="sr-only">Press Ctrl+Left Arrow to toggle</span>
+            </button>
+
             <!-- People palette -->
-            <div class="people-palette" id="people-palette">
+            <div class="people-palette" id="people-palette" 
+                 role="complementary" 
+                 aria-label="People Sidebar"
+                 data-default-width="320">
                 <div class="palette-header">
                     <div class="palette-title">People</div>
-                    <button id="sidebar-toggle" class="sidebar-toggle" title="Toggle sidebar">
+                    <button id="sidebar-toggle" class="sidebar-toggle" 
+                            title="Toggle sidebar (Ctrl+←)" 
+                            aria-label="Collapse People Sidebar"
+                            aria-expanded="true">
                         <i data-lucide="chevron-left"></i>
                     </button>
                 </div>
@@ -72,6 +89,11 @@
                         Hold Ctrl + scroll to zoom. Hold Ctrl/Shift and drag background to pan.
                     </div>
                 </div>
+                <!-- Resize handle for people palette -->
+                <div class="resize-handle resize-handle-right" 
+                     id="people-resize-handle"
+                     title="Resize sidebar"
+                     aria-label="Resize People Sidebar"></div>
             </div>
 
             <!-- Canvas -->
@@ -105,15 +127,36 @@
             </div>
 
             <!-- Timeline sidebar -->
-            <div class="timeline-sidebar collapsed" id="timeline-sidebar">
+            <div class="timeline-sidebar collapsed" id="timeline-sidebar"
+                 role="complementary" 
+                 aria-label="Timeline Sidebar"
+                 data-default-width="280">
+                <!-- Resize handle for timeline sidebar -->
+                <div class="resize-handle resize-handle-left" 
+                     id="timeline-resize-handle"
+                     title="Resize timeline sidebar"
+                     aria-label="Resize Timeline Sidebar"></div>
                 <div class="timeline-header">
                     <div class="timeline-title">Timeline</div>
-                    <button id="timeline-toggle" class="sidebar-toggle" title="Toggle timeline">
+                    <button id="timeline-toggle" class="sidebar-toggle" 
+                            title="Toggle timeline (Ctrl+→)" 
+                            aria-label="Collapse Timeline Sidebar"
+                            aria-expanded="false">
                         <i data-lucide="chevron-left"></i>
                     </button>
                 </div>
                 <div id="timeline-content" class="timeline-content"></div>
             </div>
+
+            <!-- External toggle for timeline sidebar when collapsed -->
+            <button id="timeline-external-toggle" class="external-toggle external-toggle-right" 
+                    title="Show Timeline Sidebar (Ctrl+→)" 
+                    aria-label="Show Timeline Sidebar"
+                    aria-describedby="timeline-sidebar-help"
+                    tabindex="0">
+                <i data-lucide="chevron-left"></i>
+                <span class="sr-only">Press Ctrl+Right Arrow to toggle</span>
+            </button>
 
             <!-- Dependency mode indicator -->
             <div id="dependency-mode-indicator" class="dependency-mode-indicator">

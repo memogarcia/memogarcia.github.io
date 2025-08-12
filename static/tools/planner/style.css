@@ -3132,5 +3132,360 @@ select:focus-visible {
     }
 }
 
+/* Enhanced Sidebar System */
+
+/* External Toggle Buttons */
+.external-toggle {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 60px;
+    background: rgba(var(--color-bg-secondary) / 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    color: var(--secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 0 12px rgba(var(--color-border) / 0.2);
+}
+
+.external-toggle-left {
+    left: 0;
+    border-left: none;
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.external-toggle-right {
+    right: 0;
+    border-right: none;
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.external-toggle:hover {
+    background: rgba(var(--cyberpunk-teal) / 0.1);
+    color: var(--cyberpunk-teal);
+    border-color: var(--cyberpunk-teal);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 2px 0 16px rgba(var(--cyberpunk-teal) / 0.3);
+}
+
+.external-toggle-left:hover {
+    transform: translateY(-50%) translateX(4px) scale(1.05);
+    box-shadow: 4px 0 16px rgba(var(--cyberpunk-teal) / 0.3);
+}
+
+.external-toggle-right:hover {
+    transform: translateY(-50%) translateX(-4px) scale(1.05);
+    box-shadow: -4px 0 16px rgba(var(--cyberpunk-teal) / 0.3);
+}
+
+.external-toggle:focus-visible {
+    outline: 2px solid var(--cyberpunk-teal);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgb(16 163 127 / 0.1);
+}
+
+.external-toggle:active {
+    transform: translateY(-50%) scale(0.98);
+}
+
+.external-toggle i {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+}
+
+/* Pulse animation for external toggles */
+.external-toggle::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, transparent, var(--cyberpunk-teal), transparent);
+    z-index: -1;
+    opacity: 0;
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% { opacity: 0; transform: scale(0.95); }
+    50% { opacity: 0.3; transform: scale(1.02); }
+}
+
+/* Resize Handles */
+.resize-handle {
+    position: absolute;
+    background: transparent;
+    z-index: 100;
+    cursor: col-resize;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.resize-handle-right {
+    top: 0;
+    right: -2px;
+    width: 4px;
+    height: 100%;
+    border-right: 2px solid transparent;
+}
+
+.resize-handle-left {
+    top: 0;
+    left: -2px;
+    width: 4px;
+    height: 100%;
+    border-left: 2px solid transparent;
+}
+
+.resize-handle:hover {
+    background: rgba(var(--cyberpunk-teal) / 0.1);
+}
+
+.resize-handle-right:hover {
+    border-right-color: var(--cyberpunk-teal);
+    background: linear-gradient(90deg, transparent, rgba(var(--cyberpunk-teal) / 0.1));
+}
+
+.resize-handle-left:hover {
+    border-left-color: var(--cyberpunk-teal);
+    background: linear-gradient(270deg, transparent, rgba(var(--cyberpunk-teal) / 0.1));
+}
+
+.resize-handle:active,
+.resize-handle.dragging {
+    background: rgba(var(--cyberpunk-teal) / 0.2);
+}
+
+.resize-handle-right:active,
+.resize-handle-right.dragging {
+    border-right-color: var(--cyberpunk-teal);
+    background: linear-gradient(90deg, transparent, rgba(var(--cyberpunk-teal) / 0.2));
+}
+
+.resize-handle-left:active,
+.resize-handle-left.dragging {
+    border-left-color: var(--cyberpunk-teal);
+    background: linear-gradient(270deg, transparent, rgba(var(--cyberpunk-teal) / 0.2));
+}
+
+/* Enhanced Sidebar Transitions */
+.people-palette,
+.timeline-sidebar {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: width;
+}
+
+.people-palette.resizing,
+.timeline-sidebar.resizing {
+    transition: none;
+}
+
+/* Improved Collapsed States */
+.people-palette.collapsed .resize-handle,
+.timeline-sidebar.collapsed .resize-handle {
+    display: none;
+}
+
+/* Width constraints for resizable sidebars */
+.people-palette {
+    min-width: 48px;
+    max-width: 500px;
+}
+
+.timeline-sidebar {
+    min-width: 48px;
+    max-width: 400px;
+}
+
+/* Enhanced Mobile Responsive Design */
+@media (max-width: 768px) {
+    .external-toggle {
+        width: 36px;
+        height: 72px;
+        border-radius: var(--radius);
+    }
+    
+    .external-toggle-left {
+        border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    
+    .external-toggle-right {
+        border-radius: var(--radius) 0 0 var(--radius);
+    }
+    
+    .resize-handle {
+        width: 6px;
+    }
+    
+    .resize-handle-right {
+        right: -3px;
+    }
+    
+    .resize-handle-left {
+        left: -3px;
+    }
+    
+    .people-palette {
+        max-width: 280px;
+    }
+    
+    .timeline-sidebar {
+        max-width: 260px;
+    }
+}
+
+@media (max-width: 480px) {
+    .external-toggle {
+        width: 32px;
+        height: 60px;
+    }
+    
+    .external-toggle i {
+        font-size: 12px;
+    }
+    
+    .resize-handle {
+        width: 8px;
+    }
+    
+    .resize-handle-right {
+        right: -4px;
+    }
+    
+    .resize-handle-left {
+        left: -4px;
+    }
+    
+    .people-palette {
+        max-width: 240px;
+    }
+    
+    .timeline-sidebar {
+        max-width: 220px;
+    }
+}
+
+/* Touch device optimizations */
+@media (pointer: coarse) {
+    .external-toggle {
+        width: 40px;
+        height: 80px;
+    }
+    
+    .resize-handle {
+        width: 10px;
+    }
+    
+    .resize-handle-right {
+        right: -5px;
+    }
+    
+    .resize-handle-left {
+        left: -5px;
+    }
+}
+
+/* Accessibility improvements for external toggles */
+.external-toggle:focus-visible::after {
+    content: attr(aria-label);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(var(--color-bg) / 0.95);
+    color: var(--primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+}
+
+/* High contrast mode for external toggles */
+@media (prefers-contrast: high) {
+    .external-toggle {
+        border-width: 2px;
+        background: rgb(var(--color-bg));
+    }
+    
+    .resize-handle-right:hover {
+        border-right-width: 3px;
+    }
+    
+    .resize-handle-left:hover {
+        border-left-width: 3px;
+    }
+}
+
+/* Screen Reader Only Text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Screen reader announcements for sidebar state changes */
+.sidebar-announcement {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Focus improvements for keyboard navigation */
+.external-toggle:focus-visible,
+.resize-handle:focus-visible {
+    outline: 3px solid var(--cyberpunk-teal);
+    outline-offset: 2px;
+    z-index: 1000;
+}
+
+/* Improved focus ring for sidebar toggles */
+.sidebar-toggle:focus-visible {
+    outline: 2px solid var(--cyberpunk-teal);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgb(16 163 127 / 0.1);
+}
+
+/* Enhanced keyboard navigation indicators */
+.external-toggle:focus-visible::before {
+    opacity: 1;
+    animation: none;
+    transform: scale(1.05);
+}
+
+/* Skip link for keyboard users */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--cyberpunk-teal);
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    z-index: 1000;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
 
 
