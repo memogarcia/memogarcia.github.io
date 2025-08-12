@@ -2159,7 +2159,7 @@ class PlanningApp {
         
         this.epics.forEach(epic => {
             const epicDiv = document.createElement('div');
-            epicDiv.className = 'epic';
+            epicDiv.className = `epic ${epic.status === 'done' ? 'done' : ''}`;
             epicDiv.dataset.epicId = epic.id;
             epicDiv.style.transform = `translate(${epic.x}px, ${epic.y}px)`;
             epicDiv.style.width = `${epic.w}px`;
@@ -2177,9 +2177,13 @@ class PlanningApp {
                     <i data-lucide="star"></i>
                     <div class="epic-title">${epic.title}</div>
                     <div class="epic-badges">
+                        <span class="badge priority-${epic.priority}">${epic.priority}</span>
                         <span class="badge">Tasks: ${epicTasks.length}</span>
                         <span class="badge">People: ${assignedPeopleIds.size}</span>
                     </div>
+                    <button class="epic-done-btn" onclick="event.stopPropagation(); app.toggleEpicDone('${epic.id}')" title="Mark Epic as Done">
+                        <i data-lucide="check"></i>
+                    </button>
                     <button class="epic-delete-btn" onclick="event.stopPropagation(); app.deleteEpic('${epic.id}')" title="Delete Epic">
                         <i data-lucide="x"></i>
                     </button>
@@ -2211,7 +2215,7 @@ class PlanningApp {
             const absPos = this.getTaskAbsolutePosition(task);
             const taskAssignments = this.assignments.filter(a => a.taskId === task.id);
             
-            taskDiv.className = `task ${task.epicId ? 'aligned' : 'unaligned'}`;
+            taskDiv.className = `task ${task.epicId ? 'aligned' : 'unaligned'} ${task.status === 'done' ? 'done' : ''}`;
             taskDiv.dataset.taskId = task.id;
             taskDiv.dataset.dragType = 'task';
             taskDiv.style.transform = `translate(${absPos.x}px, ${absPos.y}px)`;
@@ -2221,6 +2225,9 @@ class PlanningApp {
                 <div class="task-header" onclick="app.openDetailsPanel('task', '${task.id}')" style="cursor: pointer;">
                     <i data-lucide="target"></i>
                     <span>Task</span>
+                    <button class="task-done-btn" onclick="event.stopPropagation(); app.toggleTaskDone('${task.id}')" title="Mark Task as Done">
+                        <i data-lucide="check"></i>
+                    </button>
                     <button class="task-delete-btn" onclick="event.stopPropagation(); app.deleteTask('${task.id}')" title="Delete Task">
                         <i data-lucide="x"></i>
                     </button>
@@ -2646,7 +2653,7 @@ class PlanningApp {
         const MIN_NS_H = 120;
         
         const newW = this.clamp(this.dragging.startPos.w + dx, MIN_NS_W, 1200);
-        const newH = this.clamp(this.dragging.startPos.h + dy, MIN_NS_H, 400);
+        const newH = Math.max(this.dragging.startPos.h + dy, MIN_NS_H);
         
         northStar.w = newW;
         northStar.h = newH;
@@ -2849,6 +2856,7 @@ class PlanningApp {
             title: title,
             description: '',
             status: 'planning',
+            priority: 'medium',
             x: 200 + Math.random() * 400,
             y: 80 + Math.random() * 120,
             w: 420,
@@ -3009,7 +3017,25 @@ class PlanningApp {
         });
         
         this.northStars = this.northStars.filter(ns => ns.id !== northStarId);
-        
+
+        this.render();
+        this.saveToStorage();
+    }
+
+    toggleTaskDone(taskId) {
+        const task = this.findById(this.tasks, taskId);
+        if (!task) return;
+        task.status = task.status === 'done' ? 'todo' : 'done';
+        task.modifiedAt = Date.now();
+        this.render();
+        this.saveToStorage();
+    }
+
+    toggleEpicDone(epicId) {
+        const epic = this.findById(this.epics, epicId);
+        if (!epic) return;
+        epic.status = epic.status === 'done' ? 'planning' : 'done';
+        epic.modifiedAt = Date.now();
         this.render();
         this.saveToStorage();
     }
@@ -3030,6 +3056,7 @@ class PlanningApp {
                     ${epic.status === 'done' ? '<i data-lucide="check"></i>' : ''}
                 </div>
                 <span class="details-task-title">${epic.title}</span>
+                <div class="details-priority-badge ${epic.priority || 'medium'}">${epic.priority || 'medium'}</div>
             </div>
         `).join('');
         
@@ -3439,6 +3466,7 @@ class PlanningApp {
         document.getElementById('epic-title-input').value = epic.title || '';
         document.getElementById('epic-description-input').value = epic.description || '';
         document.getElementById('epic-status-input').value = epic.status || 'planning';
+        document.getElementById('epic-priority-input').value = epic.priority || 'medium';
         
         // Set up event listeners for real-time updates
         this.setupEpicDetailsListeners(epic);
@@ -3460,19 +3488,22 @@ class PlanningApp {
         const titleInput = document.getElementById('epic-title-input');
         const descInput = document.getElementById('epic-description-input');
         const statusInput = document.getElementById('epic-status-input');
+        const priorityInput = document.getElementById('epic-priority-input');
         
         const updateEpic = () => {
             epic.title = titleInput.value;
             epic.description = descInput.value;
             epic.status = statusInput.value;
+            epic.priority = priorityInput.value;
             epic.modifiedAt = Date.now();
             this.render();
             this.saveToStorage();
         };
-        
+
         titleInput.addEventListener('input', updateEpic);
         descInput.addEventListener('input', updateEpic);
         statusInput.addEventListener('change', updateEpic);
+        priorityInput.addEventListener('change', updateEpic);
     }
     
     loadEpicTasks(epicId) {
@@ -3737,6 +3768,7 @@ class PlanningApp {
         const title = document.getElementById('epic-title-input').value.trim();
         const description = document.getElementById('epic-description-input').value.trim();
         const status = document.getElementById('epic-status-input').value;
+        const priority = document.getElementById('epic-priority-input').value;
         
         if (!title) {
             alert('Epic title is required');
@@ -3746,6 +3778,7 @@ class PlanningApp {
         epic.title = title;
         epic.description = description;
         epic.status = status;
+        epic.priority = priority;
         epic.modifiedAt = new Date().toISOString();
         
         this.render();
