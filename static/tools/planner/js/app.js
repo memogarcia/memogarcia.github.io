@@ -134,12 +134,18 @@ export class PlanningApp {
             }
         }
 
-        // Setup toggle event listeners
+        // Remove any existing event listeners to prevent duplicates
         if (sidebar.toggle) {
+            sidebar.toggle.replaceWith(sidebar.toggle.cloneNode(true));
+            sidebar.toggle = sidebar.element.querySelector('.sidebar-toggle');
             sidebar.toggle.addEventListener('click', () => this.toggleSidebar(sidebarKey));
         }
         
-        sidebar.externalToggle.addEventListener('click', () => this.toggleSidebar(sidebarKey));
+        if (sidebar.externalToggle) {
+            sidebar.externalToggle.replaceWith(sidebar.externalToggle.cloneNode(true));
+            sidebar.externalToggle = document.getElementById(sidebarKey === 'people' ? 'people-external-toggle' : 'timeline-external-toggle');
+            sidebar.externalToggle.addEventListener('click', () => this.toggleSidebar(sidebarKey));
+        }
 
         // Update Lucide icons
         if (typeof lucide !== 'undefined') {
