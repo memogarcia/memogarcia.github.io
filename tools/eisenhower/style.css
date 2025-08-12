@@ -190,6 +190,16 @@ h1 {
     letter-spacing: -0.005em;
 }
 
+.quadrant-subtitle {
+    /* Subtitle for action guidance */
+    margin: 0.25rem 0 0 0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    line-height: 1.2;
+    font-style: italic;
+}
+
 .task-count {
     /* Card description styles inspired by shadcn-ui */
     font-size: 0.875rem;
@@ -377,7 +387,40 @@ h1 {
     background: rgba(0, 0, 0, 0.05);
 }
 
-/* Drag & drop placeholder */
+/* Drag & drop styles */
+.task-item.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+    z-index: 1000;
+}
+
+.task-list.drag-over {
+    background-color: rgba(59, 130, 246, 0.1);
+    border: 2px dashed rgb(59, 130, 246);
+    border-radius: 8px;
+}
+
+.task-completing {
+    animation: taskComplete 0.3s ease;
+}
+
+@keyframes taskComplete {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 .drop-zone {
     min-height: 60px;
     border: 2px dashed var(--border);

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eisenhower Matrix - React</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- React 18 CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel Standalone for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // Theme initialization - load saved preference
+        const savedTheme = localStorage.getItem('pref-theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+        } else if (savedTheme === 'light') {
+            document.body.classList.remove('dark');
+        }
+    </script>
+
+    <!-- Load React components -->
+    <script type="text/babel" src="components/TaskProvider.jsx"></script>
+    <script type="text/babel" src="components/ThemeToggle.jsx"></script>
+    <script type="text/babel" src="components/TaskDialog.jsx"></script>
+    <script type="text/babel" src="components/TaskItem.jsx"></script>
+    <script type="text/babel" src="components/Quadrant.jsx"></script>
+    <script type="text/babel" src="EisenhowerMatrix.jsx"></script>
+</body>
+</html>
