@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@types/dompurify": "^3.0.5",
+    "isomorphic-dompurify": "^2.26.0"
+  }
+}
