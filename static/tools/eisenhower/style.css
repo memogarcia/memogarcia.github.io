@@ -90,37 +90,37 @@ h1 {
 
 .quadrant[data-quadrant="urgent-important"] { 
     background: #ffffff;
-    border: 2px solid #fecaca;  /* Subtle red border - highest priority */
+    border: 1px solid var(--border);
 }
 .quadrant[data-quadrant="important"] { 
     background: #ffffff;
-    border: 2px solid #bef264;  /* Subtle green border - important but not urgent */
+    border: 1px solid var(--border);
 }
 .quadrant[data-quadrant="urgent"] { 
     background: #ffffff;
-    border: 2px solid #93c5fd;  /* Subtle blue border - urgent but not important */
+    border: 1px solid var(--border);
 }
 .quadrant[data-quadrant="neither"] { 
     background: #ffffff;
-    border: 2px solid #e5e7eb;  /* Light gray border - lowest priority */
+    border: 1px solid var(--border);
 }
 
 /* Dark mode quadrant styles */
 body.dark .quadrant[data-quadrant="urgent-important"] { 
     background: #2e2e33;
-    border: 2px solid #dc2626;  /* Subtle red border - highest priority */
+    border: 1px solid var(--border);
 }
 body.dark .quadrant[data-quadrant="important"] { 
     background: #2e2e33;
-    border: 2px solid #65a30d;  /* Subtle green border - important but not urgent */
+    border: 1px solid var(--border);
 }
 body.dark .quadrant[data-quadrant="urgent"] { 
     background: #2e2e33;
-    border: 2px solid #3b82f6;  /* Subtle blue border - urgent but not important */
+    border: 1px solid var(--border);
 }
 body.dark .quadrant[data-quadrant="neither"] { 
     background: #2e2e33;
-    border: 2px solid #4b5563;  /* Dark gray border - lowest priority */
+    border: 1px solid var(--border);
 }
 
 .quadrant-header {
@@ -158,6 +158,20 @@ body.dark .quadrant[data-quadrant="neither"] {
     color: var(--primary);
     line-height: 1;
     letter-spacing: -0.005em;
+}
+
+/* Colored quadrant titles */
+.quadrant[data-quadrant="urgent-important"] .quadrant-title {
+    color: #dc2626;  /* Red for highest priority */
+}
+.quadrant[data-quadrant="important"] .quadrant-title {
+    color: #f59e0b;  /* Orange/Yellow for important but not urgent */
+}
+.quadrant[data-quadrant="urgent"] .quadrant-title {
+    color: #3b82f6;  /* Blue for urgent but not important */
+}
+.quadrant[data-quadrant="neither"] .quadrant-title {
+    color: #10b981;  /* Green for lowest priority */
 }
 
 .quadrant-subtitle {
