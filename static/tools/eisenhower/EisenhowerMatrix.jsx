@@ -59,37 +59,10 @@ function EisenhowerMatrix() {
         React.Fragment,
         null,
         
-        // Theme Toggle
-        React.createElement(ThemeToggle),
-        
         // Main Container
         React.createElement(
             'div',
             { className: 'container' },
-            
-            // Header
-            React.createElement(
-                'div',
-                { className: 'header' },
-                React.createElement(
-                    'a',
-                    {
-                        href: '/tools/',
-                        className: 'back-link'
-                    },
-                    '← Back to Tools'
-                ),
-                React.createElement(
-                    'h1',
-                    null,
-                    'Eisenhower Matrix'
-                ),
-                React.createElement(
-                    'p',
-                    { className: 'subtitle' },
-                    'Organize your tasks by urgency and importance'
-                )
-            ),
             
             // Matrix Grid
             React.createElement(
