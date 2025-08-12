@@ -25,6 +25,7 @@ class PlanningApp {
         this.dependencyDragState = null; // State during dependency drag
         this.autoAlignMode = false; // Flag for auto-alignment mode
         this.originalPositions = new Map(); // Store original task positions for restoration
+        this.selected = new Set(); // Currently selected objects for multi-drag
         
         // Constants - will be updated based on screen size
         this.updateConstants();
@@ -148,6 +149,50 @@ class PlanningApp {
             this.addHapticFeedback();
         }
     }
+
+    // Selection handling
+    toggleSelection(type, id) {
+        const key = `${type}:${id}`;
+        if (this.selected.has(key)) {
+            this.selected.delete(key);
+        } else {
+            this.selected.add(key);
+        }
+        this.updateSelectionStyles();
+    }
+
+    clearSelection() {
+        this.selected.clear();
+        this.updateSelectionStyles();
+    }
+
+    updateSelectionStyles() {
+        document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+        this.selected.forEach(key => {
+            const [type, id] = key.split(':');
+            let selector = '';
+            if (type === 'task') selector = `[data-task-id="${id}"]`;
+            else if (type === 'epic') selector = `[data-epic-id="${id}"]`;
+            else if (type === 'north-star') selector = `[data-north-star-id="${id}"]`;
+            const el = document.querySelector(selector);
+            if (el) {
+                // For epics and north stars, the draggable element is the container
+                el.classList.add('selected');
+            }
+        });
+    }
+
+    getItemFromTarget(target) {
+        const dragType = target.dataset.dragType;
+        if (dragType === 'task') {
+            return { type: 'task', id: target.closest('.task').dataset.taskId };
+        } else if (dragType === 'epic') {
+            return { type: 'epic', id: target.closest('.epic').dataset.epicId };
+        } else if (dragType === 'north-star') {
+            return { type: 'north-star', id: target.closest('.north-star').dataset.northStarId };
+        }
+        return { type: dragType };
+    }
     
     addHapticFeedback() {
         // Add subtle haptic feedback for touch interactions
@@ -264,7 +309,7 @@ class PlanningApp {
     
     updateConstants() {
         const width = window.innerWidth;
-        
+        this.NS_HEADER = 64;
         if (width <= 320) {
             this.EPIC_HEADER = 56;
             this.EPIC_PAD_X = 10;
@@ -420,7 +465,8 @@ class PlanningApp {
         this.updateUnalignedCount();
         this.updateStrategicAlignment();
         this.updateWorldTransform();
-        
+        this.updateSelectionStyles();
+
         // Setup hover handlers for new dependency system
         setTimeout(() => this.setupTaskHoverHandlers(), 100);
     }
@@ -2063,7 +2109,6 @@ class PlanningApp {
             const nsDiv = document.createElement('div');
             nsDiv.className = 'north-star';
             nsDiv.dataset.northStarId = northStar.id;
-            nsDiv.dataset.dragType = 'north-star';
             nsDiv.style.transform = `translate(${northStar.x}px, ${northStar.y}px)`;
             nsDiv.style.width = `${northStar.w}px`;
             nsDiv.style.height = `${northStar.h}px`;
@@ -2073,6 +2118,7 @@ class PlanningApp {
                 return sum + this.tasks.filter(t => t.epicId === epic.id).length;
             }, 0) + this.tasks.filter(t => t.northStarId === northStar.id && !t.epicId).length;
             
+            const contentHeight = northStar.h - this.NS_HEADER;
             nsDiv.innerHTML = `
                 <div class="north-star-header" data-drag-type="north-star" onclick="app.openDetailsPanel('north-star', '${northStar.id}')" style="cursor: pointer;">
                     <div class="north-star-info">
@@ -2088,7 +2134,7 @@ class PlanningApp {
                         <i data-lucide="x"></i>
                     </button>
                 </div>
-                <div class="north-star-content" data-north-star-content="${northStar.id}">
+                <div class="north-star-content" data-north-star-content="${northStar.id}" style="height: ${contentHeight}px;">
                     <div class="north-star-objective">${northStar.objective || 'Define strategic objective...'}</div>
                     <div class="resize-handle" data-drag-type="resize" data-north-star-id="${northStar.id}"></div>
                 </div>
@@ -2096,11 +2142,13 @@ class PlanningApp {
             
             world.appendChild(nsDiv);
         });
-        
+
         // Re-initialize icons
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+
+        this.updateSelectionStyles();
     }
 
     renderEpics() {
@@ -2143,11 +2191,13 @@ class PlanningApp {
             
             world.appendChild(epicDiv);
         });
-        
+
         // Re-initialize icons
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+
+        this.updateSelectionStyles();
     }
     
     renderTasks() {
@@ -2201,11 +2251,13 @@ class PlanningApp {
             // Add connection port event listeners
             this.setupConnectionPortListeners(taskDiv, task.id);
         });
-        
+
         // Re-initialize icons
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+
+        this.updateSelectionStyles();
     }
     
     renderConnections() {
@@ -2298,12 +2350,28 @@ class PlanningApp {
     }
     
     handleCanvasMouseDown(e) {
-        if (!(e.shiftKey || e.metaKey || e.ctrlKey || e.button === 1)) {
-            const target = e.target.closest('[data-drag-type]');
-            if (!target) return;
-            
+        const target = e.target.closest('[data-drag-type]');
+        if (target) {
+            const item = this.getItemFromTarget(target);
+            if (e.metaKey || e.ctrlKey) {
+                // Toggle selection
+                if (item.id) this.toggleSelection(item.type, item.id);
+                return;
+            }
+
+            // Start multi-drag if item is selected among multiple
+            const key = `${item.type}:${item.id}`;
+            if (this.selected.has(key)) {
+                if (this.selected.size > 1) {
+                    this.startMultiDrag(e);
+                    return;
+                }
+            } else {
+                this.clearSelection();
+                if (item.id) this.toggleSelection(item.type, item.id);
+            }
+
             const dragType = target.dataset.dragType;
-            
             if (dragType === 'north-star') {
                 this.startDragNorthStar(e, target);
             } else if (dragType === 'epic') {
@@ -2318,9 +2386,12 @@ class PlanningApp {
                 this.startDragTask(e, target);
             }
         } else {
-            // Pan canvas
-            this.dragging = { type: 'canvas' };
-            this.dragStartPos = { x: e.clientX, y: e.clientY };
+            // Clicked on empty canvas
+            if (!(e.metaKey || e.ctrlKey)) this.clearSelection();
+            if (e.shiftKey || e.metaKey || e.ctrlKey || e.button === 1) {
+                this.dragging = { type: 'canvas' };
+                this.dragStartPos = { x: e.clientX, y: e.clientY };
+            }
         }
     }
     
@@ -2345,6 +2416,8 @@ class PlanningApp {
             this.resizeEpic(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'task') {
             this.moveTask(this.dragging.id, dx, dy);
+        } else if (this.dragging.type === 'multi') {
+            this.moveSelected(dx, dy);
         }
     }
     
@@ -2353,8 +2426,10 @@ class PlanningApp {
             this.handleTaskDragEnd(e);
         } else if (this.dragging?.type === 'epic') {
             this.handleEpicDragEnd(e);
+        } else if (this.dragging?.type === 'multi') {
+            this.saveToStorage();
         }
-        
+
         this.dragging = null;
         this.dragStartPos = null;
         this.dragOffset = null;
@@ -2431,6 +2506,77 @@ class PlanningApp {
         
         element.classList.add('dragging');
     }
+
+    startMultiDrag(e) {
+        const items = [];
+        const selectedEpics = new Set();
+        this.selected.forEach(key => {
+            const [type, id] = key.split(':');
+            if (type === 'epic') selectedEpics.add(id);
+        });
+        this.selected.forEach(key => {
+            const [type, id] = key.split(':');
+            if (type === 'task') {
+                const task = this.findById(this.tasks, id);
+                if (task && (!task.epicId || !selectedEpics.has(task.epicId))) {
+                    const startPos = task.epicId ? { ix: task.ix || 0, iy: task.iy || 0, epicId: task.epicId } : { x: task.x, y: task.y };
+                    items.push({ type: 'task', id, startPos });
+                }
+            } else if (type === 'epic') {
+                const epic = this.findById(this.epics, id);
+                if (epic) items.push({ type: 'epic', id, startPos: { x: epic.x, y: epic.y } });
+            } else if (type === 'north-star') {
+                const ns = this.findById(this.northStars, id);
+                if (ns) items.push({ type: 'north-star', id, startPos: { x: ns.x, y: ns.y } });
+            }
+        });
+
+        this.dragging = { type: 'multi', items };
+        this.dragStartPos = { x: e.clientX, y: e.clientY };
+    }
+
+    moveSelected(dx, dy) {
+        let epicMoved = false;
+        this.dragging.items.forEach(item => {
+            if (item.type === 'task') {
+                const task = this.findById(this.tasks, item.id);
+                if (!task) return;
+                if (task.epicId) {
+                    const epic = this.findById(this.epics, task.epicId);
+                    if (!epic) return;
+                    const maxX = Math.max(0, epic.w - this.EPIC_PAD_X * 2 - this.TASK_W);
+                    const maxY = Math.max(0, epic.h - this.EPIC_HEADER - this.EPIC_PAD_Y * 2 - this.TASK_H);
+                    task.ix = this.clamp(item.startPos.ix + dx / this.view.scale, 0, maxX);
+                    task.iy = this.clamp(item.startPos.iy + dy / this.view.scale, 0, maxY);
+                } else {
+                    task.x = item.startPos.x + dx / this.view.scale;
+                    task.y = item.startPos.y + dy / this.view.scale;
+                }
+                const absPos = this.getTaskAbsolutePosition(task);
+                const el = document.querySelector(`[data-task-id="${item.id}"]`);
+                if (el) el.style.transform = `translate(${absPos.x}px, ${absPos.y}px)`;
+            } else if (item.type === 'epic') {
+                const epic = this.findById(this.epics, item.id);
+                if (!epic) return;
+                epic.x = item.startPos.x + dx / this.view.scale;
+                epic.y = item.startPos.y + dy / this.view.scale;
+                const el = document.querySelector(`[data-epic-id="${item.id}"]`);
+                if (el) el.closest('.epic').style.transform = `translate(${epic.x}px, ${epic.y}px)`;
+                epicMoved = true;
+            } else if (item.type === 'north-star') {
+                const ns = this.findById(this.northStars, item.id);
+                if (!ns) return;
+                ns.x = item.startPos.x + dx / this.view.scale;
+                ns.y = item.startPos.y + dy / this.view.scale;
+                const el = document.querySelector(`[data-north-star-id="${item.id}"]`);
+                if (el) el.closest('.north-star').style.transform = `translate(${ns.x}px, ${ns.y}px)`;
+            }
+        });
+        if (epicMoved) {
+            this.renderTasks();
+        }
+        this.renderConnections();
+    }
     
     moveEpic(epicId, x, y) {
         const epic = this.findById(this.epics, epicId);
@@ -2443,10 +2589,11 @@ class PlanningApp {
         if (element) {
             element.closest('.epic').style.transform = `translate(${x}px, ${y}px)`;
         }
-        
+
         // Update task positions and connections
         this.renderTasks();
         this.renderConnections();
+        this.updateSelectionStyles();
     }
 
     moveNorthStar(northStarId, x, y) {
