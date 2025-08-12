@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on Memo Garcia</title>
+    <link>https://memo.mx/posts/</link>
+    <description>Recent content in Posts on Memo Garcia</description>
+    <image>
+      <url>https://memo.mx/papermod-cover.png</url>
+      <link>https://memo.mx/papermod-cover.png</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 12 Aug 2025 00:31:00 -0700</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Simplicity</title>
+      <link>https://memo.mx/posts/simplicity/</link>
+      <pubDate>Tue, 12 Aug 2025 00:31:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/simplicity/</guid>
+      <description>The reason why newcomers try to do everything at once or add everything they can is to prove they can do anything with the new knowledge they acquire.
+Veterans tend to make things simpler.</description>
+    </item>
+    
+    <item>
+      <title>How Istio Handles Requests</title>
+      <link>https://memo.mx/posts/how-istio-handles-requests/</link>
+      <pubDate>Tue, 12 Aug 2025 00:30:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/how-istio-handles-requests/</guid>
+      <description>Understanding how HTTP requests traverse an Istio service mesh is fundamental to effectively operating and troubleshooting microservices architectures. This technical analysis examines the complete request lifecycle, from external ingress through service-to-service communication, detailing the mechanisms that enable Istio&amp;rsquo;s traffic management, security, and observability capabilities.
+The Service Mesh Problem Statement Microservices need reliable communication, security, and observability. Without a service mesh:
+Each service manually implements load balancing, retries, and circuit breakers Security and certificate management are inconsistent Service-to-service communication lacks visibility Debugging network issues is complex Code duplicates resilience patterns Istio provides standard networking, security, and observability across services without code changes.</description>
+    </item>
+    
+    <item>
+      <title>Focus</title>
+      <link>https://memo.mx/posts/focus/</link>
+      <pubDate>Mon, 11 Aug 2025 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/focus/</guid>
+      <description>Just say no.</description>
+    </item>
+    
+    <item>
+      <title>Behavior-driven development with LLMs</title>
+      <link>https://memo.mx/posts/bdd-with-llms/</link>
+      <pubDate>Wed, 22 Jan 2025 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/bdd-with-llms/</guid>
+      <description>Have you ever asked an LLM, &amp;ldquo;Build me a CRUD API in FastAPI,&amp;rdquo; and just hoped for the best? LLMs are great at taking broad requests and letting us talk to computers like they’re people. But that freeform style can bring surprises and make it tough to get the same result twice.
+Behavior-Driven Development, or BDD, offers a clear framework. It guides you to:
+Define exactly what you expect Set clear boundaries for the solution Keep everything documented in plain language Creating a prompt plan using BDD A &amp;ldquo;prompt plan&amp;rdquo; is basically a roadmap for your LLM.</description>
+    </item>
+    
+    <item>
+      <title>Happiness</title>
+      <link>https://memo.mx/posts/happiness/</link>
+      <pubDate>Wed, 22 Jan 2025 00:03:30 +0200</pubDate>
+      
+      <guid>https://memo.mx/posts/happiness/</guid>
+      <description>3 ideas that help me be a bit more happier every day:
+The journey is where the fun is, not at the destination Allow yourself to be happy Find a purpose in life </description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
+      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
+      <description>I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this and you are also struggling with these concepts, just know this isn’t a complete map of the &amp;ldquo;networking world&amp;rdquo;, it is simply a different way to see it. I hope you find this analogy helpful.
+I&amp;rsquo;ve decided to stick with analogies here instead of going deep into technical terms, you can find those easily anywhere, because I enjoy looking at the world from different perspectives.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Networks by Analogy | Appendices</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</link>
+      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</guid>
+      <description>Concept mapping table Concept Analogy Network Building Computer Room IP Address Room Number Subnet Floor Network Protocol Language Switch Floor Manager Router Building Concierge Gateway Elevator MAC Address Unique Door ID Bandwidth Hall Width Private IP Internal Room Number Public IP Building Street Address DNS Public Directory TCP Registered Mail Service UDP Untracked Mail Service Port Service-Specific Mail Slot HTTP/HTTPS Web Service Language SMTP/FTP/SSH Specialized Service Languages Data Packet Envelope with Metadata Checksum Data Integrity Check Internet City of Buildings ISP Road/Utility Builder Firewall Security Gate/Guard VPN Hidden Passageway Load Balancer Extra Reception Staff CDN Local Storage Hub QoS Priority Lane NAT Front Desk Clerk Routing Table Building/City Map IPv4 Limited Address System, IPv6 Unlimited Address System, Network Topology Building Blueprint Cloud Computing Rented Office Space Cloud Provider Property Manager Scalability (Cloud) Flexible Office Expansion Network Interface Door VLAN Private Hallway Dual-Stack System Translator for Old/New Address Systems Software-Defined Networking Virtual Architect License This draft is shared under CC BY-NC-ND 4.</description>
+    </item>
+    
+    <item>
+      <title>Systems Thinking</title>
+      <link>https://memo.mx/posts/systems-thinking/</link>
+      <pubDate>Sat, 04 May 2024 01:55:24 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/systems-thinking/</guid>
+      <description>What is a system? A set of pieces that work together to perform a function. When those pieces work together, emergence arises!
+Emergence as a concept refers to the idea that the whole is greater than the sum of its parts. New properties and behaviors emerge at the system level that cannot be understood by analyzing the parts in isolation.
+Systems thinking is bla bla bla, you can read it from wikipedia.</description>
+    </item>
+    
+    <item>
+      <title>AWS | Cross-Account IAM Role Assumption</title>
+      <link>https://memo.mx/posts/aws-iam-crossaccount-roles/</link>
+      <pubDate>Sat, 04 May 2024 00:55:24 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/aws-iam-crossaccount-roles/</guid>
+      <description>In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.
+Let&amp;rsquo;s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB
+Account A In AccountA create a role account_a_role that has 2 types of policies:
+a Trust Relationship that define which entities can assume this role { &amp;#34;Version&amp;#34;: &amp;#34;2012-10-17&amp;#34;, &amp;#34;Statement&amp;#34;: [ { &amp;#34;Sid&amp;#34;: &amp;#34;AllowAssumeRoleFromAccountB&amp;#34;, &amp;#34;Effect&amp;#34;: &amp;#34;Allow&amp;#34;, &amp;#34;Principal&amp;#34;: { &amp;#34;AWS&amp;#34;: &amp;#34;arn:aws:iam::ACCOUNT_B_ID:role/account_b_role&amp;#34; }, &amp;#34;Action&amp;#34;: &amp;#34;sts:AssumeRole&amp;#34; } ] } You can also set Conditions to filter which entities can AssumeRole and even configure AssumeRoleWithWebIdentity for users who have been authenticated with a web identity provider.</description>
+    </item>
+    
+    <item>
+      <title>Lateral Thinking</title>
+      <link>https://memo.mx/posts/lateral-thinking/</link>
+      <pubDate>Fri, 03 May 2024 02:13:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/lateral-thinking/</guid>
+      <description>For me, lateral thinking is:
+Solving problems using an indirect and creative approach. Using reasoning that is not immediately obvious and involving ideas that might not be obtainable by using traditional step-by-step logic.
+One &amp;ldquo;simple&amp;rdquo; approach to &amp;ldquo;think outside the box&amp;rdquo; is:
+Understanding WHAT you want to achieve. Understanding WHY you want to achieve it. Knowing the rules of the game (constraints like environment, budget, physical limitations, etc.) Reframing WHAT you want in a way that ignores these rules of the game.</description>
+    </item>
+    
+    <item>
+      <title>Simplicity vs familiarity</title>
+      <link>https://memo.mx/posts/simplicity-vs-familiarity/</link>
+      <pubDate>Fri, 03 May 2024 02:05:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/simplicity-vs-familiarity/</guid>
+      <description>I&amp;rsquo;ve been thinking a lot about how we interact with technology, and I&amp;rsquo;ve come to realize that being familiar with something doesn&amp;rsquo;t always mean it&amp;rsquo;s simple. In fact, it can sometimes make things more complicated.
+For example, when I&amp;rsquo;m working on code or documentation, I find myself getting too close to the issue. It&amp;rsquo;s easy to lose sight of the bigger picture and get caught up in the details. That&amp;rsquo;s why it&amp;rsquo;s important for us to take a step back, look at our work from a different perspective, and ask for feedback.</description>
+    </item>
+    
+    <item>
+      <title>Optimizations</title>
+      <link>https://memo.mx/posts/optimization/</link>
+      <pubDate>Fri, 03 May 2024 02:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/optimization/</guid>
+      <description>In order to make it faster, we need to understand why it is slow.</description>
+    </item>
+    
+    <item>
+      <title>Microservices vs monoliths</title>
+      <link>https://memo.mx/posts/microservices-vs-monoliths/</link>
+      <pubDate>Fri, 03 May 2024 01:09:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/microservices-vs-monoliths/</guid>
+      <description>Which architecture should I choose?
+I don&amp;rsquo;t think this is the right question to ask. A better question would be, given the current state of my service/product, which architecture will provide what I&amp;rsquo;m looking for? For example, performance, independent deployments, application boundaries, etc.
+For example, many people mention that we should start with a monolith and while I agree with some of the arguments (simplified development and deployment, consistent performance), it tends to ignore the fact that it might be better to prioritize freedom and experimentation at early stages rather than performance.</description>
+    </item>
+    
+    <item>
+      <title>My issue with Github Actions</title>
+      <link>https://memo.mx/posts/github-actions/</link>
+      <pubDate>Fri, 03 May 2024 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/github-actions/</guid>
+      <description>GitHub actions are a problem because they lock you by the balls and you cannot reproduce your pipelines.
+Getting to depend on all those small Actions saves 5 minutes today, only to make migrations immensely painful tomorrow.
+Build, package, and release software should be written as standalone scripts that in principle could even run in the developer&amp;rsquo;s machine. Moving them to CI is just changing the machine that will run the scripts.</description>
+    </item>
+    
+    <item>
+      <title>Organizational Culture</title>
+      <link>https://memo.mx/posts/organizational-culture/</link>
+      <pubDate>Sat, 17 Feb 2024 05:55:27 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/organizational-culture/</guid>
+      <description>A pattern of shared assumptions that groups have learned as they solve problems of external adaptation and internal integration, that has worked well enough in the past to be considered valid and therefore to be taught to new members as the correct way to PERCEIVE, THINK and FEEL &amp;ndash; Edgar Schein
+Culture evolves over time, driven by both external influences and internal dynamics. It&amp;rsquo;s important to explore the factors driving these changes.</description>
+    </item>
+    
+    <item>
+      <title>Domain Knowledge Transfer</title>
+      <link>https://memo.mx/posts/domain-knowledge-transfer/</link>
+      <pubDate>Sat, 17 Feb 2024 05:55:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/domain-knowledge-transfer/</guid>
+      <description>Innovation often springs from the most unexpected sources. &amp;ndash; Me
+The ability to transfer domain knowledge from one field to another can breed a lot of creativity and gives you new perspectives and the opportunity to think outside the box.
+But what is Domain Knowledge Transfer?
+Domain knowledge transfer is the process of applying knowledge, principles, and solutions from one field of study or industry to another. By looking beyond the confines of a single domain, we can find new solutions to complex problems and drive progress in unexpected and transformative ways.</description>
+    </item>
+    
+    <item>
+      <title>Embracing Change</title>
+      <link>https://memo.mx/posts/embrace-change/</link>
+      <pubDate>Sat, 17 Feb 2024 05:53:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/embrace-change/</guid>
+      <description>A made up mind is hard to change &amp;ndash; Jeff Bezos or Confucius, I don&amp;rsquo;t know who, but the phrase got stuck with me
+Standing still is not an option. Progress, by its very nature, demands change. It beckons us to guess, to venture into the unknown, and to embrace risks with open arms. Why? Because without the courage to step beyond the familiar, innovation remains a distant dream.</description>
+    </item>
+    
+    <item>
+      <title>Generations</title>
+      <link>https://memo.mx/posts/generations/</link>
+      <pubDate>Wed, 27 Sep 2023 09:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/generations/</guid>
+      <description>Society seems to follow a cycle of moods that last around 20 years each.
+Each cycle is called &amp;ldquo;Turning&amp;rdquo;
+NOTE This is an unfalsifiable theory, so take it with a grain of salt.
+High The first turning is a high, which occurs after a crisis. During the high, institutions are strong and individualism is weak. Society is confident about where it wants to go collectively, though those outside the majoritarian center often feel stifled by conformity</description>
+    </item>
+    
+    <item>
+      <title>So, you want to be a DevOps Engineer?</title>
+      <link>https://memo.mx/posts/being-devops/</link>
+      <pubDate>Tue, 01 Aug 2023 06:53:23 +0000</pubDate>
+      
+      <guid>https://memo.mx/posts/being-devops/</guid>
+      <description>First of, congratulations!
+Few words before moving on:
+There is no such thing as DevOps Engineer, DevOps is a philosophy, a way of working. Your DevOps role will depend on your organization structure and maturity. Some organizations use DevOps, SRE and Platform engineering interchangeably, don’t worry. Focus on the goal. You will work in a team, empathy is mandatory. A lot of people ask, do I really need to know ___ALL OF THAT___ to work as a DevOps Engineer?</description>
+    </item>
+    
+    <item>
+      <title>What is Kubernetes, really?</title>
+      <link>https://memo.mx/posts/what-is-kubernetes/</link>
+      <pubDate>Tue, 01 Aug 2023 05:53:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/what-is-kubernetes/</guid>
+      <description>As in the ship of Theseus&amp;hellip; If you replace each Kubernetes component&amp;hellip; what is it that you get at the end?
+An API, an ecosystem and the sum of its parts.
+BTW, is kubernetes an overkill? Yes and No
+I think is a necessary evil to avoid selling your soul to a cloud provider.</description>
+    </item>
+    
+    <item>
+      <title>Is complexity a human construct?</title>
+      <link>https://memo.mx/posts/complexity/</link>
+      <pubDate>Wed, 18 Jan 2023 05:53:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/complexity/</guid>
+      <description>Or is it a perspective? is it the result of the human ego? or is it just a communication problem?
+If you look at biology, evolution has found a way to design its systems in a way that each component has a defined interface to communicate, and more importantly, each component is free to “experiment” or evolve independently from each other by random mutations.
+When changes in one component require a new interface it propagates those “requirements” to the other components in a trial-and-error mechanism.</description>
+    </item>
+    
+    <item>
+      <title>Multi stage docker build for python</title>
+      <link>https://memo.mx/posts/multi-stage-build-python/</link>
+      <pubDate>Sun, 01 Jan 2023 05:53:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-stage-build-python/</guid>
+      <description>Docker multi-stage build is a great way to build a container images with a minimal footprint.
+Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container
+This is an example from the official docs:
+FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.</description>
+    </item>
+    
+    <item>
+      <title>Big O notation</title>
+      <link>https://memo.mx/posts/big-o/</link>
+      <pubDate>Wed, 28 Dec 2022 05:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/big-o/</guid>
+      <description>Big O Notation (or the Big O) is used to describe how long and complex an operation will be based on its input.
+Complexity could mean that an operation takes N amount of time, or N amount of memory, N CPU resources, etc.
+There are some notations to describe this:
+O(n) -&amp;gt; The complexity grows linearly based on the size of the input. O(n^2) -&amp;gt; Grows at a square ratio of its input.</description>
+    </item>
+    
+    <item>
+      <title>Istio Ambient Mesh</title>
+      <link>https://memo.mx/posts/istio-ambient-mesh/</link>
+      <pubDate>Thu, 24 Nov 2022 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/istio-ambient-mesh/</guid>
+      <description>Ambient mesh is a new data plane mode for Istio that doesn’t rely on sidecars.
+It gives users the option to forgo sidecar proxies in favor of a mesh data plane that’s integrated into your infrastructure.
+Ambient mesh benefits are:
+Minimal configuration for traffic encryption. Same configuration for L7 policies as ”normal service mesh”. Take less resources because no sidecars are needed. Easier upgrades because pods don’t need to restart in order to upgrade the service mesh.</description>
+    </item>
+    
+    <item>
+      <title>80-20 rule for learning Nim</title>
+      <link>https://memo.mx/posts/80-20-nim/</link>
+      <pubDate>Mon, 24 Oct 2022 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/80-20-nim/</guid>
+      <description>aka Pareto principle.
+After writing Python for over 10 years, I can code in it as naturally as I speak Spanish or English. The honeymoon period is over, though. Python has some disadvantages I&amp;rsquo;m no longer willing to tolerate:
+Distribution complexity: Sharing code requires the right interpreter + pip registry access on target environments. Air-gapped environments become nightmares. Tools like nuitka exist, but adoption remains limited. Performance bottlenecks: Python is slow.</description>
+    </item>
+    
+    <item>
+      <title>Is OpenStack fighting a lost battle?</title>
+      <link>https://memo.mx/posts/is-openstack-losing/</link>
+      <pubDate>Thu, 20 Oct 2022 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/is-openstack-losing/</guid>
+      <description>Update Jan 2023: Is OpenStack Still Needed in 2022? - Thierry Carrez, Open Infrastructure Foundation
+And why Kubernetes “won”.
+I owe my career to OpenStack and to all its contributors. I have made excellent friends, I learned a lot from them and the project itself.
+For that and more, thanks a lot OpenStack.
+However…
+Even though OpenStack has never been better, I can’t shake the feeling that is fighting a lost battle.</description>
+    </item>
+    
+    <item>
+      <title>TOOL - Lateralus</title>
+      <link>https://memo.mx/posts/lateralus/</link>
+      <pubDate>Mon, 17 Oct 2022 05:53:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/lateralus/</guid>
+      <description>TOOL Website
+TOOL - Lateralus
+Black Then White are All I see In my infancy Red and yellow then came to be Reaching out to me Lets me see As below so above and beyond I imagine Drawn beyond the lines of reason Push the envelope Watch it bend Over thinking, over analyzing, separates the body from the mind Withering my intuition, missing opportunities and I must Feed my will to feel my moment Drawing way outside the lines Black Then White are All I see In my infancy Red and yellow then came to be Reaching out to me Lets me see There is So Much More and Beckons me To look through to these Infinite possibilities As below so above and beyond I imagine Drawn outside the lines of reason Push the envelope Watch it bend Over thinking, over analyzing, separates the body from the mind Withering my intuition, leaving opportunities behind Feed my will to feel this moment Urging me to cross the line Reaching out to embrace the random Reaching out to embrace whatever may come I embrace my desire to I embrace my desire to Feel the rhythm To feel connected Enough to step aside and Weep like a widow To feel inspired To fathom the power To witness the beauty To bathe in the fountain To swing on the spiral To swing on the spiral To swing on the spiral Of our divinity and Still be a human With my feet upon the ground I lose myself between the sounds And open wide to suck it in I feel it move across my skin I&amp;#39;m reaching up and reaching out I&amp;#39;m reaching for the random or Whatever will bewilder me Whatever will bewilder me And following our will and wind We may just go where no one&amp;#39;s been We&amp;#39;ll ride the spiral to the end And may just go where no one&amp;#39;s been Spiral out, keep going Spiral out, keep going Spiral out, keep going Spiral out, keep going </description>
+    </item>
+    
+    <item>
+      <title>The role of a systems architect</title>
+      <link>https://memo.mx/posts/the-role-of-a-systems-architect/</link>
+      <pubDate>Fri, 14 Oct 2022 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/the-role-of-a-systems-architect/</guid>
+      <description>Define the scope of your system Start by asking this broad questions:
+Why is your system required? This will help you find the reason why this system or organization exists What is the goal of your system? These two questions will help you understand your organization&amp;rsquo;s requirements, use them as a starting place, then clarify as much as you can those answers so you can start building a clear picture of what components might be needed and more importantly, which ones won&amp;rsquo;t.</description>
+    </item>
+    
+    <item>
+      <title>My favorite horror movies</title>
+      <link>https://memo.mx/posts/my-favourite-horror-movies/</link>
+      <pubDate>Thu, 13 Oct 2022 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/my-favourite-horror-movies/</guid>
+      <description>In no particular order:
+The wailing | Gokseong
+Noroi | The Curse
+The Medium
+Late Night with the Devil
+The Dark and the Wicked
+When Evil Lurks | Cuando Acecha La Maldad
+Perfect Blue | Pâfekuto burû
+Satan’s Slaves | Pengabdi Setan
+Satan&amp;rsquo;s Slaves: Communion | Pengabdi Setan 2: Communion
+Kairo | Pulse
+Aterrados
+Incantation | Zhou
+Gonjiam: Haunted Asylum | Gon-ji-am
+A Tale Of Two Sisters | Janghwa, Hongryeon</description>
+    </item>
+    
+    <item>
+      <title>Learning resources I use</title>
+      <link>https://memo.mx/posts/learning-resources/</link>
+      <pubDate>Wed, 12 Oct 2022 00:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/learning-resources/</guid>
+      <description>Tools for better thinking
+The Catalog of Design Patterns
+Learn X in Y minutes
+XMind
+Amazon EKS Blueprints for Terraform
+AWS Architecture Blog
+Cloud Design Patterns
+AWS in plain English
+AWS Solutions
+AWS Well-Architected
+Distributed Load Testing on AWS
+Istio by example
+High scalability
+Kubernetes Failure Stories
+AWS Prescriptive Guidance Patterns</description>
+    </item>
+    
+    <item>
+      <title>Installing GitLab in air-gapped mode</title>
+      <link>https://memo.mx/posts/airgapped-gitlab-install/</link>
+      <pubDate>Mon, 03 Oct 2022 19:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/airgapped-gitlab-install/</guid>
+      <description>When installing GitLab in air-gapped mode using helm charts first you need to pull the required images for the target version to your private container registry.
+But is not straightforward to find which container tags map to which GitLab version.
+An easy way to find which tags you need is to print the helm templates first and get the values from there.
+helm \ -n gitlab \ template \ gitlab gitlab/gitlab \ --version 6.</description>
+    </item>
+    
+    <item>
+      <title>Why am I always busy?</title>
+      <link>https://memo.mx/posts/busy/</link>
+      <pubDate>Tue, 30 Aug 2022 23:30:44 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/busy/</guid>
+      <description>I’m trying to learn everything at once.
+I’m trying to do everything at once.
+&amp;hellip;
+Except what I should be doing right now.
+一度にすべてを学ぼうとしています。 一度にすべてをやろうとしています。 &amp;hellip; 今すぐやるべきことを除いて。</description>
+    </item>
+    
+    <item>
+      <title>Lessons I learned from senior engineers</title>
+      <link>https://memo.mx/posts/senior-engineers/</link>
+      <pubDate>Fri, 01 Jul 2022 00:00:00 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/senior-engineers/</guid>
+      <description>“Why is this important”? Good senior engineers always ask “why” this feature, or function or even project is necessary.
+Understanding “why” allows them to make decisions on “what” to do, “how” to do it and even how to take shortcuts to get there.
+They also understand “why” target users would want these features in the first place.
+Clear communication Good senior engineers always strive to be good communicators.
+They document everything, from code to the decision making process and agreements between people involved in a project.</description>
+    </item>
+    
+    <item>
+      <title>Demystifying Kubernetes</title>
+      <link>https://memo.mx/posts/understanding-kubernetes/</link>
+      <pubDate>Thu, 30 Jun 2022 00:00:00 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-kubernetes/</guid>
+      <description>Kubernetes is becoming a monster and as it grows it becomes more and more challenging for newcomers to understand it.
+My goal is to demystify its components.
+Main components There are two main components in a Kubernetes cluster.
+Master nodes Worker nodes The only difference is the workloads they run. You can assign metadata to these nodes to schedule specific workloads on each node or type of node. For Users Containers A container is a filesystem and process wrapped in a “box” with some labels on it.</description>
+    </item>
+    
+    <item>
+      <title>A lesson from my dog</title>
+      <link>https://memo.mx/posts/taquito/</link>
+      <pubDate>Tue, 28 Jun 2022 20:20:31 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/taquito/</guid>
+      <description>Looming recession !! , third world war !!, climate change !!
+Meanwhile taquito…</description>
+    </item>
+    
+    <item>
+      <title>TODOs</title>
+      <link>https://memo.mx/posts/todos/</link>
+      <pubDate>Thu, 05 May 2022 06:53:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/todos/</guid>
+      <description>At its core, TODOS are a real cognitive and spiritual burden of having to carry lots of unfulfilled promises into the future.
+その本質において、TODOリストは、未来に持ち込む未完の約束の重たい認知的および精神的な負担である。</description>
+    </item>
+    
+    <item>
+      <title>How to use GitOps in a non-cloud-native environment</title>
+      <link>https://memo.mx/posts/gitops-in-enterprise/</link>
+      <pubDate>Fri, 04 Mar 2022 02:05:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/gitops-in-enterprise/</guid>
+      <description>The rapid development and adoption of cloud-native stacks that brings a better developer experience, security, reproducibility and speed at which organizations deliver value are leaving more traditional stacks behind. Hence, there is more pressure from the markets, organizations and developers to bring those stacks into a more modern era.
+We often wonder whether the same techniques and toolchains of these modern stacks can be used to configure not-so-modern applications or infrastructures.</description>
+    </item>
+    
+    <item>
+      <title>Setup multiple git identities and pgp keys</title>
+      <link>https://memo.mx/posts/git-multiple-identities/</link>
+      <pubDate>Fri, 04 Mar 2022 02:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/git-multiple-identities/</guid>
+      <description>Be very carrefull in your setup : any misconfiguration make all the git config to fail silently !
+Setup multiple git ssh identities for git Generate your SSH keys as per your git provider documentation. Add each public SSH keys to your git providers acounts. In your ~/.ssh/config, set each ssh key for each repository as in this exemple: Host github.com HostName github.com User git IdentityFile ~/.ssh/github_private_key IdentitiesOnly=yes Host gitlab.com Hostname gitlab.</description>
+    </item>
+    
+    <item>
+      <title>i3 running on WSL2</title>
+      <link>https://memo.mx/posts/i3wm-wsl2/</link>
+      <pubDate>Wed, 23 Sep 2020 14:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/i3wm-wsl2/</guid>
+      <description>WSL configuration Install i3
+sudo apt install i3 -y Create an init script
+vim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don&amp;#39;t do anything [ -z &amp;#34;$PS1&amp;#34; ] &amp;amp;&amp;amp; return export DISPLAY=$(awk &amp;#39;/nameserver / {print $2; exit}&amp;#39; /etc/resolv.conf 2&amp;gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&amp;#34;is not running&amp;#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root
+wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell</description>
+    </item>
+    
+    <item>
+      <title>Modular CLI Documentation Fuzzy Finder</title>
+      <link>https://memo.mx/posts/doc-fzf/</link>
+      <pubDate>Fri, 14 Jun 2019 15:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/doc-fzf/</guid>
+      <description>Fuzzy Search documentation from the CLI.
+See it in action here https://terminalizer.com/view/2c3935cf1418
+Disclaimer This tool was built to learn FZF capabilities. Feel free to use it or extend it.
+Usage doc-fzf ansible doc-fzf ansible -q yum Installation pip3 install doc-fzf Verify your installation:
+doc-fzf -h usage: doc-fzf.py [-h] [-q QUERY] module_name doc-fzf. positional arguments: module_name Name of the module to search optional arguments: -h, --help show this help message and exit -q QUERY Query the docs Extending Doc-FZF doc-fzf is a modular application.</description>
+    </item>
+    
+    <item>
+      <title>Generating a dynamic host inventory for ansible with Netbox</title>
+      <link>https://memo.mx/posts/pynetbox/</link>
+      <pubDate>Thu, 10 Jan 2019 23:30:44 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/pynetbox/</guid>
+      <description>Usage:
+pip install pynetbox ansible ansible all -i hosts/env -m setup --tree /tmp/facts/env #!/opt/netbox/bin/python import argparse import json import os import sys import pynetbox import yaml import urllib3 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) if sys.version_info &amp;lt; (3, 6): print(&amp;#34;Python 3.6 is required&amp;#34;) sys.exit(2) def to_json(in_dict): return json.dumps(in_dict, sort_keys=True, indent=4) def load_configuration(path=&amp;#34;/etc/ansible/netbox.yml&amp;#34;): &amp;#34;&amp;#34;&amp;#34; Load netbox configuration /etc/ansible/netbox.yml &amp;#34;&amp;#34;&amp;#34; try: with open(path, &amp;#34;r&amp;#34;) as fd: return yaml.safe_load(fd) except yaml.YAMLError as yml_error: print(yml_error) NETBOX_ENDPOINT = load_configuration()[&amp;#34;netbox_endpoint&amp;#34;] NETBOX_TOKEN = load_configuration()[&amp;#34;netbox_token&amp;#34;] if not NETBOX_ENDPOINT: raise OSError(&amp;#34;environmet var NETBOX_ENDPOINT not set&amp;#34;) if not NETBOX_TOKEN: raise OSError(&amp;#34;environmet var NETBOX_TOKEN not set&amp;#34;) nb = pynetbox.</description>
+    </item>
+    
+    <item>
+      <title>Some Richard Feynman videos</title>
+      <link>https://memo.mx/posts/richard-feynman/</link>
+      <pubDate>Fri, 04 Jan 2019 22:20:31 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/richard-feynman/</guid>
+      <description>The World from another point of view
+Fun to imagine
+Knowing versus Understanding</description>
+    </item>
+    
+    <item>
+      <title>Waju - A fun and brutal game</title>
+      <link>https://memo.mx/posts/waju/</link>
+      <pubDate>Fri, 04 Jan 2019 15:49:47 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/waju/</guid>
+      <description>Waju or whatever is called is a game that until this day I don&amp;rsquo;t know from where it comes. But, is fun.
+Edit: The game is based on a German game called Mensch ärgere Dich nicht
+Goal The goal of the game is very simple:
+Move your marbles for one lap from your home to your goal. Don&amp;rsquo;t worry about winning but don&amp;rsquo;t let anyone else win. Have fun. Board The board has six main components:</description>
+    </item>
+    
+    <item>
+      <title>Beyond PEP 8 - Best practices for beautiful intelligible code</title>
+      <link>https://memo.mx/posts/beyond-pep8/</link>
+      <pubDate>Thu, 03 Jan 2019 18:53:23 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/beyond-pep8/</guid>
+      <description> </description>
+    </item>
+    
+    <item>
+      <title>Linux on Huawei Matebook X Pro</title>
+      <link>https://memo.mx/posts/linux-matebook/</link>
+      <pubDate>Tue, 04 Dec 2018 13:10:28 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/linux-matebook/</guid>
+      <description>This laptop has very decent specs:
+8th Generation Intel® Core™ i7-8550U processor GPU: NVIDIA® GeForce® MX150 with 2 GB GDDR5 / Intel® UHD Graphics 620 16 GB LPDDR3 2133 MHz BT 4.1 (compatible with 3.0 and 2.1+EDR) 512 GB NVMe PCIe SSD Don&amp;rsquo;t expect running workstation level workloads in this machine but it is a wonderful dev machine.
+Things I don&amp;rsquo;t like about the laptop Palm rejection on Linux Sound, it only outputs sound to two speakers on Linux and it has a werid noise under high volumes.</description>
+    </item>
+    
+    <item>
+      <title>Deploying OpenStack with Docker</title>
+      <link>https://memo.mx/posts/openstack-containers/</link>
+      <pubDate>Sat, 05 May 2018 18:53:14 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/openstack-containers/</guid>
+      <description>Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer
+Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
+Current deployment: stable/queens
+Host configuration The default configuration for this environment is composed by 3 main components that need to run on the host:
+Docker Libvirtd OpenVSwitch Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage.</description>
+    </item>
+    
+    <item>
+      <title>Becoming a Certificate Authority (CA)</title>
+      <link>https://memo.mx/posts/becoming-ca/</link>
+      <pubDate>Mon, 05 Feb 2018 19:03:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/becoming-ca/</guid>
+      <description>A Certificate Authority or CA is an entity that signs digital certificates. These digital certificates are used to validate the connection while using secure mechanisms.
+Generating a root CA We will use a root CA to create intermediate CA&amp;rsquo;s which are trusted to sign certificates on its behalf.
+First, prepare the environment.
+mkdir /root/ca &amp;amp;&amp;amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &amp;gt; serial Then download the template for /root/ca/openssl.</description>
+    </item>
+    
+    <item>
+      <title>Pratai, event driven platform for OpenStack</title>
+      <link>https://memo.mx/posts/pratai/</link>
+      <pubDate>Fri, 05 Jan 2018 19:08:55 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/pratai/</guid>
+      <description>Note This is a Work-In-Progress Document.
+Read the docs at memogarcia/pratai-docs
+Abstract Pratai provides an incredibly flexible and resilient platform to migrate workloads to the cloud that respond to events without having to manage any server or network.
+How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (disclaimer, from now on I will refer to code as functions), that will react to an event without worrying about anything else, the platform handles the execution.</description>
+    </item>
+    
+  </channel>
+</rss>

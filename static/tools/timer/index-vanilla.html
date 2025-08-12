@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
+    <div class="container">
+        <div class="header">
+            <a href="/tools/" class="back-link">← Back to Tools</a>
+            <h1>Timer</h1>
+        </div>
+        <div class="setup-section">
+            <div class="input-group">
+                <input type="text" id="topic" placeholder="What are you working on?" />
+            </div>
+            
+            <div class="input-group">
+                <input type="number" id="duration" value="25" min="1" max="60" />
+            </div>
+        </div>
+        
+        <div class="timer-display">
+            <div id="current-topic" class="current-topic"></div>
+            <div id="timer" class="timer">25:00</div>
+            <div id="status" class="status">Ready</div>
+        </div>
+        
+        <div class="controls">
+            <button id="startBtn" class="btn btn-start">Start</button>
+            <button id="pauseBtn" class="btn btn-pause" disabled>Pause</button>
+            <button id="resetBtn" class="btn btn-reset">Reset</button>
+        </div>
+        
+        <div class="stats">
+            <h3>Session History</h3>
+            <div id="history" class="history"></div>
+        </div>
+    </div>
+
+    <script>
+        const pref = localStorage.getItem('pref-theme');
+        if (pref === 'dark') {
+            document.body.classList.add('dark');
+        } else if (pref === 'light') {
+            document.body.classList.remove('dark');
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            if (document.body.classList.contains('dark')) {
+                document.body.classList.remove('dark');
+                localStorage.setItem('pref-theme', 'light');
+            } else {
+                document.body.classList.add('dark');
+                localStorage.setItem('pref-theme', 'dark');
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
