@@ -1,5 +1,7 @@
 # CLAUDE
 
+NEVER RUN `hugo commands`!! 
+
 ## Repository Specifications
 
 ### Project Type
