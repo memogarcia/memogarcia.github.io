@@ -4261,5 +4261,15 @@ export class PlanningApp {
 
 // Bootstrapping in js/main.js
 
-// Mixins
+/**
+ * Mixin persistence methods into PlanningApp prototype
+ * This adds saveToStorage, loadFromStorage, exportData, and importData methods
+ * to all PlanningApp instances. These methods can be called as this.saveToStorage() etc.
+ * 
+ * Methods mixed in:
+ * - saveToStorage(): Save state to localStorage
+ * - loadFromStorage(): Load state from localStorage  
+ * - exportData(): Export plan as JSON file
+ * - importData(file): Import plan from JSON file
+ */
 Object.assign(PlanningApp.prototype, persistence);

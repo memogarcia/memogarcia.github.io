@@ -1,4 +1,13 @@
+/**
+ * Persistence module for Planner application
+ * These methods are mixed into PlanningApp prototype via Object.assign
+ * They handle all data storage, loading, export, and import functionality
+ */
 export const persistence = {
+  /**
+   * Save current application state to localStorage
+   * Automatically called after most user actions
+   */
   saveToStorage() {
     const data = {
       northStars: this.northStars,
@@ -12,6 +21,11 @@ export const persistence = {
     localStorage.setItem('planner-data', JSON.stringify(data));
   },
 
+  /**
+   * Load application state from localStorage
+   * Called during app initialization
+   * Handles backward compatibility with older data formats
+   */
   loadFromStorage() {
     try {
       const stored = localStorage.getItem('planner-data');
@@ -35,6 +49,10 @@ export const persistence = {
     }
   },
 
+  /**
+   * Export current plan as JSON file
+   * Creates downloadable file with timestamp
+   */
   exportData() {
     const data = {
       northStars: this.northStars,
@@ -58,6 +76,11 @@ export const persistence = {
     URL.revokeObjectURL(url);
   },
 
+  /**
+   * Import plan from JSON file
+   * Validates data format and updates application state
+   * @param {File} file - File object from input element
+   */
   importData(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
