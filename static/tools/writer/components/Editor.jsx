@@ -243,7 +243,27 @@ function Editor({ showBorders = true }) {
               className: 'py-8',
               style: { padding: '32px 0' }
             },
-            React.createElement(window.ParagraphList)
+            // Render based on editor mode
+            editorMode === 'preview' 
+              ? React.createElement(
+                  'div',
+                  {
+                    className: 'prose prose-slate max-w-none',
+                    style: {
+                      lineHeight: '1.7',
+                      fontSize: '1rem',
+                      color: 'var(--text-primary)'
+                    }
+                  },
+                  React.createElement(window.SanitizedMarkdown, {
+                    content: currentDocument?.paragraphs
+                      ?.filter(p => p && typeof p.content === 'string')
+                      ?.map(p => p.content)
+                      ?.join('\n\n') || '',
+                    className: 'preview-content'
+                  })
+                )
+              : React.createElement(window.ParagraphList)
           )
         )
       )
