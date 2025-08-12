@@ -102,7 +102,18 @@
                 <!-- Snap preview indicator -->
                 <div id="snap-preview" class="snap-preview"></div>
             </div>
-            
+
+            <!-- Timeline sidebar -->
+            <div class="timeline-sidebar collapsed" id="timeline-sidebar">
+                <div class="timeline-header">
+                    <div class="timeline-title">Timeline</div>
+                    <button id="timeline-toggle" class="sidebar-toggle" title="Toggle timeline">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+                </div>
+                <div id="timeline-content" class="timeline-content"></div>
+            </div>
+
             <!-- Dependency mode indicator -->
             <div id="dependency-mode-indicator" class="dependency-mode-indicator">
                 <span id="dependency-mode-text">Drag from output port to input port</span>
