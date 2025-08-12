@@ -8,7 +8,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
 </head>
 <body>
-    <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark theme">☀️</button>
     <div class="app">
         <!-- Top bar -->
         <div class="top-bar">
@@ -466,43 +465,13 @@
     </div>
 
     <script>
-        // Enhanced theme toggle with three themes (light/dark/sepia)
-        const themes = ['light', 'dark', 'sepia'];
-        const themeIcons = {
-            light: '☀️',
-            dark: '🌙', 
-            sepia: '📖'
-        };
-        
-        let currentTheme = localStorage.getItem('pref-theme') || 'light';
-        
-        // Apply initial theme
-        function applyTheme(theme) {
-            document.body.classList.remove('dark', 'sepia');
-            if (theme === 'dark') {
-                document.body.classList.add('dark');
-            } else if (theme === 'sepia') {
-                document.body.classList.add('sepia');
-            }
-            
-            const toggleBtn = document.getElementById('theme-toggle');
-            if (toggleBtn) {
-                toggleBtn.textContent = themeIcons[theme];
-                toggleBtn.setAttribute('aria-label', `Switch to ${themes[(themes.indexOf(theme) + 1) % themes.length]} theme`);
-            }
+        // Apply saved theme preference without toggle
+        const pref = localStorage.getItem('pref-theme');
+        if (pref === 'dark') {
+            document.body.classList.add('dark');
+        } else if (pref === 'sepia') {
+            document.body.classList.add('sepia');
         }
-        
-        applyTheme(currentTheme);
-        
-        // Theme toggle with cycling through all three themes
-        document.getElementById('theme-toggle').addEventListener('click', () => {
-            const currentIndex = themes.indexOf(currentTheme);
-            const nextIndex = (currentIndex + 1) % themes.length;
-            currentTheme = themes[nextIndex];
-            
-            applyTheme(currentTheme);
-            localStorage.setItem('pref-theme', currentTheme);
-        });
     </script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script type="module" src="js/main.js"></script>
