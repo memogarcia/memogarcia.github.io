@@ -138,7 +138,7 @@ git submodule update --remote --merge
 - Analyzing complex DevOps/cloud architecture topics
 - Reflective problem-solving for interactive tool features
 
-#### `shadcn-ui-svelte`
+#### `shadcn-ui`
 **Use for**: UI component research (when applicable)
 - Reference modern component patterns for JavaScript tools
 - Study accessibility patterns for interactive applications

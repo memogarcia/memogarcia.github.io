@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
     <div class="container">
         <div class="header">
             <a href="/tools/" class="back-link">← Back to Tools</a>
@@ -20,7 +21,7 @@
                 <div class="quadrant-header">
                     <div class="quadrant-info">
                         <h2 class="quadrant-title">Urgent & Important</h2>
-                        <span class="task-count" data-count="urgent-important">No Date <span class="count">0</span></span>
+                        <span class="task-count" data-count="urgent-important">Do First • <span class="count">0</span> tasks</span>
                     </div>
                     <button class="add-task-btn" data-quadrant="urgent-important" aria-label="Add urgent and important task">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -41,7 +42,7 @@
                 <div class="quadrant-header">
                     <div class="quadrant-info">
                         <h2 class="quadrant-title">Not Urgent & Important</h2>
-                        <span class="task-count" data-count="important">No Date <span class="count">0</span></span>
+                        <span class="task-count" data-count="important">Schedule • <span class="count">0</span> tasks</span>
                     </div>
                     <button class="add-task-btn" data-quadrant="important" aria-label="Add important task">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -62,7 +63,7 @@
                 <div class="quadrant-header">
                     <div class="quadrant-info">
                         <h2 class="quadrant-title">Urgent & Unimportant</h2>
-                        <span class="task-count" data-count="urgent">No Date <span class="count">0</span></span>
+                        <span class="task-count" data-count="urgent">Delegate • <span class="count">0</span> tasks</span>
                     </div>
                     <button class="add-task-btn" data-quadrant="urgent" aria-label="Add urgent task">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -83,7 +84,7 @@
                 <div class="quadrant-header">
                     <div class="quadrant-info">
                         <h2 class="quadrant-title">Not Urgent & Unimportant</h2>
-                        <span class="task-count" data-count="neither">No Date <span class="count">0</span></span>
+                        <span class="task-count" data-count="neither">Eliminate • <span class="count">0</span> tasks</span>
                     </div>
                     <button class="add-task-btn" data-quadrant="neither" aria-label="Add task">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -119,7 +120,7 @@
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="btn btn-secondary" id="cancel-task">Cancel</button>
+                <button class="btn btn-outline" id="cancel-task">Cancel</button>
                 <button class="btn btn-primary" id="save-task">Add Task</button>
             </div>
         </div>
@@ -153,7 +154,7 @@
             </div>
             <div class="modal-actions">
                 <button class="btn btn-danger" id="delete-task">Delete</button>
-                <button class="btn btn-secondary" id="cancel-edit">Cancel</button>
+                <button class="btn btn-outline" id="cancel-edit">Cancel</button>
                 <button class="btn btn-primary" id="save-edit">Save Changes</button>
             </div>
         </div>
@@ -161,6 +162,25 @@
 
     <div class="modal-backdrop hidden" id="modal-backdrop"></div>
 
+    <script>
+        // Theme toggle functionality
+        const pref = localStorage.getItem('pref-theme');
+        if (pref === 'dark') {
+            document.body.classList.add('dark');
+        } else if (pref === 'light') {
+            document.body.classList.remove('dark');
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            if (document.body.classList.contains('dark')) {
+                document.body.classList.remove('dark');
+                localStorage.setItem('pref-theme', 'light');
+            } else {
+                document.body.classList.add('dark');
+                localStorage.setItem('pref-theme', 'dark');
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
