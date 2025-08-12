@@ -32,10 +32,15 @@ export class PlanningApp {
         // Constants - will be updated based on screen size
         this.updateConstants();
         
-        // Add resize listener
+        // Add resize listener with debouncing for performance
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            this.updateConstants();
-            this.render();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                this.updateConstants();
+                this.render();
+                this.handleResponsiveSidebars();
+            }, 250);
         });
         
         // Pre-bind reusable global handlers to avoid add/remove leaks
@@ -112,6 +117,9 @@ export class PlanningApp {
 
         // Setup accessibility features
         this.setupSidebarKeyboardNavigation();
+        
+        // Apply initial responsive behavior
+        this.handleResponsiveSidebars();
     }
 
     initializeSidebar(sidebarKey) {
@@ -131,32 +139,52 @@ export class PlanningApp {
         // Set collapsed state
         if (sidebar.collapsed) {
             sidebar.element.classList.add('collapsed');
+            sidebar.element.setAttribute('aria-hidden', 'true');
             if (sidebar.toggle) {
                 sidebar.toggle.setAttribute('aria-expanded', 'false');
+                sidebar.toggle.setAttribute('aria-controls', sidebar.element.id);
                 sidebar.toggle.setAttribute('aria-label', `Show ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
+                    icon.setAttribute('aria-hidden', 'true');
                     icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'panel-left-open' : 'panel-right-open');
                 }
             }
         } else {
             sidebar.element.classList.remove('collapsed');
+            sidebar.element.removeAttribute('aria-hidden');
             sidebar.element.style.width = `${sidebar.width}px`;
             if (sidebar.toggle) {
                 sidebar.toggle.setAttribute('aria-expanded', 'true');
+                sidebar.toggle.setAttribute('aria-controls', sidebar.element.id);
                 sidebar.toggle.setAttribute('aria-label', `Collapse ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
+                    icon.setAttribute('aria-hidden', 'true');
                     icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'panel-left-close' : 'panel-right-close');
                 }
             }
         }
 
-        // Remove any existing event listeners to prevent duplicates
+        // Simplified event listener management - use specific IDs
         if (sidebar.toggle) {
-            sidebar.toggle.replaceWith(sidebar.toggle.cloneNode(true));
-            sidebar.toggle = sidebar.element.querySelector('.sidebar-toggle');
-            sidebar.toggle.addEventListener('click', () => this.toggleSidebar(sidebarKey));
+            // Store the handler function on the sidebar object for proper cleanup
+            if (sidebar.toggleHandler) {
+                sidebar.toggle.removeEventListener('click', sidebar.toggleHandler);
+            }
+            
+            // Create and store the handler function
+            sidebar.toggleHandler = () => this.toggleSidebar(sidebarKey);
+            
+            // Re-query the toggle button by its specific ID to ensure we have the right element
+            const toggleId = sidebarKey === 'people' ? 'sidebar-toggle' : 'timeline-toggle';
+            sidebar.toggle = document.getElementById(toggleId);
+            
+            if (sidebar.toggle) {
+                sidebar.toggle.addEventListener('click', sidebar.toggleHandler);
+            } else {
+                console.warn(`Toggle button not found for ${sidebarKey} sidebar`);
+            }
         }
 
         // Update Lucide icons
@@ -172,12 +200,22 @@ export class PlanningApp {
             return;
         }
         
+        // Store current focused element if it's inside the sidebar
+        const activeElement = document.activeElement;
+        const focusWasInside = sidebar.element.contains(activeElement);
+        
         const wasCollapsed = sidebar.collapsed;
         sidebar.collapsed = !wasCollapsed;
         
         if (sidebar.collapsed) {
             // Collapsing
             sidebar.element.classList.add('collapsed');
+            sidebar.element.setAttribute('aria-hidden', 'true');
+            
+            // Move focus to toggle button if it was inside the sidebar
+            if (focusWasInside && sidebar.toggle) {
+                sidebar.toggle.focus();
+            }
             
             // Update toggle button
             if (sidebar.toggle) {
@@ -185,12 +223,14 @@ export class PlanningApp {
                 sidebar.toggle.setAttribute('aria-label', `Show ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
+                    icon.setAttribute('aria-hidden', 'true');
                     icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'panel-left-open' : 'panel-right-open');
                 }
             }
         } else {
             // Expanding
             sidebar.element.classList.remove('collapsed');
+            sidebar.element.removeAttribute('aria-hidden');
             sidebar.element.style.width = `${sidebar.width}px`;
             
             // Update toggle button
@@ -199,6 +239,7 @@ export class PlanningApp {
                 sidebar.toggle.setAttribute('aria-label', `Collapse ${sidebarKey === 'people' ? 'People' : 'Timeline'} Sidebar`);
                 const icon = sidebar.toggle.querySelector('i');
                 if (icon) {
+                    icon.setAttribute('aria-hidden', 'true');
                     icon.setAttribute('data-lucide', sidebarKey === 'people' ? 'panel-left-close' : 'panel-right-close');
                 }
             }
@@ -341,12 +382,28 @@ export class PlanningApp {
     setupSidebarKeyboardNavigation() {
         // Add keyboard support for resize handles
         Object.keys(this.sidebarState).forEach(sidebarKey => {
-            const handle = this.sidebarState[sidebarKey].resizeHandle;
+            const sidebar = this.sidebarState[sidebarKey];
+            const handle = sidebar.resizeHandle;
             if (handle) {
                 handle.setAttribute('tabindex', '0');
                 handle.setAttribute('role', 'separator');
                 handle.setAttribute('aria-orientation', 'vertical');
                 handle.setAttribute('aria-label', `Resize ${sidebarKey === 'people' ? 'People' : 'Timeline'} sidebar`);
+                
+                // Add ARIA value attributes for slider semantics
+                const updateAriaValues = () => {
+                    const minWidth = 48;
+                    const maxWidth = sidebarKey === 'people' ? 500 : 400;
+                    const currentWidth = sidebar.width;
+                    const percentage = Math.round(((currentWidth - minWidth) / (maxWidth - minWidth)) * 100);
+                    
+                    handle.setAttribute('aria-valuenow', currentWidth.toString());
+                    handle.setAttribute('aria-valuemin', minWidth.toString());
+                    handle.setAttribute('aria-valuemax', maxWidth.toString());
+                    handle.setAttribute('aria-valuetext', `${percentage}% width`);
+                };
+                
+                updateAriaValues();
                 
                 handle.addEventListener('keydown', (e) => {
                     if (this.sidebarState[sidebarKey].collapsed) return;
@@ -378,29 +435,119 @@ export class PlanningApp {
                     this.sidebarState[sidebarKey].element.style.width = `${newWidth}px`;
                     localStorage.setItem(`${sidebarKey}-sidebar-width`, newWidth.toString());
                     
-                    // Announce the new width
+                    // Update ARIA values
+                    updateAriaValues();
+                    
+                    // Announce the new width as percentage
                     this.announceWidthChange(sidebarKey, newWidth);
                 });
             }
         });
     }
 
+    // Show accessibility toast notification
+    showAccessibilityToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'accessibility-toast';
+        toast.textContent = message;
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        document.body.appendChild(toast);
+        
+        // Trigger animation
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+    
     // Announce width changes for accessibility
     announceWidthChange(sidebarKey, width) {
         const sidebarName = sidebarKey === 'people' ? 'People' : 'Timeline';
-        const message = `${sidebarName} sidebar width: ${width} pixels`;
+        const minWidth = 48;
+        const maxWidth = sidebarKey === 'people' ? 500 : 400;
+        const percentage = Math.round(((width - minWidth) / (maxWidth - minWidth)) * 100);
+        const message = `${sidebarName} sidebar width: ${percentage}%`;
         
-        let announcer = document.getElementById('width-announcer');
+        // Use existing announcer or create new one
+        let announcer = document.getElementById('sidebar-announcer');
         if (!announcer) {
             announcer = document.createElement('div');
-            announcer.id = 'width-announcer';
+            announcer.id = 'sidebar-announcer';
             announcer.className = 'sr-only';
             announcer.setAttribute('aria-live', 'polite');
             announcer.setAttribute('aria-atomic', 'true');
             document.body.appendChild(announcer);
         }
         
-        announcer.textContent = message;
+        // Clear and set new message
+        announcer.textContent = '';
+        setTimeout(() => {
+            announcer.textContent = message;
+        }, 100);
+        
+        // Clean up after announcement
+        setTimeout(() => {
+            announcer.textContent = '';
+        }, 2000);
+    }
+    
+    // Handle responsive sidebar behavior on window resize
+    handleResponsiveSidebars() {
+        // Check if user has disabled auto-collapse
+        const autoCollapseDisabled = localStorage.getItem('disable-auto-collapse') === 'true';
+        if (autoCollapseDisabled) {
+            // Respect user's manual sidebar states
+            return;
+        }
+        
+        const windowWidth = window.innerWidth;
+        
+        // Auto-collapse on very small screens
+        if (windowWidth <= 480) {
+            // Collapse both sidebars if not already collapsed
+            if (!this.sidebarState.people.collapsed) {
+                this.toggleSidebar('people');
+            }
+            if (!this.sidebarState.timeline.collapsed) {
+                this.toggleSidebar('timeline');
+            }
+        } else if (windowWidth <= 768) {
+            // On medium screens, only collapse timeline by default
+            if (!this.sidebarState.timeline.collapsed) {
+                this.toggleSidebar('timeline');
+            }
+        } else if (windowWidth > 1024) {
+            // On larger screens, restore saved states from localStorage
+            const peopleCollapsed = localStorage.getItem('people-sidebar-collapsed') === 'true';
+            const timelineCollapsed = localStorage.getItem('timeline-sidebar-collapsed') !== 'false';
+            
+            if (this.sidebarState.people.collapsed !== peopleCollapsed) {
+                this.toggleSidebar('people');
+            }
+            if (this.sidebarState.timeline.collapsed !== timelineCollapsed) {
+                this.toggleSidebar('timeline');
+            }
+        }
+        
+        // Adjust maximum widths based on available space
+        const maxPeopleWidth = Math.min(500, windowWidth * 0.3);
+        const maxTimelineWidth = Math.min(400, windowWidth * 0.25);
+        
+        if (!this.sidebarState.people.collapsed && this.sidebarState.people.width > maxPeopleWidth) {
+            this.sidebarState.people.width = maxPeopleWidth;
+            this.sidebarState.people.element.style.width = `${maxPeopleWidth}px`;
+        }
+        
+        if (!this.sidebarState.timeline.collapsed && this.sidebarState.timeline.width > maxTimelineWidth) {
+            this.sidebarState.timeline.width = maxTimelineWidth;
+            this.sidebarState.timeline.element.style.width = `${maxTimelineWidth}px`;
+        }
     }
     
     setupMobileOptimizations() {
@@ -479,10 +626,13 @@ export class PlanningApp {
             
             // Auto-collapse sidebar on very small screens
             if (window.innerWidth <= 480) {
-                const sidebarElement = document.getElementById('people-palette');
-                if (sidebarElement && !sidebarElement.classList.contains('collapsed')) {
-                    sidebarElement.classList.add('collapsed');
-                    localStorage.setItem('sidebar-collapsed', 'true');
+                // Handle people sidebar
+                if (this.sidebarState.people && !this.sidebarState.people.collapsed) {
+                    this.toggleSidebar('people');
+                }
+                // Handle timeline sidebar
+                if (this.sidebarState.timeline && !this.sidebarState.timeline.collapsed) {
+                    this.toggleSidebar('timeline');
                 }
             }
             
@@ -3634,6 +3784,34 @@ export class PlanningApp {
             // Only trigger shortcuts when not in input fields and panel is not open
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || 
                 document.getElementById('details-panel').classList.contains('open')) {
+                return;
+            }
+            
+            // Alt+A: Toggle auto-collapse preference (accessibility feature)
+            if (e.altKey && e.key === 'a') {
+                e.preventDefault();
+                const currentPref = localStorage.getItem('disable-auto-collapse') === 'true';
+                localStorage.setItem('disable-auto-collapse', (!currentPref).toString());
+                
+                // Announce the change
+                const message = currentPref ? 
+                    'Automatic sidebar collapse enabled' : 
+                    'Automatic sidebar collapse disabled';
+                
+                // Create accessible announcement
+                let announcer = document.getElementById('sidebar-announcer');
+                if (!announcer) {
+                    announcer = document.createElement('div');
+                    announcer.id = 'sidebar-announcer';
+                    announcer.className = 'sr-only';
+                    announcer.setAttribute('aria-live', 'polite');
+                    announcer.setAttribute('aria-atomic', 'true');
+                    document.body.appendChild(announcer);
+                }
+                announcer.textContent = message;
+                
+                // Show visual feedback
+                this.showAccessibilityToast(message);
                 return;
             }
             

@@ -53,15 +53,6 @@ languages:
         - name: Tools
           url: tools
           weight: 3
-        - name: $DAYJOB
-          url: dayjob
-          weight: 4
-        - name: Startup
-          url: startup
-          weight: 5
-        - name: YouTube
-          url: youtube
-          weight: 6
         - name: Books
           url: books
           weight: 7
