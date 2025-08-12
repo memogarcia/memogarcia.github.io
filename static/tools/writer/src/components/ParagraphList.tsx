@@ -81,7 +81,7 @@ export function ParagraphList() {
               {/* Add paragraph button before first paragraph */}
               {index === 0 && (
                 <div 
-                  className="relative h-4 group"
+                  className="relative h-2 group"
                   onMouseEnter={() => setHoveredIndex(-1)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
@@ -104,7 +104,7 @@ export function ParagraphList() {
               
               {/* Add paragraph button after each paragraph */}
               <div 
-                className="relative h-4 group"
+                className="relative h-2 group"
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >

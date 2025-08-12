@@ -1,28 +1,46 @@
-name: Build and Deploy Hugo Site
+name: Full Site Deployment
 
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0' # Weekly on Sunday at midnight
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Hugo
         uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: "0.128.0"
+          extended: true
 
       - name: Build Hugo site
+        env:
+          HUGO_ENVIRONMENT: production
         run: hugo --minify
 
-      - name: Deploy to publish branch
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: ./public
           publish_branch: gh-pages
+          commit_message: 'Full site deployment [skip ci]'

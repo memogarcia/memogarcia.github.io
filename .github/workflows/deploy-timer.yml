@@ -1,0 +1,42 @@
+name: Deploy Timer Tool
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'static/tools/timer/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-timer:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.128.0'
+          extended: true
+
+      - name: Build Hugo with Timer updates
+        env:
+          HUGO_ENVIRONMENT: production
+        run: hugo --minify
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          commit_message: 'Deploy Timer tool updates [skip ci]'

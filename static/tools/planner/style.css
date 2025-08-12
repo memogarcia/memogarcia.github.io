@@ -1632,6 +1632,29 @@ body {
     color: var(--entry);
 }
 
+.epic-add-task-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+}
+.epic:hover .epic-add-task-btn {
+    opacity: 1;
+}
+.epic-add-task-btn:hover {
+    background: #3b82f6;
+    color: var(--entry);
+}
+
 .epic-done-btn {
     width: 24px;
     height: 24px;
@@ -3733,3 +3756,56 @@ select:focus-visible {
 
 
 
+
+
+/* Deadline badges */
+.badge.deadline-badge {
+    background: #fbbf24;
+    color: #451a03;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge.deadline-badge i {
+    width: 10px;
+    height: 10px;
+}
+
+.task-deadline {
+    font-size: 10px;
+    color: var(--secondary);
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.task-deadline i {
+    width: 10px;
+    height: 10px;
+}
+
+/* North Star add epic button */
+.north-star-add-epic-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+}
+.north-star:hover .north-star-add-epic-btn {
+    opacity: 1;
+}
+.north-star-add-epic-btn:hover {
+    background: #3b82f6;
+    color: var(--entry);
+}

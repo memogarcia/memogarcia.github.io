@@ -2666,8 +2666,12 @@ export class PlanningApp {
                             <span class="badge">Epics: ${alignedEpics.length}</span>
                             <span class="badge">Tasks: ${totalTasks}</span>
                             <span class="badge status-${northStar.status}">${northStar.status}</span>
+                            ${northStar.dueDate ? `<span class="badge deadline-badge" title="Deadline"><i data-lucide="calendar"></i> ${new Date(northStar.dueDate).toLocaleDateString()}</span>` : ''}
                         </div>
                     </div>
+                    <button class="north-star-add-epic-btn" onclick="event.stopPropagation(); app.createEpicInNorthStar('${northStar.id}')" title="Add Epic to North Star">
+                        <i data-lucide="plus"></i>
+                    </button>
                     <button class="north-star-delete-btn" onclick="event.stopPropagation(); app.deleteNorthStar('${northStar.id}')" title="Delete North Star">
                         <i data-lucide="x"></i>
                     </button>
@@ -2718,7 +2722,11 @@ export class PlanningApp {
                         <span class="badge priority-${epic.priority}">${epic.priority}</span>
                         <span class="badge">Tasks: ${epicTasks.length}</span>
                         <span class="badge">People: ${assignedPeopleIds.size}</span>
+                        ${epic.dueDate ? `<span class="badge deadline-badge" title="Deadline"><i data-lucide="calendar"></i> ${new Date(epic.dueDate).toLocaleDateString()}</span>` : ''}
                     </div>
+                    <button class="epic-add-task-btn" onclick="event.stopPropagation(); app.createTaskInEpic('${epic.id}')" title="Add Task to Epic">
+                        <i data-lucide="plus"></i>
+                    </button>
                     <button class="epic-done-btn" onclick="event.stopPropagation(); app.toggleEpicDone('${epic.id}')" title="Mark Epic as Done">
                         <i data-lucide="check"></i>
                     </button>
@@ -2771,6 +2779,7 @@ export class PlanningApp {
                     </button>
                 </div>
                 <div class="task-title" title="${this.escapeHTML(task.title)}">${this.escapeHTML(task.title)}</div>
+                ${task.dueDate ? `<div class="task-deadline" style="font-size: 10px; color: var(--secondary); margin: 2px 0;"><i data-lucide="calendar" style="width: 10px; height: 10px; display: inline-block; vertical-align: middle;"></i> ${new Date(task.dueDate).toLocaleDateString()}</div>` : ''}
                 <div class="task-assignments">
                     ${taskAssignments.length === 0 ? 
                         '<span class="assignment-badge no-assignments">No people yet</span>' :
@@ -3417,6 +3426,53 @@ export class PlanningApp {
         this.saveToStorage();
     }
     
+    createEpicInNorthStar(northStarId) {
+        this.showDialog('New Epic in North Star', 'Epic title', (title) => {
+            const northStar = this.findById(this.northStars, northStarId);
+            if (!northStar) return;
+            
+            // Find existing epics aligned to this north star to position the new one intelligently
+            const alignedEpics = this.epics.filter(e => e.northStarId === northStarId);
+            
+            // Calculate position for the new epic near/within the north star
+            let x = northStar.x + 20;
+            let y = northStar.y + northStar.h + 20; // Position below the north star by default
+            
+            if (alignedEpics.length > 0) {
+                // Position it next to the last aligned epic
+                const lastEpic = alignedEpics[alignedEpics.length - 1];
+                x = lastEpic.x + lastEpic.w + 20;
+                y = lastEpic.y;
+                
+                // If it goes too far right, wrap to next row
+                if (x + 420 > northStar.x + northStar.w + 200) {
+                    x = northStar.x + 20;
+                    y = lastEpic.y + lastEpic.h + 20;
+                }
+            }
+            
+            const epic = {
+                id: this.generateId('epic'),
+                title: title,
+                description: '',
+                status: 'planning',
+                priority: 'medium',
+                northStarId: northStarId,
+                x: x,
+                y: y,
+                w: 420,
+                h: 320,
+                createdAt: Date.now(),
+                modifiedAt: Date.now(),
+                dueDate: null
+            };
+            
+            this.epics.push(epic);
+            this.render();
+            this.saveToStorage();
+        });
+    }
+    
     addTask(title) {
         const task = {
             id: this.generateId('t'),
@@ -3434,6 +3490,57 @@ export class PlanningApp {
         this.tasks.push(task);
         this.render();
         this.saveToStorage();
+    }
+    
+    createTaskInEpic(epicId) {
+        this.showDialog('New Task in Epic', 'Task title', (title) => {
+            const epic = this.findById(this.epics, epicId);
+            if (!epic) return;
+            
+            // Find existing tasks in this epic to position the new one intelligently
+            const epicTasks = this.tasks.filter(t => t.epicId === epicId);
+            
+            // Calculate position for the new task within the epic
+            let ix = 10; // Default X position inside epic
+            let iy = 10; // Default Y position inside epic
+            
+            if (epicTasks.length > 0) {
+                // Try to find a good position based on existing tasks
+                const cols = Math.floor((epic.w - this.EPIC_PAD_X * 2) / (this.TASK_W + 10));
+                const row = Math.floor(epicTasks.length / cols);
+                const col = epicTasks.length % cols;
+                
+                ix = col * (this.TASK_W + 10);
+                iy = row * (this.TASK_H + 10);
+                
+                // Make sure it fits within the epic bounds
+                const maxX = Math.max(0, epic.w - this.EPIC_PAD_X * 2 - this.TASK_W);
+                const maxY = Math.max(0, epic.h - this.EPIC_HEADER - this.EPIC_PAD_Y * 2 - this.TASK_H);
+                ix = Math.min(ix, maxX);
+                iy = Math.min(iy, maxY);
+            }
+            
+            const task = {
+                id: this.generateId('t'),
+                title: title,
+                description: '',
+                status: 'todo',
+                priority: 'medium',
+                epicId: epicId,
+                ix: ix,
+                iy: iy,
+                createdAt: Date.now(),
+                modifiedAt: Date.now(),
+                dueDate: null
+            };
+            
+            this.tasks.push(task);
+            this.render();
+            this.saveToStorage();
+            
+            // Optionally open the task details panel for the new task
+            // this.openDetailsPanel('task', task.id);
+        });
     }
     
     addPerson(name) {
@@ -3995,6 +4102,7 @@ export class PlanningApp {
         document.getElementById('ns-timeframe-input').value = northStar.timeframe || '';
         document.getElementById('ns-status-input').value = northStar.status || 'active';
         document.getElementById('ns-priority-input').value = northStar.priority || 'high';
+        document.getElementById('ns-deadline-input').value = northStar.dueDate ? new Date(northStar.dueDate).toISOString().split('T')[0] : '';
         
         // Add real-time updating
         const titleInput = document.getElementById('ns-title-input');
@@ -4003,6 +4111,7 @@ export class PlanningApp {
         const timeframeInput = document.getElementById('ns-timeframe-input');
         const statusInput = document.getElementById('ns-status-input');
         const priorityInput = document.getElementById('ns-priority-input');
+        const deadlineInput = document.getElementById('ns-deadline-input');
         
         const updateNorthStar = () => {
             northStar.title = titleInput.value;
@@ -4011,6 +4120,7 @@ export class PlanningApp {
             northStar.timeframe = timeframeInput.value;
             northStar.status = statusInput.value;
             northStar.priority = priorityInput.value;
+            northStar.dueDate = deadlineInput.value ? new Date(deadlineInput.value).getTime() : null;
             northStar.modifiedAt = Date.now();
             
             this.render();
@@ -4023,6 +4133,7 @@ export class PlanningApp {
         timeframeInput.addEventListener('input', updateNorthStar);
         statusInput.addEventListener('change', updateNorthStar);
         priorityInput.addEventListener('change', updateNorthStar);
+        deadlineInput.addEventListener('change', updateNorthStar);
         
         // Update metadata
         document.getElementById('ns-created-date').textContent = 
@@ -4057,6 +4168,7 @@ export class PlanningApp {
         document.getElementById('epic-description-input').value = epic.description || '';
         document.getElementById('epic-status-input').value = epic.status || 'planning';
         document.getElementById('epic-priority-input').value = epic.priority || 'medium';
+        document.getElementById('epic-deadline-input').value = epic.dueDate ? new Date(epic.dueDate).toISOString().split('T')[0] : '';
         
         // Set up event listeners for real-time updates
         this.setupEpicDetailsListeners(epic);
@@ -4079,12 +4191,14 @@ export class PlanningApp {
         const descInput = document.getElementById('epic-description-input');
         const statusInput = document.getElementById('epic-status-input');
         const priorityInput = document.getElementById('epic-priority-input');
+        const deadlineInput = document.getElementById('epic-deadline-input');
         
         const updateEpic = () => {
             epic.title = titleInput.value;
             epic.description = descInput.value;
             epic.status = statusInput.value;
             epic.priority = priorityInput.value;
+            epic.dueDate = deadlineInput.value ? new Date(deadlineInput.value).getTime() : null;
             epic.modifiedAt = Date.now();
             this.render();
             this.saveToStorage();
@@ -4094,6 +4208,7 @@ export class PlanningApp {
         descInput.addEventListener('input', updateEpic);
         statusInput.addEventListener('change', updateEpic);
         priorityInput.addEventListener('change', updateEpic);
+        deadlineInput.addEventListener('change', updateEpic);
     }
     
     loadEpicTasks(epicId) {
@@ -4131,6 +4246,7 @@ export class PlanningApp {
         document.getElementById('task-description-input').value = task.description || '';
         document.getElementById('task-status-input').value = task.status || 'todo';
         document.getElementById('task-priority-input').value = task.priority || 'medium';
+        document.getElementById('task-deadline-input').value = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '';
         
         // Set up event listeners
         this.setupTaskDetailsListeners(task);
@@ -4153,12 +4269,14 @@ export class PlanningApp {
         const descInput = document.getElementById('task-description-input');
         const statusInput = document.getElementById('task-status-input');
         const priorityInput = document.getElementById('task-priority-input');
+        const deadlineInput = document.getElementById('task-deadline-input');
         
         const updateTask = () => {
             task.title = titleInput.value;
             task.description = descInput.value;
             task.status = statusInput.value;
             task.priority = priorityInput.value;
+            task.dueDate = deadlineInput.value ? new Date(deadlineInput.value).getTime() : null;
             task.modifiedAt = Date.now();
             this.render();
             this.saveToStorage();
@@ -4176,6 +4294,7 @@ export class PlanningApp {
         descInput.addEventListener('input', updateTask);
         statusInput.addEventListener('change', updateTask);
         priorityInput.addEventListener('change', updateTask);
+        deadlineInput.addEventListener('change', updateTask);
     }
     
     loadTaskAssignee(task) {

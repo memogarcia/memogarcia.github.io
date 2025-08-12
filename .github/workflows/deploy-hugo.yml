@@ -1,0 +1,55 @@
+name: Deploy Hugo Blog
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'content/**'
+      - 'layouts/**'
+      - 'archetypes/**'
+      - 'config.toml'
+      - 'config.yml'
+      - 'config.yaml'
+      - 'hugo.toml'
+      - 'hugo.yml'
+      - 'hugo.yaml'
+      - 'themes/**'
+      - 'static/**'
+      - '!static/tools/**'  # Exclude tools directory
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.128.0'
+          extended: true
+
+      - name: Build with Hugo
+        env:
+          HUGO_ENVIRONMENT: production
+          HUGO_ENV: production
+        run: hugo --minify
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          commit_message: 'Deploy Hugo blog updates [skip ci]'

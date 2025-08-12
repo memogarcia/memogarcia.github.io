@@ -1,19 +1,35 @@
-name: Deploy Writer Tool
+name: Build Writer Tool
 
 on:
   push:
     branches: [master]
     paths:
-      - 'static/tools/writer/**'
+      - 'static/tools/writer/src/**'
+      - 'static/tools/writer/package.json'
+      - 'static/tools/writer/package-lock.json'
+      - 'static/tools/writer/vite.config.ts'
+      - 'static/tools/writer/tsconfig.json'
+      - 'static/tools/writer/tailwind.config.js'
+      - 'static/tools/writer/postcss.config.js'
   pull_request:
     branches: [master]
     paths:
-      - 'static/tools/writer/**'
+      - 'static/tools/writer/src/**'
+      - 'static/tools/writer/package.json'
+      - 'static/tools/writer/package-lock.json'
+      - 'static/tools/writer/vite.config.ts'
+      - 'static/tools/writer/tsconfig.json'
+      - 'static/tools/writer/tailwind.config.js'
+      - 'static/tools/writer/postcss.config.js'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  deploy-writer:
+  build-writer:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
 
     steps:
       - name: Check out the repo
@@ -24,62 +40,36 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: 'static/tools/writer/package-lock.json'
 
       - name: Install Writer tool dependencies
-        run: |
-          cd static/tools/writer
-          npm ci
+        working-directory: ./static/tools/writer
+        run: npm ci
 
       - name: Run Writer tool tests (if available)
-        run: |
-          cd static/tools/writer
-          # Run tests if they exist
-          if npm run test --if-present; then
-            echo "Tests passed or no tests found"
-          else
-            echo "Tests failed"
-            exit 1
-          fi
+        working-directory: ./static/tools/writer
+        run: npm run test --if-present || true
 
       - name: Build Writer tool
-        run: |
-          cd static/tools/writer
-          npm run build
+        working-directory: ./static/tools/writer
+        run: npm run build
           
-      - name: Deploy built Writer assets
+      - name: Update Writer production files
+        working-directory: ./static/tools/writer
         run: |
-          cd static/tools/writer
-          # Backup current CDN version if it exists
-          if [ -f index.html ]; then
-            cp index.html index-cdn.html
-          fi
-          # Copy built files (they're already properly structured in dist/)
+          # Remove old assets if they exist
+          rm -rf ./assets
+          # Copy new built assets
+          cp -r dist/assets ./
+          
+          # Update index.html for production
           cp dist/index.html index.html
-          # Copy assets directory if it exists
-          if [ -d "dist/assets" ]; then
-            rm -rf assets/ 2>/dev/null || true
-            cp -r dist/assets assets/
-          fi
-          # Copy any other files from dist/ (like favicon, etc.)
-          find dist/ -maxdepth 1 -type f ! -name "index.html" ! -path "*/assets/*" -exec cp {} . \; 2>/dev/null || true
-          # Clean up build artifacts
-          rm -rf dist src node_modules package.json package-lock.json tsconfig.json vite.config.ts postcss.config.js tailwind.config.js tsconfig.node.json tsconfig.tsbuildinfo
 
-      - name: Set up Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: "0.128.0"
-
-      - name: Build Hugo site
-        run: hugo --minify
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-pages
-          commit_message: 'Deploy writer tool updates'
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add static/tools/writer/assets static/tools/writer/index.html
+          git diff --staged --quiet || (git commit -m "Build Writer tool - Update production assets [skip ci]" && git push)

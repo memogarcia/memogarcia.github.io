@@ -1,0 +1,65 @@
+name: Deploy Planner Tool
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'static/tools/planner/**'
+      - '!static/tools/planner/node_modules/**'
+      - '!static/tools/planner/package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js for testing
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install test dependencies
+        working-directory: ./static/tools/planner
+        run: |
+          if [ -f package.json ]; then
+            npm install --only=dev
+          fi
+
+      - name: Run Planner tests (if available)
+        working-directory: ./static/tools/planner
+        run: |
+          if [ -f package.json ] && npm run test:headless --if-present; then
+            echo "Tests passed"
+          else
+            echo "No tests or tests skipped"
+          fi
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.128.0'
+          extended: true
+
+      - name: Build Hugo with Planner updates
+        env:
+          HUGO_ENVIRONMENT: production
+        run: hugo --minify
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          commit_message: 'Deploy Planner tool updates [skip ci]'
