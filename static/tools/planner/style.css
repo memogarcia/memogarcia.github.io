@@ -978,6 +978,7 @@ body {
     background: rgba(99, 102, 241, 0.1);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     user-select: none;
+    z-index: 2;
 }
 
 @media (max-width: 640px) {
@@ -1049,6 +1050,39 @@ body {
     color: var(--entry);
 }
 
+.epic-done-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+}
+
+.epic:hover .epic-done-btn {
+    opacity: 1;
+}
+
+.epic-done-btn:hover {
+    background: #10b981;
+    color: var(--entry);
+}
+
+.epic.done {
+    opacity: 0.7;
+}
+
+.epic.done .epic-title {
+    text-decoration: line-through;
+}
+
 .badge {
     background: var(--entry);
     color: var(--border);
@@ -1093,6 +1127,7 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     cursor: grab;
     user-select: none;
+    z-index: 3;
 }
 
 .task-delete-btn {
@@ -1120,6 +1155,41 @@ body {
 .task-delete-btn:hover {
     background: #ef4444;
     color: var(--entry);
+}
+
+.task-done-btn {
+    position: absolute;
+    top: 8px;
+    right: 36px;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.task:hover .task-done-btn {
+    opacity: 1;
+}
+
+.task-done-btn:hover {
+    background: #10b981;
+    color: var(--entry);
+}
+
+.task.done {
+    opacity: 0.6;
+}
+
+.task.done .task-title {
+    text-decoration: line-through;
 }
 
 @media (max-width: 640px) {
