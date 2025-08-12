@@ -12,7 +12,7 @@ class PlanningApp {
         this.people = [];
         
         this.assignments = [];
-        this.dependencies = []; // Array of {fromTaskId, toTaskId, type} objects
+        this.dependencies = []; // Array of {from, to, type} objects
         
         this.view = { x: 0, y: 0, scale: 1 };
         this.dragging = null;
@@ -242,7 +242,11 @@ class PlanningApp {
                 this.tasks = data.tasks || [];
                 this.people = data.people || [];
                 this.assignments = data.assignments || [];
-                this.dependencies = data.dependencies || [];
+                this.dependencies = (data.dependencies || []).map(d => ({
+                    from: d.from ?? d.fromTaskId,
+                    to: d.to ?? d.toTaskId,
+                    type: d.type || 'blocks'
+                }));
                 this.view = data.view || { x: 0, y: 0, scale: 1 };
                 this.render();
             }
@@ -287,7 +291,11 @@ class PlanningApp {
                     this.tasks = data.tasks || [];
                     this.people = data.people || [];
                     this.assignments = data.assignments || [];
-                    this.dependencies = data.dependencies || [];
+                    this.dependencies = (data.dependencies || []).map(d => ({
+                        from: d.from ?? d.fromTaskId,
+                        to: d.to ?? d.toTaskId,
+                        type: d.type || 'blocks'
+                    }));
                     
                     // Reset view to default
                     this.view = { x: 0, y: 0, scale: 1 };
@@ -399,6 +407,21 @@ class PlanningApp {
                 this.addPerson(name);
             });
         });
+
+        const timelineToggle = document.getElementById('timeline-toggle');
+        if (timelineToggle) {
+            timelineToggle.addEventListener('click', () => {
+                const sidebar = document.getElementById('timeline-sidebar');
+                sidebar.classList.toggle('collapsed');
+                const icon = timelineToggle.querySelector('i');
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.setAttribute('data-lucide', 'chevron-left');
+                } else {
+                    icon.setAttribute('data-lucide', 'chevron-right');
+                }
+                lucide.createIcons();
+            });
+        }
         
         
         document.getElementById('auto-align').addEventListener('click', () => {
@@ -462,6 +485,7 @@ class PlanningApp {
         this.renderTasks();
         this.renderConnections();
         this.renderDependencies();
+        this.updateTimelineSidebar();
         this.updateUnalignedCount();
         this.updateStrategicAlignment();
         this.updateWorldTransform();
@@ -478,7 +502,7 @@ class PlanningApp {
     
     setupTaskHoverHandlers() {
         // This will be called after tasks are rendered to add hover handlers
-        const tasks = document.querySelectorAll('.task, .epic');
+        const tasks = document.querySelectorAll('.task, .epic, .north-star');
         tasks.forEach(taskEl => {
             this.addHoverDependencyHandlers(taskEl);
         });
@@ -528,8 +552,8 @@ class PlanningApp {
     }
     
     addDependencyDragHandlers(taskEl, dependencyHandle) {
-        const sourceId = taskEl.dataset.taskId || taskEl.dataset.epicId;
-        const sourceType = taskEl.dataset.taskId ? 'task' : 'epic';
+        const sourceId = taskEl.dataset.taskId || taskEl.dataset.epicId || taskEl.dataset.northStarId;
+        const sourceType = taskEl.dataset.taskId ? 'task' : (taskEl.dataset.epicId ? 'epic' : 'north-star');
         
         let isDragging = false;
         let dragStartPos = null;
@@ -637,16 +661,16 @@ class PlanningApp {
     
     updateDragTargetHighlight(x, y) {
         // Clear existing highlights
-        document.querySelectorAll('.task, .epic').forEach(el => {
+        document.querySelectorAll('.task, .epic, .north-star').forEach(el => {
             el.classList.remove('dependency-drop-target', 'dependency-drop-invalid');
         });
         
         // Find element under cursor
         const elementUnder = document.elementFromPoint(x, y);
-        const targetEl = elementUnder?.closest('.task, .epic');
+        const targetEl = elementUnder?.closest('.task, .epic, .north-star');
         
         if (targetEl) {
-            const targetId = targetEl.dataset.taskId || targetEl.dataset.epicId;
+            const targetId = targetEl.dataset.taskId || targetEl.dataset.epicId || targetEl.dataset.northStarId;
             const sourceId = this.dependencyDragState.sourceId;
             
             // Don't allow self-dependency
@@ -656,8 +680,8 @@ class PlanningApp {
             }
             
             // Check for existing dependency
-            const existingDep = this.dependencies.find(d => 
-                d.fromTaskId === sourceId && d.toTaskId === targetId
+            const existingDep = this.dependencies.find(d =>
+                d.from === sourceId && d.to === targetId
             );
             
             if (existingDep) {
@@ -683,8 +707,8 @@ class PlanningApp {
         
         // Find drop target
         const elementUnder = document.elementFromPoint(e.clientX, e.clientY);
-        const targetEl = elementUnder?.closest('.task, .epic');
-        const targetId = targetEl?.dataset.taskId || targetEl?.dataset.epicId;
+        const targetEl = elementUnder?.closest('.task, .epic, .north-star');
+        const targetId = targetEl?.dataset.taskId || targetEl?.dataset.epicId || targetEl?.dataset.northStarId;
         
         // Clean up
         this.cleanupDependencyDrag(mouseMoveHandler, mouseUpHandler, touchMoveHandler, touchEndHandler);
@@ -706,7 +730,7 @@ class PlanningApp {
         // Clean up visual state
         document.body.classList.remove('dependency-dragging');
         document.querySelectorAll('.dependency-handle').forEach(h => h.classList.remove('dragging'));
-        document.querySelectorAll('.task, .epic').forEach(el => {
+        document.querySelectorAll('.task, .epic, .north-star').forEach(el => {
             el.classList.remove('dependency-drop-target', 'dependency-drop-invalid');
         });
         
@@ -731,7 +755,7 @@ class PlanningApp {
     
     createDependency(fromId, toId) {
         // Check for existing dependency
-        if (this.dependencies.some(d => d.fromTaskId === fromId && d.toTaskId === toId)) {
+        if (this.dependencies.some(d => d.from === fromId && d.to === toId)) {
             this.showDependencyError('Dependency already exists');
             return;
         }
@@ -744,8 +768,8 @@ class PlanningApp {
         
         // Create dependency
         this.dependencies.push({
-            fromTaskId: fromId,
-            toTaskId: toId,
+            from: fromId,
+            to: toId,
             type: 'blocks'
         });
         
@@ -840,8 +864,8 @@ class PlanningApp {
         movedEpicTasks.forEach(task => {
             // Find all tasks that depend on this task
             const dependentTasks = this.dependencies
-                .filter(d => d.fromTaskId === task.id)
-                .map(d => this.findById(this.tasks, d.toTaskId))
+                .filter(d => d.from === task.id)
+                .map(d => this.findById(this.tasks, d.to))
                 .filter(t => t && t.epicId && t.epicId !== movedEpicId);
             
             // Group dependents by epic and move those epics further right if needed
@@ -866,7 +890,7 @@ class PlanningApp {
     
     clearDependencyDragState() {
         // Remove all dependency-related classes and states
-        document.querySelectorAll('.task').forEach(task => {
+        document.querySelectorAll('.task, .epic, .north-star').forEach(task => {
             task.classList.remove(
                 'dependency-hover', 
                 'dependency-source', 
@@ -1120,8 +1144,8 @@ class PlanningApp {
         if (targetPortType !== 'input') return false;
         
         // Check for existing dependency
-        const existingDependency = this.dependencies.find(dep => 
-            dep.fromTaskId === sourceTaskId && dep.toTaskId === targetTaskId
+        const existingDependency = this.dependencies.find(dep =>
+            dep.from === sourceTaskId && dep.to === targetTaskId
         );
         
         if (existingDependency) return false;
@@ -1134,7 +1158,7 @@ class PlanningApp {
         return true;
     }
     
-    wouldCreateCircularDependency(fromTaskId, toTaskId) {
+    wouldCreateCircularDependency(fromId, toId) {
         // Simple cycle detection using DFS
         const visited = new Set();
         
@@ -1145,8 +1169,8 @@ class PlanningApp {
             visited.add(start);
             
             const outgoing = dependencies
-                .filter(dep => dep.fromTaskId === start)
-                .map(dep => dep.toTaskId);
+                .filter(dep => dep.from === start)
+                .map(dep => dep.to);
                 
             for (const next of outgoing) {
                 if (hasPath(next, end, dependencies)) {
@@ -1157,8 +1181,8 @@ class PlanningApp {
             return false;
         }
         
-        // Check if adding fromTaskId -> toTaskId would create a cycle
-        return hasPath(toTaskId, fromTaskId, this.dependencies);
+        // Check if adding fromId -> toId would create a cycle
+        return hasPath(toId, fromId, this.dependencies);
     }
     
     handleDependencyMouseUp(e) {
@@ -1214,13 +1238,13 @@ class PlanningApp {
         this.dependencyDragState = null;
     }
     
-    createDependency(fromTaskId, toTaskId) {
+    createDependency(fromId, toId) {
         const dependency = {
-            fromTaskId: fromTaskId,
-            toTaskId: toTaskId,
+            from: fromId,
+            to: toId,
             type: 'finish-to-start'
         };
-        
+
         this.dependencies.push(dependency);
         this.renderDependencies();
         this.saveToStorage();
@@ -1589,23 +1613,14 @@ class PlanningApp {
         svg.querySelectorAll('.dependency-line, .dependency-delete-handle').forEach(el => el.remove());
         
         this.dependencies.forEach((dep, index) => {
-            const fromTask = this.findById(this.tasks, dep.fromTaskId);
-            const toTask = this.findById(this.tasks, dep.toTaskId);
-            
-            if (!fromTask || !toTask) return;
-            
-            const fromPos = this.getTaskAbsolutePosition(fromTask);
-            const toPos = this.getTaskAbsolutePosition(toTask);
-            
-            // Calculate connection points (from output port to input port)
-            const outputPortX = fromPos.x + this.TASK_W + 6; // Offset for port
-            const outputPortY = fromPos.y + this.TASK_H / 2;
-            const inputPortX = toPos.x - 6; // Offset for port
-            const inputPortY = toPos.y + this.TASK_H / 2;
-            
-            const startPoint = { x: outputPortX, y: outputPortY };
-            const endPoint = { x: inputPortX, y: inputPortY };
-            
+            const fromItem = this.getItemById(dep.from);
+            const toItem = this.getItemById(dep.to);
+
+            if (!fromItem || !toItem) return;
+
+            const startPoint = this.getItemCenter(fromItem);
+            const endPoint = this.getItemCenter(toItem);
+
             // Create curved path using Bezier curve
             const pathData = this.createCurvedPath(startPoint, endPoint);
             
@@ -1613,8 +1628,8 @@ class PlanningApp {
             const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             line.setAttribute('d', pathData);
             line.setAttribute('class', 'dependency-line');
-            line.setAttribute('data-from', dep.fromTaskId);
-            line.setAttribute('data-to', dep.toTaskId);
+            line.setAttribute('data-from', dep.from);
+            line.setAttribute('data-to', dep.to);
             line.setAttribute('data-dependency-index', index);
             
             // Add click handler for line selection/deletion
@@ -1636,6 +1651,61 @@ class PlanningApp {
             
             svg.appendChild(line);
         });
+    }
+
+    getItemById(id) {
+        const task = this.findById(this.tasks, id);
+        if (task) return { type: 'task', item: task };
+        const epic = this.findById(this.epics, id);
+        if (epic) return { type: 'epic', item: epic };
+        const ns = this.findById(this.northStars, id);
+        if (ns) return { type: 'north-star', item: ns };
+        return null;
+    }
+
+    getItemCenter(entry) {
+        const { type, item } = entry;
+        if (type === 'task') {
+            const pos = this.getTaskAbsolutePosition(item);
+            return { x: pos.x + this.TASK_W / 2, y: pos.y + this.TASK_H / 2 };
+        } else if (type === 'epic') {
+            return { x: item.x + item.w / 2, y: item.y + item.h / 2 };
+        } else if (type === 'north-star') {
+            return { x: item.x + item.w / 2, y: item.y + item.h / 2 };
+        }
+        return { x: 0, y: 0 };
+    }
+
+    updateTimelineSidebar() {
+        const container = document.getElementById('timeline-content');
+        if (!container) return;
+
+        const items = [];
+        this.northStars.forEach(ns => {
+            if (ns.dueDate) items.push({ type: 'North Star', title: ns.title, due: ns.dueDate });
+        });
+        this.epics.forEach(ep => {
+            if (ep.dueDate) items.push({ type: 'Epic', title: ep.title, due: ep.dueDate });
+        });
+        this.tasks.forEach(t => {
+            if (t.dueDate) items.push({ type: 'Task', title: t.title, due: t.dueDate });
+        });
+
+        items.sort((a, b) => new Date(a.due) - new Date(b.due));
+
+        if (items.length === 0) {
+            container.innerHTML = '<div class="timeline-empty">No timelines set</div>';
+        } else {
+            container.innerHTML = items.map(it => 
+                `<div class="timeline-item"><span class="timeline-type">${it.type}</span>` +
+                `<span class="timeline-title">${it.title}</span>` +
+                `<span class="timeline-date">${new Date(it.due).toLocaleDateString()}</span></div>`
+            ).join('');
+        }
+
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     }
     
     showDependencyDeleteHandle(line, dependency, index) {
@@ -1826,9 +1896,9 @@ class PlanningApp {
         // Build graph from dependencies
         this.dependencies.forEach(dep => {
             // Only include dependencies where both tasks exist
-            if (taskIds.has(dep.fromTaskId) && taskIds.has(dep.toTaskId)) {
-                graph.get(dep.fromTaskId).push(dep.toTaskId);
-                inDegree.set(dep.toTaskId, inDegree.get(dep.toTaskId) + 1);
+            if (taskIds.has(dep.from) && taskIds.has(dep.to)) {
+                graph.get(dep.from).push(dep.to);
+                inDegree.set(dep.to, inDegree.get(dep.to) + 1);
             }
         });
         
@@ -2842,7 +2912,8 @@ class PlanningApp {
             w: 600,
             h: 180,
             createdAt: Date.now(),
-            modifiedAt: Date.now()
+            modifiedAt: Date.now(),
+            dueDate: null
         };
         
         this.northStars.push(northStar);
@@ -2862,7 +2933,8 @@ class PlanningApp {
             w: 420,
             h: 320,
             createdAt: Date.now(),
-            modifiedAt: Date.now()
+            modifiedAt: Date.now(),
+            dueDate: null
         };
         
         this.epics.push(epic);
@@ -2880,7 +2952,8 @@ class PlanningApp {
             x: 260 + Math.random() * 520,
             y: 320 + Math.random() * 240,
             createdAt: Date.now(),
-            modifiedAt: Date.now()
+            modifiedAt: Date.now(),
+            dueDate: null
         };
         
         this.tasks.push(task);
