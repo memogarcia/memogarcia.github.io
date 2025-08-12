@@ -1,0 +1,79 @@
+name: Deploy Writer Tool
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'static/tools/writer/**'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'static/tools/writer/**'
+  workflow_dispatch:
+
+jobs:
+  deploy-writer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'static/tools/writer/package-lock.json'
+
+      - name: Install Writer tool dependencies
+        run: |
+          cd static/tools/writer
+          npm ci
+
+      - name: Run Writer tool tests (if available)
+        run: |
+          cd static/tools/writer
+          # Run tests if they exist
+          if npm run test --if-present; then
+            echo "Tests passed or no tests found"
+          else
+            echo "Tests failed"
+            exit 1
+          fi
+
+      - name: Build Writer tool
+        run: |
+          cd static/tools/writer
+          npm run build
+          
+      - name: Deploy built Writer assets
+        run: |
+          cd static/tools/writer
+          # Backup current CDN version if it exists
+          if [ -f index.html ]; then
+            cp index.html index-cdn.html
+          fi
+          # Copy built files
+          cp dist/index.html index.html
+          cp -r dist/assets assets/ 2>/dev/null || true
+          # Clean up dist directory for deployment
+          rm -rf dist src node_modules
+
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.128.0"
+
+      - name: Build Hugo site
+        run: hugo --minify
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          commit_message: 'Deploy writer tool updates'
