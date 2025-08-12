@@ -1,0 +1,15 @@
+# Caddyfile for Writer App
+
+# Local development configuration
+:80 {
+    # Reverse proxy to Next.js app
+    reverse_proxy host.docker.internal:3000
+    
+    # Enable compression
+    encode gzip
+    
+    # Log to stdout
+    log {
+        output stdout
+    }
+}
