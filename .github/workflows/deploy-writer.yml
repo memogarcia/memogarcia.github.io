@@ -56,11 +56,17 @@ jobs:
           if [ -f index.html ]; then
             cp index.html index-cdn.html
           fi
-          # Copy built files
+          # Copy built files (they're already properly structured in dist/)
           cp dist/index.html index.html
-          cp -r dist/assets assets/ 2>/dev/null || true
-          # Clean up dist directory for deployment
-          rm -rf dist src node_modules
+          # Copy assets directory if it exists
+          if [ -d "dist/assets" ]; then
+            rm -rf assets/ 2>/dev/null || true
+            cp -r dist/assets assets/
+          fi
+          # Copy any other files from dist/ (like favicon, etc.)
+          find dist/ -maxdepth 1 -type f ! -name "index.html" ! -path "*/assets/*" -exec cp {} . \; 2>/dev/null || true
+          # Clean up build artifacts
+          rm -rf dist src node_modules package.json package-lock.json tsconfig.json vite.config.ts postcss.config.js tailwind.config.js tsconfig.node.json tsconfig.tsbuildinfo
 
       - name: Set up Hugo
         uses: peaceiris/actions-hugo@v3

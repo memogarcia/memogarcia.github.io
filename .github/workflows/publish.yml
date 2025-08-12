@@ -3,8 +3,6 @@ name: Build and Deploy Hugo Site
 on:
   push:
     branches: [master]
-    paths-ignore:
-      - 'static/tools/writer/**'
 
 jobs:
   build-and-deploy:
