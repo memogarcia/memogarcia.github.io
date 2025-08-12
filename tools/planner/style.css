@@ -3147,13 +3147,15 @@ select:focus-visible {
     border-radius: 0 var(--radius) var(--radius) 0;
     color: var(--secondary);
     cursor: pointer;
-    display: flex;
+    display: none; /* Hidden by default */
     align-items: center;
     justify-content: center;
     z-index: 50;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 2px 0 12px rgba(var(--color-border) / 0.2);
 }
+
+/* External toggles are managed by JavaScript via style.display */
 
 .external-toggle-left {
     left: 0;
