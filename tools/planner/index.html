@@ -72,15 +72,6 @@
         </div>
 
         <div class="main-content">
-            <!-- External toggle for people palette when collapsed -->
-            <button id="people-external-toggle" class="external-toggle external-toggle-left" 
-                    title="Show People Sidebar (Ctrl+←)" 
-                    aria-label="Show People Sidebar"
-                    aria-describedby="people-sidebar-help"
-                    tabindex="0">
-                <i data-lucide="chevron-right"></i>
-                <span class="sr-only">Press Ctrl+Left Arrow to toggle</span>
-            </button>
 
             <!-- People palette -->
             <div class="people-palette" id="people-palette" 
@@ -93,7 +84,7 @@
                             title="Toggle sidebar (Ctrl+←)" 
                             aria-label="Collapse People Sidebar"
                             aria-expanded="true">
-                        <i data-lucide="chevron-left"></i>
+                        <i data-lucide="panel-left-close"></i>
                     </button>
                 </div>
                 <div class="palette-content">
@@ -156,7 +147,7 @@
                             title="Toggle timeline (Ctrl+→)" 
                             aria-label="Collapse Timeline Sidebar"
                             aria-expanded="false">
-                        <i data-lucide="chevron-left"></i>
+                        <i data-lucide="panel-right-close"></i>
                     </button>
                 </div>
                 <div id="timeline-content" class="timeline-content">
@@ -180,15 +171,6 @@
                 </div>
             </div>
 
-            <!-- External toggle for timeline sidebar when collapsed -->
-            <button id="timeline-external-toggle" class="external-toggle external-toggle-right" 
-                    title="Show Timeline Sidebar (Ctrl+→)" 
-                    aria-label="Show Timeline Sidebar"
-                    aria-describedby="timeline-sidebar-help"
-                    tabindex="0">
-                <i data-lucide="chevron-left"></i>
-                <span class="sr-only">Press Ctrl+Right Arrow to toggle</span>
-            </button>
 
             <!-- Dependency mode indicator -->
             <div id="dependency-mode-indicator" class="dependency-mode-indicator">
