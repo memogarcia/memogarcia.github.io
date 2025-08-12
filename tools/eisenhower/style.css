@@ -136,20 +136,38 @@ h1 {
 }
 
 .quadrant[data-quadrant="urgent-important"] { 
-    background: var(--urgent-important);
-    border-color: var(--urgent-important-border);
+    background: #ffffff;
+    border: 2px solid #fecaca;  /* Subtle red border - highest priority */
 }
 .quadrant[data-quadrant="important"] { 
-    background: var(--important);
-    border-color: var(--important-border);
+    background: #ffffff;
+    border: 2px solid #bef264;  /* Subtle green border - important but not urgent */
 }
 .quadrant[data-quadrant="urgent"] { 
-    background: var(--urgent);
-    border-color: var(--urgent-border);
+    background: #ffffff;
+    border: 2px solid #93c5fd;  /* Subtle blue border - urgent but not important */
 }
 .quadrant[data-quadrant="neither"] { 
-    background: var(--neither);
-    border-color: var(--neither-border);
+    background: #ffffff;
+    border: 2px solid #e5e7eb;  /* Light gray border - lowest priority */
+}
+
+/* Dark mode quadrant styles */
+body.dark .quadrant[data-quadrant="urgent-important"] { 
+    background: #2e2e33;
+    border: 2px solid #dc2626;  /* Subtle red border - highest priority */
+}
+body.dark .quadrant[data-quadrant="important"] { 
+    background: #2e2e33;
+    border: 2px solid #65a30d;  /* Subtle green border - important but not urgent */
+}
+body.dark .quadrant[data-quadrant="urgent"] { 
+    background: #2e2e33;
+    border: 2px solid #3b82f6;  /* Subtle blue border - urgent but not important */
+}
+body.dark .quadrant[data-quadrant="neither"] { 
+    background: #2e2e33;
+    border: 2px solid #4b5563;  /* Dark gray border - lowest priority */
 }
 
 .quadrant-header {
