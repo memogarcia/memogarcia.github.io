@@ -29,16 +29,20 @@ body.dark {
 /* Eisenhower-specific body styles - inherits from shared design system */
 body {
     margin: 0;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    width: 100vw;
+    height: 100vh;
+    padding: 1rem;
     background: transparent;
     border: none;
     box-shadow: none;
     border-radius: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Header styles inherited from shared design system */
@@ -63,9 +67,9 @@ h1 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 1.5rem;
-    height: 70vh;  /* Fixed height instead of min-height */
-    margin-top: 2rem;
+    gap: 1rem;
+    flex: 1;  /* Take all available space */
+    height: 100%;
 }
 
 .quadrant {
@@ -130,7 +134,7 @@ body.dark .quadrant[data-quadrant="neither"] {
     grid-template-rows: auto auto;
     align-items: start;
     gap: 0.375rem;
-    padding: 1.5rem;
+    padding: 1rem;
     border-bottom: 1px solid var(--border);
     background: transparent;
 }
@@ -238,9 +242,9 @@ body.dark .quadrant[data-quadrant="neither"] {
 .task-list {
     /* Card content styles inspired by shadcn-ui */
     flex: 1;
-    padding: 0.75rem 1.5rem 1.5rem 1.5rem;  /* Reduced top padding from 1.5rem to 0.75rem */
+    padding: 0.75rem 1rem 1rem 1rem;  /* Reduced padding for more space */
     overflow-y: auto;
-    max-height: calc(100% - 80px);  /* Fixed max height with scrolling, accounting for header */
+    max-height: calc(100% - 60px);  /* Fixed max height with scrolling, accounting for smaller header */
     min-height: 0;  /* Allow flex to shrink */
     display: flex;
     flex-direction: column;  /* Enable order property for completed tasks */
@@ -679,20 +683,11 @@ body.dark .quadrant[data-quadrant="neither"] {
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
-        padding: 1rem;
-    }
-    
-    h1 {
-        font-size: 1.875rem;
-    }
-    
-    .subtitle {
-        font-size: 0.875rem;
+        padding: 0.75rem;
     }
     
     .matrix-container {
-        gap: 1rem;
-        margin-top: 1.5rem;
+        gap: 0.75rem;
     }
     
     .quadrant {
@@ -700,7 +695,7 @@ body.dark .quadrant[data-quadrant="neither"] {
     }
     
     .quadrant-header {
-        padding: 0.875rem 1rem;
+        padding: 0.75rem;
     }
     
     .quadrant-title {
@@ -708,7 +703,7 @@ body.dark .quadrant[data-quadrant="neither"] {
     }
     
     .task-list {
-        padding: 0.875rem 1rem;
+        padding: 0.5rem 0.75rem 0.75rem 0.75rem;
     }
     
     .task-item {
@@ -744,32 +739,27 @@ body.dark .quadrant[data-quadrant="neither"] {
 
 @media (max-width: 480px) {
     .container {
-        padding: 0.75rem;
-    }
-    
-    h1 {
-        font-size: 1.5rem;
+        padding: 0.5rem;
     }
     
     .matrix-container {
         grid-template-columns: 1fr;
         grid-template-rows: repeat(4, 1fr);
-        gap: 0.75rem;
-        min-height: auto;
+        gap: 0.5rem;
     }
     
     .quadrant {
-        min-height: 200px;
+        min-height: 120px;
     }
     
     .quadrant-header {
-        padding: 0.75rem;
+        padding: 0.5rem;
     }
     
     .task-list {
-        padding: 0.75rem;
-        min-height: 120px;
+        padding: 0.25rem 0.5rem 0.5rem 0.5rem;
+        max-height: calc(100% - 50px);
     }
 }
 
-/* Theme toggle styles inherited from shared design system */
+/* Full viewport layout - no theme toggle needed */

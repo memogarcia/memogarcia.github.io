@@ -18,10 +18,10 @@ class PlanningApp {
         this.dragging = null;
         this.dragStartPos = null;
         this.dragOffset = null;
-        this.dependencyCreationMode = false; // Flag for dependency creation state
+        this.dependencyCreationMode = true; // Enable dependency creation via ports by default
         this.dependencyStart = null; // Starting task for dependency line
         this.hoveredTask = null; // Currently hovered task for dependency creation
-        this.isDraggingDependency = false; // Flag for drag operation
+        this.isDraggingDependency = false; // Flag for drag operation (legacy overlay flow)
         this.dependencyDragState = null; // State during dependency drag
         this.autoAlignMode = false; // Flag for auto-alignment mode
         this.originalPositions = new Map(); // Store original task positions for restoration
@@ -36,18 +36,37 @@ class PlanningApp {
             this.render();
         });
         
+        // Pre-bind reusable global handlers to avoid add/remove leaks
+        this._handlers = {
+            depMouseMove: this.handleDependencyMouseMove.bind(this),
+            depMouseUp: this.handleDependencyMouseUp.bind(this),
+            depTouchMove: this.handleDependencyTouchMove.bind(this),
+            depTouchEnd: this.handleDependencyTouchEnd.bind(this),
+        };
+
         this.init();
         this.loadFromStorage();
         this.setupSidebarToggle();
         this.setupDetailsPanel();
         this.setupGlobalKeyboardShortcuts();
     }
+
+    // Escape text for safe innerHTML usage
+    escapeHTML(value) {
+        const str = String(value ?? '');
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
     
     setupSidebarToggle() {
         // Load sidebar state - on mobile, default to collapsed for more canvas space
         const isMobile = window.innerWidth <= 480;
         const defaultCollapsed = isMobile ? 'true' : 'false';
-        const sidebarCollapsed = localStorage.getItem('sidebar-collapsed') ?? defaultCollapsed === 'true';
+        const sidebarCollapsed = ((localStorage.getItem('sidebar-collapsed') ?? defaultCollapsed) === 'true');
         const sidebar = document.getElementById('people-palette');
         
         if (sidebarCollapsed) {
@@ -490,9 +509,6 @@ class PlanningApp {
         this.updateStrategicAlignment();
         this.updateWorldTransform();
         this.updateSelectionStyles();
-
-        // Setup hover handlers for new dependency system
-        setTimeout(() => this.setupTaskHoverHandlers(), 100);
     }
     
     initializeDependencyCreation() {
@@ -749,8 +765,7 @@ class PlanningApp {
             this.dependencyEscapeHandler = null;
         }
         
-        // Re-setup hover handlers after drag
-        setTimeout(() => this.setupTaskHoverHandlers(), 100);
+        // Legacy overlay cleanup done; port-based dependency UI is always available
     }
     
     createDependency(fromId, toId) {
@@ -985,9 +1000,9 @@ class PlanningApp {
         
         this.startDependencyDrag(taskId, port, { x: e.clientX, y: e.clientY });
         
-        // Add mouse move and up listeners to document
-        document.addEventListener('mousemove', this.handleDependencyMouseMove.bind(this));
-        document.addEventListener('mouseup', this.handleDependencyMouseUp.bind(this));
+        // Add mouse move and up listeners to document (pre-bound to allow proper removal)
+        document.addEventListener('mousemove', this._handlers.depMouseMove);
+        document.addEventListener('mouseup', this._handlers.depMouseUp);
     }
     
     handlePortTouchStart(e, taskId, port) {
@@ -1002,9 +1017,9 @@ class PlanningApp {
         const touch = e.touches[0];
         this.startDependencyDrag(taskId, port, { x: touch.clientX, y: touch.clientY });
         
-        // Add touch move and end listeners
-        document.addEventListener('touchmove', this.handleDependencyTouchMove.bind(this));
-        document.addEventListener('touchend', this.handleDependencyTouchEnd.bind(this));
+        // Add touch move and end listeners (pre-bound to allow proper removal)
+        document.addEventListener('touchmove', this._handlers.depTouchMove);
+        document.addEventListener('touchend', this._handlers.depTouchEnd);
     }
     
     startDependencyDrag(sourceTaskId, sourcePort, startPos) {
@@ -1036,7 +1051,7 @@ class PlanningApp {
     }
     
     createPreviewLine(startPos) {
-        const svg = document.getElementById('connections');
+        const svg = document.getElementById('dependencies-layer') || document.getElementById('connections');
         
         // Remove existing preview line
         const existingPreview = svg.querySelector('.dependency-preview-line');
@@ -1189,8 +1204,8 @@ class PlanningApp {
         this.finishDependencyDrag({ x: e.clientX, y: e.clientY });
         
         // Remove document listeners
-        document.removeEventListener('mousemove', this.handleDependencyMouseMove.bind(this));
-        document.removeEventListener('mouseup', this.handleDependencyMouseUp.bind(this));
+        document.removeEventListener('mousemove', this._handlers.depMouseMove);
+        document.removeEventListener('mouseup', this._handlers.depMouseUp);
     }
     
     handleDependencyTouchEnd(e) {
@@ -1201,8 +1216,8 @@ class PlanningApp {
         this.finishDependencyDrag({ x: touch.clientX, y: touch.clientY });
         
         // Remove document listeners
-        document.removeEventListener('touchmove', this.handleDependencyTouchMove.bind(this));
-        document.removeEventListener('touchend', this.handleDependencyTouchEnd.bind(this));
+        document.removeEventListener('touchmove', this._handlers.depTouchMove);
+        document.removeEventListener('touchend', this._handlers.depTouchEnd);
     }
     
     finishDependencyDrag(endPos) {
@@ -1486,7 +1501,7 @@ class PlanningApp {
         }
         
         // Create preview line
-        const svg = document.getElementById('connections');
+        const svg = document.getElementById('dependencies-layer') || document.getElementById('connections');
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         line.setAttribute('class', 'keyboard-dependency-preview');
         line.setAttribute('d', this.createCurvedPath(startPoint, endPoint));
@@ -1607,10 +1622,11 @@ class PlanningApp {
     }
     
     renderDependencies() {
-        const svg = document.getElementById('connections');
+        const layer = document.getElementById('dependencies-layer');
+        if (!layer) return;
         
-        // Remove existing dependency lines and handles
-        svg.querySelectorAll('.dependency-line, .dependency-delete-handle').forEach(el => el.remove());
+        // Remove existing dependency lines and handles (keep defs and other layers)
+        layer.querySelectorAll('.dependency-line, .dependency-delete-handle').forEach(el => el.remove());
         
         this.dependencies.forEach((dep, index) => {
             const fromItem = this.getItemById(dep.from);
@@ -1649,7 +1665,7 @@ class PlanningApp {
                 this.hideDependencyDeleteHandle(index);
             });
             
-            svg.appendChild(line);
+            layer.appendChild(line);
         });
     }
 
@@ -1697,9 +1713,9 @@ class PlanningApp {
             container.innerHTML = '<div class="timeline-empty">No timelines set</div>';
         } else {
             container.innerHTML = items.map(it => 
-                `<div class="timeline-item"><span class="timeline-type">${it.type}</span>` +
-                `<span class="timeline-title">${it.title}</span>` +
-                `<span class="timeline-date">${new Date(it.due).toLocaleDateString()}</span></div>`
+                `<div class=\"timeline-item\"><span class=\"timeline-type\">${this.escapeHTML(it.type)}</span>` +
+                `<span class=\"timeline-title\">${this.escapeHTML(it.title)}</span>` +
+                `<span class=\"timeline-date\">${new Date(it.due).toLocaleDateString()}</span></div>`
             ).join('');
         }
 
@@ -2102,12 +2118,12 @@ class PlanningApp {
         this.people.forEach(person => {
             const personDiv = document.createElement('div');
             personDiv.className = 'person-card';
-            personDiv.setAttribute('data-person-name', person.name);
-            personDiv.setAttribute('title', person.name); // Fallback tooltip
+            personDiv.setAttribute('data-person-name', this.escapeHTML(person.name));
+            personDiv.setAttribute('title', this.escapeHTML(person.name)); // Fallback tooltip
             personDiv.innerHTML = `
                 <div class="person-header" draggable="true" data-type="person" data-person-id="${person.id}" onclick="app.openDetailsPanel('person', '${person.id}')" style="cursor: pointer;">
                     <i data-lucide="user"></i>
-                    <span class="person-name">${person.name}</span>
+                    <span class="person-name">${this.escapeHTML(person.name)}</span>
                     <span class="activity-count">${person.activities.length}</span>
                     <button class="person-delete-btn" onclick="event.stopPropagation(); app.deletePerson('${person.id}')" title="Delete Person">
                         <i data-lucide="x"></i>
@@ -2117,7 +2133,7 @@ class PlanningApp {
                     ${person.activities.map(activity => `
                         <div class="activity-item">
                             <div class="activity" draggable="true" data-type="activity" data-person-id="${person.id}" data-activity-id="${activity.id}">
-                                <span class="activity-text">${activity.text}</span>
+                                <span class="activity-text">${this.escapeHTML(activity.text)}</span>
                             </div>
                             <button class="remove-btn" onclick="app.removeActivity('${person.id}', '${activity.id}')">
                                 <i data-lucide="trash-2"></i>
@@ -2192,7 +2208,7 @@ class PlanningApp {
             nsDiv.innerHTML = `
                 <div class="north-star-header" data-drag-type="north-star" onclick="app.openDetailsPanel('north-star', '${northStar.id}')" style="cursor: pointer;">
                     <div class="north-star-info">
-                        <div class="north-star-title">${northStar.title}</div>
+                        <div class="north-star-title">${this.escapeHTML(northStar.title)}</div>
                         <div class="north-star-metrics">
                             <span class="badge priority-${northStar.priority}">${northStar.priority}</span>
                             <span class="badge">Epics: ${alignedEpics.length}</span>
@@ -2205,7 +2221,7 @@ class PlanningApp {
                     </button>
                 </div>
                 <div class="north-star-content" data-north-star-content="${northStar.id}" style="height: ${contentHeight}px;">
-                    <div class="north-star-objective">${northStar.objective || 'Define strategic objective...'}</div>
+                    <div class="north-star-objective">${this.escapeHTML(northStar.objective || 'Define strategic objective...')}</div>
                     <div class="resize-handle" data-drag-type="resize" data-north-star-id="${northStar.id}"></div>
                 </div>
             `;
@@ -2245,7 +2261,7 @@ class PlanningApp {
             epicDiv.innerHTML = `
                 <div class="epic-header" data-drag-type="epic" onclick="app.openDetailsPanel('epic', '${epic.id}')" style="cursor: pointer;">
                     <i data-lucide="star"></i>
-                    <div class="epic-title">${epic.title}</div>
+                    <div class="epic-title">${this.escapeHTML(epic.title)}</div>
                     <div class="epic-badges">
                         <span class="badge priority-${epic.priority}">${epic.priority}</span>
                         <span class="badge">Tasks: ${epicTasks.length}</span>
@@ -2302,7 +2318,7 @@ class PlanningApp {
                         <i data-lucide="x"></i>
                     </button>
                 </div>
-                <div class="task-title" title="${task.title}">${task.title}</div>
+                <div class="task-title" title="${this.escapeHTML(task.title)}">${this.escapeHTML(task.title)}</div>
                 <div class="task-assignments">
                     ${taskAssignments.length === 0 ? 
                         '<span class="assignment-badge no-assignments">No people yet</span>' :
@@ -2311,7 +2327,7 @@ class PlanningApp {
                             const activity = assignment.activityId ? 
                                 person?.activities.find(a => a.id === assignment.activityId) : null;
                             return `<span class="assignment-badge">
-                                ${person?.name || ''}${activity ? ` — ${activity.text}` : ''}
+                                ${this.escapeHTML(person?.name || '')}${activity ? ` — ${this.escapeHTML(activity.text)}` : ''}
                             </span>`;
                         }).join('')
                     }
@@ -2338,8 +2354,9 @@ class PlanningApp {
     }
     
     renderConnections() {
-        const svg = document.getElementById('connections');
-        svg.innerHTML = '';
+        const layer = document.getElementById('alignment-layer');
+        if (!layer) return;
+        layer.innerHTML = '';
         
         this.tasks.filter(t => t.epicId).forEach(task => {
             const epic = this.findById(this.epics, task.epicId);
@@ -2358,7 +2375,7 @@ class PlanningApp {
             line.setAttribute('stroke', '#cbd5e1');
             line.setAttribute('stroke-width', '1');
             
-            svg.appendChild(line);
+            layer.appendChild(line);
         });
     }
     
@@ -2395,6 +2412,12 @@ class PlanningApp {
     updateWorldTransform() {
         const world = document.getElementById('world');
         world.style.transform = `translate(${this.view.x}px, ${this.view.y}px) scale(${this.view.scale})`;
+        
+        const svg = document.getElementById('connections');
+        if (svg) {
+            svg.style.transformOrigin = 'top left';
+            svg.style.transform = `translate(${this.view.x}px, ${this.view.y}px) scale(${this.view.scale})`;
+        }
         
         // Update grid background
         const canvas = document.getElementById('canvas');
@@ -3128,7 +3151,7 @@ class PlanningApp {
                 <div class="details-task-status ${epic.status === 'done' ? 'done' : ''}">
                     ${epic.status === 'done' ? '<i data-lucide="check"></i>' : ''}
                 </div>
-                <span class="details-task-title">${epic.title}</span>
+                <span class="details-task-title">${this.escapeHTML(epic.title)}</span>
                 <div class="details-priority-badge ${epic.priority || 'medium'}">${epic.priority || 'medium'}</div>
             </div>
         `).join('');
@@ -3593,7 +3616,7 @@ class PlanningApp {
                 <div class="details-task-status ${task.status === 'done' ? 'done' : ''}">
                     ${task.status === 'done' ? '<i data-lucide="check"></i>' : ''}
                 </div>
-                <div class="details-task-title">${task.title}</div>
+                <div class="details-task-title">${this.escapeHTML(task.title)}</div>
                 <div class="details-priority-badge ${task.priority || 'medium'}">${task.priority || 'medium'}</div>
             </div>
         `).join('');
@@ -3783,7 +3806,7 @@ class PlanningApp {
                 <div class="details-task-status ${task.status === 'done' ? 'done' : ''}">
                     ${task.status === 'done' ? '<i data-lucide="check"></i>' : ''}
                 </div>
-                <div class="details-task-title">${task.title}</div>
+                <div class="details-task-title">${this.escapeHTML(task.title)}</div>
                 <div class="details-priority-badge ${task.priority || 'medium'}">${task.priority || 'medium'}</div>
             </div>
         `).join('');

@@ -44,7 +44,7 @@ class PlannerE2ETest {
         // Load the app
         const appPath = `file://${path.join(__dirname, 'index.html')}`;
         await this.page.goto(appPath);
-        await this.page.waitForSelector('#app', { timeout: 5000 });
+        await this.page.waitForSelector('.app', { timeout: 5000 });
     }
 
     async takeScreenshot(name) {
@@ -91,9 +91,8 @@ class PlannerE2ETest {
             await this.waitForElement('#add-epic');
             await this.waitForElement('#add-task');
             await this.waitForElement('#add-person');
-            await this.waitForElement('#dependency-mode');
             
-            const title = await this.page.textContent('title');
+            const title = await this.page.title();
             if (!title.includes('Planner')) {
                 throw new Error('Page title should contain "Planner"');
             }
@@ -107,7 +106,7 @@ class PlannerE2ETest {
             
             // Check epic appears on canvas
             await this.waitForElement('.epic');
-            const epicTitle = await this.page.textContent('.epic-title');
+            const epicTitle = await this.page.$eval('.epic-title', el => el.textContent);
             if (!epicTitle.includes('User Authentication Epic')) {
                 throw new Error('Epic title not found or incorrect');
             }
@@ -133,7 +132,7 @@ class PlannerE2ETest {
             }
             
             // Check HUD shows unaligned tasks
-            const hudText = await this.page.textContent('#unaligned-count');
+            const hudText = await this.page.$eval('#unaligned-count', el => el.textContent);
             if (hudText !== '2') {
                 throw new Error('HUD should show 2 unaligned tasks');
             }
@@ -169,7 +168,7 @@ class PlannerE2ETest {
     async testSidebarCollapse() {
         await this.test('Sidebar collapse functionality', async () => {
             // Test sidebar toggle
-            await this.clickAndWait('.sidebar-toggle');
+            await this.clickAndWait('#sidebar-toggle');
             
             // Check if sidebar is collapsed
             const sidebar = await this.page.$('.people-palette');
@@ -194,41 +193,42 @@ class PlannerE2ETest {
             await this.takeScreenshot('person-tooltip');
             
             // Expand sidebar back
-            await this.clickAndWait('.sidebar-toggle');
+            await this.clickAndWait('#sidebar-toggle');
         });
     }
 
-    async testDependencyMode() {
-        await this.test('Dependency mode activation', async () => {
-            // Activate dependency mode
-            await this.clickAndWait('#dependency-mode');
-            
-            // Check button is active
-            const button = await this.page.$('#dependency-mode');
-            const hasActiveClass = await this.page.evaluate(el => 
-                el.classList.contains('btn-active'), button);
-            
-            if (!hasActiveClass) {
-                throw new Error('Dependency mode button should be active');
+    async testDependencyCreation() {
+        await this.test('Dependency creation via ports', async () => {
+            // Ensure at least two tasks exist (created earlier)
+            const tasks = await this.page.$$('.task');
+            if (tasks.length < 2) {
+                throw new Error('Need at least two tasks to create a dependency');
             }
-            
-            // Check cursor changed
-            const cursor = await this.page.evaluate(() => 
-                document.body.style.cursor);
-            
-            if (cursor !== 'crosshair') {
-                throw new Error('Cursor should change to crosshair in dependency mode');
+
+            // Find output port on first task and input port on second
+            const outputPort = await this.page.$('.task:nth-of-type(1) .connection-port.output');
+            const inputPort = await this.page.$('.task:nth-of-type(2) .connection-port.input');
+            if (!outputPort || !inputPort) {
+                throw new Error('Connection ports not found');
             }
-            
-            await this.takeScreenshot('dependency-mode-active');
+
+            const outBox = await outputPort.boundingBox();
+            const inBox = await inputPort.boundingBox();
+
+            // Drag from output to input
+            await this.page.mouse.move(outBox.x + outBox.width / 2, outBox.y + outBox.height / 2);
+            await this.page.mouse.down();
+            await this.page.mouse.move(inBox.x + inBox.width / 2, inBox.y + inBox.height / 2);
+            await this.page.mouse.up();
+
+            // Verify a dependency path exists
+            await this.page.waitForSelector('.dependency-line', { timeout: 2000 });
+            await this.takeScreenshot('dependency-created');
         });
     }
 
     async testTaskDragAndDrop() {
         await this.test('Task drag and drop into Epic', async () => {
-            // First exit dependency mode
-            await this.clickAndWait('#dependency-mode');
-            
             // Get task and epic positions
             const task = await this.page.$('.task');
             const epic = await this.page.$('.epic-content');
@@ -256,7 +256,7 @@ class PlannerE2ETest {
             await this.page.waitForTimeout(1000);
             
             // Check if task is now aligned
-            const unalignedCount = await this.page.textContent('#unaligned-count');
+            const unalignedCount = await this.page.$eval('#unaligned-count', el => el.textContent);
             const expectedCount = '1'; // Should be one less
             
             if (unalignedCount !== expectedCount) {
@@ -286,15 +286,19 @@ class PlannerE2ETest {
 
     async testExportImport() {
         await this.test('Export functionality', async () => {
-            // Test export (this will trigger download)
-            const [download] = await Promise.all([
-                this.page.waitForEvent ? this.page.waitForEvent('download') : Promise.resolve(null),
-                this.page.click('#export-data')
-            ]);
-            
-            // Note: Import test would require file upload simulation
-            // which is more complex and environment-dependent
-            console.log('Export triggered successfully');
+            // Stub URL.createObjectURL to observe export being called
+            await this.page.evaluate(() => {
+                window.__export_called = false;
+                const orig = URL.createObjectURL;
+                URL.createObjectURL = function(blob) {
+                    window.__export_called = true;
+                    try { return orig.call(this, blob); } catch (e) { return 'blob://test'; }
+                };
+            });
+            await this.page.click('#export-data');
+            await this.page.waitForTimeout(300);
+            const called = await this.page.evaluate(() => window.__export_called === true);
+            if (!called) throw new Error('Export did not trigger blob creation');
         });
     }
 
@@ -384,7 +388,7 @@ class PlannerE2ETest {
             
             // UI interaction tests
             await this.testSidebarCollapse();
-            await this.testDependencyMode();
+            await this.testDependencyCreation();
             await this.testTaskDragAndDrop();
             await this.testZoomAndPan();
             
