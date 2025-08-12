@@ -14,11 +14,11 @@ const Loader2 = ({ className }) => React.createElement('span', { className, styl
 const Download = ({ className }) => React.createElement('span', { className, style: { fontSize: '16px' } }, '💾');
 const Settings = ({ className }) => React.createElement('span', { className, style: { fontSize: '16px' } }, '⚙️');
 
-// Simple date formatter (fallback if date-fns not available)
+// Simple date formatter using the dateUtils from index.html
 function formatDate(date) {
-  if (window.dateFns && window.dateFns.format) {
+  if (window.dateUtils) {
     try {
-      return window.dateFns.format(date, 'MMM d, yyyy');
+      return window.dateUtils.format(date, 'MMM d, yyyy');
     } catch (e) {
       // Fallback to simple date formatting
     }
