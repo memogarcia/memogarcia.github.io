@@ -450,6 +450,62 @@ body {
     display: none;
 }
 
+/* Timeline sidebar */
+.timeline-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    overflow-y: auto;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.timeline-sidebar.collapsed {
+    width: 48px;
+}
+
+.timeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.timeline-content {
+    padding: 12px;
+}
+
+.timeline-item {
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.timeline-item .timeline-type {
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+.timeline-item .timeline-date {
+    font-size: 12px;
+    color: var(--secondary);
+    display: block;
+}
+
+.timeline-empty {
+    font-size: 13px;
+    color: var(--secondary);
+}
+
+.timeline-sidebar.collapsed .timeline-title,
+.timeline-sidebar.collapsed .timeline-content {
+    display: none;
+}
+
+
 .people-palette.collapsed .sidebar-toggle i {
     transform: rotate(180deg);
 }
