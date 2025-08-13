@@ -42,6 +42,18 @@ Each service manually implements load balancing, retries, and circuit breakers S
     </item>
     
     <item>
+      <title>How to write properly (or not)</title>
+      <link>https://memo.mx/posts/how-to-write-properly/</link>
+      <pubDate>Sun, 13 Jul 2025 10:00:00 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/how-to-write-properly/</guid>
+      <description>How do you write properly?
+Wrong question. Better one: given what I&amp;rsquo;m trying to communicate, how can I make my thinking clear to someone else?
+Most writing advice comes from people who never had to explain why a Kubernetes pod is stuck pending at 3 AM. &amp;ldquo;Write like Hemingway,&amp;rdquo; they say. &amp;ldquo;Use active voice.&amp;rdquo; Great for novels. Useless when documenting why your deployment exploded last Tuesday.
+I write a lot. Blog posts, documentation, incident reports, code comments that future-me will actually read.</description>
+    </item>
+    
+    <item>
       <title>Behavior-driven development with LLMs</title>
       <link>https://memo.mx/posts/bdd-with-llms/</link>
       <pubDate>Wed, 22 Jan 2025 00:03:30 +0100</pubDate>
