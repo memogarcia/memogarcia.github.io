@@ -1,0 +1,421 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prevent text rendering issues */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fix for virtualized list items */
+[data-testid="virtualized-list"] > div {
+  will-change: transform;
+}
+
+/* Text selection and dragging styles */
+.select-text {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+/* Custom drag cursor for text */
+.select-text:not(:has(textarea)):not(.editing) {
+  cursor: text;
+}
+
+.select-text:not(:has(textarea)):not(.editing):active {
+  cursor: grabbing;
+}
+
+/* Highlight selected text */
+::selection {
+  background-color: rgb(16 163 127 / 0.3);
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: rgb(16 163 127 / 0.3);
+  color: inherit;
+}
+
+@layer base {
+  :root {
+    --color-bg: 255 255 255;
+    --color-bg-secondary: 249 249 249;
+    --color-text: 0 0 0;
+    --color-text-secondary: 75 85 99;  /* #4B5563 - Better contrast */
+    --color-text-muted: 107 114 128;   /* #6B7280 - WCAG AA compliant */
+    --color-border: 229 229 229;
+    --color-hover: 247 247 247;
+  }
+  
+  .dark {
+    --color-bg: 33 33 33;
+    --color-bg-secondary: 44 44 44;
+    --color-text: 255 255 255;
+    --color-text-secondary: 209 213 219; /* #D1D5DB - Better contrast */
+    --color-text-muted: 156 163 175;     /* #9CA3AF - WCAG AA compliant */
+    --color-border: 68 68 68;
+    --color-hover: 55 55 55;
+  }
+  
+  .sepia {
+    /* Scientifically optimized reading theme based on research:
+       - Warm background reduces blue light exposure
+       - Optimal contrast ratio of ~7:1 for extended reading
+       - Slight yellow tint (around 5500K color temperature) reduces eye strain
+       - Based on studies from Journal of Vision and Ergonomics research */
+    --color-bg: 251 248 241;           /* #FBF8F1 - Warm cream background */
+    --color-bg-secondary: 247 243 234; /* #F7F3EA - Slightly darker warm */
+    --color-text: 62 51 41;            /* #3E3329 - Dark brown, contrast ratio ~9:1 */
+    --color-text-secondary: 92 77 61;  /* #5C4D3D - Medium brown, contrast ratio ~6:1 */
+    --color-text-muted: 122 102 82;    /* #7A6652 - Light brown, contrast ratio ~4.5:1 */
+    --color-border: 226 218 203;       /* #E2DACB - Soft warm border */
+    --color-hover: 241 235 223;        /* #F1EBDF - Subtle hover state */
+  }
+  
+  body {
+    @apply antialiased transition-colors duration-200;
+    background-color: rgb(var(--color-bg));
+    color: rgb(var(--color-text));
+  }
+  
+  /* Enhanced readability for sepia mode */
+  .sepia .editor-content {
+    /* Optimal font settings for extended reading based on typography research */
+    letter-spacing: 0.01em;  /* Slight letter spacing improves readability */
+    word-spacing: 0.05em;    /* Slightly increased word spacing */
+  }
+  
+  .sepia .editor-content p {
+    text-align: justify;      /* Justified text for book-like reading experience */
+    hyphens: auto;           /* Enable automatic hyphenation */
+  }
+}
+
+.editor-content {
+  @apply font-serif text-base;
+  line-height: 1.8;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+}
+
+.editor-content > * {
+  margin: 0;
+  padding: 0;
+}
+
+.editor-content > *:first-child {
+  margin-top: 0 !important;
+}
+
+.editor-content > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+.editor-content h1,
+.editor-content h2,
+.editor-content h3,
+.editor-content h4,
+.editor-content h5,
+.editor-content h6 {
+  @apply font-sans font-semibold;
+  line-height: 1.2;
+}
+
+.editor-content h1 {
+  @apply text-2xl mt-6 mb-4;
+}
+
+.editor-content h2 {
+  @apply text-xl mt-5 mb-3;
+}
+
+.editor-content h3 {
+  @apply text-lg mt-4 mb-2;
+}
+
+.editor-content p {
+  line-height: 1.8;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* Override markdown library default paragraph spacing */
+.wmde-markdown p {
+  margin-bottom: 0.5rem !important;
+}
+
+.editor-content ul,
+.editor-content ol {
+  @apply mb-4 ml-6;
+  list-style-position: outside;
+}
+
+.editor-content ul {
+  list-style-type: disc;
+}
+
+.editor-content ol {
+  list-style-type: decimal;
+}
+
+.editor-content li {
+  @apply mb-2;
+  line-height: 1.7;
+}
+
+.editor-content blockquote {
+  @apply border-l-4 border-border pl-4 italic my-4;
+}
+
+.editor-content code {
+  @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono;
+}
+
+.editor-content pre {
+  @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto my-4;
+}
+
+.editor-content pre code {
+  @apply bg-transparent p-0;
+}
+
+.editor-content a {
+  @apply text-accent hover:text-accent-dark underline;
+}
+
+.editor-content strong {
+  @apply font-bold;
+}
+
+.editor-content em {
+  @apply italic;
+}
+
+.editor-content hr {
+  @apply my-6 border-t border-border;
+}
+
+/* Global textarea styles for text wrapping */
+textarea {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Ensure long words break in all content */
+.editor-content * {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Specific fix for code blocks with long lines */
+.editor-content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.editor-content pre code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Focus mode styles - AI Writer inspired */
+.focus-mode-transition {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.focus-mode-dimmed {
+  opacity: 0.3;
+  filter: blur(0.5px);
+}
+
+/* Enhanced focus mode with smoother transitions */
+@supports (backdrop-filter: blur(10px)) {
+  .focus-mode-backdrop {
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* Smooth scroll behavior in focus mode */
+.focus-mode-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Responsive Design Breakpoints */
+@media (max-width: 1024px) {
+  /* Tablet - Hide right sidebar by default */
+  .right-sidebar-mobile-hidden {
+    display: none !important;
+  }
+  
+  /* Reduce padding on editor */
+  .editor-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile - Single column layout */
+  .left-sidebar-mobile-hidden {
+    display: none !important;
+  }
+  
+  /* Full width editor on mobile */
+  .mobile-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Smaller font sizes on mobile */
+  .editor-content {
+    font-size: 0.95rem;
+  }
+  
+  .editor-content h1 {
+    @apply text-xl;
+  }
+  
+  .editor-content h2 {
+    @apply text-lg;
+  }
+  
+  /* Hide certain UI elements on mobile */
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  /* Adjust header for mobile */
+  .mobile-header {
+    padding: 0.5rem;
+  }
+  
+  /* Stack word count vertically on mobile */
+  .word-count-mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Small mobile adjustments */
+  .editor-content {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+  
+  /* Simplify drag handles on mobile */
+  .drag-handle-mobile {
+    display: none;
+  }
+}
+
+/* Accessibility - High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: 0 0 0;
+    --color-text-muted: 64 64 64;
+  }
+  
+  .dark {
+    --color-border: 255 255 255;
+    --color-text-muted: 192 192 192;
+  }
+}
+
+/* Accessibility - Focus indicators */
+/* High-visibility focus ring for better accessibility */
+*:focus-visible {
+  outline: 2px solid rgb(16 163 127);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+/* Custom focus styles for buttons and interactive elements */
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid rgb(16 163 127);
+  outline-offset: 2px;
+}
+
+/* Focus styles for form elements */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgb(16 163 127);
+  outline-offset: 2px;
+  border-color: rgb(16 163 127);
+}
+
+/* Skip links for keyboard navigation */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 999;
+  padding: 0.5rem 1rem;
+  background: rgb(16 163 127);
+  color: white;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Focus management for drag and drop elements */
+[draggable="true"]:focus-visible {
+  outline: 2px dashed rgb(16 163 127);
+  outline-offset: 2px;
+}
+
+/* High contrast mode improvements */
+@media (prefers-contrast: high) {
+  *:focus-visible {
+    outline: 3px solid;
+    outline-offset: 2px;
+  }
+  
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 3px solid;
+    background: ButtonHighlight;
+    color: ButtonText;
+  }
+}
+
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

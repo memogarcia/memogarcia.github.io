@@ -29,6 +29,26 @@ export class PlanningApp {
         this.originalPositions = new Map(); // Store original task positions for restoration
         this.selected = new Set(); // Currently selected objects for multi-drag
         
+        // Performance optimization properties
+        this.animationFrame = null;
+        this.isAnimating = false;
+        this.pendingUpdates = new Set();
+        this.lastFrameTime = 0;
+        this.targetFPS = 60;
+        this.frameInterval = 1000 / this.targetFPS;
+        
+        // Throttling for event handlers
+        this.lastMouseMoveTime = 0;
+        this.mouseMoveThrottleMs = 16; // ~60fps
+        this.wheelThrottleTimeout = null;
+        
+        // Performance monitoring
+        this.performanceMetrics = {
+            frameCount: 0,
+            averageFPS: 60,
+            lastFPSUpdate: 0
+        };
+        
         // Constants - will be updated based on screen size
         this.updateConstants();
         
@@ -56,6 +76,7 @@ export class PlanningApp {
         this.setupEnhancedSidebars();
         this.setupDetailsPanel();
         this.setupGlobalKeyboardShortcuts();
+        this.initPerformanceMonitoring();
     }
 
     // Escape text for safe innerHTML usage
@@ -68,6 +89,202 @@ export class PlanningApp {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
     }
+    
+    // ===== PERFORMANCE OPTIMIZATION METHODS =====
+    
+    // RAF-based animation system for smooth 60fps updates
+    startAnimation() {
+        if (this.isAnimating) return;
+        this.isAnimating = true;
+        this.animationFrame = requestAnimationFrame(this.animationLoop.bind(this));
+    }
+    
+    stopAnimation() {
+        this.isAnimating = false;
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.animationFrame = null;
+        }
+        this.pendingUpdates.clear();
+    }
+    
+    animationLoop(currentTime) {
+        if (!this.isAnimating) return;
+        
+        // Throttle to target FPS
+        if (currentTime - this.lastFrameTime >= this.frameInterval) {
+            this.processFrameUpdates();
+            this.updatePerformanceMetrics(currentTime);
+            this.lastFrameTime = currentTime;
+        }
+        
+        if (this.isAnimating) {
+            this.animationFrame = requestAnimationFrame(this.animationLoop.bind(this));
+        }
+    }
+    
+    processFrameUpdates() {
+        // Process all pending updates in a single frame
+        if (this.pendingUpdates.has('world-transform')) {
+            this.applyWorldTransform();
+            this.pendingUpdates.delete('world-transform');
+        }
+        
+        if (this.pendingUpdates.has('positions')) {
+            this.applyPendingPositions();
+            this.pendingUpdates.delete('positions');
+        }
+        
+        if (this.pendingUpdates.has('connections')) {
+            this.renderConnections();
+            this.pendingUpdates.delete('connections');
+        }
+        
+        // Stop animation if no more updates pending
+        if (this.pendingUpdates.size === 0) {
+            this.stopAnimation();
+        }
+    }
+    
+    scheduleUpdate(updateType) {
+        this.pendingUpdates.add(updateType);
+        if (!this.isAnimating) {
+            this.startAnimation();
+        }
+    }
+    
+    // Throttled event handler wrapper
+    throttle(func, delay) {
+        let timeoutId;
+        let lastExecTime = 0;
+        return function (...args) {
+            const currentTime = Date.now();
+            if (currentTime - lastExecTime > delay) {
+                func.apply(this, args);
+                lastExecTime = currentTime;
+            } else {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                    lastExecTime = Date.now();
+                }, delay - (currentTime - lastExecTime));
+            }
+        };
+    }
+    
+    // Performance metrics tracking
+    updatePerformanceMetrics(currentTime) {
+        this.performanceMetrics.frameCount++;
+        
+        if (currentTime - this.performanceMetrics.lastFPSUpdate >= 1000) {
+            this.performanceMetrics.averageFPS = this.performanceMetrics.frameCount;
+            this.performanceMetrics.frameCount = 0;
+            this.performanceMetrics.lastFPSUpdate = currentTime;
+            
+            // Log performance if below target
+            if (this.performanceMetrics.averageFPS < 50) {
+                console.warn(`Performance warning: ${this.performanceMetrics.averageFPS} FPS`);
+            }
+        }
+    }
+    
+    // Optimized transform applications using transform3d for GPU acceleration
+    applyTransform3d(element, x, y, scale = 1) {
+        if (!element || !element.style) return;
+        element.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+    }
+    
+    // Batch DOM updates to minimize reflows
+    batchDOMUpdates(updates) {
+        // Use DocumentFragment for multiple element creation
+        const fragment = document.createDocumentFragment();
+        
+        // Apply all transform updates in a single batch
+        requestAnimationFrame(() => {
+            updates.forEach(update => {
+                if (update.type === 'transform' && update.element) {
+                    this.applyTransform3d(update.element, update.x, update.y, update.scale);
+                } else if (update.type === 'style' && update.element) {
+                    Object.assign(update.element.style, update.styles);
+                }
+            });
+        });
+    }
+    
+    // Apply world transform with GPU acceleration
+    applyWorldTransform() {
+        const world = document.getElementById('world');
+        if (world) {
+            this.applyTransform3d(world, this.view.x, this.view.y, this.view.scale);
+        }
+        
+        const svg = document.getElementById('connections');
+        if (svg) {
+            svg.style.transformOrigin = 'top left';
+            this.applyTransform3d(svg, this.view.x, this.view.y, this.view.scale);
+        }
+        
+        // Update grid background with optimized performance
+        const canvas = document.getElementById('canvas');
+        if (canvas) {
+            canvas.style.backgroundSize = `${20 * this.view.scale}px ${20 * this.view.scale}px`;
+        }
+    }
+    
+    // Apply pending position updates in batch
+    applyPendingPositions() {
+        if (!this.pendingPositionUpdates) return;
+        
+        const updates = [];
+        this.pendingPositionUpdates.forEach((position, elementId) => {
+            const element = document.querySelector(`[data-task-id="${elementId}"], [data-epic-id="${elementId}"], [data-north-star-id="${elementId}"]`);
+            if (element) {
+                updates.push({
+                    type: 'transform',
+                    element,
+                    x: position.x,
+                    y: position.y,
+                    scale: 1
+                });
+            }
+        });
+        
+        this.batchDOMUpdates(updates);
+        this.pendingPositionUpdates.clear();
+    }
+    
+    // Initialize pending position updates map
+    initPendingPositions() {
+        if (!this.pendingPositionUpdates) {
+            this.pendingPositionUpdates = new Map();
+        }
+    }
+    
+    // Performance monitoring integration
+    initPerformanceMonitoring() {
+        if (window.performanceMonitor) {
+            // Hook into drag events
+            const originalHandleMouseMove = this.handleCanvasMouseMove.bind(this);
+            this.handleCanvasMouseMove = (e) => {
+                window.performanceMonitor.recordDragEvent();
+                return originalHandleMouseMove(e);
+            };
+            
+            // Hook into render operations
+            const originalRender = this.render.bind(this);
+            this.render = () => {
+                const startTime = performance.now();
+                const result = originalRender();
+                const renderTime = performance.now() - startTime;
+                window.performanceMonitor.recordRenderTime(renderTime);
+                return result;
+            };
+            
+            console.log('Performance monitoring hooks installed');
+        }
+    }
+    
+    // ===== END PERFORMANCE METHODS =====
     
     setupEnhancedSidebars() {
         // Initialize sidebar state and dimensions
@@ -750,6 +967,9 @@ export class PlanningApp {
     }
     
     init() {
+        // Initialize performance optimizations
+        this.initPendingPositions();
+        
         this.setupEventListeners();
         this.render();
         this.addMobileEnhancements();
@@ -825,12 +1045,24 @@ export class PlanningApp {
             }
         });
         
-        // Canvas events
+        // Canvas events with performance optimizations
         const canvas = document.getElementById('canvas');
-        canvas.addEventListener('wheel', this.handleWheel.bind(this));
-        canvas.addEventListener('mousedown', this.handleCanvasMouseDown.bind(this));
-        canvas.addEventListener('mousemove', this.handleCanvasMouseMove.bind(this));
-        canvas.addEventListener('mouseup', this.handleCanvasMouseUp.bind(this));
+        
+        // Wheel events need preventDefault, so can't be passive
+        canvas.addEventListener('wheel', this.handleWheel.bind(this), { passive: false });
+        
+        // Mouse events for drag operations
+        canvas.addEventListener('mousedown', this.handleCanvasMouseDown.bind(this), { passive: true });
+        canvas.addEventListener('mousemove', this.handleCanvasMouseMove.bind(this), { passive: true });
+        canvas.addEventListener('mouseup', this.handleCanvasMouseUp.bind(this), { passive: true });
+        
+        // Touch events for mobile with optimizations
+        canvas.addEventListener('touchstart', this.handleCanvasTouchStart.bind(this), { passive: false });
+        canvas.addEventListener('touchmove', this.handleCanvasTouchMove.bind(this), { passive: false });
+        canvas.addEventListener('touchend', this.handleCanvasTouchEnd.bind(this), { passive: true });
+        
+        // Add performance-optimized classes to canvas
+        canvas.classList.add('canvas-optimized');
         
         // Dialog events
         document.getElementById('dialog-cancel').addEventListener('click', this.hideDialog.bind(this));
@@ -2871,18 +3103,8 @@ export class PlanningApp {
     }
     
     updateWorldTransform() {
-        const world = document.getElementById('world');
-        world.style.transform = `translate(${this.view.x}px, ${this.view.y}px) scale(${this.view.scale})`;
-        
-        const svg = document.getElementById('connections');
-        if (svg) {
-            svg.style.transformOrigin = 'top left';
-            svg.style.transform = `translate(${this.view.x}px, ${this.view.y}px) scale(${this.view.scale})`;
-        }
-        
-        // Update grid background
-        const canvas = document.getElementById('canvas');
-        canvas.style.backgroundSize = `${20 * this.view.scale}px ${20 * this.view.scale}px`;
+        // Use performance-optimized RAF-based updating
+        this.scheduleUpdate('world-transform');
     }
     
     getTaskAbsolutePosition(task) {
@@ -2899,15 +3121,23 @@ export class PlanningApp {
         };
     }
     
-    // Event handlers
+    // Event handlers with performance optimizations
     handleWheel(e) {
         if (!(e.metaKey || e.ctrlKey)) return;
         
         e.preventDefault();
-        const direction = e.deltaY > 0 ? -1 : 1;
-        const factor = 1 + direction * 0.12;
-        this.view.scale = this.clamp(this.view.scale * factor, 0.35, 2.2);
-        this.updateWorldTransform();
+        
+        // Throttle wheel events to prevent excessive updates
+        if (this.wheelThrottleTimeout) {
+            clearTimeout(this.wheelThrottleTimeout);
+        }
+        
+        this.wheelThrottleTimeout = setTimeout(() => {
+            const direction = e.deltaY > 0 ? -1 : 1;
+            const factor = 1 + direction * 0.12;
+            this.view.scale = this.clamp(this.view.scale * factor, 0.35, 2.2);
+            this.updateWorldTransform();
+        }, 10); // Throttle to ~100fps for wheel events
     }
     
     handleCanvasMouseDown(e) {
@@ -2959,8 +3189,20 @@ export class PlanningApp {
     handleCanvasMouseMove(e) {
         if (!this.dragging) return;
         
+        // Throttle mouse move events for smooth 60fps performance
+        const currentTime = Date.now();
+        if (currentTime - this.lastMouseMoveTime < this.mouseMoveThrottleMs) {
+            return;
+        }
+        this.lastMouseMoveTime = currentTime;
+        
         const dx = e.clientX - this.dragStartPos.x;
         const dy = e.clientY - this.dragStartPos.y;
+        
+        // Add high-performance drag class to improve rendering
+        if (!document.body.classList.contains('high-performance-drag')) {
+            document.body.classList.add('high-performance-drag');
+        }
         
         if (this.dragging.type === 'canvas') {
             this.view.x += dx;
@@ -2968,17 +3210,17 @@ export class PlanningApp {
             this.updateWorldTransform();
             this.dragStartPos = { x: e.clientX, y: e.clientY };
         } else if (this.dragging.type === 'north-star') {
-            this.moveNorthStar(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
+            this.moveNorthStarOptimized(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
         } else if (this.dragging.type === 'epic') {
-            this.moveEpic(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
+            this.moveEpicOptimized(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
         } else if (this.dragging.type === 'resize-north-star') {
             this.resizeNorthStar(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'resize') {
             this.resizeEpic(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'task') {
-            this.moveTask(this.dragging.id, dx, dy);
+            this.moveTaskOptimized(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'multi') {
-            this.moveSelected(dx, dy);
+            this.moveSelectedOptimized(dx, dy);
         }
     }
     
@@ -2990,6 +3232,14 @@ export class PlanningApp {
         } else if (this.dragging?.type === 'multi') {
             this.saveToStorage();
         }
+
+        // Clean up performance optimizations
+        document.body.classList.remove('high-performance-drag');
+        
+        // Remove dragging class from elements for better performance
+        document.querySelectorAll('.dragging').forEach(el => {
+            el.classList.remove('dragging');
+        });
 
         this.dragging = null;
         this.dragStartPos = null;
@@ -3241,6 +3491,207 @@ export class PlanningApp {
         
         this.renderConnections();
     }
+    
+    // ===== PERFORMANCE-OPTIMIZED MOVEMENT FUNCTIONS =====
+    
+    moveTaskOptimized(taskId, dx, dy) {
+        const task = this.findById(this.tasks, taskId);
+        if (!task) return;
+        
+        if (task.epicId) {
+            const epic = this.findById(this.epics, task.epicId);
+            if (!epic) return;
+            
+            const maxX = Math.max(0, epic.w - this.EPIC_PAD_X * 2 - this.TASK_W);
+            const maxY = Math.max(0, epic.h - this.EPIC_HEADER - this.EPIC_PAD_Y * 2 - this.TASK_H);
+            
+            task.ix = this.clamp(this.dragging.startPos.ix + dx / this.view.scale, 0, maxX);
+            task.iy = this.clamp(this.dragging.startPos.iy + dy / this.view.scale, 0, maxY);
+        } else {
+            task.x = this.dragging.startPos.x + dx / this.view.scale;
+            task.y = this.dragging.startPos.y + dy / this.view.scale;
+        }
+        
+        const absPos = this.getTaskAbsolutePosition(task);
+        const element = document.querySelector(`[data-task-id="${taskId}"]`);
+        if (element) {
+            // Use GPU-accelerated transform3d
+            this.applyTransform3d(element, absPos.x, absPos.y);
+        }
+        
+        // Schedule connection updates instead of immediate render
+        this.scheduleUpdate('connections');
+    }
+    
+    moveEpicOptimized(epicId, x, y) {
+        const epic = this.findById(this.epics, epicId);
+        if (!epic) return;
+        
+        epic.x = x;
+        epic.y = y;
+        
+        const element = document.querySelector(`[data-epic-id="${epicId}"]`);
+        if (element) {
+            const epicElement = element.closest('.epic');
+            if (epicElement) {
+                // Use GPU-accelerated transform3d
+                this.applyTransform3d(epicElement, x, y);
+            }
+        }
+
+        // Store pending position update instead of immediate render
+        if (!this.pendingPositionUpdates) this.pendingPositionUpdates = new Map();
+        this.pendingPositionUpdates.set(epicId, { x, y });
+        this.scheduleUpdate('positions');
+        this.scheduleUpdate('connections');
+    }
+    
+    moveNorthStarOptimized(northStarId, x, y) {
+        const northStar = this.findById(this.northStars, northStarId);
+        if (!northStar) return;
+        
+        northStar.x = x;
+        northStar.y = y;
+        
+        const element = document.querySelector(`[data-north-star-id="${northStarId}"]`);
+        if (element) {
+            const nsElement = element.closest('.north-star');
+            if (nsElement) {
+                // Use GPU-accelerated transform3d
+                this.applyTransform3d(nsElement, x, y);
+            }
+        }
+        
+        // Schedule connection updates instead of immediate render
+        this.scheduleUpdate('connections');
+    }
+    
+    moveSelectedOptimized(dx, dy) {
+        let epicMoved = false;
+        const updates = [];
+        
+        this.dragging.items.forEach(item => {
+            if (item.type === 'task') {
+                const task = this.findById(this.tasks, item.id);
+                if (!task) return;
+                
+                if (task.epicId) {
+                    const epic = this.findById(this.epics, task.epicId);
+                    if (!epic) return;
+                    
+                    const maxX = Math.max(0, epic.w - this.EPIC_PAD_X * 2 - this.TASK_W);
+                    const maxY = Math.max(0, epic.h - this.EPIC_HEADER - this.EPIC_PAD_Y * 2 - this.TASK_H);
+                    
+                    task.ix = this.clamp(item.startPos.ix + dx / this.view.scale, 0, maxX);
+                    task.iy = this.clamp(item.startPos.iy + dy / this.view.scale, 0, maxY);
+                } else {
+                    task.x = item.startPos.x + dx / this.view.scale;
+                    task.y = item.startPos.y + dy / this.view.scale;
+                }
+                
+                const absPos = this.getTaskAbsolutePosition(task);
+                const element = document.querySelector(`[data-task-id="${item.id}"]`);
+                if (element) {
+                    updates.push({
+                        type: 'transform',
+                        element,
+                        x: absPos.x,
+                        y: absPos.y
+                    });
+                }
+            } else if (item.type === 'epic') {
+                const epic = this.findById(this.epics, item.id);
+                if (!epic) return;
+                
+                epic.x = item.startPos.x + dx / this.view.scale;
+                epic.y = item.startPos.y + dy / this.view.scale;
+                epicMoved = true;
+                
+                const element = document.querySelector(`[data-epic-id="${item.id}"]`);
+                if (element) {
+                    const epicElement = element.closest('.epic');
+                    if (epicElement) {
+                        updates.push({
+                            type: 'transform',
+                            element: epicElement,
+                            x: epic.x,
+                            y: epic.y
+                        });
+                    }
+                }
+            } else if (item.type === 'north-star') {
+                const ns = this.findById(this.northStars, item.id);
+                if (!ns) return;
+                
+                ns.x = item.startPos.x + dx / this.view.scale;
+                ns.y = item.startPos.y + dy / this.view.scale;
+                
+                const element = document.querySelector(`[data-north-star-id="${item.id}"]`);
+                if (element) {
+                    const nsElement = element.closest('.north-star');
+                    if (nsElement) {
+                        updates.push({
+                            type: 'transform',
+                            element: nsElement,
+                            x: ns.x,
+                            y: ns.y
+                        });
+                    }
+                }
+            }
+        });
+        
+        // Batch all DOM updates
+        this.batchDOMUpdates(updates);
+        
+        // Schedule updates instead of immediate renders
+        if (epicMoved) {
+            this.scheduleUpdate('positions');
+        }
+        this.scheduleUpdate('connections');
+    }
+    
+    // ===== END PERFORMANCE-OPTIMIZED MOVEMENT FUNCTIONS =====
+    
+    // ===== OPTIMIZED TOUCH EVENT HANDLERS =====
+    
+    handleCanvasTouchStart(e) {
+        // Convert touch to mouse event for unified handling
+        if (e.touches.length === 1) {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                button: 0
+            });
+            this.handleCanvasMouseDown(mouseEvent);
+        }
+        e.preventDefault(); // Prevent scrolling
+    }
+    
+    handleCanvasTouchMove(e) {
+        if (e.touches.length === 1 && this.dragging) {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            this.handleCanvasMouseMove(mouseEvent);
+        }
+        e.preventDefault(); // Prevent scrolling
+    }
+    
+    handleCanvasTouchEnd(e) {
+        if (this.dragging) {
+            const mouseEvent = new MouseEvent('mouseup', {
+                clientX: 0,
+                clientY: 0
+            });
+            this.handleCanvasMouseUp(mouseEvent);
+        }
+    }
+    
+    // ===== END TOUCH EVENT HANDLERS =====
     
     handleTaskDragEnd(e) {
         const taskId = this.dragging.id;
