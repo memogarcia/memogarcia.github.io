@@ -10,7 +10,19 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 12 Aug 2025 00:31:00 -0700</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 13 Aug 2025 00:00:00 +0100</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Keycloak: Identity Management</title>
+      <link>https://memo.mx/posts/keycloak-identity-management/</link>
+      <pubDate>Wed, 13 Aug 2025 00:00:00 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/keycloak-identity-management/</guid>
+      <description>Implementing authentication from scratch often starts simple but quickly escalates into weeks of navigating RFC specifications and protocol implementations. Keycloak addresses this complexity by providing a comprehensive identity management solution.
+What is Keycloak? Keycloak is an open-source identity and access management solution that handles authentication and authorization at enterprise scale.
+Core capabilities include:
+Single Sign-On (SSO) - Centralized authentication across multiple applications User federation - Integration with LDAP, Active Directory, and other identity stores Identity brokering - Authentication through external providers including Google, GitHub, and SAML systems Authorization policies - Fine-grained permission management Standard protocols - OAuth 2.</description>
+    </item>
+    
     <item>
       <title>Simplicity</title>
       <link>https://memo.mx/posts/simplicity/</link>
