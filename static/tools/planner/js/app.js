@@ -37,11 +37,6 @@ export class PlanningApp {
         this.targetFPS = 60;
         this.frameInterval = 1000 / this.targetFPS;
         
-        // Throttling for event handlers
-        this.lastMouseMoveTime = 0;
-        this.mouseMoveThrottleMs = 16; // ~60fps
-        this.wheelThrottleTimeout = null;
-        
         // Performance monitoring
         this.performanceMetrics = {
             frameCount: 0,
@@ -76,7 +71,6 @@ export class PlanningApp {
         this.setupEnhancedSidebars();
         this.setupDetailsPanel();
         this.setupGlobalKeyboardShortcuts();
-        this.initPerformanceMonitoring();
     }
 
     // Escape text for safe innerHTML usage
@@ -260,31 +254,6 @@ export class PlanningApp {
         }
     }
     
-    // Performance monitoring integration
-    initPerformanceMonitoring() {
-        if (window.performanceMonitor) {
-            // Hook into drag events
-            const originalHandleMouseMove = this.handleCanvasMouseMove.bind(this);
-            this.handleCanvasMouseMove = (e) => {
-                window.performanceMonitor.recordDragEvent();
-                return originalHandleMouseMove(e);
-            };
-            
-            // Hook into render operations
-            const originalRender = this.render.bind(this);
-            this.render = () => {
-                const startTime = performance.now();
-                const result = originalRender();
-                const renderTime = performance.now() - startTime;
-                window.performanceMonitor.recordRenderTime(renderTime);
-                return result;
-            };
-            
-            console.log('Performance monitoring hooks installed');
-        }
-    }
-    
-    // ===== END PERFORMANCE METHODS =====
     
     setupEnhancedSidebars() {
         // Initialize sidebar state and dimensions
@@ -3189,20 +3158,8 @@ export class PlanningApp {
     handleCanvasMouseMove(e) {
         if (!this.dragging) return;
         
-        // Throttle mouse move events for smooth 60fps performance
-        const currentTime = Date.now();
-        if (currentTime - this.lastMouseMoveTime < this.mouseMoveThrottleMs) {
-            return;
-        }
-        this.lastMouseMoveTime = currentTime;
-        
         const dx = e.clientX - this.dragStartPos.x;
         const dy = e.clientY - this.dragStartPos.y;
-        
-        // Add high-performance drag class to improve rendering
-        if (!document.body.classList.contains('high-performance-drag')) {
-            document.body.classList.add('high-performance-drag');
-        }
         
         if (this.dragging.type === 'canvas') {
             this.view.x += dx;
@@ -3210,17 +3167,17 @@ export class PlanningApp {
             this.updateWorldTransform();
             this.dragStartPos = { x: e.clientX, y: e.clientY };
         } else if (this.dragging.type === 'north-star') {
-            this.moveNorthStarOptimized(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
+            this.moveNorthStar(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
         } else if (this.dragging.type === 'epic') {
-            this.moveEpicOptimized(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
+            this.moveEpic(this.dragging.id, this.dragging.startPos.x + dx, this.dragging.startPos.y + dy);
         } else if (this.dragging.type === 'resize-north-star') {
             this.resizeNorthStar(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'resize') {
             this.resizeEpic(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'task') {
-            this.moveTaskOptimized(this.dragging.id, dx, dy);
+            this.moveTask(this.dragging.id, dx, dy);
         } else if (this.dragging.type === 'multi') {
-            this.moveSelectedOptimized(dx, dy);
+            this.moveSelected(dx, dy);
         }
     }
     
@@ -3232,11 +3189,8 @@ export class PlanningApp {
         } else if (this.dragging?.type === 'multi') {
             this.saveToStorage();
         }
-
-        // Clean up performance optimizations
-        document.body.classList.remove('high-performance-drag');
         
-        // Remove dragging class from elements for better performance
+        // Remove dragging class from elements
         document.querySelectorAll('.dragging').forEach(el => {
             el.classList.remove('dragging');
         });
@@ -3494,7 +3448,7 @@ export class PlanningApp {
     
     // ===== PERFORMANCE-OPTIMIZED MOVEMENT FUNCTIONS =====
     
-    moveTaskOptimized(taskId, dx, dy) {
+    moveTask(taskId, dx, dy) {
         const task = this.findById(this.tasks, taskId);
         if (!task) return;
         
