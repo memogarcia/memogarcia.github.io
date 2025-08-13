@@ -118,6 +118,48 @@ While Keycloak handles authentication effectively, complex authorization decisio
 
 The integration typically follows this pattern:
 
+```
+┌─────────────┐
+│    User     │
+└──────┬──────┘
+       │ 1. Login
+       ▼
+┌─────────────────────────────────────────────┐
+│                 Keycloak                     │
+│  ┌─────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  Realm  │  │   Users  │  │   IdP    │   │
+│  └─────────┘  └──────────┘  └──────────┘   │
+└─────────────────────┬───────────────────────┘
+                      │ 2. JWT Token
+       ┌──────────────┴──────────────┐
+       ▼                             ▼
+┌──────────────┐              ┌──────────────┐
+│   Frontend   │              │   Service A   │
+│ Application  │              │              │
+└──────┬───────┘              │  ┌────────┐  │
+       │ 3. API Request       │  │  OPA   │  │
+       │    + JWT             │  │Sidecar │  │
+       ▼                      │  └────┬───┘  │
+┌──────────────────────┐      └───────┼──────┘
+│     API Gateway      │              │ 5. Decision
+│                      │              ▼
+│  ┌──────────────┐    │      ┌──────────────┐
+│  │ JWT Validation│   │      │   Service B   │
+│  └──────────────┘    │      │              │
+└──────────┬───────────┘      │  ┌────────┐  │
+           │ 4. Forward       │  │  OPA   │  │
+           │    Request       │  │Sidecar │  │
+           ▼                  │  └────┬───┘  │
+    ┌──────────────┐          └───────┼──────┘
+    │   Services   │                  │
+    │              │                  ▼
+    │ ┌──────────┐ │          ┌──────────────┐
+    │ │   OPA    │ │          │   Database   │
+    │ │ Library  │ │          └──────────────┘
+    │ └──────────┘ │
+    └──────────────┘
+```
+
 1. **Keycloak** manages authentication and issues JWT tokens containing user identity and basic roles
 2. **OPA** evaluates authorization policies based on the JWT claims plus additional context
 3. **Services** query OPA for authorization decisions using the JWT and request context
