@@ -589,15 +589,37 @@ body {
     margin-bottom: 1rem;
 }
 
-/* Smooth transitions for interactive elements */
+/* Performance optimized transitions for interactive elements */
 .epic, .task, .north-star {
+    /* GPU acceleration hints */
+    will-change: transform;
+    transform: translate3d(0, 0, 0); /* Force GPU layer */
+    
+    /* Optimized transitions - disable during drag */
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
                 box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.epic:hover, .task:hover, .north-star:hover {
-    transform: translateY(-2px);
+/* Disable transitions during drag for better performance */
+.epic.dragging, .task.dragging, .north-star.dragging {
+    transition: none !important;
+    will-change: transform;
+    pointer-events: none; /* Optimize hit testing during drag */
+}
+
+/* Performance-optimized hover states */
+.epic:hover:not(.dragging), .task:hover:not(.dragging), .north-star:hover:not(.dragging) {
+    transform: translate3d(0, -2px, 0);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+/* Global performance optimizations */
+.performance-mode {
+    pointer-events: none;
+}
+
+.performance-mode * {
+    pointer-events: none;
 }
 
 /* Enhanced sidebar transitions */
@@ -1400,6 +1422,10 @@ body {
     left: 0;
     top: 0;
     transform-origin: top left;
+    /* Performance optimizations for world transforms */
+    will-change: transform;
+    transform: translate3d(0, 0, 0) scale(1); /* Force GPU layer with initial transform */
+    backface-visibility: hidden; /* Optimize for 3D transforms */
 }
 
 .connections {
@@ -1407,6 +1433,10 @@ body {
     inset: 0;
     pointer-events: none;
     z-index: 1;
+    /* SVG performance optimizations */
+    will-change: transform;
+    transform: translate3d(0, 0, 0); /* Force GPU layer for SVG */
+    shape-rendering: optimizeSpeed; /* Optimize SVG rendering */
 }
 
 /* North Star */
@@ -3809,3 +3839,78 @@ select:focus-visible {
     background: #3b82f6;
     color: var(--entry);
 }
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/* RAF Animation Performance */
+.raf-animating {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+}
+
+/* High-performance drag states */
+.high-performance-drag {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    transition: none !important;
+    pointer-events: none;
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Optimized canvas interactions */
+.canvas-optimized {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    contain: layout style paint;
+}
+
+/* GPU-accelerated transforms */
+.gpu-accelerated {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Disable GPU acceleration when not needed */
+.gpu-disabled {
+    will-change: auto;
+    transform: none;
+    backface-visibility: visible;
+}
+
+/* Performance-optimized selection states */
+.selected.performance-mode {
+    will-change: transform, box-shadow;
+    transform: translate3d(0, 0, 0);
+}
+
+/* Throttled interaction states */
+.throttled-interaction {
+    pointer-events: auto;
+}
+
+.throttled-interaction.disabled {
+    pointer-events: none;
+}
+
+/* Optimized SVG rendering */
+.connections.optimized {
+    shape-rendering: optimizeSpeed;
+    text-rendering: optimizeSpeed;
+    color-rendering: optimizeSpeed;
+    image-rendering: optimizeSpeed;
+}
+
+/* Smooth scrolling optimization */
+.smooth-scroll {
+    scroll-behavior: auto; /* Disable smooth scroll during drag */
+}
+
+/* Memory and layout containment */
+.contained {
+    contain: layout style paint;
+}
+
+/* ===== END PERFORMANCE OPTIMIZATIONS ===== */
