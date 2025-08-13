@@ -43,7 +43,3 @@ Maybe the real question isn't "how do you write properly?" Maybe it's "how do yo
 Answer: you write. Badly at first, better through iteration.
 
 The best technical writing follows debugging principles: start with the problem, show your work, explain reasoning, provide reproducible examples.
-
-Writing like an engineer beats writing like a writer.
-
-Now, if someone could just explain to me why my blog's CSS looks fine locally but breaks in production...
