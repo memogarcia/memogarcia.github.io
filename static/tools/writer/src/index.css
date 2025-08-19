@@ -130,15 +130,15 @@
 }
 
 .editor-content h1 {
-  @apply text-2xl mt-6 mb-4;
+  @apply mt-6 mb-4 text-2xl;
 }
 
 .editor-content h2 {
-  @apply text-xl mt-5 mb-3;
+  @apply mt-5 mb-3 text-xl;
 }
 
 .editor-content h3 {
-  @apply text-lg mt-4 mb-2;
+  @apply mt-4 mb-2 text-lg;
 }
 
 .editor-content p {
@@ -174,7 +174,7 @@
 }
 
 .editor-content blockquote {
-  @apply border-l-4 border-border pl-4 italic my-4;
+  @apply pl-4 my-4 italic border-l-4 border-border;
 }
 
 .editor-content code {
@@ -182,15 +182,15 @@
 }
 
 .editor-content pre {
-  @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto my-4;
+  @apply p-4 my-4 overflow-x-auto bg-gray-100 rounded-lg dark:bg-gray-800;
 }
 
 .editor-content pre code {
-  @apply bg-transparent p-0;
+  @apply p-0 bg-transparent;
 }
 
 .editor-content a {
-  @apply text-accent hover:text-accent-dark underline;
+  @apply underline text-accent hover:text-accent-dark;
 }
 
 .editor-content strong {
