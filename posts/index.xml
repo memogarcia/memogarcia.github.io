@@ -87,6 +87,29 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
     </item>
     
     <item>
+      <title>Claude Code Advanced Features: Hooks, Agents, and MCP Servers</title>
+      <link>https://memo.mx/posts/claude-code-advanced-features/</link>
+      <pubDate>Sun, 19 Jan 2025 10:00:00 -0600</pubDate>
+      
+      <guid>https://memo.mx/posts/claude-code-advanced-features/</guid>
+      <description>You&amp;rsquo;ve been using Claude Code for basic tasks. Time to unlock its real power.
+This tutorial builds a Python task management API from scratch, progressively adding Claude Code&amp;rsquo;s advanced features. Each step produces observable results. No toy examples, no fluff—just practical patterns you&amp;rsquo;ll use daily.
+Prerequisites You need:
+Claude Code installed and configured Python 3.11+ uv package manager (curl -LsSf https://astral.sh/uv/install.sh | sh) Basic Python and REST API knowledge Part 1: Project Initialization with Hooks Hooks transform repetitive setup into automated workflows.</description>
+    </item>
+    
+    <item>
+      <title>Mastering Claude Code: From Basic Hooks to Production Workflows</title>
+      <link>https://memo.mx/posts/claude-code-configuration-tutorial/</link>
+      <pubDate>Sun, 19 Jan 2025 10:00:00 -0600</pubDate>
+      
+      <guid>https://memo.mx/posts/claude-code-configuration-tutorial/</guid>
+      <description>The Problem Nobody Talks About You&amp;rsquo;ve installed Claude Code. You&amp;rsquo;ve written some Python. Maybe you&amp;rsquo;ve even built a few APIs. But every time you start a new project, you&amp;rsquo;re doing the same dance: manually formatting code, forgetting to run tests, missing edge cases in reviews, and switching mental contexts between documentation and implementation.
+What if your AI assistant could handle all of this&amp;hellip; automatically?
+Here&amp;rsquo;s what we&amp;rsquo;re actually building: a task management API that progressively gains superpowers through Claude Code&amp;rsquo;s configuration system.</description>
+    </item>
+    
+    <item>
       <title>Understanding Computer Networks by Analogy</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
       <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
