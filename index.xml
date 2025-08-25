@@ -10,7 +10,17 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 25 Aug 2025 00:53:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Aug 2025 00:55:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The cloud native inefficiencies</title>
+      <link>https://memo.mx/posts/krazam/</link>
+      <pubDate>Mon, 25 Aug 2025 00:55:23 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/krazam/</guid>
+      <description>Leadership Sync
+Positive Affirmations for Site Reliability Engineers</description>
+    </item>
+    
     <item>
       <title>The cloud native inefficiencies</title>
       <link>https://memo.mx/posts/cloud-native-inneficiency/</link>
