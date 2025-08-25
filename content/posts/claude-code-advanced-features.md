@@ -1,7 +1,7 @@
 ---
 title: "Claude Code Advanced Features: Hooks, Agents, and MCP Servers"
 date: 2025-01-19T10:00:00-06:00
-draft: false
+draft: true
 ---
 
 You've been using Claude Code for basic tasks. Time to unlock its real power.

@@ -1,7 +1,7 @@
 ---
 title: "Mastering Claude Code: From Basic Hooks to Production Workflows"
 date: 2025-01-19T10:00:00-06:00
-draft: false
+draft: true
 ---
 
 ## The Problem Nobody Talks About
