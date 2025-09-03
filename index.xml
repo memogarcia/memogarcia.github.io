@@ -10,7 +10,17 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 25 Aug 2025 00:55:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 03 Sep 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Istio VirtualServices: Production Basics</title>
+      <link>https://memo.mx/posts/istio-virtualservices-production/</link>
+      <pubDate>Wed, 03 Sep 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://memo.mx/posts/istio-virtualservices-production/</guid>
+      <description>Problem You need safe, predictable traffic control in prod. VirtualServices + DestinationRules give version routing, timeouts/retries, and circuit breaking without touching code.
+Approach Define versioned subsets in a DestinationRule. Route via VirtualService with weights (canary → rollout). Add timeout, retries, and outlier detection. Shift weights, watch metrics, then cut over. Example (Config) # vs-dr.yaml apiVersion: networking.istio.io/v1beta1 kind: DestinationRule metadata: name: svc namespace: prod spec: host: svc.prod.svc.cluster.local subsets: - name: v1 labels: version: v1 - name: v2 labels: version: v2 trafficPolicy: tls: mode: ISTIO_MUTUAL outlierDetection: consecutive5xx: 5 interval: 5s baseEjectionTime: 30s maxEjectionPercent: 50 --- apiVersion: networking.</description>
+    </item>
+    
     <item>
       <title>Krazam</title>
       <link>https://memo.mx/posts/krazam/</link>
@@ -108,16 +118,6 @@ Define exactly what you expect Set clear boundaries for the solution Keep everyt
       <guid>https://memo.mx/posts/happiness/</guid>
       <description>3 ideas that help me be a bit more happier every day:
 The journey is where the fun is, not at the destination Allow yourself to be happy Find a purpose in life </description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
-      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this and you are also struggling with these concepts, just know this isn’t a complete map of the &amp;ldquo;networking world&amp;rdquo;, it is simply a different way to see it. I hope you find this analogy helpful.
-I&amp;rsquo;ve decided to stick with analogies here instead of going deep into technical terms, you can find those easily anywhere, because I enjoy looking at the world from different perspectives.</description>
     </item>
     
     <item>
