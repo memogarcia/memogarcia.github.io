@@ -50,9 +50,6 @@ languages:
     weight: 1
     menu:
       main:
-        - name: Tools
-          url: tools
-          weight: 3
         - name: Books
           url: books
           weight: 7
