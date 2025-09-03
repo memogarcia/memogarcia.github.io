@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy"
 date: 2024-12-20T01:53:23+01:00
-draft: true
+draft: false
 ---
 
 I wrote this for the younger (and less handsome) version of myself from university who found networking concepts challenging. If you’re reading this and you are also struggling with these concepts, just know this isn’t a complete map of the "networking world", it is simply a different way to see it. I hope you find this analogy helpful.
