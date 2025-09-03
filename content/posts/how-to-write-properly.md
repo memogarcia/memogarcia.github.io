@@ -1,7 +1,7 @@
 ---
 title: "How to write properly (or not)"
 date: 2025-07-13T10:00:00+01:00
-draft: false
+draft: true
 ---
 
 How do you write properly?
