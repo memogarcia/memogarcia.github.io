@@ -10,7 +10,16 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 03 Sep 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 20 Sep 2025 01:09:30 +0100</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>mooomooo, your org as data</title>
+      <link>https://memo.mx/posts/mooomooo/</link>
+      <pubDate>Sat, 20 Sep 2025 01:09:30 +0100</pubDate>
+      
+      <guid>https://memo.mx/posts/mooomooo/</guid>
+      <description>Most developers and project managers know the pain of using disconnected tools like Jira, GitHub Issues, Asana, Linear, or Monday and even Sentry. These tools often force separate workflows for development, operations, issue tracking, and project management. Teams spend too much time keeping things synchronized manually or through brittle automation scripts. Often, people simply stop updating these systems properly, causing dashboards to drift further from reality. mooomooo exists precisely to eliminate this problem by creating a unified, shared source of truth.</description>
+    </item>
+    
     <item>
       <title>Istio VirtualServices: Production Basics</title>
       <link>https://memo.mx/posts/istio-virtualservices-production/</link>

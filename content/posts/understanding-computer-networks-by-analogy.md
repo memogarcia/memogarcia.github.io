@@ -69,7 +69,6 @@ Let’s follow your letter’s journey step by step:
 
 Throughout this book, we'll explore each part of this journey in more detail, helping you fully grasp how networks connect and communicate by using relatable, everyday analogies from life in a city.
 
-
 ---
 
 ## License
