@@ -4,7 +4,9 @@ date: 2025-09-20T01:09:30+01:00
 draft: false
 ---
 
-Most developers and project managers know the pain of using disconnected tools like Jira, GitHub Issues, Asana, Linear, or Monday and even Sentry. These tools often force separate workflows for development, operations, issue tracking, and project management. Teams spend too much time keeping things synchronized manually or through brittle automation scripts. Often, people simply stop updating these systems properly, causing dashboards to drift further from reality. `mooomooo` exists precisely to eliminate this problem by creating a unified, shared source of truth.
+I'm currently building `mooomooo`, driven by my personal frustration with disconnected and manual work that I have to do in JIRA. My vision is to unify software lifecycle management, daily operations, and issue tracking into a single cohesive system that genuinely reflects the current state of an organization. By doing so, `mooomooo` aims to eliminate tedious manual synchronization and keep teams effortlessly aligned.
+
+Many developers and project managers have shared with me (and online!!) the pain of using tools like Jira, GitHub Issues, Asana, Linear, or Monday and even Sentry. These tools often force separate workflows for development, operations, issue tracking, and project management. Teams spend too much time keeping things synchronized manually or through brittle automation scripts. Often, people simply stop updating these systems properly, causing dashboards to drift further from reality. `mooomooo` exists precisely to eliminate this problem by creating a unified, shared source of truth.
 
 At the core of `mooomooo` is the fundamental idea that everything is data. Strategic goals, epics, tasks, code commits, deployments, operational feedback, and even failures are stored together in a single unified model. When something changes, every view, report, or interface immediately reflects that change. This removes redundant manual steps and prevents outdated information from lingering across different tools.
 
