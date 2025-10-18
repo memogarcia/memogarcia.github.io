@@ -1,0 +1,4 @@
+labels:
+  istio: eastwestgateway
+service:
+  type: LoadBalancer
