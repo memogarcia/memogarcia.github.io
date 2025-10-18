@@ -1,6 +1,6 @@
 ---
 title: "Multi region cloud training Lab 5/9: Sample App and Overlays"
-date: 2025-10-18T09:14:00-07:00
+date: 2025-10-17T09:14:00-07:00
 draft: false
 ---
 

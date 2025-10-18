@@ -1,6 +1,6 @@
 ---
 title: "Multi region cloud training Lab 2/9: GitOps with Argo CD"
-date: 2025-10-18T09:11:00-07:00
+date: 2025-10-17T09:11:00-07:00
 draft: false
 ---
 

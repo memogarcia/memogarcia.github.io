@@ -1,6 +1,6 @@
 ---
 title: "Multi region cloud training Lab 8/9: Chaos Testing"
-date: 2025-10-18T09:17:00-07:00
+date: 2025-10-17T09:17:00-07:00
 draft: false
 ---
 

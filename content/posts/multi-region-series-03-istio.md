@@ -1,6 +1,6 @@
 ---
 title: "Multi region cloud training Lab 3/9: Istio Multi Region Mesh"
-date: 2025-10-18T09:12:00-07:00
+date: 2025-10-17T09:12:00-07:00
 draft: false
 ---
 

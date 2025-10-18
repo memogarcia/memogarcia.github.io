@@ -10,7 +10,7 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 18 Oct 2025 09:18:00 -0700</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 18 Oct 2025 22:39:16 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Understanding Computer Networks by Analogy: Appendices</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</link>
@@ -48,6 +48,133 @@ We keep the same first principles: who am I talking to, how do I reach them, and
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
       <description>Part 4 · Where the Analogy Stretches Chapter 34: The Unseen Rules of Wi-Fi Throughout this book, we’ve used the analogy of a hallway’s width to represent bandwidth. It’s a simple, useful picture. A wider hallway lets more people (data) move through it at once. This mental model works beautifully when we’re thinking about physical cables, like the Ethernet cable connecting your computer to the wall.
 A wired connection is a private, predictable conversation.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 8/9: Chaos Testing</title>
+      <link>https://memo.mx/posts/multi-region-series-08-chaos/</link>
+      <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-08-chaos/</guid>
+      <description>Problem: Validate resilience under pod kills and regional impairment.
+Assumptions/Constraints
+Cost note: Two clusters simulate regions. Install Chaos Mesh or Litmus Chaos, one per cluster. ASCII Diagram
+[Chaos Mesh] | +--&amp;gt; PodChaos: kill one pod in app=echo | +--&amp;gt; NetworkChaos: add 200ms delay to ns=echo Effects: - Envoy retries + multiple replicas keep SLI green - p99 rises during NetworkChaos window Steps (Chaos Mesh)
+Install the operator. Create a PodChaos to kill app pods.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 9/9: Load Generation and SLOs</title>
+      <link>https://memo.mx/posts/multi-region-series-09-load/</link>
+      <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-09-load/</guid>
+      <description>Problem: Prove throughput and latency targets across clusters.
+Assumptions/Constraints
+Cost note: Two clusters represent regions. Run k6 as a Job inside each cluster to test in region and cross region paths. ASCII Diagram
+[k6 Job in US] ---&amp;gt; http://echo.echo.svc.cluster.local (US svc) [k6 Job in EU] ---&amp;gt; http://echo.echo.svc.cluster.local (EU svc) Measure: - in region p95/p99 - cross region p95/p99 (by hitting remote via gateway if desired) Steps
+Create a ConfigMap with a k6 script.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 7/9: CD with Istio Traffic Policy and Argo CD</title>
+      <link>https://memo.mx/posts/multi-region-series-07-cd/</link>
+      <pubDate>Fri, 17 Oct 2025 09:16:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-07-cd/</guid>
+      <description>Problem: Roll out new versions safely at high throughput.
+Assumptions/Constraints
+Cost note: Two clusters act as regions. Istio sidecars injected. Namespace labeled with istio-injection=enabled. ASCII Diagram
+VirtualService +-------------------+ Request ---&amp;gt; | 90% -&amp;gt; subset v1 | | 10% -&amp;gt; subset v2 | +-------------------+ | v DestinationRule (subsets + policies) - subsets: v1 (labels version=v1), v2 (version=v2) - connectionPool, outlierDetection Steps
+Add VirtualService and DestinationRule with connection pools and outlier detection. Let Argo CD sync them per region overlay.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 6/9: CI with GitHub Actions and Taskfile</title>
+      <link>https://memo.mx/posts/multi-region-series-06-ci/</link>
+      <pubDate>Fri, 17 Oct 2025 09:15:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-06-ci/</guid>
+      <description>Problem: Build, tag, and push images consistently.
+Assumptions/Constraints
+Cost note: Using two clusters only. GHCR or ECR credentials set as repo secrets. ASCII Diagram
+[GitHub Actions CI] | | docker build/push (Taskfile) v [Registry] | | write IMAGE_TAG file and commit v [Git Repo] | v [Argo CD notices change and syncs] Steps
+Use Taskfile in the workflow for local parity. Push image and update a tag file for GitOps. Example workflow (.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 5/9: Sample App and Overlays</title>
+      <link>https://memo.mx/posts/multi-region-series-05-app/</link>
+      <pubDate>Fri, 17 Oct 2025 09:14:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-05-app/</guid>
+      <description>Problem: Deploy a simple HTTP service with region specific config.
+Assumptions/Constraints
+Cost note: Two clusters represent regions. Use Kustomize overlays keyed by region label. ASCII Diagram
+Kustomize structure deploy/ base/echo/ -&amp;gt; common Deployment, Service overlays/ us/echo/ -&amp;gt; patch: REGION=us eu/echo/ -&amp;gt; patch: REGION=eu Argo CD picks overlay by cluster label and syncs to each cluster. Steps
+Create a tiny HTTP server. Add base manifests and overlays. Example app (app/main.go)
+package main import ( &amp;#34;fmt&amp;#34;; &amp;#34;log&amp;#34;; &amp;#34;net/http&amp;#34;; &amp;#34;os&amp;#34; ) func main(){ region := os.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 4/9: AWS Identity (IRSA vs Pod Identity)</title>
+      <link>https://memo.mx/posts/multi-region-series-04-identity/</link>
+      <pubDate>Fri, 17 Oct 2025 09:13:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-04-identity/</guid>
+      <description>Problem: Let workloads call AWS without node credentials.
+Assumptions/Constraints
+Cost note: Two clusters, not two AWS regions. Choose one path: IRSA or EKS Pod Identity. Do not mix for the same service account. ASCII Diagram
+IRSA path Pod Identity path +-----------------------------+ +-----------------------------+ | [Pod + SA aws-sa] | | [Pod + SA aws-sa] | | token (OIDC projected) | | request to EKS agent | +--------------|--------------+ +--------------|--------------+ v v [IAM OIDC Provider] [EKS Pod Identity Agent] | | v v [STS AssumeRoleWithWebIdentity] [STS AssumeRole] | | v v [Temp creds] [Temp creds] \________________________________________/ | v [AWS APIs] Notes: IRSA supports Fargate and non EKS clusters with OIDC; Pod Identity is EKS only.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 3/9: Istio Multi Region Mesh</title>
+      <link>https://memo.mx/posts/multi-region-series-03-istio/</link>
+      <pubDate>Fri, 17 Oct 2025 09:12:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-03-istio/</guid>
+      <description>Problem: Enable east to west traffic and consistent policy across clusters.
+Assumptions/Constraints
+Cost note: Two clusters stand in for two regions. Same meshID, same trust domain, distinct network per cluster. ASCII Diagram
+Cross cluster via gateway + ServiceEntry (no istioctl) +-----------+ mTLS mesh +-----------+ | Cluster US|&amp;lt;=============&amp;gt;| Cluster EU| | istiod | | istiod | | east-west | &amp;lt;---15443---- | east-west | | gateway | | gateway | | echo svc | | echo svc | +-----------+ +-----------+ meshID=training-mesh, trustDomain=corp.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 2/9: GitOps with Argo CD</title>
+      <link>https://memo.mx/posts/multi-region-series-02-argocd/</link>
+      <pubDate>Fri, 17 Oct 2025 09:11:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-02-argocd/</guid>
+      <description>Problem: Deploy one app to many clusters using a single source of truth.
+Assumptions/Constraints
+Cost note: We mock regions with two clusters. Argo CD runs in each cluster or as a control cluster. Use ApplicationSet clusters generator. ASCII Diagram
+[GitHub Repo (manifests)] | v [Argo CD (control)] / \ v v [Cluster US] [Cluster EU] ns echo ns echo apps synced apps synced Steps
+Label clusters for region selection. Register clusters in Argo CD.</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training Lab 1/9: Baseline Repo and Environments</title>
+      <link>https://memo.mx/posts/multi-region-series-01-baseline/</link>
+      <pubDate>Fri, 17 Oct 2025 09:10:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-01-baseline/</guid>
+      <description>Problem: Standardize local commands and name the moving parts so every step is repeatable.
+Assumptions/Constraints
+Cost note: We mock “multi region” by using two Kubernetes clusters, not two AWS regions. App code in app/, manifests in deploy/. Kube contexts: prod-us-east-1, prod-eu-west-1. ASCII Diagram
+[Dev Laptop] | task, kubectl v [GitHub Repo] [Registry] | | | manifests | images v v (next chapters wire Argo CD and Istio) Contexts: prod-us-east-1, prod-eu-west-1 Steps</description>
+    </item>
+    
+    <item>
+      <title>Multi region cloud training</title>
+      <link>https://memo.mx/posts/multi-region-learning/</link>
+      <pubDate>Fri, 17 Oct 2025 09:00:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-learning/</guid>
+      <description>Train teams on multi region, high throughput, chaos tested GitOps without burning money.
+Assumptions/Constraints
+Money note: We mock “multi region” with two Kubernetes clusters, not two AWS regions. You have two kube contexts reachable from your workstation. You control a container registry and a GitHub repo. Optional AWS: use IRSA or EKS Pod Identity in Lab 4. Labs
+Lab 1: Baseline Repo and Environments Sets shared variables and task wrappers. Confirms contexts and versions.</description>
     </item>
     
     <item>
