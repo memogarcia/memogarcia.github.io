@@ -1,8 +1,9 @@
 ---
-title: "Understanding Computer Networks by Analogy"
+title: "Understanding Computer Networks by Analogy: Part 1"
 date: 2024-12-20T01:53:23+01:00
 draft: false
 ---
+
 
 > Understanding computer networks is like following the journey of a letter you send to your friend across a city, navigating streets, buildings, and neighborhoods until it reaches their hands
 
