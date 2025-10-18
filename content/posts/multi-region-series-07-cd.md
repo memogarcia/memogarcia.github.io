@@ -1,6 +1,6 @@
 ---
 title: "Multi region cloud training Lab 7/9: CD with Istio Traffic Policy and Argo CD"
-date: 2025-10-18T09:16:00-07:00
+date: 2025-10-17T09:16:00-07:00
 draft: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "Multi region cloud training Lab 4/9: AWS Identity (IRSA vs Pod Identity)"
-date: 2025-10-18T09:13:00-07:00
+date: 2025-10-17T09:13:00-07:00
 draft: false
 ---
 

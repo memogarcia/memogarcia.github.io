@@ -1,6 +1,6 @@
 ---
 title: "Multi region cloud training Lab 6/9: CI with GitHub Actions and Taskfile"
-date: 2025-10-18T09:15:00-07:00
+date: 2025-10-17T09:15:00-07:00
 draft: false
 ---
 

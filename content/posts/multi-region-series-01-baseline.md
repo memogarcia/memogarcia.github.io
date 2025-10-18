@@ -1,6 +1,6 @@
 ---
 title: "Multi region cloud training Lab 1/9: Baseline Repo and Environments"
-date: 2025-10-18T09:10:00-07:00
+date: 2025-10-17T09:10:00-07:00
 draft: false
 ---
 
