@@ -3,287 +3,307 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://memo.mx/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://memo.mx/posts/mooomooo/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/istio-virtualservices-production/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/krazam/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/cloud-native-inneficiency/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/keycloak-identity-management/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/simplicity/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/how-istio-handles-requests/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/focus/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/bdd-with-llms/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/happiness/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://memo.mx/posts/understanding-computer-networks-by-analogy/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <loc>https://memo.mx/series/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/mooomooo/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/istio-virtualservices-production/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/krazam/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/cloud-native-inneficiency/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/keycloak-identity-management/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/simplicity/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/how-istio-handles-requests/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/focus/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/bdd-with-llms/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/happiness/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://memo.mx/posts/understanding-computer-networks-by-analogy/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/systems-thinking/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/aws-iam-crossaccount-roles/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/lateral-thinking/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/simplicity-vs-familiarity/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/optimization/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/microservices-vs-monoliths/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/github-actions/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/organizational-culture/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/domain-knowledge-transfer/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/embrace-change/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/generations/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/being-devops/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/what-is-kubernetes/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/complexity/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/multi-stage-build-python/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/big-o/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/istio-ambient-mesh/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/80-20-nim/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/is-openstack-losing/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/lateralus/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/the-role-of-a-systems-architect/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/my-favourite-horror-movies/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/learning-resources/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/airgapped-gitlab-install/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/busy/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/senior-engineers/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/understanding-kubernetes/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/taquito/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/todos/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/gitops-in-enterprise/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/git-multiple-identities/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/i3wm-wsl2/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/doc-fzf/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/pynetbox/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/richard-feynman/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/waju/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/beyond-pep8/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/linux-matebook/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/openstack-containers/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/becoming-ca/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/posts/pratai/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/about/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://memo.mx/books/</loc>
-    <lastmod>2025-10-18T20:55:28+09:00</lastmod>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -291,11 +311,12 @@
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://memo.mx/series/</loc>
+    <loc>https://memo.mx/tags/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://memo.mx/tags/</loc>
+    <loc>https://memo.mx/series/understanding-computer-networks-by-analogy/</loc>
+    <lastmod>2025-10-18T22:48:24+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

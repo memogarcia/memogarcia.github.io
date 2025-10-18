@@ -12,6 +12,45 @@
     <language>en</language>
     <lastBuildDate>Sat, 18 Oct 2025 09:18:00 -0700</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Understanding Computer Networks by Analogy: Appendices</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</link>
+      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</guid>
+      <description>Appendices Appendix A: The Analogy Blueprint This is a quick reference for the core analogies used throughout this book. Use it as a cheat sheet to refresh your memory on the key concepts.
+Think in rooms, floors, buildings, and streets. You send an envelope from your room, the concierge guides it across floors and buildings, and the city directory helps you find the right address. When you outgrow your building, you rent a private floor in a hotel and keep your hallways private.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy: Part 2 - The Hotel City (Cloud)</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
+      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
+      <description>Part II: The Hotel City (Cloud) Moving to the cloud feels like moving into a serviced hotel. You do not build the walls or run the elevators. You rent space, bring your rules, and let the hotel handle power, plumbing, and staff. In this part, we take our building and city mental model and extend it to hotels, private floors, and the pathways that connect everything.
+We keep the same first principles: who am I talking to, how do I reach them, and do I have permission.</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy: Part 3 - Streets, Names, and Guards</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</link>
+      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
+      <description>Part 3 · Mastering the Cloud City Chapter 28: Service Doors &amp;amp; Private Hatches Remember back in Chapter 19 when we rented our own private district in the cloud city? That Virtual Private Cloud, or VPC, is our secure, isolated section of the hotel. It has its own rules, its own guards, and its own private hallways. It’s a great setup. But what happens when your employees, working on your private floor, need to visit one of the hotel’s own amenities, like the massive hotel gym or the central archives?</description>
+    </item>
+    
+    <item>
+      <title>Understanding Computer Networks by Analogy: Part 4 - Where It Bends and How to Debug</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</link>
+      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
+      <description>Part 4 · Where the Analogy Stretches Chapter 34: The Unseen Rules of Wi-Fi Throughout this book, we’ve used the analogy of a hallway’s width to represent bandwidth. It’s a simple, useful picture. A wider hallway lets more people (data) move through it at once. This mental model works beautifully when we’re thinking about physical cables, like the Ethernet cable connecting your computer to the wall.
+A wired connection is a private, predictable conversation.</description>
+    </item>
+    
+    <item>
       <title>mooomooo, your org as data</title>
       <link>https://memo.mx/posts/mooomooo/</link>
       <pubDate>Sat, 20 Sep 2025 01:09:30 +0100</pubDate>
@@ -119,7 +158,7 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
     </item>
     
     <item>
-      <title>Understanding Computer Networks by Analogy</title>
+      <title>Understanding Computer Networks by Analogy: Part 1</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
       <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
       
@@ -127,15 +166,6 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
       <description>Understanding computer networks is like following the journey of a letter you send to your friend across a city, navigating streets, buildings, and neighborhoods until it reaches their hands
 I&amp;rsquo;m writing this for my younger (and admittedly less handsome) self back in university, who constantly struggled to grasp networking concepts, particularly subnetting.
 I chose analogies for this book because they&amp;rsquo;re powerful tools for understanding complicated ideas. There&amp;rsquo;s an old saying: &amp;ldquo;the map is not the territory.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Networks by Analogy | Appendices</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</link>
-      <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</guid>
-      <description>Concept mapping table Concept Analogy Network Building Computer Room IP Address Room Number Subnet Floor Network Protocol Language Switch Floor Manager Router Building Concierge Gateway Elevator MAC Address Unique Door ID Bandwidth Hall Width Private IP Internal Room Number Public IP Building Street Address DNS Public Directory TCP Registered Mail Service UDP Untracked Mail Service Port Service-Specific Mail Slot HTTP/HTTPS Web Service Language SMTP/FTP/SSH Specialized Service Languages Data Packet Envelope with Metadata Checksum Data Integrity Check Internet City of Buildings ISP Road/Utility Builder Firewall Security Gate/Guard VPN Hidden Passageway Load Balancer Extra Reception Staff CDN Local Storage Hub QoS Priority Lane NAT Front Desk Clerk Routing Table Building/City Map IPv4 Limited Address System, IPv6 Unlimited Address System, Network Topology Building Blueprint Cloud Computing Rented Office Space Cloud Provider Property Manager Scalability (Cloud) Flexible Office Expansion Network Interface Door VLAN Private Hallway Dual-Stack System Translator for Old/New Address Systems Software-Defined Networking Virtual Architect License This draft is shared under CC BY-NC-ND 4.</description>
     </item>
     
     <item>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Understanding Computer Networks by Analogy on Memo Garcia</title>
+    <link>https://memo.mx/series/understanding-computer-networks-by-analogy/</link>
+    <description>Recent content in Understanding Computer Networks by Analogy on Memo Garcia</description>
+    <image>
+      <url>https://memo.mx/papermod-cover.png</url>
+      <link>https://memo.mx/papermod-cover.png</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://memo.mx/series/understanding-computer-networks-by-analogy/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Computer Networks by Analogy: Appendices</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</link>
+      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</guid>
+      <description>Appendices Appendix A: The Analogy Blueprint This is a quick reference for the core analogies used throughout this book. Use it as a cheat sheet to refresh your memory on the key concepts.
+Think in rooms, floors, buildings, and streets. You send an envelope from your room, the concierge guides it across floors and buildings, and the city directory helps you find the right address. When you outgrow your building, you rent a private floor in a hotel and keep your hallways private.</description>
+    </item>
+    
+  </channel>
+</rss>
