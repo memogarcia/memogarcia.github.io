@@ -1,0 +1,7 @@
+global:
+  meshID: training-mesh
+  trustDomain: corp.local
+  # network is set by Taskfile per cluster: us-net or eu-net
+pilot:
+  env:
+    PILOT_ENABLE_MULTINETWORK: "true"

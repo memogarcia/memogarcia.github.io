@@ -1,0 +1,129 @@
+version: '3'
+vars:
+  # Override via env: REGISTRY=ghcr.io/your-org task ...
+  REGISTRY: "ghcr.io/your-org"
+  APP: "echo-api"
+  IMAGE: "{{.REGISTRY}}/{{.APP}}:{{.TAG}}"
+  TAG: "{{.TAG | default .GIT_SHA}}"
+  GIT_SHA: { sh: "git rev-parse --short HEAD || echo dev" }
+  CTX_US: "{{.CTX_US | default "prod-us-east-1"}}"
+  CTX_EU: "{{.CTX_EU | default "prod-eu-west-1"}}"
+  ISTIO_NS: "istio-system"
+  ARGO_NS: "argocd"
+  MESH_ID: "{{.MESH_ID | default "training-mesh"}}"
+  TRUST_DOMAIN: "{{.TRUST_DOMAIN | default "corp.local"}}"
+tasks:
+  ctx:list:
+    cmds:
+      - kubectl config get-contexts
+  k:ver:
+    cmds:
+      - kubectl --context {{.CTX_US}} version --short || true
+      - kubectl --context {{.CTX_EU}} version --short || true
+
+  # --- Istio ---
+  istio:repo:
+    cmds:
+      - helm repo add istio https://istio-release.storage.googleapis.com/charts || true
+      - helm repo update
+  istio:install:us:
+    deps: [istio:repo]
+    cmds:
+      - kubectl --context {{.CTX_US}} create ns {{.ISTIO_NS}} --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
+      - helm --kube-context {{.CTX_US}} upgrade --install istio-base istio/base -n {{.ISTIO_NS}}
+      - helm --kube-context {{.CTX_US}} upgrade --install istiod istio/istiod -n {{.ISTIO_NS}} -f deploy/istio/values-istio.yaml --set global.meshID={{.MESH_ID}} --set global.trustDomain={{.TRUST_DOMAIN}} --set global.network=us-net --wait
+  istio:install:eu:
+    deps: [istio:repo]
+    cmds:
+      - kubectl --context {{.CTX_EU}} create ns {{.ISTIO_NS}} --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
+      - helm --kube-context {{.CTX_EU}} upgrade --install istio-base istio/base -n {{.ISTIO_NS}}
+      - helm --kube-context {{.CTX_EU}} upgrade --install istiod istio/istiod -n {{.ISTIO_NS}} -f deploy/istio/values-istio.yaml --set global.meshID={{.MESH_ID}} --set global.trustDomain={{.TRUST_DOMAIN}} --set global.network=eu-net --wait
+  istio:install:all:
+    deps: [istio:install:us, istio:install:eu]
+
+  istio:gw:us:
+    deps: [istio:repo]
+    cmds:
+      - helm --kube-context {{.CTX_US}} upgrade --install istio-eastwestgateway istio/gateway -n {{.ISTIO_NS}} -f deploy/istio/gateway-eastwest-values.yaml --wait
+  istio:gw:eu:
+    deps: [istio:repo]
+    cmds:
+      - helm --kube-context {{.CTX_EU}} upgrade --install istio-eastwestgateway istio/gateway -n {{.ISTIO_NS}} -f deploy/istio/gateway-eastwest-values.yaml --wait
+  istio:gw:all:
+    deps: [istio:gw:us, istio:gw:eu]
+
+  istio:remote-secrets:
+    desc: "Removed. Using gateway + ServiceEntry; no istioctl required."
+    cmds:
+      - echo "No-op. Remote secrets disabled; use ServiceEntry for cross-cluster calls."
+
+  # --- Argo CD ---
+  argocd:repo:
+    cmds:
+      - helm repo add argo https://argoproj.github.io/argo-helm || true
+      - helm repo update
+  argocd:install:us:
+    deps: [argocd:repo]
+    cmds:
+      - kubectl --context {{.CTX_US}} create ns {{.ARGO_NS}} --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
+      - helm --kube-context {{.CTX_US}} upgrade --install argocd argo/argo-cd -n {{.ARGO_NS}} --set server.service.type=LoadBalancer --wait
+  argocd:install:eu:
+    deps: [argocd:repo]
+    cmds:
+      - kubectl --context {{.CTX_EU}} create ns {{.ARGO_NS}} --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
+      - helm --kube-context {{.CTX_EU}} upgrade --install argocd argo/argo-cd -n {{.ARGO_NS}} --set server.service.type=LoadBalancer --wait
+  argocd:install:all:
+    deps: [argocd:install:us, argocd:install:eu]
+
+  # --- Chaos Mesh ---
+  chaos:repo:
+    cmds:
+      - helm repo add chaos-mesh https://charts.chaos-mesh.org || true
+      - helm repo update
+  chaos:install:us:
+    deps: [chaos:repo]
+    cmds:
+      - kubectl --context {{.CTX_US}} create ns chaos-testing --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
+      - helm --kube-context {{.CTX_US}} upgrade --install chaos-mesh chaos-mesh/chaos-mesh -n chaos-testing --set dashboard.create=true --wait
+  chaos:install:eu:
+    deps: [chaos:repo]
+    cmds:
+      - kubectl --context {{.CTX_EU}} create ns chaos-testing --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
+      - helm --kube-context {{.CTX_EU}} upgrade --install chaos-mesh chaos-mesh/chaos-mesh -n chaos-testing --set dashboard.create=true --wait
+  chaos:install:all:
+    deps: [chaos:install:us, chaos:install:eu]
+
+  # --- Docker build/push example ---
+  docker:build:
+    dir: app
+    cmds:
+      - docker build -t {{.IMAGE}} .
+  docker:push:
+    dir: app
+    cmds:
+      - docker push {{.IMAGE}}
+
+  # --- Observability (Prometheus + Grafana via kube-prometheus-stack; Kiali) ---
+  obs:repo:
+    cmds:
+      - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts || true
+      - helm repo add kiali https://kiali.org/helm-charts || true
+      - helm repo update
+  obs:install:us:
+    deps: [obs:repo]
+    cmds:
+      - kubectl --context {{.CTX_US}} create ns observability --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
+      - helm --kube-context {{.CTX_US}} upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability \
+          --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
+      - helm --kube-context {{.CTX_US}} upgrade --install kiali kiali/kiali-server -n {{.ISTIO_NS}} \
+          --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
+  obs:install:eu:
+    deps: [obs:repo]
+    cmds:
+      - kubectl --context {{.CTX_EU}} create ns observability --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
+      - helm --kube-context {{.CTX_EU}} upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability \
+          --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
+      - helm --kube-context {{.CTX_EU}} upgrade --install kiali kiali/kiali-server -n {{.ISTIO_NS}} \
+          --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
+  obs:install:all:
+    deps: [obs:install:us, obs:install:eu]
