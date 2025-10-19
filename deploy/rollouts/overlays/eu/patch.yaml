@@ -1,0 +1,11 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata: { name: echo, namespace: echo }
+spec:
+  template:
+    spec:
+      containers:
+        - name: echo
+          env:
+            - name: REGION
+              value: eu

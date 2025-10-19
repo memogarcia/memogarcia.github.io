@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: echo-rollouts
+  namespace: echo
+spec:
+  hosts:
+    - "echo-stable.echo.svc.cluster.local"
+  gateways: [ "mesh" ]
+  http:
+    - name: ab-test
+      match:
+        - headers:
+            x-user-type:
+              exact: beta
+      route:
+        - destination:
+            host: echo-canary.echo.svc.cluster.local
+            port:
+              number: 80
+          weight: 100
+    - name: primary
+      route:
+        - destination:
+            host: echo-stable.echo.svc.cluster.local
+            port:
+              number: 80
+          weight: 100
+        - destination:
+            host: echo-canary.echo.svc.cluster.local
+            port:
+              number: 80
+          weight: 0
