@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 9/9: Load Generation and SLOs"
+title: "Multi Region Cloud Training Lab: Part 9 - Load Generation and SLOs"
 date: 2025-10-17T09:17:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-09-load/
 ---
 
 Problem: Prove throughput and latency targets across clusters.
@@ -77,5 +79,5 @@ Verification/DoD
 - k6 completes with acceptable error rate and p95 latency.
 - Repeat in both clusters. Compare in region and cross region p95 and p99.
 
-Previous: [Lab 8](/posts/multi-region-series-08-chaos/)
+Previous: [Part 8](/posts/multi-region-series-part-8-chaos/)
 Back to the index → [/posts/multi-region-learning/](/posts/multi-region-learning/)

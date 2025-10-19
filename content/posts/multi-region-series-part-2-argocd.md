@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 2/9: GitOps with Argo CD"
+title: "Multi Region Cloud Training Lab: Part 2 - GitOps with Argo CD"
 date: 2025-10-17T09:11:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-02-argocd/
 ---
 
 Problem: Deploy one app to many clusters using a single source of truth.
@@ -76,4 +78,4 @@ Verification/DoD
 - `argocd app list` shows two apps: `echo-prod-us`, `echo-prod-eu` in Sync OK.
 - Each cluster has namespace `echo` created by Argo CD.
 
-Previous: [Lab 1](/posts/multi-region-series-01-baseline/) · Next: [Lab 3](/posts/multi-region-series-03-istio/)
+Previous: [Part 1](/posts/multi-region-series-part-1-baseline/) · Next: [Part 3](/posts/multi-region-series-part-3-istio/)

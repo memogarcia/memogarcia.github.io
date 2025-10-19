@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 7/9: CD with Istio Traffic Policy and Argo CD"
+title: "Multi Region Cloud Training Lab: Part 7 - CD with Istio Traffic Policy and Argo CD"
 date: 2025-10-17T09:16:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-07-cd/
 ---
 
 Problem: Roll out new versions safely at high throughput.
@@ -72,4 +74,4 @@ Verification/DoD
 
 - Traffic splits 90 or 10 between versions. Adjust by commit and Argo CD applies.
 
-Previous: [Lab 6](/posts/multi-region-series-06-ci/) · Next: [Lab 8](/posts/multi-region-series-08-chaos/)
+Previous: [Part 6](/posts/multi-region-series-part-6-ci/) · Next: [Part 8](/posts/multi-region-series-part-8-chaos/)

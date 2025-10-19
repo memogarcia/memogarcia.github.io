@@ -15,31 +15,31 @@ Assumptions/Constraints
 
 Labs
 
-- [Lab 1: Baseline Repo and Environments](/posts/multi-region-series-01-baseline/)
+- [Part 1 - Baseline Repo and Environments](/posts/multi-region-series-part-1-baseline/)
   Sets shared variables and `task` wrappers. Confirms contexts and versions.
-- [Lab 2: GitOps with Argo CD](/posts/multi-region-series-02-argocd/)
+- [Part 2 - GitOps with Argo CD](/posts/multi-region-series-part-2-argocd/)
   Installs Argo CD and deploys one app to both clusters with ApplicationSet.
-- [Lab 3: Istio Multi Region Mesh](/posts/multi-region-series-03-istio/)
+- [Part 3 - Istio Multi Region Mesh](/posts/multi-region-series-part-3-istio/)
   Installs Istio with a single mesh across clusters and an east west gateway.
-- [Lab 4: AWS Identity (IRSA and Pod Identity)](/posts/multi-region-series-04-identity/)
+- [Part 4 - AWS Identity (IRSA and Pod Identity)](/posts/multi-region-series-part-4-identity/)
   Gives pods AWS creds with IRSA or Pod Identity. Includes when to choose which.
-- [Lab 5: Sample App and Overlays](/posts/multi-region-series-05-app/)
+- [Part 5 - Sample App and Overlays](/posts/multi-region-series-part-5-app/)
   Deploys a tiny HTTP service with region specific overlays.
-- [Lab 6: CI with GitHub Actions and Taskfile](/posts/multi-region-series-06-ci/)
+- [Part 6 - CI with GitHub Actions and Taskfile](/posts/multi-region-series-part-6-ci/)
   Builds and pushes images with CI that mirrors local `task` commands.
-- [Lab 7: CD with Istio and Argo CD](/posts/multi-region-series-07-cd/)
+- [Part 7 - CD with Istio and Argo CD](/posts/multi-region-series-part-7-cd/)
   Adds connection pools, outlier detection, and traffic splitting.
-- [Lab 8: Chaos Testing](/posts/multi-region-series-08-chaos/)
+- [Part 8 - Chaos Testing](/posts/multi-region-series-part-8-chaos/)
   Kills pods and injects latency to prove resilience.
-- [Lab 9: Load and SLOs](/posts/multi-region-series-09-load/)
+- [Part 9 - Load and SLOs](/posts/multi-region-series-part-9-load/)
   Generates load with k6 and checks p95 and p99 across clusters.
 
 How to Use
 
 1) Set two contexts. Example: `prod-us-east-1` and `prod-eu-west-1`.
-2) Work through Lab 1 then follow in order. Each lab is self contained and runnable.
+2) Work through Part 1 then follow in order. Each lab is self contained and runnable.
 3) Swap in kind or k3d for local clusters to keep spend near zero.
-4) In Lab 4 choose one identity path. IRSA covers EKS, Fargate, and other clusters with an OIDC provider. Pod Identity is EKS only and requires Linux EC2 nodes.
+4) In Part 4 choose one identity path. IRSA covers EKS, Fargate, and other clusters with an OIDC provider. Pod Identity is EKS only and requires Linux EC2 nodes.
 
 ASCII Diagram (full architecture)
 

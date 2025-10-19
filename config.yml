@@ -50,9 +50,22 @@ languages:
     weight: 1
     menu:
       main:
+        - name: Labs
+          identifier: labs
+          url: /posts/multi-region-learning/
+          weight: 6
+        - name: Multi Region Cloud Training Lab
+          parent: labs
+          url: /posts/multi-region-learning/
+          weight: 1
         - name: Books
-          url: books
+          identifier: books
+          url: /books/
           weight: 7
+        - name: Understanding Computer Networks by Analogy
+          parent: books
+          url: /series/understanding-computer-networks-by-analogy/
+          weight: 1
         - name: About
           url: about
           weight: 8

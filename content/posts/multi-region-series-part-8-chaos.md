@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 8/9: Chaos Testing"
+title: "Multi Region Cloud Training Lab: Part 8 - Chaos Testing"
 date: 2025-10-17T09:17:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-08-chaos/
 ---
 
 Problem: Validate resilience under pod kills and regional impairment.
@@ -75,4 +77,4 @@ Verification/DoD
 - Service responds during pod kills due to replicas and retries.
 - Added latency increases p99 within tolerance or triggers alerts.
 
-Previous: [Lab 7](/posts/multi-region-series-07-cd/) · Next: [Lab 9](/posts/multi-region-series-09-load/)
+Previous: [Part 7](/posts/multi-region-series-part-7-cd/) · Next: [Part 9](/posts/multi-region-series-part-9-load/)
