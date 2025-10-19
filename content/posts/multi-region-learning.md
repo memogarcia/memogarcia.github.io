@@ -29,6 +29,8 @@ Labs
   Builds and pushes images with CI that mirrors local `task` commands.
 - [Part 7 - CD with Istio and Argo CD](/posts/multi-region-series-part-7-cd/)
   Adds connection pools, outlier detection, and traffic splitting.
+- [Part 7.1 - Argo Rollouts: Canary and A/B](/posts/multi-region-series-part-7a-rollouts/)
+  Progressive delivery with Argo Rollouts using Istio routing and basic metrics.
 - [Part 8 - Chaos Testing](/posts/multi-region-series-part-8-chaos/)
   Kills pods and injects latency to prove resilience.
 - [Part 9 - Load and SLOs](/posts/multi-region-series-part-9-load/)
