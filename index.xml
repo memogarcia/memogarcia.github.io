@@ -802,5 +802,14 @@ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (
       <description>Understanding Computer Networks By Analogy</description>
     </item>
     
+    <item>
+      <title>My Labs</title>
+      <link>https://memo.mx/labs/</link>
+      <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
+      
+      <guid>https://memo.mx/labs/</guid>
+      <description>Multi region cloud training</description>
+    </item>
+    
   </channel>
 </rss>
