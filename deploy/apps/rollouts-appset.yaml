@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: echo-rollouts
+  namespace: argocd
+spec:
+  generators:
+    - clusters: {}
+  template:
+    metadata:
+      name: 'echo-rollouts-{{name}}'
+    spec:
+      project: default
+      destination:
+        server: '{{server}}'
+        namespace: echo
+      source:
+        repoURL: https://github.com/memogarcia/memogarcia.github.io
+        targetRevision: main
+        path: deploy/rollouts/overlays/{{metadata.labels.region}}
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

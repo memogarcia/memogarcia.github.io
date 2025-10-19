@@ -75,6 +75,15 @@ tasks:
   argocd:install:all:
     deps: [argocd:install:us, argocd:install:eu]
 
+  argocd:appset:rollouts:us:
+    desc: Apply rollouts ApplicationSet into US Argo CD (control plane)
+    cmds:
+      - kubectl --context {{.CTX_US}} -n {{.ARGO_NS}} apply -f deploy/apps/rollouts-appset.yaml
+  argocd:appset:rollouts:eu:
+    desc: Apply rollouts ApplicationSet into EU Argo CD (alternative control plane)
+    cmds:
+      - kubectl --context {{.CTX_EU}} -n {{.ARGO_NS}} apply -f deploy/apps/rollouts-appset.yaml
+
   # --- Chaos Mesh ---
   chaos:repo:
     cmds:
@@ -171,3 +180,16 @@ tasks:
     desc: Watch rollout status (requires kubectl-argo-rollouts)
     cmds:
       - kubectl --context {{.CTX_EU}} -n echo argo rollouts get rollout echo --watch || kubectl --context {{.CTX_EU}} -n echo get rollout echo -o yaml
+
+  rollouts:image:us:
+    desc: Update echo image in US rollout (set REGISTRY/APP/TAG)
+    cmds:
+      - |
+        kubectl --context {{.CTX_US}} -n echo patch rollout echo --type merge \
+          -p '{"spec":{"template":{"spec":{"containers":[{"name":"echo","image":"{{.IMAGE}}"}]}}}}'
+  rollouts:image:eu:
+    desc: Update echo image in EU rollout (set REGISTRY/APP/TAG)
+    cmds:
+      - |
+        kubectl --context {{.CTX_EU}} -n echo patch rollout echo --type merge \
+          -p '{"spec":{"template":{"spec":{"containers":[{"name":"echo","image":"{{.IMAGE}}"}]}}}}'

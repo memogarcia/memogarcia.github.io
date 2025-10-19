@@ -77,4 +77,4 @@ Verification/DoD
 - Service responds during pod kills due to replicas and retries.
 - Added latency increases p99 within tolerance or triggers alerts.
 
-Previous: [Part 7](/posts/multi-region-series-part-7-cd/) · Next: [Part 9](/posts/multi-region-series-part-9-load/)
+Previous: [Part 7.1](/posts/multi-region-series-part-7a-rollouts/) · Next: [Part 9](/posts/multi-region-series-part-9-load/)
