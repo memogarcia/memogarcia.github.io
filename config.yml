@@ -52,14 +52,14 @@ languages:
       main:
         - name: Labs
           identifier: labs
-          url: /labs/
-          weight: 7
+          pageRef: /labs
+          weight: 6
         - name: Books
           identifier: books
-          url: /books/
+          pageRef: /books
           weight: 7
         - name: About
-          url: about
+          pageRef: /about
           weight: 8
 outputs:
   home:

@@ -127,3 +127,47 @@ tasks:
           --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
   obs:install:all:
     deps: [obs:install:us, obs:install:eu]
+
+  # --- Argo Rollouts ---
+  rollouts:repo:
+    cmds:
+      - helm repo add argo https://argoproj.github.io/argo-helm || true
+      - helm repo update
+  rollouts:install:us:
+    desc: Install Argo Rollouts controller in US cluster
+    deps: [rollouts:repo]
+    cmds:
+      - helm --kube-context {{.CTX_US}} upgrade --install argo-rollouts argo/argo-rollouts -n argo-rollouts --create-namespace --wait
+  rollouts:install:eu:
+    desc: Install Argo Rollouts controller in EU cluster
+    deps: [rollouts:repo]
+    cmds:
+      - helm --kube-context {{.CTX_EU}} upgrade --install argo-rollouts argo/argo-rollouts -n argo-rollouts --create-namespace --wait
+  rollouts:install:all:
+    deps: [rollouts:install:us, rollouts:install:eu]
+
+  rollouts:apply:us:
+    desc: Apply Rollouts-based echo app to US overlay
+    cmds:
+      - kubectl --context {{.CTX_US}} create ns echo --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
+      - kubectl --context {{.CTX_US}} label namespace echo istio-injection=enabled --overwrite
+      - kubectl --context {{.CTX_US}} -n echo delete deploy echo --ignore-not-found
+      - kubectl --context {{.CTX_US}} apply -k deploy/rollouts/overlays/us
+  rollouts:apply:eu:
+    desc: Apply Rollouts-based echo app to EU overlay
+    cmds:
+      - kubectl --context {{.CTX_EU}} create ns echo --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
+      - kubectl --context {{.CTX_EU}} label namespace echo istio-injection=enabled --overwrite
+      - kubectl --context {{.CTX_EU}} -n echo delete deploy echo --ignore-not-found
+      - kubectl --context {{.CTX_EU}} apply -k deploy/rollouts/overlays/eu
+  rollouts:apply:all:
+    deps: [rollouts:apply:us, rollouts:apply:eu]
+
+  rollouts:watch:us:
+    desc: Watch rollout status (requires kubectl-argo-rollouts)
+    cmds:
+      - kubectl --context {{.CTX_US}} -n echo argo rollouts get rollout echo --watch || kubectl --context {{.CTX_US}} -n echo get rollout echo -o yaml
+  rollouts:watch:eu:
+    desc: Watch rollout status (requires kubectl-argo-rollouts)
+    cmds:
+      - kubectl --context {{.CTX_EU}} -n echo argo rollouts get rollout echo --watch || kubectl --context {{.CTX_EU}} -n echo get rollout echo -o yaml
