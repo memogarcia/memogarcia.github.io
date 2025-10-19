@@ -794,12 +794,12 @@ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (
     </item>
     
     <item>
-      <title>My Books</title>
+      <title>Books</title>
       <link>https://memo.mx/books/</link>
-      <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://memo.mx/books/</guid>
-      <description>Understanding Computer Networks By Analogy</description>
+      <description>Series-length walkthroughs.</description>
     </item>
     
     <item>
@@ -808,7 +808,7 @@ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://memo.mx/labs/</guid>
-      <description> Multi Region Cloud Training Lab </description>
+      <description>Hands-on training guides.</description>
     </item>
     
   </channel>

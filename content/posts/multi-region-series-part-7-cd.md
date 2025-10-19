@@ -74,4 +74,4 @@ Verification/DoD
 
 - Traffic splits 90 or 10 between versions. Adjust by commit and Argo CD applies.
 
-Previous: [Part 6](/posts/multi-region-series-part-6-ci/) · Next: [Part 8](/posts/multi-region-series-part-8-chaos/)
+Previous: [Part 6](/posts/multi-region-series-part-6-ci/) · Next: [Part 7.1](/posts/multi-region-series-part-7a-rollouts/)
