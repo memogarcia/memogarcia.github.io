@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: echo
+  namespace: echo
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+        - name: echo
+          image: ghcr.io/your-org/echo-api:1.0.0
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 3
+  strategy:
+    canary:
+      canaryService: echo-canary
+      stableService: echo-stable
+      trafficRouting:
+        istio:
+          virtualService:
+            name: echo-rollouts
+            routes: [ "primary", "ab-test" ]
+      steps:
+        - setWeight: 10
+        - pause: { duration: 60 }
+        - analysis:
+            templates:
+              - templateName: success-rate
+        - setWeight: 25
+        - pause: { duration: 60 }
+        - setWeight: 50
+        - pause: { duration: 60 }

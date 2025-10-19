@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+  namespace: echo
+spec:
+  metrics:
+    - name: non-5xx-rate
+      interval: 30s
+      count: 3
+      successCondition: result[0] >= 0.99
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+          query: |
+            sum(rate(istio_requests_total{reporter="destination", destination_workload_namespace="echo", response_code!~"5.."}[1m]))
+            /
+            sum(rate(istio_requests_total{reporter="destination", destination_workload_namespace="echo"}[1m]))
