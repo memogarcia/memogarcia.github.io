@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 5/9: Sample App and Overlays"
+title: "Multi Region Cloud Training Lab: Part 5 - Sample App and Overlays"
 date: 2025-10-17T09:14:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-05-app/
 ---
 
 Problem: Deploy a simple HTTP service with region specific config.
@@ -106,4 +108,4 @@ Verification/DoD
 - `kubectl --context prod-us-east-1 -n echo get deploy echo` shows 3 replicas.
 - `kubectl --context prod-eu-west-1 -n echo exec -it deploy/echo -- curl -s echo.echo` prints `ok region=eu`.
 
-Previous: [Lab 4](/posts/multi-region-series-04-identity/) · Next: [Lab 6](/posts/multi-region-series-06-ci/)
+Previous: [Part 4](/posts/multi-region-series-part-4-identity/) · Next: [Part 6](/posts/multi-region-series-part-6-ci/)

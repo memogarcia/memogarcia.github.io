@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 1/9: Baseline Repo and Environments"
+title: "Multi Region Cloud Training Lab: Part 1 - Baseline Repo and Environments"
 date: 2025-10-17T09:10:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-01-baseline/
 ---
 
 Problem: Standardize local commands and name the moving parts so every step is repeatable.
@@ -68,4 +70,4 @@ Verification/DoD
 - `task ctx:list` shows both contexts.
 - `task k:ver` returns versions for both clusters.
 
-Next: [Lab 2](/posts/multi-region-series-02-argocd/)
+Next: [Part 2](/posts/multi-region-series-part-2-argocd/)

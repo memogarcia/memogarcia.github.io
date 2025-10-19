@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 4/9: AWS Identity (IRSA vs Pod Identity)"
+title: "Multi Region Cloud Training Lab: Part 4 - AWS Identity (IRSA vs Pod Identity)"
 date: 2025-10-17T09:13:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-04-identity/
 ---
 
 Problem: Let workloads call AWS without node credentials.
@@ -106,4 +108,4 @@ References
 - IRSA SDK/credential chain notes: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts-minimum-sdk.html
 - Fargate execution role and IRSA note: https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html
 
-Previous: [Lab 3](/posts/multi-region-series-03-istio/) · Next: [Lab 5](/posts/multi-region-series-05-app/)
+Previous: [Part 3](/posts/multi-region-series-part-3-istio/) · Next: [Part 5](/posts/multi-region-series-part-5-app/)

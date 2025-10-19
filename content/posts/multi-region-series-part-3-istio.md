@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 3/9: Istio Multi Region Mesh"
+title: "Multi Region Cloud Training Lab: Part 3 - Istio Multi Region Mesh"
 date: 2025-10-17T09:12:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-03-istio/
 ---
 
 Problem: Enable east to west traffic and consistent policy across clusters.
@@ -127,4 +129,4 @@ helm --kube-context prod-eu-west-1 upgrade --install kube-prometheus-stack prome
 helm --kube-context prod-eu-west-1 upgrade --install kiali kiali/kiali-server -n istio-system --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
 ```
 
-Previous: [Lab 2](/posts/multi-region-series-02-argocd/) · Next: [Lab 4](/posts/multi-region-series-04-identity/)
+Previous: [Part 2](/posts/multi-region-series-part-2-argocd/) · Next: [Part 4](/posts/multi-region-series-part-4-identity/)

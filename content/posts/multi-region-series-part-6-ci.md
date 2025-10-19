@@ -1,7 +1,9 @@
 ---
-title: "Multi region cloud training Lab 6/9: CI with GitHub Actions and Taskfile"
+title: "Multi Region Cloud Training Lab: Part 6 - CI with GitHub Actions and Taskfile"
 date: 2025-10-17T09:15:00-07:00
 draft: false
+aliases:
+  - /posts/multi-region-series-06-ci/
 ---
 
 Problem: Build, tag, and push images consistently.
@@ -70,4 +72,4 @@ Verification/DoD
 - Image appears in the registry with the commit tag.
 - Commit updates `IMAGE_TAG` in the repo.
 
-Previous: [Lab 5](/posts/multi-region-series-05-app/) · Next: [Lab 7](/posts/multi-region-series-07-cd/)
+Previous: [Part 5](/posts/multi-region-series-part-5-app/) · Next: [Part 7](/posts/multi-region-series-part-7-cd/)

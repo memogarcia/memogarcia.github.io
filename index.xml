@@ -51,11 +51,11 @@ A wired connection is a private, predictable conversation.</description>
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 8/9: Chaos Testing</title>
-      <link>https://memo.mx/posts/multi-region-series-08-chaos/</link>
+      <title>Multi Region Cloud Training Lab: Part 8 - Chaos Testing</title>
+      <link>https://memo.mx/posts/multi-region-series-part-8-chaos/</link>
       <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-08-chaos/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-8-chaos/</guid>
       <description>Problem: Validate resilience under pod kills and regional impairment.
 Assumptions/Constraints
 Cost note: Two clusters simulate regions. Install Chaos Mesh or Litmus Chaos, one per cluster. ASCII Diagram
@@ -64,11 +64,11 @@ Install the operator. Create a PodChaos to kill app pods.</description>
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 9/9: Load Generation and SLOs</title>
-      <link>https://memo.mx/posts/multi-region-series-09-load/</link>
+      <title>Multi Region Cloud Training Lab: Part 9 - Load Generation and SLOs</title>
+      <link>https://memo.mx/posts/multi-region-series-part-9-load/</link>
       <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-09-load/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-9-load/</guid>
       <description>Problem: Prove throughput and latency targets across clusters.
 Assumptions/Constraints
 Cost note: Two clusters represent regions. Run k6 as a Job inside each cluster to test in region and cross region paths. ASCII Diagram
@@ -77,11 +77,11 @@ Create a ConfigMap with a k6 script.</description>
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 7/9: CD with Istio Traffic Policy and Argo CD</title>
-      <link>https://memo.mx/posts/multi-region-series-07-cd/</link>
+      <title>Multi Region Cloud Training Lab: Part 7 - CD with Istio Traffic Policy and Argo CD</title>
+      <link>https://memo.mx/posts/multi-region-series-part-7-cd/</link>
       <pubDate>Fri, 17 Oct 2025 09:16:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-07-cd/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-7-cd/</guid>
       <description>Problem: Roll out new versions safely at high throughput.
 Assumptions/Constraints
 Cost note: Two clusters act as regions. Istio sidecars injected. Namespace labeled with istio-injection=enabled. ASCII Diagram
@@ -90,11 +90,11 @@ Add VirtualService and DestinationRule with connection pools and outlier detecti
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 6/9: CI with GitHub Actions and Taskfile</title>
-      <link>https://memo.mx/posts/multi-region-series-06-ci/</link>
+      <title>Multi Region Cloud Training Lab: Part 6 - CI with GitHub Actions and Taskfile</title>
+      <link>https://memo.mx/posts/multi-region-series-part-6-ci/</link>
       <pubDate>Fri, 17 Oct 2025 09:15:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-06-ci/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-6-ci/</guid>
       <description>Problem: Build, tag, and push images consistently.
 Assumptions/Constraints
 Cost note: Using two clusters only. GHCR or ECR credentials set as repo secrets. ASCII Diagram
@@ -103,11 +103,11 @@ Use Taskfile in the workflow for local parity. Push image and update a tag file 
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 5/9: Sample App and Overlays</title>
-      <link>https://memo.mx/posts/multi-region-series-05-app/</link>
+      <title>Multi Region Cloud Training Lab: Part 5 - Sample App and Overlays</title>
+      <link>https://memo.mx/posts/multi-region-series-part-5-app/</link>
       <pubDate>Fri, 17 Oct 2025 09:14:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-05-app/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-5-app/</guid>
       <description>Problem: Deploy a simple HTTP service with region specific config.
 Assumptions/Constraints
 Cost note: Two clusters represent regions. Use Kustomize overlays keyed by region label. ASCII Diagram
@@ -117,11 +117,11 @@ package main import ( &amp;#34;fmt&amp;#34;; &amp;#34;log&amp;#34;; &amp;#34;net
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 4/9: AWS Identity (IRSA vs Pod Identity)</title>
-      <link>https://memo.mx/posts/multi-region-series-04-identity/</link>
+      <title>Multi Region Cloud Training Lab: Part 4 - AWS Identity (IRSA vs Pod Identity)</title>
+      <link>https://memo.mx/posts/multi-region-series-part-4-identity/</link>
       <pubDate>Fri, 17 Oct 2025 09:13:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-04-identity/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-4-identity/</guid>
       <description>Problem: Let workloads call AWS without node credentials.
 Assumptions/Constraints
 Cost note: Two clusters, not two AWS regions. Choose one path: IRSA or EKS Pod Identity. Do not mix for the same service account. ASCII Diagram
@@ -129,11 +129,11 @@ IRSA path Pod Identity path +-----------------------------+ +-------------------
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 3/9: Istio Multi Region Mesh</title>
-      <link>https://memo.mx/posts/multi-region-series-03-istio/</link>
+      <title>Multi Region Cloud Training Lab: Part 3 - Istio Multi Region Mesh</title>
+      <link>https://memo.mx/posts/multi-region-series-part-3-istio/</link>
       <pubDate>Fri, 17 Oct 2025 09:12:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-03-istio/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-3-istio/</guid>
       <description>Problem: Enable east to west traffic and consistent policy across clusters.
 Assumptions/Constraints
 Cost note: Two clusters stand in for two regions. Same meshID, same trust domain, distinct network per cluster. ASCII Diagram
@@ -141,11 +141,11 @@ Cross cluster via gateway + ServiceEntry (no istioctl) +-----------+ mTLS mesh +
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 2/9: GitOps with Argo CD</title>
-      <link>https://memo.mx/posts/multi-region-series-02-argocd/</link>
+      <title>Multi Region Cloud Training Lab: Part 2 - GitOps with Argo CD</title>
+      <link>https://memo.mx/posts/multi-region-series-part-2-argocd/</link>
       <pubDate>Fri, 17 Oct 2025 09:11:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-02-argocd/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-2-argocd/</guid>
       <description>Problem: Deploy one app to many clusters using a single source of truth.
 Assumptions/Constraints
 Cost note: We mock regions with two clusters. Argo CD runs in each cluster or as a control cluster. Use ApplicationSet clusters generator. ASCII Diagram
@@ -154,11 +154,11 @@ Label clusters for region selection. Register clusters in Argo CD.</description>
     </item>
     
     <item>
-      <title>Multi region cloud training Lab 1/9: Baseline Repo and Environments</title>
-      <link>https://memo.mx/posts/multi-region-series-01-baseline/</link>
+      <title>Multi Region Cloud Training Lab: Part 1 - Baseline Repo and Environments</title>
+      <link>https://memo.mx/posts/multi-region-series-part-1-baseline/</link>
       <pubDate>Fri, 17 Oct 2025 09:10:00 -0700</pubDate>
       
-      <guid>https://memo.mx/posts/multi-region-series-01-baseline/</guid>
+      <guid>https://memo.mx/posts/multi-region-series-part-1-baseline/</guid>
       <description>Problem: Standardize local commands and name the moving parts so every step is repeatable.
 Assumptions/Constraints
 Cost note: We mock “multi region” by using two Kubernetes clusters, not two AWS regions. App code in app/, manifests in deploy/. Kube contexts: prod-us-east-1, prod-eu-west-1. ASCII Diagram
@@ -174,7 +174,7 @@ Cost note: We mock “multi region” by using two Kubernetes clusters, not two 
       <description>Train teams on multi region, high throughput, chaos tested GitOps without burning money.
 Assumptions/Constraints
 Money note: We mock “multi region” with two Kubernetes clusters, not two AWS regions. You have two kube contexts reachable from your workstation. You control a container registry and a GitHub repo. Optional AWS: use IRSA or EKS Pod Identity in Lab 4. Labs
-Lab 1: Baseline Repo and Environments Sets shared variables and task wrappers. Confirms contexts and versions.</description>
+Part 1 - Baseline Repo and Environments Sets shared variables and task wrappers.</description>
     </item>
     
     <item>
