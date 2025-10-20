@@ -1,5 +1,5 @@
 ---
-title: "Understanding Computer Networks by Analogy: Part 1"
+title: "Understanding Computer Networks by Analogy: Part 1 - Buildings as Networks"
 date: 2024-12-20T01:53:23+01:00
 draft: false
 ---
