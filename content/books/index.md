@@ -1,7 +1,6 @@
 ---
 title: "Books"
 draft: false
-description: "Series-length walkthroughs."
 ---
 
 1. [Understanding Computer Networks by Analogy: Part 1](/posts/understanding-computer-networks-by-analogy/)  
