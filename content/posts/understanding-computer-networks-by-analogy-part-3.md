@@ -4,7 +4,7 @@ date: 2025-10-18T22:39:16+09:00
 draft: false
 ---
 
-
+> License for this chapter: CC BY‑NC‑ND 4.0
 
 # Chapter 3: Hotels as the Cloud
 
@@ -26,7 +26,7 @@ The advantage of the hotel model is **elasticity**. When a conference comes to t
 
 There is, however, a trade-off. You do not control the wiring behind the walls. You don’t get to decide how the hotel’s power grid is designed. The hotel gives you granular controls at your own doors and in your own hallways, but they always keep a set of master keys to ensure the entire building remains safe, secure, and operational. You are a tenant in their building, and you must play by their rules.
 
-> **In a Nutshell:** The cloud is a hotel. You rent the space and services you need, allowing you to scale up and down with demand. You let the hotel staff run the building, so you can focus on your work.
+> **Key Ideas:** The cloud is a hotel. You rent the space and services you need, allowing you to scale up and down with demand. You let the hotel staff run the building, so you can focus on your work.
 
 ## 3.2 Your Private Floor: The Virtual Private Cloud (VPC)
 
@@ -44,7 +44,7 @@ The elevator bank on your floor is your connection to the rest of the world. You
 
 It’s important to note that this is where the physical analogy bends slightly. A VPC is not always a single, contiguous physical floor in a real data center. It is a *virtual* set of hallways that the hotel’s advanced technology carves out for you, potentially spanning across many different physical floors and racks of servers. The privacy, however, is very real, enforced by the hotel’s sophisticated internal security systems. The walls may be virtual, but they are just as strong as steel.
 
-> **In a Nutshell:** A VPC is your private, secure floor in the cloud hotel. You define the layout with subnets (wings) and control all access to and from your floor using gateways (elevators).
+> **Core Concepts:** A VPC is your private, secure floor in the cloud hotel. You define the layout with subnets (wings) and control all access to and from your floor using gateways (elevators).
 
 ### Technical Deep Dive
 
@@ -52,7 +52,7 @@ It’s important to note that this is where the physical analogy bends slightly.
 *   **Subnets:** A VPC is divided into one or more subnets. Each subnet exists within a single Availability Zone (a single data center) to ensure high availability.
     *   **Public Subnet:** A subnet is considered “public” if it has a route in its routing table that points directly to the Internet Gateway. This allows resources in the subnet to be directly reachable from the public internet (if they have a public IP address).
     *   **Private Subnet:** A subnet that does not have a route to the Internet Gateway. Resources in a private subnet cannot be reached from the internet.
-*   **IP Addressing:** When you create a VPC, you assign it a range of private IP addresses from the ranges defined in RFC 1918 (e.g., `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`). You are essentially choosing the numbering scheme for all the rooms on your private floor.
+*   **IP Addressing:** When you create a VPC, you assign it a range of private IP addresses from the ranges defined in [RFC 1918](https://tools.ietf.org/html/rfc1918) (e.g., `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`). You are essentially choosing the numbering scheme for all the rooms on your private floor.
 
 **ASCII Diagram: A VPC Floor Plan**
 
@@ -116,7 +116,7 @@ There are two main types of these service doors:
 1.  **Gateway Endpoints:** These are like special, high-speed tunnels from your floor’s main junction to one of the hotel’s massive, shared utilities like the power grid (S3, DynamoDB). You don’t give the power grid a room number on your floor; you just update your floor’s directory (the route table) to say, “All requests for power go through this private tunnel.”
 2.  **Interface Endpoints:** These are more like having a brand new, private door installed directly on your floor. This door leads to a specific hotel service, and that service actually gets its own room number (a private IP address) in your hallway. It feels like the service is located right there on your floor, and you can even place one of your own security guards at its door.
 
-> **In a Nutshell:** Use the right door for the right job. The Internet Gateway is the main, two-way entrance for public traffic. The NAT Gateway is the secure, one-way exit for private resources. And VPC Endpoints are the private, staff-only hallways to the hotel’s own services, keeping your traffic off the public street.
+> **Key Takeaway:** Use the right door for the right job. The Internet Gateway is the main, two-way entrance for public traffic. The NAT Gateway is the secure, one-way exit for private resources. And VPC Endpoints are the private, staff-only hallways to the hotel’s own services, keeping your traffic off the public street.
 
 ## 3.4 Badges and Permissions: Identity and Access Management (IAM)
 
@@ -131,7 +131,7 @@ IAM is the hotel’s security department, responsible for issuing badges and def
 
 IAM is the system that enforces these rules. It’s the source of truth for all permissions. When a request arrives at a door, the guard at the door (the firewall or Security Group) checks two things: first, the network rules (is traffic from this hallway allowed?), and second, the identity of the visitor (does this person’s badge give them permission to open this specific door?).
 
-> **In a Nutshell:** Identity is the first and most important key to cloud security. Use IAM to define who can do what, always follow the principle of least privilege, and treat your master keys with the extreme care they deserve.
+> **Checklist:** Identity is the first and most important key to cloud security. Use IAM to define who can do what, always follow the principle of least privilege, and treat your master keys with the extreme care they deserve.
 
 ### Technical Deep Dive
 

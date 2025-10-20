@@ -4,7 +4,7 @@ date: 2025-10-18T22:39:16+09:00
 draft: false
 ---
 
-
+> License for this chapter: CC BY‑NC‑ND 4.0
 
 # Chapter 2: Cities as the Internet
 
@@ -25,7 +25,7 @@ Your device makes a simple but critical decision every single time it sends a me
 
 The elevator itself doesn’t read your letter. It doesn’t care about the contents of your message. Its job is purely logistical. It looks at the destination address on the outside of the envelope and knows its one and only job: to take you to the lobby, the central hub of the building, where the concierge can provide further directions. The gateway is the bridge between your private, local floor and the rest of the building, and by extension, the rest of the city.
 
-> **In a Nutshell:** Same floor, stroll the hallway. Different floor, take the elevator. The default gateway is your network’s designated exit door, the first step on any journey to another network.
+> **Checklist:** Same floor, stroll the hallway. Different floor, take the elevator. The default gateway is your network’s designated exit door, the first step on any journey to another network.
 
 ### Technical Deep Dive
 
@@ -35,10 +35,8 @@ The elevator itself doesn’t read your letter. It doesn’t care about the cont
 
 **ASCII Diagram: The Decision to Leave the Subnet**
 
-This diagram shows the logical process inside your device as it decides where to send a packet.
-
 ```
-+----------------------------------------------------+ 
++----------------------------------------------------+
 | Your Laptop (192.168.1.101)                        |
 |                                                    |
 |  Destination: 8.8.8.8 (Google's DNS Server)        |
@@ -75,7 +73,7 @@ This hop-by-hop system is the fundamental principle that allows the entire inter
 
 How do these concierges keep their maps up to date? Sometimes, the building manager comes down and manually writes new directions in the binder. These are **static routes**, which are reliable, but inflexible. More often, the concierges from different buildings have a system for keeping each other informed. This is **dynamic routing**. Protocols like **OSPF** are like the concierges from all the buildings on a single corporate campus having a regular meeting to share notes on the fastest hallways and elevator maintenance schedules. **BGP**, the protocol of the internet itself, is like the council of concierges from all the different corporations in the city, agreeing on the major highways and transit arteries to use between districts.
 
-> **In a Nutshell:** The router is the network’s concierge, and its routing table is its map. It doesn’t know the whole journey; it just makes the smartest decision about the next hop.
+> **Mini case:** The router is the network’s concierge, and its routing table is its map. It doesn’t know the whole journey; it just makes the smartest decision about the next hop.
 
 ### Technical Deep Dive
 
@@ -85,9 +83,7 @@ How do these concierges keep their maps up to date? Sometimes, the building mana
     *   **Interface:** The physical exit door (e.g., `GigabitEthernet0/1`) on the router to use to reach the next hop.
     *   **Metric:** A number representing the “cost” of the route. If a router knows two different paths to the same destination, it will choose the one with the lower cost.
 *   **Routing Protocols:** These are the languages routers use to talk to each other.
-    *   **Static Routing:** An administrator manually configures all routes. It’s simple and secure but doesn’t adapt to network changes.
-    *   **Dynamic Routing:** Routers automatically learn about new routes and network failures from each other.
-        *   **Interior Gateway Protocols (IGP):** Used *within* a single organization’s network (a single “autonomous system”). Their goal is to find the absolute fastest path. Examples: **OSPF (Open Shortest Path First)**, **EIGRP (Enhanced Interior Gateway Routing Protocol)**.
+    *   **Static Routing:** An administrator manually a single organization’s network (a single “autonomous system”). Their goal is to find the absolute fastest path. Examples: **OSPF (Open Shortest Path First)**, **EIGRP (Enhanced Interior Gateway Routing Protocol)**.
         *   **Exterior Gateway Protocol (EGP):** Used *between* different organizations on the internet. The internet’s one and only EGP is **BGP (Border Gateway Protocol)**. BGP is less concerned with speed and more concerned with policy. It’s about which routes are allowed, preferred, and paid for. It’s the protocol of internet business relationships.
 *   **Time To Live (TTL):** What happens if a bad map causes a letter to get stuck in a loop, passed back and forth between two confused concierges forever? To prevent this, every IP packet has a TTL field, which is like a countdown timer. It starts at a number like 64 or 128. Every single router that handles the packet subtracts one from the TTL. If the TTL ever reaches zero, the router discards the packet and sends a notification (an ICMP “Time Exceeded” message) back to the sender. This is the clever mechanism that the `traceroute` command uses to map the path a packet takes across the internet.
 
@@ -122,7 +118,7 @@ A single computer (a single room) can run many different services at the same ti
 
 When you send a message, your device also picks a temporary return slot for itself. This is an **ephemeral port**. It’s like putting your specific apartment number *and* a temporary mailbox number on the return address. The recipient uses this ephemeral port number to send replies back to you, ensuring that their response gets delivered to the exact application on your computer that started the conversation, without getting it mixed up with other ongoing chats.
 
-> **In a Nutshell:** Packets are the envelopes of the internet, carrying your data. Port numbers are the labeled mail slots on every door, ensuring that the right service gets the right message.
+> **Key Ideas:** Packets are the envelopes of the internet, carrying your data. Port numbers are the labeled mail slots on every door, ensuring that the right service gets the right message.
 
 ### Technical Deep Dive
 
@@ -169,9 +165,11 @@ You can find the right building, the right room, and the right mail slot, but th
 
 **TCP (Transmission Control Protocol)** is the equivalent of sending a package by registered mail with tracking and delivery confirmation. It is a formal, reliable, and somewhat heavyweight process, designed for conversations where accuracy is far more important than speed. Before you send your actual message, you and your friend perform a ritual known as the **three-way handshake** to formally establish a connection:
 
-1.  **SYN:** You send a message saying, “I would like to start a formal conversation. Are you ready?” (This is the **SYN**chronize packet).
-2.  **SYN-ACK:** Your friend replies, “I received your request, and I am also ready to talk.” (This is the **SYN**chronize-**ACK**nowledge packet).
-3.  **ACK:** You send a final confirmation: “Excellent, I have received your acknowledgment. The conversation is now officially open.” (This is the final **ACK**nowledge packet).
+1.  **SYN:** You send a message saying, “I would like to start a formal conversation. Are you ready?”
+2.  **SYN-ACK:** Your friend replies, “I received your request, and I am also ready to talk.”
+3.  **ACK:** You send a final confirmation: “Excellent, I have received your acknowledgment. The conversation is now officially open.”
+
+This ritual is often summarized as: TCP three-way handshake: SYN → SYN-ACK → ACK (synchronize / acknowledge).
 
 Once this formal connection is established, TCP meticulously numbers every single packet it sends. The receiver sends back acknowledgments (receipts) to confirm which packets have arrived safely. If a packet gets lost in transit, TCP’s tracking system notices it’s missing and automatically re-sends it. If the network seems congested (if the receipts start taking too long to come back), TCP will automatically slow down its sending rate to be a good citizen and reduce the congestion. This careful, reliable, and orderly approach is perfect for things like web pages, file downloads, and emails, where every single piece of data must be correct and in the right order.
 
@@ -179,7 +177,7 @@ Once this formal connection is established, TCP meticulously numbers every singl
 
 Why on earth would you ever use something so seemingly unreliable? Because it is incredibly fast and efficient. For applications like live video streaming, online gaming, or a quick DNS lookup, speed and low overhead are far more important than perfect accuracy. In a video call, a single missed frame or a slightly garbled word is much better than a long, jarring pause while TCP meticulously re-sends a lost packet from three seconds ago. If a UDP packet is lost, the application can either just ignore it and move on, or, if it’s important, the application itself can ask for the information again.
 
-> **In a Nutshell:** Choose your protocol for the job. TCP is the careful, reliable, and orderly registered mail service. UDP is the fast, efficient, and no-frills postcard service.
+> **Core Concepts:** Choose your protocol for the job. TCP is the careful, reliable, and orderly registered mail service. UDP is the fast, efficient, and no-frills postcard service.
 
 ### Technical Deep Dive
 
@@ -188,11 +186,11 @@ Why on earth would you ever use something so seemingly unreliable? Because it is
     *   **Reliable and Ordered:** Guarantees that data will be delivered in the correct sequence and without errors, using sequence numbers and acknowledgments.
     *   **Flow Control:** Uses a “sliding window” mechanism to ensure the sender doesn’t send data faster than the receiver can process it.
     *   **Congestion Control:** Uses sophisticated algorithms (like CUBIC and BBR) to detect and react to network congestion, reducing the transmission rate to avoid overwhelming the network.
-*   **UDP (User Datagram Protocol):**
+*   **UDP (User Datagram Protocol):
     *   **Connectionless:** No handshake; packets (called datagrams) are sent without establishing a connection first.
     *   **Unreliable and Unordered:** Provides no guarantee of delivery or that datagrams will arrive in the order they were sent.
     *   **Low Overhead:** The UDP header is much smaller and simpler than the TCP header, meaning more of the packet is dedicated to your actual data and less processing is required by the network stack.
-*   **QUIC (Quick UDP Internet Connections):** A much newer protocol that aims to provide the best of both worlds. It runs on top of UDP, so it’s fast and avoids some of the pitfalls of TCP. However, it builds its own reliability, ordering, and congestion control mechanisms directly into the protocol. Crucially, it also encrypts all data by default. QUIC is the foundation of **HTTP/3**, the latest version of the protocol that powers the web, and it’s designed to make web browsing faster and more secure, especially on unreliable networks.
+*   **QUIC (Quick UDP Internet Connections):** A much newer protocol that aims to provide the best of both worlds. It runs on top of UDP, so it’s fast and avoids some of the pitfalls of TCP. However, it builds its own reliability, ordering, and congestion control mechanisms directly into the protocol. Crucially, it also encrypts all data by default. QUIC is the foundation of **HTTP/3**, the latest version of the protocol that powers the web, and it’s designed to make web browsing faster and more secure, especially on unreliable networks. You can read more about it in [RFC 9000](https://www.rfc-editor.org/rfc/rfc9000.html).
 
 **Comparison Table: TCP vs. UDP**
 
@@ -219,10 +217,9 @@ The process is simple. Your device essentially asks, "Where can I find friends-a
 
 You don't go to the main city directory for every single letter. The first time you look up an address, you might jot it down on a sticky note. Your computer does the same thing. It keeps a temporary list of recently used names and addresses in a cache. This makes future connections much faster, because you don't have to ask for directions to a place you just visited.
 
-> **In a Nutshell:** DNS is the city directory that turns easy-to-remember names into the precise addresses that networks need to deliver your message.
+> **Key Ideas:** DNS is the city directory that turns easy-to-remember names into the precise addresses that networks need to deliver your message.
 
 ### Technical Deep Dive
-
 *   **DNS (Domain Name System):** A hierarchical and decentralized naming system for computers, services, or other resources connected to the Internet or a private network.
 *   **DNS Query:** The process of a client computer asking a DNS server to resolve a domain name into an IP address.
 *   **DNS Cache:** A temporary storage of information about previous DNS lookups on a machine's OS or web browser. Caching helps to improve performance by responding to DNS queries with locally stored information instead of having to query a DNS server.

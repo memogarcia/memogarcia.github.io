@@ -17,7 +17,8 @@
       <pubDate>Mon, 20 Oct 2025 16:02:20 +0900</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</guid>
-      <description>Appendices Appendix A: The Analogy Blueprint This is a reference for the core analogies used throughout this book. Use it as a sheet to refresh your memory on the concepts.
+      <description>License for this chapter: CC BY‑NC‑ND 4.0
+Appendix A: The Analogy Blueprint This is a reference for the core analogies used throughout this book. Use it as a sheet to refresh your memory on the concepts.
 Think in rooms, floors, buildings, and streets. You send an envelope from your room, the concierge guides it across floors and buildings, and the city directory helps you find the right address. When you outgrow your building, you rent a private floor in a hotel and keep your hallways private.</description>
     </item>
     
@@ -49,7 +50,8 @@ Think in rooms, floors, buildings, and streets. You send an envelope from your r
       <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>Chapter 2: Cities as the Internet In this chapter, we leave the familiar comfort of our own building and step out into the city. You’ll learn how our letter travels across different networks, meeting the indispensable characters that make the internet work: the efficient elevator operator (gateway), the all-knowing concierge (router), and the vigilant security guard (firewall). By the end, you’ll have a mental map of how a simple message can find its way from your room to anywhere in the world.</description>
+      <description>License for this chapter: CC BY‑NC‑ND 4.0
+Chapter 2: Cities as the Internet In this chapter, we leave the familiar comfort of our own building and step out into the city. You’ll learn how our letter travels across different networks, meeting the indispensable characters that make the internet work: the efficient elevator operator (gateway), the all-knowing concierge (router), and the vigilant security guard (firewall). By the end, you’ll have a mental map of how a simple message can find its way from your room to anywhere in the world.</description>
     </item>
     
     <item>
@@ -58,7 +60,8 @@ Think in rooms, floors, buildings, and streets. You send an envelope from your r
       <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
-      <description>Chapter 3: Hotels as the Cloud In this chapter, our analogy evolves. We move out of our private building and into a hotel. You will learn how the core ideas of cloud computing map to this new environment: renting a private floor (VPC), using the hotel’s internal services (endpoints), ordering room service on demand (serverless), and managing a global chain of hotel branches (multi-region). The rules of the city stay the same, but the speed and scale of the game are about to change dramatically.</description>
+      <description>License for this chapter: CC BY‑NC‑ND 4.0
+Chapter 3: Hotels as the Cloud In this chapter, our analogy evolves. We move out of our private building and into a hotel. You will learn how the core ideas of cloud computing map to this new environment: renting a private floor (VPC), using the hotel’s internal services (endpoints), ordering room service on demand (serverless), and managing a global chain of hotel branches (multi-region).</description>
     </item>
     
     <item>
@@ -67,7 +70,8 @@ Think in rooms, floors, buildings, and streets. You send an envelope from your r
       <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
-      <description>Chapter 4: Advanced Architectures In this chapter, we move from the foundational architecture of our city to its most modern structures. We’ll explore the street market of Wi-Fi, the diplomatic enclave of modern encryption, and the logic-driven world of the service mesh. These are the systems that power the most demanding applications on the internet. They might seem complex at first, but as you’ll see, they are all built on the same fundamental principles of address, path, and permission we’ve been using all along.</description>
+      <description>License for this chapter: CC BY‑NC‑ND 4.0
+Chapter 4: Advanced Architectures In this chapter, we move from the foundational architecture of our city to its most modern structures. We’ll explore the street market of Wi-Fi, the diplomatic enclave of modern encryption, and the logic-driven world of the service mesh. These are the systems that power the most demanding applications on the internet. They might seem complex at first, but as you’ll see, they are all built on the same fundamental principles of address, path, and permission we’ve been using all along.</description>
     </item>
     
     <item>
@@ -310,9 +314,9 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
       <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>Understanding computer networks is like following the journey of a letter you send to your friend across a city, navigating streets, buildings, and neighborhoods until it reaches their hands
-I&amp;rsquo;m writing this for my younger (and admittedly less handsome) self back in university, who constantly struggled to grasp networking concepts, particularly subnetting.
-I chose analogies for this book because they&amp;rsquo;re powerful tools for understanding complicated ideas. There&amp;rsquo;s an old saying: &amp;ldquo;the map is not the territory.</description>
+      <description>License for this chapter: CC BY‑NC‑ND 4.0
+Understanding computer networks is like following the journey of a letter you send to your friend across a city, navigating streets, buildings, and neighborhoods until it reaches their hands.
+I am writing this for my younger and less handsome version of myself back in university who struggled with subnets, addresses, and all the invisible pieces that make the internet works. If that is you too, welcome.</description>
     </item>
     
     <item>

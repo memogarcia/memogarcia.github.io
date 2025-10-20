@@ -4,7 +4,7 @@ date: 2025-10-18T22:39:16+09:00
 draft: false
 ---
 
-
+> License for this chapter: CC BY‑NC‑ND 4.0
 
 # Chapter 4: Advanced Architectures
 
@@ -37,7 +37,7 @@ Wireless networks face these exact same issues every millisecond of every day. T
 
 This whole process is a constant, high-speed dance of listening, waiting, and transmitting. It’s a far cry from the brute-force reliability of sending electricity down a private, shielded wire.
 
-> **In a Nutshell:** A wired network is a private, predictable hallway. Wi-Fi is a shared, noisy street market. To be understood, every device must follow a complex set of turn-taking rules, constantly listening and politely waiting for a chance to speak.
+> **Key Ideas:** A wired network is a private, predictable hallway. Wi-Fi is a shared, noisy street market. To be understood, every device must follow a complex set of turn-taking rules, constantly listening and politely waiting for a chance to speak.
 
 ### Technical Deep Dive
 
@@ -111,7 +111,7 @@ These ushers are a coordinated team, and they provide a consistent set of advanc
 *   **Intelligent Traffic Control and Resilience:** If Room A’s usher tries to deliver a message to Room B, but Room B is swamped with requests, the usher can be programmed with intelligent rules. They might wait a moment and try again (a **retry**). They might divert the message to Room C, which provides the same service (load balancing). Or, if Room B seems to be broken and isn’t answering its door, the usher can immediately stop sending traffic to it for a while to let it recover (a **circuit breaker**). This intelligence lives with the ushers, not the applications in the rooms.
 *   **Perfect, Consistent Observability:** Every single usher keeps a meticulous logbook of every message they send and receive: who they talked to, how long it took, and whether it was successful. Because all traffic must go through the ushers, you get a floor-wide, centralized view of all the hallway conversations. This data is a mine for the observability tools we discussed earlier, giving you insight into the health and performance of your entire system.
 
-> **In a Nutshell:** A service mesh moves security and networking intelligence from the boundaries directly into the hallways. It gives every service a personal usher (a sidecar proxy) that handles the hard work of secure, reliable communication. This makes the applications themselves simpler and the entire system more secure, resilient, and observable.
+> **Key Takeaway:** A service mesh moves security and networking intelligence from the boundaries directly into the hallways. It gives every service a personal usher (a sidecar proxy) that handles the hard work of secure, reliable communication. This makes the applications themselves simpler and the entire system more secure, resilient, and observable.
 
 ### Technical Deep Dive
 
