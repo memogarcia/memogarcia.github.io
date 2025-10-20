@@ -4,9 +4,9 @@ date: 2025-10-20T09:00:00-07:00
 draft: false
 ---
 
-# Chapter 5: Follow the Envelope: Labs & Mini Exercises
+> License for this chapter: CC BY‑NC‑ND 4.0
 
-![Chapter 5 illustration](/img/networks-by-analogy/img.png)
+# Chapter 5: Follow the Envelope: Labs & Mini Exercises
 
 Welcome to the hands-on portion of our journey. In the previous chapters, we've built a model of how networks operate using our building and city analogy. Now, it's time to get our hands dirty and see these concepts in action. It’s time to see if our theoretical building can stand on its own two feet, architecturally speaking. (Pun intended!)
 

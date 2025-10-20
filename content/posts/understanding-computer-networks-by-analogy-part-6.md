@@ -4,8 +4,7 @@ date: 2025-10-20T16:02:20+0900
 draft: false
 ---
 
-# Appendices
-
+> License for this chapter: CC BY‑NC‑ND 4.0
 
 # Appendix A: The Analogy Blueprint
 
