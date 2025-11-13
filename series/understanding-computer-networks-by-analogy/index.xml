@@ -17,8 +17,10 @@
       <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</guid>
-      <description>Appendices Appendix A: The Analogy Blueprint This is a quick reference for the core analogies used throughout this book. Use it as a cheat sheet to refresh your memory on the key concepts.
-Think in rooms, floors, buildings, and streets. You send an envelope from your room, the concierge guides it across floors and buildings, and the city directory helps you find the right address. When you outgrow your building, you rent a private floor in a hotel and keep your hallways private.</description>
+      <description>A quick-reference blueprint, glossary, and troubleshooting checklist for when you feel lost in the city.
+License for this section: CC BY-NC-ND 4.0
+Appendix A – Blueprint: The Whole Journey at a Glance Use this appendix when you want to see the entire story on one page.
+A.1 Layers by Analogy +----------------------+---------------------------+-------------------------------+ | Layer (TCP/IP) | Analogy | Typical Examples | +----------------------+---------------------------+-------------------------------+ | Application | People talking in rooms | HTTP, DNS, SSH, SMTP, SQL | | Transport | Conversation style | TCP, UDP, QUIC | | Network | City-wide addressing | IP, ICMP, routing, BGP, OSPF | | Link (Data Link + | Hallways and local rules | Ethernet, Wi-Fi, VLANs, ARP | | some Physical) | (per building/floor) | | +----------------------+---------------------------+-------------------------------+ A.</description>
     </item>
     
   </channel>

@@ -2,63 +2,155 @@
 title: "Understanding Computer Networks by Analogy: Part 3 - Hotels as the Cloud"
 date: 2025-10-18T22:39:16+09:00
 draft: false
+
 ---
 
-> License for this chapter: CC BY‑NC‑ND 4.0
+> Think of the cloud as a hotel: you rent a private floor, connect to the rest of the city through controlled doors, and use badges to decide who can go where.
 
-# Chapter 3: Hotels as the Cloud
+License for this chapter: CC BY-NC-ND 4.0
 
-> In this chapter, our analogy evolves. We move out of our private building and into a hotel. You will learn how the core ideas of cloud computing map to this new environment: renting a private floor (VPC), using the hotel’s internal services (endpoints), ordering room service on demand (serverless), and managing a global chain of hotel branches (multi-region). The rules of the city stay the same, but the speed and scale of the game are about to change dramatically.
+---
 
-For the first part of our journey, we’ve been the proud owners of our own building. We managed the security, we knew every hallway, and we were responsible for fixing the plumbing at 2 a.m. But our business is growing. We need more space, more flexibility, and a presence in cities all over the world. Owning and operating a building in every city is an expensive proposition. It’s time for a new strategy.
+## What This Chapter Covers
 
-It’s time to check in to the cloud hotel.
+In Part 1, we treated your local network as a building you own and operate.  
+In Part 2, we walked through the city, following your envelopes across the internet.
+
+In this chapter, we move into a **hotel** – a shared, professionally managed building that represents a major cloud provider.
+
+By the end of this chapter, you should be able to:
+
+- Describe the **cloud model** using the hotel analogy.
+- Explain what a **Virtual Private Cloud (VPC)** is and how subnets map to different wings of your floor.
+- Distinguish between an **Internet Gateway**, a **NAT Gateway**, and **VPC Endpoints**, and know when to use each.
+- Explain the role of **Identity and Access Management (IAM)** and the principle of least privilege.
+
+---
+
+## Chapter 3: Hotels as the Cloud
+
+In the earlier chapters, you owned the entire building:
+
+- You knew every hallway.
+- You controlled every lock.
+- You were responsible for fixing the plumbing at 2 a.m.
+
+Now your business is growing:
+
+- You need more capacity.
+- You need presence in multiple cities.
+- You do not want to build and operate a physical building in each place.
+
+Owning dozens of buildings is expensive and slow. You need a different model.
+
+You decide to **check in to the cloud hotel**.
+
+---
 
 ## 3.1 Hotels and Serviced Offices: The Cloud Model
 
-Think of a major cloud provider, like Amazon Web Services (AWS), Google Cloud, or Microsoft Azure, as a global chain of hotels. Instead of buying land and constructing your own building from scratch, you rent space in one of their skyscrapers. You get to focus entirely on your business, while the hotel management handles the power grid, the plumbing, the elevators, the security staff, and the physical maintenance. You’re trading the burdens of ownership for the speed and convenience of a service.
+Think of a major cloud provider like Amazon Web Services (AWS), Google Cloud, or Microsoft Azure as a global chain of hotels.
 
-The flexibility is a breath of fresh air. You can rent a single room for a weekend to try out a new idea. You can expand to a cluster of rooms for a busy week-long conference. If your business requires absolute privacy and stability, you can reserve an entire floor, complete with your own private elevator bank.
+Instead of buying land and constructing your own building from scratch, you:
 
-The pricing model seems simple at first glance: you pay for the rooms and services you use. But as anyone who has ever stayed in a hotel knows, the footnotes on the bill matter. That extra room service, the late-night calls to other cities, and the special deliveries between floors all show up on the final invoice. Understanding this consumption model is key to using the cloud effectively.
+- Rent space in one of their skyscrapers.
+- Let the hotel staff manage:
+  - Power and cooling.
+  - Physical security.
+  - Elevators, cabling, and hardware.
+- Focus on running your own business inside the rooms and floors you rent.
 
-The advantage of the hotel model is **elasticity**. When a conference comes to town (a surge in traffic to your website), the hotel can instantly provide you with extra rooms to accommodate the influx. When the conference ends and things are quiet, you release the rooms, and your costs drop immediately. You don’t need to own a conference center just for that one week a year. You pay for what you use, when you use it.
+You can choose from different levels of commitment:
 
-There is, however, a trade-off. You do not control the wiring behind the walls. You don’t get to decide how the hotel’s power grid is designed. The hotel gives you granular controls at your own doors and in your own hallways, but they always keep a set of master keys to ensure the entire building remains safe, secure, and operational. You are a tenant in their building, and you must play by their rules.
+- A single room for a weekend experiment.
+- A cluster of rooms for a busy week-long conference.
+- An entire floor with its own elevator bank if you need isolation and predictability.
 
-> **Key Ideas:** The cloud is a hotel. You rent the space and services you need, allowing you to scale up and down with demand. You let the hotel staff run the building, so you can focus on your work.
+The pricing seems simple: you pay for the rooms and services you use.  
+In practice, the details matter:
+
+- Extra services (room service, cross-city calls, special deliveries) show up on the bill.
+- In cloud terms, this is data transfer, managed services, storage, and per-request charges.
+
+The main advantage of the hotel model is **elasticity**:
+
+- When demand spikes (a large conference arrives), the hotel can instantly allocate more rooms.
+- When traffic falls, you release rooms and costs drop.
+- You do not have to own a conference center just for a few peak days each year.
+
+The trade-off:
+
+- You no longer control the wiring behind the walls.
+- You do not design the power grid or the elevator system.
+- You get fine-grained controls at your own doors and hallways, but the hotel always retains master keys to run the building safely.
+
+> **Key idea:** The cloud is a professionally managed hotel. You trade ownership for elasticity and pay-per-use pricing, while keeping strong control inside your own area.
+
+---
 
 ## 3.2 Your Private Floor: The Virtual Private Cloud (VPC)
 
-When you move your business into the cloud hotel, you don’t just want a random assortment of rooms scattered throughout the building. You want a secure, isolated, and private space for your company. You want your own private floor. In the world of the cloud, this is a **Virtual Private Cloud (VPC)**.
+When you move into the cloud hotel, you do not want a random scatter of rooms across the building.  
+You want a secure, isolated, and organized area – **your own private floor**.
 
-A VPC is your own logically isolated section of the cloud. It’s a slice of the hotel that is entirely yours. The hallways are yours. The doors are yours. And you, and only you, get to decide who is allowed to visit.
+In the cloud, this is your **Virtual Private Cloud (VPC)**.
 
-When the hotel manager hands you the keys to your new floor, the first thing you do is lay out the floor plan. You don’t want a single open-plan office. You want to divide the floor into different wings for different purposes. This is a callback to the subnets we created in our original building.
+- A VPC is a logically isolated virtual network you define inside a cloud region.
+- You choose the IP address range (the room numbering scheme).
+- You divide the floor into **subnets**, just as we divided our original building into floors and wings.
 
-*   You might designate one wing as the **public-facing area**. This is where your lobby, reception, and marketing offices are. These rooms need to be easily accessible from the main hotel entrance.
-*   You’ll designate a much larger wing as the **private back-office**. This is where your sensitive accounting data, your internal machinery, and your employee-only areas are located. These rooms should have no direct windows or doors to the outside world.
-*   You might create a third wing for **shared internal services**, like your own private library or database servers, which need to be accessed by other rooms on your floor but not by the public.
+You might design the floor as follows:
 
-The elevator bank on your floor is your connection to the rest of the world. You get to decide which elevators stop on your floor and which rooms they can access. You can choose which of your rooms have a peephole to the street (a public IP address) and which remain entirely private and anonymous.
+- A **public wing**:
+  - Lobby, reception, marketing offices.
+  - Rooms that must be reachable from the hotel’s main entrance (public-facing web servers, APIs).
+- A **private back-office wing**:
+  - Accounting, internal tools, sensitive data.
+  - No direct doors or windows to the outside world.
+- A **shared-services wing**:
+  - Internal databases, message queues, shared application services.
+  - Accessible from other rooms on your floor, but not from the public street.
 
-It’s important to note that this is where the physical analogy bends slightly. A VPC is not always a single, contiguous physical floor in a real data center. It is a *virtual* set of hallways that the hotel’s advanced technology carves out for you, potentially spanning across many different physical floors and racks of servers. The privacy, however, is very real, enforced by the hotel’s sophisticated internal security systems. The walls may be virtual, but they are just as strong as steel.
+The elevator bank on your floor is still your connection to the rest of the world, just as in previous chapters.  
+You decide:
 
-> **Core Concepts:** A VPC is your private, secure floor in the cloud hotel. You define the layout with subnets (wings) and control all access to and from your floor using gateways (elevators).
+- Which elevators stop on your floor.
+- Which rooms can use which elevators.
+- Which rooms have peepholes to the street (public IP addresses) and which stay fully private.
+
+At this point the analogy bends slightly:
+
+- A VPC is not necessarily a single physical floor.
+- It is often carved out of multiple physical racks and data centers.
+- The isolation is logical, enforced by the provider’s networking fabric and security systems.
+
+> **Core concept:** A VPC is your private, secure floor in the cloud hotel. You design the layout with subnets and control all traffic entering and leaving using gateways and routing tables.
 
 ### Technical Deep Dive
 
-*   **VPC:** A logically isolated virtual network that you define within a cloud provider’s region. You have complete control over your virtual networking environment, including selection of your own IP address range, creation of subnets, and configuration of route tables and network gateways.
-*   **Subnets:** A VPC is divided into one or more subnets. Each subnet exists within a single Availability Zone (a single data center) to ensure high availability.
-    *   **Public Subnet:** A subnet is considered “public” if it has a route in its routing table that points directly to the Internet Gateway. This allows resources in the subnet to be directly reachable from the public internet (if they have a public IP address).
-    *   **Private Subnet:** A subnet that does not have a route to the Internet Gateway. Resources in a private subnet cannot be reached from the internet.
-*   **IP Addressing:** When you create a VPC, you assign it a range of private IP addresses from the ranges defined in [RFC 1918](https://tools.ietf.org/html/rfc1918) (e.g., `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`). You are essentially choosing the numbering scheme for all the rooms on your private floor.
+- **VPC**
+  - A logically isolated virtual network in a cloud provider’s region.
+  - You control:
+    - IP address range.
+    - Subnets.
+    - Route tables.
+    - Network gateways.
 
-**ASCII Diagram: A VPC Floor Plan**
+- **Subnets**
+  - A VPC is divided into one or more subnets.
+  - Each subnet usually lives in a single Availability Zone for high availability.
+  - Common patterns:
+    - **Public subnet**: Routing table has a route to the Internet Gateway. Resources can be publicly reachable (if they have public IPs).
+    - **Private subnet**: No route to the Internet Gateway. Resources are not directly reachable from the internet.
 
-This diagram shows a typical VPC layout with a public wing for web servers and a private wing for the application and database servers.
+- **IP Addressing**
+  - When you create a VPC, you choose a private IP range (e.g. `10.0.0.0/16`).
+  - This defines the room numbers on your floor.
+  - Subnets carve that space into smaller ranges, like wings.
 
-```
+### ASCII Diagram – A VPC Floor Plan
+
+```text
 +--------------------------------------------------------------------+
 | Your Private Floor (VPC: 10.0.0.0/16)                              |
 |                                                                    |
@@ -72,76 +164,247 @@ This diagram shows a typical VPC layout with a public wing for web servers and a
 |  |  +-------------------+    |  |  +--------------------------+  |  |
 |  |         ^                 |  |              |                 |  |
 |  +---------|-----------------+  +--------------|-----------------+  |
-|            |                                   v                 |
-|            |                      +--------------------------+  |
-|            |                      |   Database Server Room   |  |
-|            |                      |      (Private IP)        |  |
-|            |                      +--------------------------+  |
-|            |                                                     |
-|  +---------v------------------+                                  |
-|  | Main Elevator (Router)     |                                  |
-|  |   - Route to Internet GW   |                                  |
-|  |   - Route to Private Wing  |                                  |
-|  +----------------------------+                                  |
+|            |                                   v                    |
+|            |                      +--------------------------+      |
+|            |                      |   Database Server Room   |      |
+|            |                      |      (Private IP)        |      |
+|            |                      +--------------------------+      |
+|            |                                                        |
+|  +---------v------------------+                                    |
+|  | Main Elevator (Router)     |                                    |
+|  |   - Route to Internet GW   |                                    |
+|  |   - Route to Private Wing  |                                    |
+|  +----------------------------+                                    |
 |                                                                    |
 +--------------------------------------------------------------------+
 ```
 
+---
+
 ## 3.3 The Hotel’s Many Doors: Gateways and Endpoints
 
-Our private floor is secure and isolated. But we live in a connected world. Sometimes, our employees need to get information from the city library (an external API). Sometimes, they need to order supplies from a vendor across town (download software updates). And sometimes, they need to use the hotel’s own amenities, like the kitchen or the central archives.
+Your private floor is isolated, but it cannot be completely sealed off.  
+In practice, you need to:
 
-A building needs doors. In the cloud, our private floor needs gateways and endpoints.
+- Serve websites and APIs to the public internet.
+- Download software updates and talk to external APIs.
+- Use the hotel’s own internal services (like shared storage, managed databases, queues).
+
+A building needs doors. In the cloud, your VPC needs **gateways** and **endpoints**.
 
 ### The Main Entrance: The Internet Gateway
 
-An **Internet Gateway (IGW)** is the hotel’s main entrance. It’s a two-way door to the public internet. People from the outside can come in, and people from the inside can go out. You attach an Internet Gateway to your VPC when you have rooms that must be publicly reachable, like the web servers in your public-facing wing.
+An **Internet Gateway (IGW)** is the hotel’s main entrance for your floor:
 
-For a visitor to find your web server, two things must happen. First, the web server needs a public, registered address that can be found in the city directory (an **Elastic IP address**). Second, there must be a clear path from the main hotel entrance (the IGW) to its front door, which is defined in your floor’s directory (the **route table**). The security guard at the door (the **Security Group**) is still there, of course, checking IDs. But the path is open. It’s a two-way street.
+- It is a **two-way door** between your VPC and the public internet.
+- People from the outside can reach specific rooms on your floor.
+- Rooms on your floor can initiate connections to the internet.
+
+To make a web server publicly reachable:
+
+1. Attach an Internet Gateway to your VPC.
+2. Add a route in the public subnet’s route table that points internet-bound traffic to the IGW.
+3. Give the web server a public IP (or an Elastic IP).
+4. Configure a Security Group (door guard) to allow specific inbound traffic (for example, HTTPS on port 443).
+
+If those pieces are in place:
+
+- The city directory (DNS) can map a domain name to your public IP.
+- Traffic flows from the internet, through the IGW, along your routing table, and up to the correct room.
 
 ### The Staff-Only Exit: The NAT Gateway
 
-Now, think about all the rooms in your private back-office wing: your internal databases, your application servers. You never, ever want a random person from the street to be able to walk up to their door. But these back-office workers still need to access the outside world. They need to run to the store for supplies (download a security patch) or call a vendor for a price check (query an external data source). They need to get *out*, but you can’t let the public *in*.
+Rooms in your **private wing** have a different requirement:
 
-For this, you use a **NAT Gateway**. Think of it as a monitored, staff-only exit at the back of the hotel. Your internal workers can go to this exit and head out into the city. The guard at the door (the NAT Gateway) makes a note of who left and what they went to get. When the worker returns with their supplies, the guard checks their notes and says, “Ah, you went to get software updates. I know which room you came from; let me send you back there.” Crucially, no one from the outside can initiate a conversation through this door. It is strictly for traffic that is leaving first and then returning.
+- They must never be reachable directly from the public street.
+- They still need to go out to fetch software updates, call external APIs, or download data.
+
+For this, you use a **NAT Gateway**:
+
+- Think of it as a **staff-only exit** at the back of the hotel.
+- Only people who start inside your floor can use it.
+- Outsiders cannot initiate a conversation through this door.
+
+How it works conceptually:
+
+- Workers from private rooms walk to the NAT exit and step out into the city.
+- The guard at the door (the NAT Gateway) records:
+  - Which room initiated which connection.
+- When responses come back:
+  - The guard checks the notes.
+  - Sends the envelopes back to the correct internal room.
+
+The external world only sees the NAT Gateway’s address, not the internal room numbers.  
+This preserves privacy while still allowing outbound connectivity.
 
 ### The Private Service Door: VPC Endpoints
 
-What happens when your employees on your private floor need to visit one of the hotel’s own massive amenities, like the central storage warehouse (Amazon S3) or the library (Google Cloud Storage)? The default way would be to leave your private floor, go down the elevator, walk through the main lobby, and head out onto the public street, only to walk down the block and re-enter the hotel through the warehouse’s public entrance. It works, but it’s inefficient and exposes you to the public street unnecessarily.
+Sometimes your employees need to use the hotel’s own shared amenities:
 
-A **VPC Endpoint** is a private, secure service door that connects your floor directly to the hotel’s internal amenities. Instead of walking the public street, you’re using a secure, staff-only hallway. Your data never gets exposed to the public internet. This is a win for security, and it’s often faster and cheaper.
+- A huge storage warehouse (object storage like S3).
+- A document archive (managed databases).
+- Internal messaging systems (queues, notification services).
 
-There are two main types of these service doors:
+The naive approach:
 
-1.  **Gateway Endpoints:** These are like special, high-speed tunnels from your floor’s main junction to one of the hotel’s massive, shared utilities like the power grid (S3, DynamoDB). You don’t give the power grid a room number on your floor; you just update your floor’s directory (the route table) to say, “All requests for power go through this private tunnel.”
-2.  **Interface Endpoints:** These are more like having a brand new, private door installed directly on your floor. This door leads to a specific hotel service, and that service actually gets its own room number (a private IP address) in your hallway. It feels like the service is located right there on your floor, and you can even place one of your own security guards at its door.
+- Leave your floor.
+- Go down to the lobby.
+- Walk out onto the public street.
+- Walk back into the hotel through the public entrance to the warehouse.
 
-> **Key Takeaway:** Use the right door for the right job. The Internet Gateway is the main, two-way entrance for public traffic. The NAT Gateway is the secure, one-way exit for private resources. And VPC Endpoints are the private, staff-only hallways to the hotel’s own services, keeping your traffic off the public street.
+It works, but:
+
+- You expose yourself to the public street.
+- You may pay for unnecessary public data transfer.
+- It adds complexity to security and routing.
+
+A **VPC Endpoint** is a **private service door** between your floor and the hotel’s internal amenities:
+
+- Traffic to certain services never leaves the hotel’s interior network.
+- Your data avoids the public internet entirely.
+- This is better for security, and often cheaper and faster.
+
+There are two main types:
+
+1. **Gateway Endpoints**
+   - Like a special high-speed tunnel from your floor’s main junction to a big shared utility (for example, S3 or DynamoDB).
+   - You do not assign the utility a room on your floor.
+   - Instead, your route table says: “All requests for this service go through this private tunnel.”
+
+2. **Interface Endpoints**
+   - Like installing a new private door directly on your hallway.
+   - The cloud service gets a private IP on your floor.
+   - It feels as if the service lives on your floor.
+   - You can attach your own Security Group to that door.
+
+> **Key takeaway:**  
+> - Use the **Internet Gateway** for two-way public access.  
+> - Use the **NAT Gateway** for one-way outbound access from private rooms.  
+> - Use **VPC Endpoints** to reach the hotel’s own services without touching the public street.
+
+---
 
 ## 3.4 Badges and Permissions: Identity and Access Management (IAM)
 
-In a hotel, security is about more than just locks on the doors. The important element of security is identity. Who are you, and what are you allowed to do? This is managed through a system of keycards and permissions. In the cloud, this is **Identity and Access Management (IAM)**.
+Locks on doors are only part of hotel security. The crucial question is:
 
-IAM is the hotel’s security department, responsible for issuing badges and defining who can go where. Every single person and every single service in the hotel carries an identity. A policy is a document that describes what an identity is allowed to do. The core principle of good security is **least privilege**. Give each person and service the absolute minimum set of permissions they need to do their job, and nothing more.
+> Who are you, and what are you allowed to do?
 
-*   The CEO might have a master keycard that opens almost any door.
-*   A software developer might have a keycard that gives them access to the development wing of their floor, but not the finance wing.
-*   An automated cleaning robot (a service) might be given a special role that allows it to open the doors to empty rooms, but not occupied ones, and only between 3 a.m. and 5 a.m.
-*   A temporary contractor might be given a badge that automatically expires at the end of the week.
+In a hotel, this is handled with **badges and keycards**.  
+In the cloud, this is **Identity and Access Management (IAM)**.
 
-IAM is the system that enforces these rules. It’s the source of truth for all permissions. When a request arrives at a door, the guard at the door (the firewall or Security Group) checks two things: first, the network rules (is traffic from this hallway allowed?), and second, the identity of the visitor (does this person’s badge give them permission to open this specific door?).
+IAM is the hotel’s internal security department:
 
-> **Checklist:** Identity is the first and most important key to cloud security. Use IAM to define who can do what, always follow the principle of least privilege, and treat your master keys with the extreme care they deserve.
+- It issues identities (badges and keycards).
+- It defines which identities can open which doors.
+- It enforces the principle of **least privilege**:
+  - Give each identity only the minimum permissions needed to do its job.
+
+Examples in the hotel:
+
+- The CEO might have a master keycard that opens almost any door.
+- A developer might have access to the development wing, but not to finance.
+- A cleaning robot (a service) might:
+  - Only open doors to empty rooms.
+  - Only operate between 3 a.m. and 5 a.m.
+- A temporary contractor might have a badge that expires automatically at the end of the week.
+
+In the cloud:
+
+- Every user, application, and service has an **identity**.
+- Each identity has **policies** attached to it.
+- When a request reaches a door (for example, an API, a storage bucket, or a database):
+  - The network guard (Security Group / firewall) checks:
+    - Is traffic allowed from this hallway?
+  - The IAM system checks:
+    - Does this identity’s badge allow this action on this resource?
+
+> **Checklist:**  
+> - Start with the question: “Who is this?”  
+> - Apply least privilege: give only the permissions that are truly needed.  
+> - Treat powerful identities (master keys) with extreme care.
 
 ### Technical Deep Dive
 
-*   **IAM Components:**
-    *   **User:** An identity representing a human being.
-    *   **Group:** A collection of users. You can apply policies to a group to give all its members the same permissions.
-    *   **Role:** An identity that can be assumed by a user, an application, or a service. Roles are powerful because they provide temporary security credentials. For example, you can grant a server a role that allows it to write files to a specific storage bucket, without ever having to store a permanent secret key on the server itself.
-    *   **Policy:** A JSON document that explicitly defines permissions. It states what actions are allowed or denied on which resources.
-*   **Authentication vs. Authorization:**
-    *   **Authentication** is the process of proving you are who you say you are (e.g., with a password and a multi-factor authentication token). This is checking your ID at the hotel’s front desk.
-    *   **Authorization** is the process of determining what you are allowed to do once you’ve been authenticated. This is what the IAM policies define. Your ID gets you into the hotel; your keycard’s permissions determine which floors and rooms you can access.
+- **IAM Components**
+  - **User**
+    - Represents a human being.
+    - Has long-term credentials (passwords, access keys) if you choose to use them.
+  - **Group**
+    - A collection of users.
+    - You attach policies to the group so all members share the same permissions.
+  - **Role**
+    - An identity that can be assumed by a user, application, or service.
+    - Provides temporary credentials.
+    - Typical use: give a server or function a role that allows it to access a specific storage bucket, without embedding static keys.
+  - **Policy**
+    - A JSON document that defines permissions:
+      - Which actions are allowed or denied.
+      - On which resources.
+      - Under which conditions (time, source IP, MFA requirements, etc.).
 
-This chapter has introduced the shift from owning your own building to renting a floor in a cloud hotel. We’ve seen how to create a private, secure floor (VPC), how to use the hotel’s various doors (gateways and endpoints), and how to manage identity with a system of badges and permissions (IAM). In the next chapter, we’ll explore the more advanced and dynamic services the hotel has to offer, from on-demand room service to a global chain of hotel branches.
+- **Authentication vs Authorization**
+  - **Authentication**
+    - Proving who you are.
+    - Example: logging in with a password and a multi-factor token.
+    - Analogy: showing your ID at the front desk.
+  - **Authorization**
+    - Deciding what you are allowed to do.
+    - Example: IAM policies that grant access to a specific bucket or API.
+    - Analogy: your keycard permissions defining which floors and rooms you can enter.
+
+---
+
+## Recap and Small Exercises
+
+### What You Should Now Be Able to Explain
+
+By the end of this chapter, you should be comfortable explaining:
+
+- The **cloud** as a hotel where you rent space instead of owning the whole building.
+- A **VPC** as your private floor, subdivided into subnets (wings) with controlled routing.
+- The roles of:
+  - **Internet Gateways** (two-way public entrance),
+  - **NAT Gateways** (one-way staff exit for private rooms),
+  - **VPC Endpoints** (private doors to internal hotel services).
+- **IAM** as the badge and keycard system that implements least privilege.
+
+### Exercises
+
+1. **Sketch Your First Cloud Floor**
+   - Pick an example application (for example, a simple web app with a database).
+   - Draw your VPC as a floor:
+     - Public wing (web/API).
+     - Private wing (application servers, databases).
+   - Mark which subnets would be public and which would be private.
+
+2. **Place the Doors**
+   - On your sketch, show:
+     - Where the Internet Gateway connects.
+     - Where a NAT Gateway would sit for private subnets.
+     - Where you would add VPC Endpoints for storage or other managed services.
+
+3. **Design IAM for a Small Team**
+   - Imagine a small team of three people:
+     - A developer.
+     - An operator (DevOps / SRE).
+     - A finance analyst.
+   - Write down:
+     - Which “wings” each needs access to.
+     - What roles or groups you would create.
+     - One example of a permission you would explicitly **deny** to reduce risk.
+
+4. **Map the Analogy to a Real Cloud Account**
+   - If you have access to a cloud account (even a sandbox):
+     - Find an existing VPC and identify:
+       - Its CIDR range (room numbering scheme).
+       - Its subnets and which ones are public or private.
+       - Any Internet Gateways, NAT Gateways, or VPC Endpoints.
+     - Find one IAM role and interpret it:
+       - Who can assume it?
+       - Which “doors” does it open?
+
+---
+
+In the next part, we will extend the hotel analogy to more advanced architectures:  
+on-demand services (room service), globally distributed hotels (multi-region), and patterns that help you keep your systems resilient as they grow.
