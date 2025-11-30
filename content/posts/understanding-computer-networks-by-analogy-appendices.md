@@ -2,373 +2,277 @@
 title: "Understanding Computer Networks by Analogy: Appendices"
 date: 2025-10-18T22:39:16+09:00
 draft: false
-series: "Understanding Computer Networks by Analogy"
 ---
 
 > A quick-reference blueprint, glossary, and troubleshooting checklist for when you feel lost in the city.
 
-License for this section: CC BY-NC-ND 4.0
+License: CC BY-NC-ND 4.0
 
 ---
 
-## Appendix A – Blueprint: The Whole Journey at a Glance
+# Epilogue: Full Circle
 
-Use this appendix when you want to see the **entire story** on one page.
+## Chapter 19: The Day You Knew Where to Look
 
-### A.1 Layers by Analogy
+Remember your first day?
 
-```text
-+----------------------+---------------------------+-------------------------------+
-| Layer (TCP/IP)       | Analogy                   | Typical Examples              |
-+----------------------+---------------------------+-------------------------------+
-| Application          | People talking in rooms   | HTTP, DNS, SSH, SMTP, SQL     |
-| Transport            | Conversation style        | TCP, UDP, QUIC                |
-| Network              | City-wide addressing      | IP, ICMP, routing, BGP, OSPF  |
-| Link (Data Link +    | Hallways and local rules  | Ethernet, Wi-Fi, VLANs, ARP   |
-| some Physical)       | (per building/floor)      |                               |
-+----------------------+---------------------------+-------------------------------+
-```
+The network was down. Everyone was staring at you. You had no idea where to start.
 
-### A.2 Buildings, Cities, and Hotels – Side-by-Side
+Let's replay that scenario with what you know now.
 
-```text
-+-------------------+-------------------------------+--------------------------------+
-| Concept           | Analogy                       | Network / Cloud Term           |
-+-------------------+-------------------------------+--------------------------------+
-| Room              | A single device               | Host, server, laptop, phone    |
-| Door              | Network interface             | NIC, eth0, wlan0               |
-| Door label        | Physical door ID              | MAC address                    |
-| Room number       | Number on the door            | IP address                     |
-| Floor             | Group of nearby rooms         | Subnet                         |
-| Building          | One physical building         | LAN, on-prem network           |
-| Elevator lobby    | Exit from the floor           | Default gateway / router       |
-| Concierge         | Person routing mail           | Router                         |
-| Street network    | Roads & intersections         | The Internet                   |
-| City directory    | Phone/address book            | DNS                            |
-| Hotel chain       | Global managed buildings      | Cloud provider                 |
-| Private floor     | Your reserved hotel floor     | VPC                            |
-| Public wing       | Rooms with street-facing      | Public subnet                  |
-|                   | windows                        |                                |
-| Private wing      | Back-office rooms             | Private subnet                 |
-| Main entrance     | Lobby open to the street      | Internet Gateway (IGW)         |
-| Staff-only exit   | Back door for employees       | NAT Gateway                    |
-| Private service   | Internal hotel corridor to    | VPC Endpoint                   |
-| door              | shared amenities              |                                |
-| Badge / keycard   | Who you are + what you can do | IAM identities & policies      |
-| Personal usher    | Helper outside each room      | Sidecar proxy in service mesh  |
-+-------------------+-------------------------------+--------------------------------+
-```
+The symptoms: nothing internal is working. Email down, Slack down, internal apps down. But people's phones are fine on cellular data.
 
-### A.3 End-to-End Journey: From Browser to Cloud and Back
+You check your laptop's configuration. You have an IP address. That's good. DHCP is working and you have a room number. You can ping the default gateway. That's good. You can reach the elevator lobby. You try to ping an external IP, something simple like 1.1.1.1. That works too. So the path to the outside world is fine.
 
-This is the “full movie” of a typical HTTPS request from your laptop to a cloud-hosted web application.
+You try to ping an external hostname, like google.com. It fails.
 
-1. **You type a URL in your browser**  
-   - Application layer: your browser prepares an HTTP request.
+DNS is broken.
 
-2. **DNS lookup – finding the building**  
-   - Browser / OS ask a DNS resolver: “What is the IP for `www.example.com`?”  
-   - DNS replies with an IP address (the building address).
+You check which DNS server you're using. It's an internal server, 192.168.1.10. You try to reach that server directly. No response. You look at the monitoring dashboard (because by now, your company has one). The DNS server is unreachable. It went down thirty minutes ago when someone accidentally deleted it during a "cleanup."
 
-3. **Deciding whether to leave the floor**  
-   - Your device checks: “Is this IP on my floor (subnet)?”  
-   - If not, it sends the packet to the **default gateway** (elevator lobby).
+The fix is straightforward. Temporarily point your laptop's DNS to a public resolver like 1.1.1.1 or 8.8.8.8. Services start working. Then restore the internal DNS server from backup, or spin up a new one, or fix whatever configuration mistake took it down.
 
-4. **Leaving the building**  
-   - The gateway/concierge (router) looks at the destination IP and chooses a **next hop**.  
-   - Routers along the path repeat this step, forwarding the packet across the city until it reaches the cloud provider’s edge.
+You identified the layer (DNS), located the failure (internal DNS server unreachable), and applied a workaround (use external DNS temporarily) while working on the real fix.
 
-5. **Entering the cloud hotel**  
-   - The provider’s edge routers route traffic towards the correct **region** and **VPC**.  
-   - The **Internet Gateway** acts as the main entrance to your VPC floor.
-
-6. **Finding the right room inside the VPC**  
-   - The VPC’s routing tables decide which **subnet (wing)** the packet should go to.  
-   - Within the subnet, ARP (or its cloud equivalent) resolves the MAC address of the target VM or load balancer.
-
-7. **TLS handshake – setting up a secure tunnel**  
-   - Your browser and the server run the TLS ceremony:
-     - Exchange hellos and supported ciphers.
-     - Server presents its certificate; browser verifies the chain.
-     - Both sides perform a key exchange and agree on a shared secret.
-   - After the handshake, application data (HTTP) is encrypted.
-
-8. **Service-to-service calls (optional, inside the mesh)**  
-   - The front-end service may call other internal services:
-     - Each service talks to its **sidecar proxy (usher)**.
-     - Proxies use **mutual TLS** and routing rules to reach other services.
-     - Observability and policy are enforced at this layer.
-
-9. **Response travels back**  
-   - The server sends an encrypted HTTP response back through the same tunnel.  
-   - Packets retrace the path in reverse: subnet → VPC router → Internet Gateway → city routers → your default gateway → your room.
-
-10. **Your browser renders the result**  
-    - Decrypts TLS.
-    - Interprets the HTTP response.
-    - Draws the page on your screen.
-
-Use this sequence when you want to debug “where things might be going wrong.”
+That's the power of understanding the network. Not that you can solve every problem instantly, but that you know where to look. You have a mental model that tells you: check addresses, check paths, check permissions. Work from your room outward toward the destination. When something fails, you've narrowed down which layer and which component.
 
 ---
 
-## Appendix B – Glossary (Analogy-Aware)
+## A Final Word
 
-This glossary is written so you can jump between **analogy** and **technical term** quickly.
+You've traveled far.
 
-Each entry has:  
-- **Analogy** – how it appeared in the story.  
-- **Meaning** – what it is in networking terms.  
-- **Why it matters** – where you see it in real systems.
+You started in a single room, learning about doors and hallways. You moved up to floors and subnets, understanding why networks are divided and how devices communicate within and between segments.
 
-### B.1 Core Networking
+You left the building and explored the city. You met concierges and routing tables. You followed envelopes through the postal system. You learned about registered mail and postcards, TCP and UDP. You discovered the city directory, DNS, and saw how names become addresses.
 
-**Host**  
-- Analogy: A room in the building.  
-- Meaning: Any device with a network stack (server, laptop, phone, VM, container).  
-- Why it matters: Hosts originate and receive traffic; all higher-level concepts eventually involve hosts.
+You checked into the hotel, the cloud. You designed your own private floor with public and private wings. You installed doors to the outside world, from the main entrance to the staff exit to the private service corridors. You learned about badges and permissions.
 
-**Network Interface (NIC)**  
-- Analogy: The door of the room.  
-- Meaning: A hardware or virtual interface that sends/receives frames (e.g. `eth0`, `wlan0`).  
-- Why it matters: IP addresses are bound to interfaces; troubleshooting often starts here.
+You added sophistication. Wireless markets and the etiquette of shared airwaves. Diplomatic ceremonies and the protection of TLS. Personal ushers and the service mesh.
 
-**MAC Address**  
-- Analogy: The unique label on a specific door.  
-- Meaning: A link-layer address (typically 48 bits) used on Ethernet/Wi-Fi to deliver frames on a local segment.  
-- Why it matters: Switches and Wi-Fi access points use MAC addresses to decide where to send frames.
+And you ran the experiments yourself. You pinged and traced and listened and sent.
 
-**IP Address**  
-- Analogy: Floor + room number.  
-- Meaning: A logical address (IPv4 or IPv6) used at the network layer to route packets across multiple networks.  
-- Why it matters: Routers use IP addresses and prefixes to decide paths; most debugging starts with “which IP are we talking to?”
+The network isn't a black box anymore. It's a building you can walk through, a city you can navigate, a hotel you can manage.
 
-**Subnet**  
-- Analogy: A floor in the building.  
-- Meaning: A group of IP addresses that share a common prefix and can talk directly over one link-layer domain.  
-- Why it matters: Subnets define broadcast domains, routing boundaries, and security zones.
+The next time someone says "it's the network," you'll know what that means.
 
-**Default Gateway**  
-- Analogy: Elevator lobby leading out of the floor.  
-- Meaning: A router that handles traffic destined for IP addresses not on the local subnet.  
-- Why it matters: If the default gateway is misconfigured or unreachable, everything “outside the floor” breaks.
-
-**Router**  
-- Analogy: Concierge in the lobby with a map.  
-- Meaning: A device that forwards packets between networks based on routing tables.  
-- Why it matters: The internet works because routers agree on routes and forward traffic accordingly.
-
-**Routing Table**  
-- Analogy: The concierge’s binder of directions.  
-- Meaning: A set of rules that map destination prefixes to next hops and interfaces.  
-- Why it matters: When paths fail, misconfigured routes are often the culprit.
-
-**Static Route**  
-- Analogy: A hand-written rule in the binder.  
-- Meaning: A manually configured entry in the routing table that does not change automatically.  
-- Why it matters: Simple and predictable in small networks; dangerous if left unmaintained in dynamic environments.
-
-**Dynamic Routing Protocol (IGP/EGP)**  
-- Analogy: Concierges calling each other to update maps.  
-- Meaning: Protocols like OSPF, IS-IS, EIGRP (IGPs) and BGP (EGP) that share route information between routers.  
-- Why it matters: They keep large networks and the internet usable without manual updates everywhere.
-
-**DNS (Domain Name System)**  
-- Analogy: City directory or phone book.  
-- Meaning: A distributed database that maps names (like `example.com`) to records (IP addresses, mail servers, etc.).  
-- Why it matters: Users think in names, not IPs; almost every internet interaction involves DNS.
-
-### B.2 Performance and Reliability
-
-**Bandwidth**  
-- Analogy: Width of the hallway.  
-- Meaning: The theoretical maximum rate at which data can be transferred over a link (e.g. 100 Mbps, 1 Gbps).  
-- Why it matters: Sets the upper bound on throughput; relevant when links are saturated.
-
-**Throughput**  
-- Analogy: How many people actually pass through the hallway per second.  
-- Meaning: The actual observed rate of successful data delivery over a link.  
-- Why it matters: Reflects real capacity after overhead, protocol behaviour, and congestion.
-
-**Latency**  
-- Analogy: Travel time from one door to another.  
-- Meaning: The time it takes for a small piece of data to travel from source to destination.  
-- Why it matters: Critical for interactive applications, trading systems, and user experience.
-
-**Jitter**  
-- Analogy: How much travel times vary from minute to minute.  
-- Meaning: Variation in latency between packets.  
-- Why it matters: High jitter is painful for voice/video and real-time gaming.
-
-**TTL (Time To Live)**  
-- Analogy: Maximum number of buildings an envelope may pass before being discarded.  
-- Meaning: A counter in the IP header that decreases at each router; when it reaches zero the packet is dropped.  
-- Why it matters: Prevents routing loops from clogging the network; used by tools like `traceroute`.
-
-### B.3 Transport and Security
-
-**TCP (Transmission Control Protocol)**  
-- Analogy: Registered mail with tracking and acknowledgments.  
-- Meaning: A reliable, connection-oriented transport protocol providing ordered, loss-free delivery.  
-- Why it matters: Backbone of web browsing, email, and many other protocols where data integrity is essential.
-
-**UDP (User Datagram Protocol)**  
-- Analogy: Simple postcard in the mail.  
-- Meaning: A connectionless transport protocol with minimal overhead and no built-in reliability.  
-- Why it matters: Ideal when freshness and low latency matter more than perfect delivery (streaming, gaming, DNS).
-
-**QUIC**  
-- Analogy: A new, efficient courier service running on top of the regular post.  
-- Meaning: A modern transport protocol built over UDP with built-in encryption, multiplexing, and congestion control; foundation for HTTP/3.  
-- Why it matters: Reduces connection setup time and improves performance on lossy networks.
-
-**TLS (Transport Layer Security)**  
-- Analogy: Diplomatic ceremony plus sealed envelope.  
-- Meaning: Cryptographic protocol that provides confidentiality, integrity, and authentication between two endpoints.  
-- Why it matters: Protects almost all secure web and API traffic.
-
-**Mutual TLS (mTLS)**  
-- Analogy: Both sides show ID badges, not just the building.  
-- Meaning: A variant of TLS where both client and server present and verify certificates.  
-- Why it matters: Foundation for zero-trust internal networking and service meshes.
-
-### B.4 Cloud and Mesh
-
-**VPC (Virtual Private Cloud)**  
-- Analogy: Your private floor in the cloud hotel.  
-- Meaning: A logically isolated virtual network within a cloud region.  
-- Why it matters: Provides network-level separation, custom IP addressing, and control over routing/gateways.
-
-**Internet Gateway (IGW)**  
-- Analogy: Public lobby entrance to your floor.  
-- Meaning: A managed gateway that connects a VPC to the public internet.  
-- Why it matters: Necessary for publicly accessible services and outbound internet traffic from public subnets.
-
-**NAT Gateway**  
-- Analogy: Staff-only back door.  
-- Meaning: A managed gateway that allows instances in private subnets to initiate outbound internet connections while remaining unreachable from the internet.  
-- Why it matters: Lets private resources get updates or call external APIs without being exposed.
-
-**VPC Endpoint**  
-- Analogy: Private service door to hotel amenities.  
-- Meaning: A private connection from a VPC to specific cloud services (storage, queues, etc.) without traversing the public internet.  
-- Why it matters: Improves security, reduces exposure, and can lower data-transfer costs.
-
-**IAM (Identity and Access Management)**  
-- Analogy: Badge and keycard system.  
-- Meaning: The service that defines who or what may access which resources and under which conditions.  
-- Why it matters: Central to least-privilege access and security at scale.
-
-**Service Mesh**  
-- Analogy: Network of personal ushers in the hallways.  
-- Meaning: A dedicated infrastructure layer (sidecar proxies + control plane) that handles service-to-service communication, security, and observability.  
-- Why it matters: Simplifies application code and centralises cross-cutting network concerns.
+Better yet, you'll know what to do next.
 
 ---
 
-## Appendix C – Troubleshooting Checklist
+# Appendix A: The Whole Journey at a Glance
 
-Use this checklist when “the network” feels broken. The idea is to move from **room** to **city** to **cloud hotel** in a structured way.
+## Layers by Analogy
 
-### C.1 Inside the Room
+| Layer (TCP/IP) | Analogy | Examples |
+|----------------|---------|----------|
+| Application | People talking in rooms | HTTP, DNS, SSH, SMTP |
+| Transport | Conversation style | TCP, UDP, QUIC |
+| Network | City-wide addressing | IP, ICMP, routing |
+| Link | Hallways and local rules | Ethernet, Wi-Fi, VLANs, ARP |
 
-1. **Is the device actually up?**
-   - Does the operating system see the network interface?
-   - Is Wi-Fi enabled or is the cable properly plugged in?
+## The Complete Analogy Map
 
-2. **Does the device have an IP address?**
-   - Check:
-     - Interface status (up/down).
-     - IP address and subnet mask.
-     - Default gateway.
+| Concept | Analogy | Network Term |
+|---------|---------|--------------|
+| Room | A single device | Host, server, laptop |
+| Door | Network interface | NIC, eth0, wlan0 |
+| Door label | Physical door ID | MAC address |
+| Room number | Number on the door | IP address |
+| Floor | Group of nearby rooms | Subnet |
+| Building | One physical building | LAN, on-prem network |
+| Elevator lobby | Exit from the floor | Default gateway |
+| Concierge | Person routing mail | Router |
+| Street network | Roads and intersections | The Internet |
+| City directory | Phone/address book | DNS |
+| Hotel chain | Global managed buildings | Cloud provider |
+| Private floor | Your reserved hotel floor | VPC |
+| Public wing | Street-facing rooms | Public subnet |
+| Private wing | Back-office rooms | Private subnet |
+| Main entrance | Lobby open to street | Internet Gateway |
+| Staff exit | Back door for employees | NAT Gateway |
+| Private service door | Internal corridor to amenities | VPC Endpoint |
+| Badge/keycard | Identity and permissions | IAM |
+| Personal usher | Helper outside each room | Sidecar proxy |
 
-3. **Can you reach your own door and floor?**
-   - Ping your own IP (loopback or interface).
-   - Ping another host on the same subnet.
+## End-to-End Request Flow
 
-If you can’t reach neighbours on the same floor, focus on:
+When your browser requests a webpage:
 
-- Local firewall rules.
-- Switch/Wi-Fi configuration.
-- VLAN assignment for that port or SSID.
+Your browser prepares an HTTP request at the application layer.
 
-### C.2 Leaving the Building
+DNS resolves the hostname to an IP address.
 
-4. **Can you reach the default gateway (elevator lobby)?**
-   - Ping the gateway’s IP.
-   - If ARP fails or pings time out, investigate:
-     - Cabling/switch ports.
-     - VLAN configuration.
-     - Gateway health.
+Your device checks if the destination is local (same subnet) or remote.
 
-5. **Can the gateway reach the outside world?**
-   - From the gateway (or a device just behind it), try:
-     - Pinging an external IP (e.g. a known public DNS server).
-     - Traceroute to see where the path breaks.
+If remote, the packet goes to the default gateway.
 
-If you lose packets immediately after the gateway, look at:
+Routers forward the packet hop by hop across the internet, each one making a local decision about the next hop.
 
-- Upstream router configuration.
-- Routing tables and static routes.
-- Firewall rules at the perimeter.
+The packet reaches the cloud provider's edge and is routed to the correct region and VPC.
 
-### C.3 Name Resolution and Certificates
+The Internet Gateway admits traffic to the VPC.
 
-6. **Does DNS work?**
-   - Try resolving a hostname with `dig`, `nslookup`, or browser tools.
-   - Compare:
-     - “Can I reach the IP directly?” vs “Can I reach the name?”
+VPC routing sends the packet to the correct subnet.
 
-If IP works but name doesn’t:
+ARP (or its cloud equivalent) resolves the target's MAC address.
 
-- Check:
-  - Which DNS servers your device is using.
-  - DNS firewall or filtering policies.
-  - Misconfigured search domains.
+Your browser and the server perform the TLS handshake.
 
-7. **Is TLS failing?**
-   - Symptoms:
-     - Browser warnings about insecure certificates.
-     - Client libraries complaining about handshake errors.
-   - Check:
-     - Certificate validity period.
-     - Certificate names (subject / SAN) vs hostnames.
-     - Trust chain and root CAs.
+Encrypted HTTP data flows through the established tunnel.
 
-### C.4 Inside the Cloud Hotel
+Internal services may communicate through a service mesh with mutual TLS.
 
-8. **Are routes and gateways correct in the VPC?**
-   - Look at:
-     - VPC CIDR ranges.
-     - Subnet route tables (public vs private).
-     - Internet Gateway / NAT Gateway attachment.
+The response travels back through the same path in reverse.
 
-9. **Are Security Groups and Network ACLs blocking traffic?**
-   - Confirm:
-     - Inbound rules for the relevant ports and protocols.
-     - Outbound rules (sometimes overlooked).
-   - Use:
-     - VPC flow logs or equivalent diagnostics, if available.
-
-10. **Are VPC Endpoints configured as expected?**
-    - For traffic to cloud services:
-      - Check endpoint policies.
-      - Ensure correct route table entries send traffic to the endpoint.
-
-### C.5 Inside the Mesh
-
-11. **Is the service mesh intercepting traffic?**
-    - Confirm:
-      - Sidecar injection status for pods/instances.
-      - mTLS policies (do they match both sides?).
-      - Retry / timeout rules that might cause unexpected behaviour.
-
-12. **Check observability data from the mesh**
-    - Look for:
-      - Per-service error rates.
-      - Latency spikes between specific pairs of services.
-      - Circuit breakers opening.
-
-Use this appendix as a **decision tree**, not a blunt checklist. Start at the level where the failure first appears and move one layer down or up as needed.
+Your browser decrypts and renders the result.
 
 ---
+
+# Appendix B: Glossary
+
+**ARP (Address Resolution Protocol):** The "who lives here?" shout that maps IP addresses to MAC addresses on a local network.
+
+**Bandwidth:** The width of the hallway. How much data can flow through per second.
+
+**BGP (Border Gateway Protocol):** The diplomatic protocol routers use to exchange routes between organizations on the internet.
+
+**CIDR (Classless Inter-Domain Routing):** Notation for IP addresses and their subnet masks, like 192.168.1.0/24.
+
+**Default Gateway:** The elevator lobby. The router that handles traffic destined for other networks.
+
+**DHCP (Dynamic Host Configuration Protocol):** The front desk that assigns room numbers (IP addresses) when you check in.
+
+**DNS (Domain Name System):** The city directory that turns names into addresses.
+
+**Encapsulation:** Wrapping data in layers of headers, like putting a letter in an envelope in a bigger envelope.
+
+**Ephemeral Port:** A temporary mail slot your device uses for outbound connections.
+
+**Firewall:** A guard that filters traffic based on rules about source, destination, and port.
+
+**IAM (Identity and Access Management):** The badge and keycard system that controls who can do what.
+
+**Internet Gateway:** The main entrance connecting a VPC to the public internet.
+
+**IP Address:** The room number that identifies a device on the network.
+
+**Latency:** The length of the hallway. How long data takes to travel from source to destination.
+
+**MAC Address:** The permanent serial number on a door, identifying a specific network interface.
+
+**MTU (Maximum Transmission Unit):** The largest package that fits through the hallway without being broken up.
+
+**Mutual TLS (mTLS):** TLS where both sides present and verify certificates, not just the server.
+
+**NAT (Network Address Translation):** Rewriting addresses at the building exit so internal room numbers stay private.
+
+**NAT Gateway:** The staff exit that allows outbound connections from private resources.
+
+**OSPF (Open Shortest Path First):** A routing protocol for finding efficient paths within an organization.
+
+**Packet:** An envelope of data with headers and payload.
+
+**Port:** A mail slot on a device, directing traffic to a specific application.
+
+**QUIC:** A modern transport protocol built on UDP with built-in encryption and reliability.
+
+**Router:** A concierge with a map that forwards packets toward their destination.
+
+**Routing Table:** The concierge's binder of directions for where to send traffic.
+
+**Security Group:** A door guard in the cloud that filters traffic to specific instances.
+
+**Service Mesh:** A network of personal ushers (sidecar proxies) that handle service-to-service communication.
+
+**Sidecar Proxy:** An usher outside each room that handles network concerns on behalf of the application inside.
+
+**Socket:** The combination of IP address and port that identifies one end of a connection.
+
+**Subnet:** A floor in the building. A group of IP addresses that can communicate directly.
+
+**TCP (Transmission Control Protocol):** Registered mail. Reliable, ordered delivery with acknowledgments.
+
+**TLS (Transport Layer Security):** The diplomatic ceremony that provides encryption and authentication.
+
+**TTL (Time To Live):** A counter that prevents packets from circulating forever if routes are broken.
+
+**UDP (User Datagram Protocol):** A postcard. Fast, simple, with no delivery guarantees.
+
+**VLAN (Virtual LAN):** A logical floor painted on top of physical infrastructure.
+
+**VPC (Virtual Private Cloud):** Your private floor in the cloud hotel.
+
+**VPC Endpoint:** A private door connecting your VPC directly to cloud provider services.
+
+---
+
+# Appendix C: Troubleshooting Checklist
+
+When the network seems broken, work from inside out.
+
+## Inside Your Room
+
+Is your device on? Does the operating system see the network interface?
+
+Do you have an IP address? Check your interface configuration.
+
+Can you ping yourself (127.0.0.1)?
+
+Can you ping another device on the same subnet?
+
+If local traffic fails, check cables, Wi-Fi connection, VLAN assignment, and local firewall rules.
+
+## Leaving the Building
+
+Can you ping your default gateway?
+
+If the gateway is unreachable, check physical connectivity, ARP resolution, and gateway health.
+
+Can the gateway reach external destinations?
+
+If external pings fail from the gateway, check upstream routing, ISP connectivity, and perimeter firewalls.
+
+## Name Resolution
+
+Does DNS work? Can you resolve a hostname?
+
+If ping by IP works but by name fails, your DNS is the problem.
+
+Check which DNS servers you're using. Try a known public DNS server (1.1.1.1 or 8.8.8.8).
+
+## Certificates and TLS
+
+Is the certificate valid and not expired?
+
+Does the certificate name match the hostname you're connecting to?
+
+Is the certificate signed by a trusted CA?
+
+Check for clock skew on your device, which can make valid certificates appear invalid.
+
+## Inside the Cloud
+
+Are VPC routes correct? Does the public subnet route to the Internet Gateway?
+
+Does the private subnet route to a NAT Gateway for outbound access?
+
+Are Security Groups allowing the expected traffic, both inbound and outbound?
+
+Are Network ACLs interfering with stateful connections?
+
+Are VPC Endpoints correctly associated with route tables?
+
+## Inside the Mesh
+
+Are sidecar proxies injected correctly?
+
+Are mTLS policies consistent between services?
+
+Check proxy logs for connection errors.
+
+Look for circuit breakers opening or retry exhaustion in metrics.
+
+---
+
+*You've reached the end. The network is no longer a mystery. Go build something.*

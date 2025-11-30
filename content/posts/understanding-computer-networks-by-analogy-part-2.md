@@ -4,534 +4,200 @@ date: 2025-10-18T22:39:16+09:00
 draft: false
 ---
 
-> Think of the internet as a city full of buildings and streets.  
-> Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
+> Think of the internet as a city full of buildings and streets. Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
 
-License for this chapter: CC BY-NC-ND 4.0
-
----
-
-## What This Chapter Covers
-
-In Part 1, we stayed inside a single building: your local network (LAN).  
-In this chapter, we step outside into the city and follow one envelope on its journey across the internet.
-
-By the end of this chapter, you should be able to:
-
-- Explain what a **default gateway** is and when your device uses it.
-- Describe what **routers** do and how they use **routing tables** and **routing protocols**.
-- Understand **packets**, **ports**, **sockets**, and **encapsulation**.
-- Compare **TCP** and **UDP** and know when each is appropriate.
-- Explain what **DNS** does and why it matters for everyday networking.
+License: CC BY-NC-ND 4.0
 
 ---
 
-## Chapter 2: Cities as the Internet
+# Part Two: Cities as the Internet
 
-In Part 1, we explored your building: rooms (devices), doors (interfaces), hallways (links), and floors (subnets).
+## Chapter 5: Leaving the Building
 
-But your friend doesn’t live in your building. They live across town, in a different building entirely. To reach them, your envelope has to leave your floor, exit your building, and navigate the city’s streets.
+You've been living in your building for a while now. You know your floor. You've sent plenty of messages to your neighbors. But today, you need to reach someone who doesn't live here.
 
-In this city:
+Your friend lives across town, in a completely different building. Same city, but a thirty-minute walk away. To reach her, your envelope has to leave your floor, exit your building, and navigate the city's streets.
 
-- Each **building** is a separate network.
-- **Streets and intersections** are the links between networks.
-- **Concierges** at each lobby are **routers**, deciding where to send your envelope next.
-- A **city directory** (DNS) helps turn names into precise addresses.
+When you walk out of your building's front door, you step into something much larger than your private hallways. The city has thousands of buildings. Tens of thousands of streets. Millions of addresses. And somehow, envelopes find their way from any building to any other building, every day, without anyone planning the entire route in advance.
 
-We’ll follow your envelope step by step, from your room to your friend’s room across the city.
+This city is the internet. The streets are the connections between networks. The intersections are routers. And the system that makes it all work is remarkable in its simplicity: nobody knows the whole map, but everyone knows enough.
 
 ---
 
-## 2.1 The Elevator to Other Floors: Your Gateway
+## Chapter 6: The Concierge with the Map
 
-Imagine you’re standing in the hallway on the 10th floor, holding a letter for your friend.  
-You know she lives on the 25th floor of a building across town.
+Walk out of the elevator into your building's lobby. Behind the front desk sits a calm figure with a thick binder. This is the concierge.
 
-You can walk up and down your hallway all day and never reach her.  
-To leave your floor, you need the elevator.
+The concierge has one job: take envelopes from residents and figure out where to send them next. Not all the way to the destination. Just the next step.
 
-In networking terms, that elevator is your **default gateway**.
+The binder contains a routing table. It's not a complete map of the city. That would be impossible to maintain. Instead, it contains rules like:
 
-Every time your device sends a message, it quietly answers one question:
+"For buildings on Oak Street, hand the envelope to the courier at the east exit."
 
-> “Is this destination on my floor, or somewhere else?”
+"For anything in the downtown district, use the main post office drop."
 
-- If the destination is on your **floor** (same subnet), your device can deliver the message directly by “walking down the hallway.”
-- If the destination is on **another floor or building** (another subnet), it hands the envelope to the elevator: the **default gateway**.
+"For anything I don't recognize, send it to the central hub and let them figure it out."
 
-The elevator doesn’t open your envelope or care about the contents.  
-It just reads the outside, knows the destination is not on your floor, and takes the envelope to the **lobby**, where the concierge (router) can decide the next step.
+Each rule specifies a destination (or range of destinations) and a next hop. The next hop is another router, another concierge at another location, who will continue the journey.
 
-> **Checklist:**  
-> Same floor → walk the hallway directly.  
-> Different floor / building → take the elevator (send to the default gateway).
+This hop-by-hop approach is how the entire internet works. No single router knows the complete path from your laptop to a server in Tokyo. Each router only knows its immediate neighbors and which neighbors are good choices for various destinations. A packet crosses the internet by passing through a sequence of routers, each one making a local decision about where to forward it next.
 
-### In networking terms
+### Static and Dynamic Routes
 
-- The **default gateway** is usually the IP address of a router on your local network.
-- Your device compares the **destination IP** with its own **IP + subnet mask**:
-  - If they share the same network prefix → destination is local.
-  - If not → destination is remote → send to the default gateway.
-- Before it can send frames to the gateway, your device needs the gateway’s **MAC address**, so it uses **ARP** to find it.
+The concierge's binder gets its entries in two ways.
 
-### Technical Deep Dive
+Some entries are written in by hand. These are static routes. They're simple and predictable. If the building management knows that deliveries to the warehouse should always go through the loading dock, they write that rule in the binder and leave it there. Static routes work well when the network is small and stable.
 
-- **Default Gateway**  
-  The IP address of the router on your subnet that handles traffic that is not local. Your device learns this address via manual configuration or automatically (e.g. via DHCP).
+Other entries arrive through conversation. Concierges in neighboring buildings talk to each other. "Hey, I can reach the financial district. If you have anything going there, send it my way." This information sharing uses routing protocols. The concierges exchange updates, and the binder fills itself in automatically.
 
-- **The Decision Process**  
-  1. Take your own IP and subnet mask.  
-  2. Take the destination IP and apply the same subnet mask.  
-  3. If the resulting network addresses match → send directly on the LAN.  
-  4. If they differ → send to the default gateway.
+Inside a single organization, these conversations use interior gateway protocols like OSPF or IS-IS. They're designed to find efficient paths within a network you control.
 
-- **ARP (Address Resolution Protocol)**  
-  IP uses logical addresses (room numbers). Ethernet uses MAC addresses (door IDs).  
-  ARP is the “Who lives in this room?” shout down the hallway:
-  - Your device broadcasts: “Who has IP `192.168.1.1`?”  
-  - The gateway replies: “That’s me, my MAC is `AA:BB:CC:11:22:33`.”  
-  - Your device caches this mapping for a short time.
+Between organizations, on the open internet, a different protocol dominates: BGP, the Border Gateway Protocol. BGP is less about finding the fastest path and more about honoring agreements. Which networks are willing to carry your traffic? Which paths are allowed by business relationships? BGP is the diplomatic protocol of the internet, negotiating routes between autonomous systems that may be competitors, partners, or strangers.
 
-#### ASCII Diagram – The Decision to Leave the Subnet
+### When Packets Get Lost
 
-```text
-+----------------------------------------------------+
-| Your Laptop (192.168.1.101)                        |
-|                                                    |
-|  Destination: 8.8.8.8 (Google's DNS Server)        |
-|  My Subnet Mask: 255.255.255.0                     |
-|                                                    |
-|  Logical Check:                                    |
-|    Is (8.8.8.8 AND 255.255.255.0) == 192.168.1.0 ? |
-|    Result: No.                                     |
-|                                                    |
-|  Conclusion: Destination is on a different network.|
-|              Send the packet to the gateway.       |
-|                                                    |
-|  Next Step:                                        |
-|    Who is my gateway? It's 192.168.1.1.            |
-|    What is its MAC address? (Send ARP request)     |
-|    Send packet to gateway's MAC address.           |
-|                                                    |
-+----------------------------------------------------+
-```
+What if a concierge makes a mistake? What if a routing table has a loop, and your envelope keeps bouncing between two buildings forever?
+
+To prevent this, every envelope carries a counter called Time To Live. When the envelope leaves your building, the counter might be set to 64. Each concierge who handles it subtracts one. When the counter hits zero, the concierge throws the envelope away and sends a note back to the sender: "Your delivery couldn't be completed."
+
+This TTL mechanism prevents routing mistakes from clogging the network indefinitely. It also makes troubleshooting possible. The traceroute command works by sending packets with increasing TTL values and watching who sends the "time exceeded" notices back. That reveals each hop along the path.
+
+### A Technical Sidebar: Routing Tables and Protocols
+
+A routing table entry typically includes four things: the destination network (like 10.0.0.0/8), the next hop address, the interface to use, and a metric indicating how "good" this route is. When multiple routes exist to the same destination, the router picks the one with the best metric.
+
+OSPF (Open Shortest Path First) is a link-state protocol. Each router maintains a complete map of the network and calculates the shortest path using Dijkstra's algorithm. It converges quickly and scales to large networks.
+
+BGP operates differently. It's a path-vector protocol. Routers exchange information about entire paths to destinations, not just costs. A BGP route might say "to reach this network, the path goes through AS1, then AS2, then AS3." This allows for policy-based decisions. Maybe you prefer routes that avoid certain countries, or prioritize routes through your business partners.
 
 ---
 
-## 2.2 The Concierge with the Map: The Router
+## Chapter 7: Envelopes, Mail Slots, and Conversations
 
-You step out of the elevator into the lobby.  
-Behind the desk stands a calm concierge with a binder full of maps and directions.
+Let's look more closely at the envelope itself.
 
-The concierge is your **router**.
+An envelope has an outside and an inside. The outside has addresses: where it came from, where it's going, maybe some handling instructions. The inside has the actual message.
 
-The concierge does not personally carry your envelope all the way across town.  
-Instead, they do one simple and powerful thing:
+In networking, the outside is the header. The inside is the payload. A packet is an envelope.
 
-> Look at the destination address and decide the **next best place** to send the envelope.
+But there's another layer of detail we haven't discussed yet. What if your building has a hundred different offices inside, each one expecting their own mail? A single street address isn't enough. You need apartment numbers, suite numbers, mail slots.
 
-That binder of maps is the router’s **routing table**.
+That's what port numbers provide.
 
-A router does not need to know every possible path to every building in the city.  
-It only needs to know:
+A port number is a mail slot on the door. When a packet arrives at a device, the port number tells the operating system which application should receive it. Port 80 is conventionally used for web traffic. Port 443 is for encrypted web traffic. Port 22 is for SSH. Port 25 is for email. There are tens of thousands of possible ports, which means a single device can run many services at once, each listening on its own slot.
 
-- Which exits lead to which areas.
-- Which neighbor concierges to send certain types of mail to.
-- Where to send mail if it doesn’t recognize the destination (the **default route**).
+When you type a URL into your browser, you're specifying an address that looks like this: the building (server IP), the mail slot (port 443), and the specific document you want (the path). Your browser combines all of this into an envelope, addresses it properly, and sends it off.
 
-Examples from the concierge’s binder:
+### Sockets and Conversations
 
-- “For floors 10–20 in this building → use the north elevator bank.”
-- “For the building across the street (Building 101) → use the east-wing exit.”
-- “For anything I don’t recognize → send it to the central post office downtown.” (default route)
+A socket is the combination of an IP address and a port. It uniquely identifies one end of a conversation. When your browser opens a connection to a web server, there are two sockets involved: your computer's IP and the temporary port your browser is using, plus the server's IP and port 443. This pair of sockets defines the connection.
 
-This **hop-by-hop** approach scales to the entire internet:
+The temporary port on your side is called an ephemeral port. It's assigned automatically from a high range, something like 49152 to 65535. When the conversation ends, that port is released and can be reused. Ephemeral ports exist so your computer can manage many simultaneous connections without confusion. Each browser tab, each download, each API call gets its own ephemeral port, and replies know exactly which conversation they belong to.
 
-- Each router makes a **local** decision based on its routing table.
-- A series of good local decisions creates a working end-to-end path.
+### Encapsulation
 
-Routers keep their maps up to date in two main ways:
+Here's where it gets layered.
 
-- **Static routes** – manually configured entries.
-- **Dynamic routing protocols** – routers exchange information with one another automatically.
+Your message doesn't travel as a single envelope. It travels as an envelope inside an envelope inside an envelope.
 
-> **Mini case:** The router is the network’s concierge, and its routing table is its map.  
-> It doesn’t know the whole journey, just the smartest next hop.
+At the application layer, your browser generates an HTTP request. That request becomes the payload of a TCP segment, which adds port numbers and sequence information. That TCP segment becomes the payload of an IP packet, which adds source and destination IP addresses. That IP packet becomes the payload of an Ethernet frame, which adds MAC addresses for the local hop.
 
-### Technical Deep Dive
+Each layer wraps the previous one. It's like putting a letter in a small envelope, putting that envelope in a medium envelope, and putting that envelope in a large envelope. Each layer of envelope is read by a different part of the network. The Ethernet frame is read by switches on your local network. The IP packet is read by routers. The TCP segment is read by the operating system's network stack. The HTTP request is read by the web server application.
 
-- **Routing Table**  
-  A router’s internal table of “how to reach which networks.”  
-  Typical fields:
-  - Destination network + subnet mask.
-  - Next hop (the IP of the next router).
-  - Outgoing interface (which port to use).
-  - Metric (cost) to compare multiple possible routes.
+When your message arrives at its destination, the process reverses. The Ethernet frame is stripped off. The IP packet is unwrapped. The TCP segment is processed. Finally, the HTTP request reaches the application that was waiting for it.
 
-- **Static Routes**  
-  Manually configured entries:
-  - Simple, predictable, and don’t change automatically.
-  - Good for small, stable networks.
-  - Don’t adapt to failures or new paths without manual updates.
+### A Technical Sidebar: Headers and Protocols
 
-- **Dynamic Routing Protocols**
-  Routers can talk to each other to keep routes up to date.
+An Ethernet frame header includes the source MAC, destination MAC, and a type field indicating what's inside (usually IPv4 or IPv6).
 
-  - **Interior Gateway Protocols (IGPs)** – used **within** one organization or autonomous system.  
-    Examples: **OSPF**, **EIGRP**, IS-IS.  
-    Their job is to find efficient paths inside one network.
+An IPv4 header includes version, header length, TTL, protocol (indicating TCP, UDP, ICMP, etc.), source IP, destination IP, and various flags and options. It's typically 20 bytes.
 
-  - **Exterior Gateway Protocol (EGP)** – used **between** organizations on the internet.  
-    Today, the internet effectively uses a single EGP: **BGP** (Border Gateway Protocol).  
-    BGP is less about fastest path and more about **policy**:
-    - Which routes are allowed?
-    - Which routes are preferred?
-    - Which paths reflect business relationships and agreements?
+A TCP header includes source port, destination port, sequence number, acknowledgment number, flags (SYN, ACK, FIN, etc.), window size, and checksum. Also typically 20 bytes.
 
-- **Time To Live (TTL)**  
-  What if a route is misconfigured and your envelope gets stuck bouncing between two concierges forever?
-
-  To prevent this, every IP packet has a **TTL** (Time To Live):
-
-  - Starts as a number like 64 or 128.
-  - Each router that forwards the packet subtracts 1.
-  - If TTL reaches 0, the router drops the packet and sends an ICMP “Time Exceeded” message back.
-
-  The `traceroute` command uses this mechanism to map the path packets take.
-
-#### Example Routing Table (Simplified)
-
-```text
-Destination         Next Hop      Interface    Metric
-----------------------------------------------------
-192.168.1.0/24      (Connected)   eth0         0
-10.0.0.0/8          192.168.1.1   eth0        10
-172.16.0.0/12       10.5.1.1      eth2        25
-0.0.0.0/0 (Default) 203.0.113.1   eth1       100
-```
-
-Interpretation:
-
-1. To reach the **local floor** (`192.168.1.0/24`) → send directly out `eth0`.
-2. To reach the **corporate campus** (`10.0.0.0/8`) → send to `192.168.1.1`.
-3. To reach a **partner network** (`172.16.0.0/12`) → send to `10.5.1.1` via `eth2`.
-4. For **anywhere else on the internet** → use the default route via `203.0.113.1`.
+A UDP header is much simpler: source port, destination port, length, checksum. Just 8 bytes. The simplicity is the point.
 
 ---
 
-## 2.3 Envelopes and Mail Slots: Packets and Ports
+## Chapter 8: Registered Mail and Postcards
 
-So far, we’ve focused on **paths** and **guides**.  
-Now let’s look more closely at the thing being carried: the envelope itself.
+The mail system in the city offers two kinds of service.
 
-An envelope is clever:
+The first is registered mail. When you send a registered letter, you get a tracking number. You know when it was picked up. You know when it was delivered. If it gets lost, the post office will tell you. If the recipient moves, the letter will be returned. Registered mail is slower and costs more, but you have guarantees.
 
-- The outside has the **addresses** and postal markings.
-- The inside has the **message** itself.
+The second is a simple postcard. You write your message, drop it in a mailbox, and hope for the best. No tracking. No confirmation. No guarantee it arrived. But it's fast, cheap, and good enough for casual updates.
 
-In networking, a **packet** is your envelope:
+In networking, registered mail is TCP. Postcards are UDP.
 
-- The outside is the **header** (addressing + control information).
-- The inside is the **payload** (your actual data).
+### TCP: Reliable Delivery
 
-But there is another important detail: the **mail slot**.
+TCP is the protocol that makes the web work. When your browser connects to a server, it first performs a handshake. Three messages go back and forth:
 
-Think about a large office building.  
-One street address might contain:
+"I'd like to connect."
 
-- Finance on floor 3.
-- Legal on floor 4.
-- Marketing on floor 5.
+"I acknowledge your request and I'm ready."
 
-You don’t want a legal summons delivered to the cafeteria.  
-The building needs a way to deliver envelopes to the **right department**.
+"I acknowledge your acknowledgment. Let's begin."
 
-In networking, those mail slots are **port numbers**.
+This three-way handshake establishes a connection. From then on, every piece of data is numbered. The sender tracks what it has sent. The receiver sends acknowledgments for what it has received. If something goes missing, the sender notices and retransmits.
 
-A single computer can run many services at once:
+TCP also manages flow. If the receiver is being overwhelmed, it tells the sender to slow down. If the network is congested, TCP backs off to avoid making things worse. These mechanisms are invisible to applications, but they're the reason file downloads complete correctly and web pages load without gaps.
 
-- Web server
-- Email server
-- SSH server
-- Databases
-- APIs
+The cost of all this reliability is overhead. TCP connections take time to establish. Acknowledgments consume bandwidth. Retransmissions add latency. For applications where every byte must arrive in order, this cost is worth paying. For other applications, it's not.
 
-Port numbers let the operating system act like a **mailroom clerk**:
+### UDP: Fast and Simple
 
-- “Anything for slot **443** → deliver to the secure web server (HTTPS).”
-- “Slot **22** → deliver to the SSH service.”
-- “Slot **3306** → deliver to the MySQL database.”
+UDP doesn't bother with handshakes or acknowledgments. You send a datagram. It might arrive. It might not. It might arrive out of order. The protocol doesn't care. It just delivers what it can and moves on.
 
-When your device sends a message, it also chooses a temporary **return slot** for itself: an **ephemeral port**. This is like using a temporary mailbox ID in the return address so that replies get back to the exact application that started the conversation.
+Why would anyone use such an unreliable protocol? Because for some applications, freshness matters more than completeness.
 
-> **Key ideas:**  
-> Packets are envelopes.  
-> Port numbers are labeled mail slots.  
-> Sockets (IP + port) are the full combination of address + slot.
+Consider a video call. If one frame of video gets lost, you don't want the call to freeze while TCP retransmits. You'd rather skip that frame and keep going. The conversation is happening now. An old frame is useless.
 
-### Technical Deep Dive
+Consider a game. If a packet showing your opponent's position from 500 milliseconds ago arrives late, you don't want to use it. You want the current position. UDP lets the application decide what to do with old or missing data.
 
-- **Packet**  
-  The basic unit of data that routers forward.  
-  Includes:
-  - One or more headers (Ethernet, IP, TCP/UDP).
-  - The payload (your application data).
+DNS queries typically use UDP. A lookup should be fast. If it fails, the application can retry. There's no need for the overhead of a TCP connection for a single question and answer.
 
-- **Port Numbers** (16-bit, 0–65535)
-  - **Well-known ports (0–1023)**  
-    Reserved for standard services; require admin privileges.  
-    Examples: FTP (21), SSH (22), DNS (53), HTTP (80), HTTPS (443).
-  - **Registered ports (1024–49151)**  
-    Used by applications that want predictable port assignments.  
-    Examples: MySQL (3306), PostgreSQL (5432).
-  - **Dynamic / private / ephemeral ports (49152–65535)**  
-    Used temporarily by clients for outbound connections.
+### QUIC: A Modern Hybrid
 
-- **Socket**  
-  A specific endpoint: `IP:Port`, e.g. `198.51.100.10:443`.  
-  This combination identifies one side of a connection.
+More recently, a protocol called QUIC has emerged. QUIC runs on top of UDP but implements its own reliability, ordering, and encryption. It's designed to get the best of both worlds: the performance of UDP with the features of TCP, plus built-in security.
 
-- **Encapsulation**  
-  As your data goes down the stack:
-  - The application data is wrapped in **TCP or UDP**.
-  - That is wrapped in an **IP** header.
-  - That is wrapped in an **Ethernet** header.
-
-  Each layer adds its own envelope around your letter.
-
-#### Packet Header Analogy (Encapsulation)
-
-```text
-+--------------------------------------------------------------------+
-| Outermost Envelope: Ethernet Frame (local hallway)                 |
-|  TO: Concierge's Door (MAC)  FROM: Your Door (MAC)                 |
-|                                                                    |
-|  +----------------------------------------------------------------+|
-|  | Second Envelope: IP Packet (city-wide journey)                 ||
-|  |  TO: Friend's Building (IP)  FROM: Your Building (IP)          ||
-|  |                                                                ||
-|  |  +------------------------------------------------------------+||
-|  |  | Third Envelope: TCP Segment (specific mail slot)           |||
-|  |  |   TO: Friend's Mail Slot (Port)                            |||
-|  |  |   FROM: Your Mail Slot (Port)                              |||
-|  |  |                                                            |||
-|  |  |   +----------------------------------------------------+   |||
-|  |  |   |                Your Actual Letter                  |   |||
-|  |  |   |                    (Payload)                       |   |||
-|  |  |   +----------------------------------------------------+   |||
-|  |  |                                                            |||
-|  |  +------------------------------------------------------------+||
-|  |                                                                ||
-|  +----------------------------------------------------------------+|
-|                                                                    |
-+--------------------------------------------------------------------+
-```
+QUIC is the foundation of HTTP/3, the latest version of the web protocol. You're probably using it without knowing whenever you visit major websites.
 
 ---
 
-## 2.4 Registered Mail vs Postcards: TCP and UDP
+## Chapter 9: The City Directory
 
-Even if your envelope reaches the right building, room, and mail slot, the **style of conversation** matters.
+You know your friend's name, but not her address. You know you want to visit "example.com" but not where that building actually is.
 
-Protocols define the rules of the conversation:
+This is why the city has a directory.
 
-- How we start and end it.
-- How we confirm delivery.
-- How we handle loss and reordering.
+The Domain Name System, DNS, is the internet's address book. Its job is to translate names that humans can remember into IP addresses that networks can route. When you type "google.com" into your browser, DNS is the service that tells you "the building you want is at 142.250.196.78."
 
-For most applications on the internet, the two main protocols at this layer are **TCP** and **UDP**.
+The process is straightforward from the outside. Your browser asks "what's the IP for google.com?" A DNS server answers. Your browser connects.
 
-### TCP – Registered Mail with Tracking
+Under the hood, it's more interesting.
 
-TCP (Transmission Control Protocol) is like **registered mail** with tracking and delivery confirmation:
+DNS is not a single database. It's a distributed, hierarchical system. At the top are the root servers, a handful of well-known authorities that know about the top-level domains: .com, .org, .net, .uk, .jp, and hundreds of others. Below the root are the TLD servers, which know about all the domains registered under their suffix. And below those are the authoritative servers for individual domains, which hold the actual records.
 
-- Before any data is exchanged, both sides perform a **three-way handshake**:
-  1. **SYN** – “I’d like to start a formal conversation. Are you ready?”
-  2. **SYN-ACK** – “I received your request and I’m ready.”
-  3. **ACK** – “Great, I got your acknowledgment. Let’s begin.”
+When you look up a name for the first time, your query might travel through this entire hierarchy. Your local DNS resolver asks the root server "where can I find .com?" The root points to the .com TLD servers. The resolver asks the TLD server "where can I find google.com?" The TLD points to Google's authoritative servers. The resolver asks Google's server "what's the address for www.google.com?" Google's server answers. The resolver caches the answer and returns it to your browser.
 
-- Once the connection is established:
-  - Each packet is numbered.
-  - The receiver sends **acknowledgments** for what it has received.
-  - Missing packets are detected and re-sent.
-  - TCP adjusts its sending rate to avoid overwhelming the network (congestion control).
+All of this happens in milliseconds. And because the results are cached at every level, repeat queries are even faster.
 
-TCP is ideal when:
+### Why DNS Matters
 
-- Every byte matters.
-- Order matters.
-- A bit of extra delay is acceptable.
+DNS is fundamental infrastructure. If DNS stops working, the internet doesn't technically break, but it becomes unusable. You could still reach any server by IP address, but you'd have to memorize those addresses, and they change frequently.
 
-Common use cases:
+DNS is also a common point of failure. If your DNS server is down or unreachable, every name lookup fails. If DNS is slow, every website feels slow. When troubleshooting connectivity problems, DNS is one of the first things to check.
 
-- Web browsing over HTTP/HTTPS.
-- File downloads and uploads.
-- Email protocols.
+### A Technical Sidebar: DNS Records
 
-### UDP – Fast, No-Frills Postcard
+An A record maps a name to an IPv4 address. An AAAA record maps a name to an IPv6 address. A CNAME record creates an alias from one name to another. An MX record identifies the mail server for a domain. A TXT record can hold arbitrary text and is often used for domain verification.
 
-UDP (User Datagram Protocol) is like dropping a **postcard** in the mailbox:
-
-- No handshake.
-- No automatic retransmission.
-- No guarantee of order.
-
-Why use it?
-
-- Very low overhead.
-- No waiting for acknowledgments.
-- Ideal when **freshness** is more important than **perfection**.
-
-Use cases:
-
-- Live audio and video.
-- Online gaming.
-- DNS queries.
-- VoIP.
-
-If a UDP packet is lost, the application decides whether to ignore it or request a retry.
-
-> **Core concepts:**  
-> TCP – careful, reliable, and ordered (registered mail).  
-> UDP – simple, fast, and best-effort (postcard).
-
-### Technical Deep Dive
-
-- **TCP**
-  - Connection-oriented (three-way handshake).
-  - Reliable and ordered delivery (sequence numbers + acknowledgments).
-  - Flow control (sliding window) so senders don’t overwhelm receivers.
-  - Congestion control (algorithms like CUBIC, BBR) to react to network conditions.
-
-- **UDP**
-  - Connectionless (no handshake).
-  - No reliability guarantees; packets may be lost or reordered.
-  - Very small header; more of the packet is real data.
-  - Often used as a base layer for higher-level protocols that add their own reliability.
-
-- **QUIC (on top of UDP)**
-  - A modern transport protocol that:
-    - Runs over UDP.
-    - Implements its own reliability and congestion control.
-    - Encrypts data by default.
-  - Forms the basis of **HTTP/3**, the latest generation of web transport.
-
-#### Comparison Table – TCP vs UDP
-
-```markdown
-| Feature       | TCP (Registered Mail)                 | UDP (Postcard)                     |
-|--------------|----------------------------------------|------------------------------------|
-| Connection   | Connection-oriented (handshake)        | Connectionless                     |
-| Reliability  | High (guaranteed delivery & order)     | Low (no guarantees)                |
-| Ordering     | In-order delivery                      | No guaranteed order                |
-| Speed        | Slower (more overhead, more checks)    | Faster (less overhead)             |
-| Header Size  | 20 bytes or more                       | 8 bytes                            |
-| Typical Use  | Web, email, file transfer              | Streaming, gaming, DNS, VoIP       |
-```
+DNS TTL (Time To Live) specifies how long a record should be cached before checking again. Short TTLs mean changes propagate quickly but generate more traffic. Long TTLs reduce load but make updates slow to spread.
 
 ---
 
-## 2.5 The City Directory: DNS
+You now understand the city. Buildings connect through routers. Packets travel hop by hop. TCP provides reliability. UDP provides speed. DNS translates names into addresses.
 
-You have your envelope, you know how to reach the streets, and you know routers will guide it.  
-But there is a problem:
+But what if you don't want to own a building? What if you need capacity you can spin up and down, presence in multiple cities, infrastructure managed by someone else?
 
-Your letter is addressed to **“My Friend, Akihabara”**, not:
-
-> Tokyo, Chiyoda City, Kanda-Hanaokacho 1-1
-
-You have a **name**, but the city needs a **precise address**.
-
-Enter the **city directory**: the Domain Name System (DNS).
-
-DNS is the internet’s **address book**. It does one main job, millions of times per second:
-
-> Translate human-friendly names (like `google.com`) into machine-friendly IP addresses (like `142.250.196.78`).
-
-The process looks like this:
-
-1. Your device wants to reach `friends-apartment.tokyo`.
-2. It asks a DNS server: “What is the IP address for `friends-apartment.tokyo`?”
-3. The DNS server looks it up (or asks other DNS servers).
-4. It replies with the IP address.
-5. With that IP address, your router now knows which **building** to start sending the envelope toward.
-
-To avoid asking the directory every time:
-
-- The first time you look up an address, you remember it.
-- Your computer does the same: it stores recent DNS results in a **cache**, speeding up future requests.
-
-> **Key idea:** DNS turns names into addresses so that routers can do their job.
-
-### Technical Deep Dive
-
-- **DNS (Domain Name System)**
-  - A hierarchical, distributed naming system.
-  - Maps names (domains) to records (A, AAAA, CNAME, etc.).
-
-- **DNS Query**
-  - A client sending a request like “What is the IP for `example.com`?”
-  - The DNS server responds with records that answer the question.
-
-- **DNS Cache**
-  - Stored locally by your OS, browser, or recursive DNS resolver.
-  - Each record has a **TTL** (time to live) after which it must be refreshed.
-
-- **Recursive DNS Server**
-  - Does the work on your behalf:
-    - If it doesn’t know the answer, it queries other DNS servers.
-    - It walks the hierarchy (root → TLD → authoritative) until it finds the authoritative answer.
-
-- **Authoritative DNS Server**
-  - Holds the official records for a domain.
-  - Answers questions like:
-    - “What is the IPv4 address for `www.example.com`?”
-    - “Which mail server handles email for this domain?”
-
----
-
-## Recap and Small Exercises
-
-### What You Should Now Be Able to Explain
-
-By the end of this chapter, you should be comfortable describing:
-
-- The **default gateway** as the elevator out of your floor.
-- Routers as **concierges** that know the next hop but not the entire path.
-- **Packets** as envelopes and **ports** as labeled mail slots.
-- The difference between **TCP** and **UDP** and when each is appropriate.
-- **DNS** as the city directory that converts names into IP addresses.
-
-### Exercises
-
-1. **Find Your Default Gateway**  
-   - On your computer, find:
-     - Your IP address.
-     - Your subnet mask.
-     - Your default gateway.
-   - Check whether a destination (e.g. `8.8.8.8`) is on your subnet or not.
-
-2. **Run a Traceroute**  
-   - Run `traceroute` (or `tracert` on Windows) to a website you use often.
-   - Count how many “concierges” (routers) your packets go through.
-   - Notice where the latency (round-trip time) increases.
-
-3. **List Open Connections**  
-   - Use a command like `netstat` or `ss` to view active connections.
-   - For a browser tab, identify:
-     - Local IP and port (your side).
-     - Remote IP and port (server side).
-   - Interpret them as sockets (`IP:Port`) and map them to services (e.g. port 443 → HTTPS).
-
-4. **Inspect DNS Resolution**  
-   - Use tools like `nslookup`, `dig`, or your browser’s developer tools to see DNS lookups.
-   - Look up a hostname and examine:
-     - The IP address returned.
-     - The TTL.
-   - Try again later and see whether the request is served from cache or re-resolved.
-
----
-
-In the next part, we’ll move from city streets to **hotels as the cloud**.  
-You’ll see how cloud providers carve up giant buildings into virtual floors and rooms (VPCs, subnets, endpoints) that you can rent and connect to the rest of the city.
+That's when you check into the hotel.

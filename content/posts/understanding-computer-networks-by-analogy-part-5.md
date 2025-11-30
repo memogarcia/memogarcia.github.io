@@ -1,403 +1,271 @@
 ---
-title: "Understanding Computer Networks by Analogy: Part 5 - Follow the Envelope: Labs & Mini Exercises"
+title: "Understanding Computer Networks by Analogy: Part 5 - Follow the Envelope"
 date: 2025-10-20T09:00:00-07:00
 draft: false
 ---
 
-> License for this chapter: CC BY‑NC‑ND 4.0
-
-# Chapter 5: Follow the Envelope: Labs & Mini Exercises
-
-Welcome to the hands-on portion of our journey. In the previous chapters, we've built a model of how networks operate using our building and city analogy. Now, it's time to get our hands dirty and see these concepts in action. It’s time to see if our theoretical building can stand on its own two feet, architecturally speaking. (Pun intended!)
-
-Each lab is designed to reinforce the analogy we've been exploring, focusing on the core principles of:
-
-**Address · Path · Permission**
-
-Keep these labs, approach them with curiosity, and don't be afraid to experiment.
+> License: CC BY-NC-ND 4.0
 
 ---
 
-## Core Labs (Local Experiments)
+# Part Five: Follow the Envelope
 
-### Lab 01: Follow the Envelope with `ping` and `traceroute`
-**Time:** 15–20 min
-**Difficulty:** Easy
-**Analogy:** You send an envelope from your room and track its journey through concierges across the city.
+## Chapter 17: Hands-On Practice
 
-**Tools:** Terminal or PowerShell
+You've read about buildings, cities, and hotels. Now it's time to explore them yourself.
 
-**Steps**
-1. Resolve the name:
-   - macOS/Linux: `dig +short example.com`
-   - Windows: `nslookup example.com`
-2. Check reachability:
-   - macOS/Linux: `ping -c 5 example.com`
-   - Windows: `ping -n 5 example.com`
-3. Map the path:
-   - macOS: `traceroute example.com`
-   - Linux: `traceroute -n example.com`
-   - Windows: `tracert example.com`
+This chapter contains practical exercises you can run on your own computer or in a cloud environment. Each exercise connects back to the analogies we've built. You'll see addresses, paths, and permissions in action.
 
-**Expected:**
-- Low loss and stable latency.
-- Several hops between your router and the destination.
+The exercises are divided into two groups. The core labs use tools available on most computers. The cloud labs require access to a cloud provider account and assume basic familiarity with creating resources.
 
-**Why it matters:**
-You just saw Address (DNS), Path (routers), Permission (ICMP policy).
+Work through them at your own pace. When something fails, that's often the most interesting part. Figure out what went wrong, apply the mental model, and try again.
 
 ---
 
-### Lab 02: DNS Cache vs No-Cache with `dig`
-**Time:** 10–15 min
-**Difficulty:** Easy
-**Analogy:** Ask the directory before you wander.
+### Lab 1: Follow the Envelope with Ping and Traceroute
 
-**Steps**
-1. Cached lookup: `dig example.com`
-2. Check the TTL in the `ANSWER` section.
-3. Authority walk: `dig +trace example.com`
-4. No cache: `dig +nocache example.com`
-5. Compare query times.
+This is your first letter to the outside world. You'll resolve a name, check if the destination is reachable, and map the path your packets take.
 
-**Expected:** Cached queries are faster.
-**Why it matters:** Directories speed repeat trips and reduce city traffic.
+Open a terminal. First, resolve a hostname to an IP address:
 
----
+On macOS or Linux: `dig +short example.com`
 
-### Lab 03: Who Has That Door? Meet ARP / Neighbor Discovery
-**Time:** 10–15 min
-**Difficulty:** Easy
-**Analogy:** Find the door tag before you deliver.
+On Windows: `nslookup example.com`
 
-**Steps**
-1. Find your gateway IP:
-   - Linux: `ip route | grep default`
-   - macOS: `route -n get default | grep gateway`
-   - Windows: `ipconfig`
-2. See the door tags (MACs):
-   - Linux: `ip neigh`
-   - macOS/Windows: `arp -a`
-3. Ping another LAN device, then re-run the table.
+This queries the city directory. You should see one or more IP addresses.
 
-**Expected:** You see IP-to-MAC mappings appear.
-**Why it matters:** Same floor talk needs the door tag.
+Next, check if you can reach that address:
+
+On macOS or Linux: `ping -c 5 example.com`
+
+On Windows: `ping -n 5 example.com`
+
+You should see responses arriving and round-trip times. If you see timeouts, something is blocking the path.
+
+Finally, trace the route:
+
+On macOS: `traceroute example.com`
+
+On Linux: `traceroute -n example.com`
+
+On Windows: `tracert example.com`
+
+Each line shows one hop. You're watching your envelope pass from concierge to concierge across the city. Note where latency increases. Large jumps often indicate geographic distance or congestion.
 
 ---
 
-### Lab 04: Meet Your Leasing Desk by Inspecting DHCP Details
-**Time:** 10–15 min
-**Difficulty:** Easy
-**Analogy:** The front desk assigns room numbers and DNS.
+### Lab 2: Inspect Your Local Network Configuration
 
-**Steps**
-1. Show your IP and mask:
-   - Linux: `ip -4 addr show`
-   - macOS: `ipconfig getifaddr en0`
-   - Windows: `ipconfig /all`
-2. Show gateway and DNS:
-   - Linux: `ip route; cat /etc/resolv.conf`
-   - Windows: `ipconfig /all`
-3. Renew lease (optional):
-   - Linux: `sudo dhclient -r && sudo dhclient`
-   - Windows: `ipconfig /release` then `ipconfig /renew`
+Before you can leave the building, you need to know your address and where the elevator is.
 
-**Expected:** Your lease includes IP, mask, gateway, and DNS.
-**Why it matters:** Without a lease, your room has no number.
+On Linux: `ip -4 addr show` to see your IP and subnet mask. Then `ip route` to see your default gateway.
+
+On macOS: `ipconfig getifaddr en0` for your IP. Then `netstat -nr | grep default` for your gateway.
+
+On Windows: `ipconfig /all` shows everything: IP address, subnet mask, default gateway, and DNS servers.
+
+Note your IP address and gateway. The gateway is the elevator lobby for your floor. Any traffic to destinations outside your subnet goes there first.
 
 ---
 
-### Lab 05: Ports and Sockets with a Tiny Web Server
-**Time:** 10–20 min
-**Difficulty:** Easy
-**Analogy:** Mail slots on the door.
+### Lab 3: Watch ARP Discover MAC Addresses
 
-**Steps**
-1. Start a server: `python3 -m http.server 8000`
-2. Test locally: `curl http://127.0.0.1:8000`
-3. Find your LAN IP:
-   - Linux: `hostname -I`
-   - macOS: `ipconfig getifaddr en0`
-   - Windows: `ipconfig`
-4. From another device: open `http://<your-ip>:8000`.
+ARP is how your device learns the door labels (MAC addresses) for other devices on your floor.
 
-**Expected:** Local site loads; other devices can connect if allowed.
-**Why it matters:** Each door slot (port) leads to a specific service.
+First, check your current ARP table:
+
+On Linux: `ip neigh`
+
+On macOS or Windows: `arp -a`
+
+You'll see IP addresses paired with MAC addresses. These are cached mappings.
+
+Now ping another device on your local network, something you haven't communicated with recently. Then check the ARP table again. You should see a new entry. Your device shouted "who has this IP?" and received an answer.
 
 ---
 
-### Lab 06: Ephemeral Ports in Action
-**Time:** 10–15 min
-**Difficulty:** Easy
-**Analogy:** Temporary mailbox numbers for each conversation.
+### Lab 4: Start a Server and Connect to a Port
 
-**Steps**
-1. Request a page: `curl -I https://example.com`
-2. List sockets:
-   - Linux: `ss -tnp | head`
-   - macOS: `netstat -anp tcp | head`
-   - Windows: `netstat -ano | find ":443"`
+Ports are mail slots. Let's open one.
 
-**Expected:** A random high-number port is used on your side.
-**Why it matters:** Replies reach the exact app that started them.
+On a machine with Python installed, start a simple web server:
 
----
+`python3 -m http.server 8000`
 
-### Lab 07: MTU and Path MTU Discovery
-**Time:** 10–20 min
-**Difficulty:** Medium
-**Analogy:** Oversized crate vs hallway height.
+This opens a mail slot (port 8000) and waits for connections.
 
-**Steps**
-- Linux:
-  ```bash
-  ping -c 1 -M do -s 1472 example.com
-  ```
-  Reduce `-s` until it succeeds.
-- Windows:
-  ```powershell
-  ping -f -l 1472 example.com
-  ```
-  Lower `-l` until success.
+In another terminal, connect to it:
 
-**Expected:** The largest successful payload defines your path MTU.
-**Why it matters:** Right-sizing the crate avoids breakage.
+`curl http://127.0.0.1:8000`
+
+You should see a directory listing. The curl command sent an envelope to your own machine, addressed to port 8000. The web server received it and replied.
+
+If you know your machine's LAN IP address, try connecting from another device on the same network. Whether it works depends on firewall settings.
 
 ---
 
-### Lab 08: TCP vs UDP with Netcat
-**Time:** 15–20 min
-**Difficulty:** Medium
-**Analogy:** Registered mail vs postcards.
+### Lab 5: Observe TCP Connections
 
-**Steps**
-1. TCP listener: `nc -l 9999`
-2. TCP sender: `nc 127.0.0.1 9999` and type a message.
-3. UDP listener: `nc -u -l 9998`
-4. UDP sender: `nc -u 127.0.0.1 9998`
+Every connection has two sockets: yours and theirs.
 
-**Expected:** TCP delivers reliably, UDP does not.
-**Why it matters:** Choose the right etiquette for the job.
+Make an HTTPS request:
 
----
+`curl -I https://example.com`
 
-### Lab 09: Wi-Fi Reality Check for Channels and Noise
-**Time:** 10–20 min
-**Difficulty:** Easy
-**Analogy:** Conversations in a crowded square.
+While the connection is open (or immediately after), list your connections:
 
-**Steps**
-- macOS:
-  ```bash
-  /System/Library/.../airport -s
-  ```
-- Linux: `nmcli dev wifi list`
-- Windows: `netsh wlan show networks mode=bssid`
+On Linux: `ss -tnp | head`
 
-1. Note SSIDs, channels, and signal.
-2. Count how many share your channel.
-3. Move closer to the router and compare signal.
+On macOS: `netstat -anp tcp | head`
 
-**Expected:** Busy channels show more contention.
-**Why it matters:** Air is a shared medium with etiquette.
+On Windows: `netstat -ano | find ":443"`
+
+Find the connection to example.com. Note the local port (something high, like 51234) and the remote port (443). The local port is ephemeral, assigned just for this conversation. When the connection closes, that port becomes available again.
 
 ---
 
-### Lab 10: Peek at the TLS Chain with OpenSSL
-**Time:** 10–15 min
-**Difficulty:** Medium
-**Analogy:** Diplomatic credential check.
+### Lab 6: Compare TCP and UDP with Netcat
 
-**Steps**
-```bash
-openssl s_client -connect example.com:443 -servername example.com -showcerts < /dev/null
-```
+Netcat is a simple tool for sending data over the network.
 
-**Observe:**
-- Subject (site name)
-- Issuer (Certificate Authority)
-- Certificate chain
+Open two terminal windows. In the first, start a TCP listener:
 
-**Expected:** Valid chain and matching hostname.
-**Why it matters:** Identity comes first, then encryption.
+`nc -l 9999`
 
----
+In the second, connect as a client:
 
-### Lab 11: Try HTTP/3 over QUIC
-**Time:** 10–15 min
-**Difficulty:** Medium
-**Analogy:** Faster talk in a noisy square.
+`nc 127.0.0.1 9999`
 
-**Steps**
-```bash
-curl -I https://example.com
-curl --http3 -I https://example.com
-```
+Type a message in the client window. It appears in the server window. TCP ensures delivery.
 
-**Expected:** Some sites respond with `HTTP/3` in headers.
-**Why it matters:** QUIC reduces head-of-line blocking.
+Now try UDP. In the first terminal:
+
+`nc -u -l 9998`
+
+In the second:
+
+`nc -u 127.0.0.1 9998`
+
+Send messages back and forth. Notice that there's no connection establishment. You just start talking. If you stop and restart the server, the client keeps sending into the void. UDP doesn't know or care.
 
 ---
 
-### Lab 12: Round-Robin DNS as Load Balancing
-**Time:** 10 min
-**Difficulty:** Easy
-**Analogy:** One address, many concierges.
+### Lab 7: Inspect a TLS Certificate Chain
 
-**Steps**
-```bash
-dig +short a www.google.com
-```
-Repeat a few times and note multiple IPs.
+When you visit an HTTPS site, your browser verifies the server's certificate. You can do this manually.
 
-**Expected:** Several addresses rotate per query.
-**Why it matters:** DNS spreads guests across entrances.
+`openssl s_client -connect example.com:443 -servername example.com -showcerts < /dev/null`
+
+The output shows the certificate chain. Look for the subject (the site's name), the issuer (the CA that signed it), and the validity period. The chain might have multiple certificates: the server's certificate, one or more intermediate certificates, and implicitly the root CA that your system trusts.
 
 ---
 
-### Lab 13: NAT in the Wild with One Public Face
-**Time:** 5–10 min
-**Difficulty:** Easy
-**Analogy:** Mail forwarding at the building exit.
+### Lab 8: Measure DNS Lookup Time
 
-**Steps**
-```bash
-curl -s https://api.ipify.org
-```
-Run on two devices on the same network.
+DNS delays add to every new connection. Let's see how long lookups take.
 
-**Expected:** Both show the same public IP.
-**Why it matters:** NAT rewrites return addresses at the exit.
+`dig example.com`
 
----
+Look at the "Query time" in the output. This is how long the lookup took.
 
-### Lab 14: Measure the Trip with Curl Timings
-**Time:** 10–15 min
-**Difficulty:** Easy
-**Analogy:** Concierge logbook of each delivery.
+Run it again. The second query is usually faster because the result is cached.
 
-**Steps**
-```bash
-curl -o /dev/null -s -w "dns=%{time_namelookup} connect=%{time_connect} tls=%{time_appconnect} ttfb=%{time_starttransfer} total=%{time_total}\n" https://example.com
-```
+Force a fresh lookup by asking a different DNS server:
 
-**Expected:** Breakdown of total time by phase.
-**Why it matters:** Observability starts with simple timing.
+`dig @8.8.8.8 example.com`
+
+This bypasses your local cache and asks Google's DNS server directly. Compare the timing.
 
 ---
 
-### Lab 15: Mini Troubleshooting Loop
-**Time:** 15–20 min
-**Difficulty:** Easy
-**Analogy:** Follow the envelope boundary by boundary.
+### Lab 9: Test Maximum Packet Size
 
-**Scenario:** A website doesn’t load.
+Networks have a maximum transmission unit (MTU), the largest packet they can carry without fragmentation. If your packet exceeds the path MTU, it must be broken into smaller pieces, which adds overhead.
 
-**Steps**
-1. Address: DNS ok? `dig example.com`
-2. Path: Local OK? `ping <gateway>`
-3. Outside OK? `traceroute 1.1.1.1`
-4. Permission: TLS or HTTP? `curl -I https://example.com`
-5. Swap DNS: `dig @1.1.1.1 example.com`
+You can probe for the path MTU:
 
-**Expected:** You identify which boundary failed.
-**Why it matters:** Address, Path, Permission always guide you.
+On Linux: `ping -c 1 -M do -s 1472 example.com`
+
+On Windows: `ping -f -l 1472 example.com`
+
+The 1472 bytes plus headers should fit in a standard 1500-byte MTU. If it works, try increasing the number. When you exceed the path MTU, you'll get an error about fragmentation needed. The largest successful size tells you your effective MTU to that destination.
 
 ---
 
-## Cloud Track (Optional, Vendor-Neutral)
+### Lab 10: Measure Connection Timing
 
-### Cloud Lab A: Build a Three-Wing VPC Floor Plan
-**Time:** 30–45 min
-**Difficulty:** Medium
-**Analogy:** Design your own private floor in the hotel.
+When troubleshooting slow pages, it helps to know where time is spent.
 
-**Goal:** Create a VPC with Public, Private-App, and Private-DB subnets.
+`curl -o /dev/null -s -w "dns=%{time_namelookup} connect=%{time_connect} tls=%{time_appconnect} ttfb=%{time_starttransfer} total=%{time_total}\n" https://example.com`
 
-**Steps**
-1. Create a VPC (e.g., `10.0.0.0/16`).
-2. Add subnets: Public (`10.0.1.0/24`), App (`10.0.2.0/24`), DB (`10.0.3.0/24`).
-3. Attach an Internet Gateway.
-4. Route tables: Public → IGW, Private → NAT.
-5. Security Groups:
-   - Web: allow 80/443 from Internet.
-   - App: allow 80 from Web subnet.
-   - DB: allow 3306 from App only.
-
-**Expected:** Public reachable, Private internal only.
+This breaks down the total time: DNS lookup, TCP connection, TLS handshake, time to first byte, and total. If DNS is slow, investigate your resolver. If TLS is slow, the server might be distant or overloaded. If time to first byte is slow after TLS, the application is taking time to generate the response.
 
 ---
 
-### Cloud Lab B: NAT Gateway as an Outbound-Only Staff Door
-**Time:** 20–30 min
-**Difficulty:** Medium
-**Analogy:** The monitored back exit.
+## Chapter 18: Cloud Labs
 
-**Steps**
-1. Deploy NAT Gateway in Public subnet.
-2. Update Private subnet route: default route to NAT.
-3. Test outbound with `curl https://example.com`.
-4. Confirm inbound from Internet fails.
+These exercises require access to a cloud provider. The specific steps vary by provider, but the concepts are universal.
 
-**Expected:** Outbound works, inbound blocked.
+### Cloud Lab A: Build a VPC with Public and Private Subnets
 
----
+Create a new VPC with a CIDR block like 10.0.0.0/16. This is your private floor.
 
-### Cloud Lab C: VPC Endpoint to Keep Traffic Off the Street
-**Time:** 15–25 min
-**Difficulty:** Medium
-**Analogy:** Private service door to hotel amenities.
+Create two subnets. One is public (10.0.1.0/24) and one is private (10.0.2.0/24). Place them in different availability zones for resilience.
 
-**Steps**
-1. Add a Gateway-type endpoint (for S3 or storage).
-2. Update route table to send service traffic through it.
-3. Access the service from a private instance.
-4. Confirm no Internet egress in flow logs.
+Create an Internet Gateway and attach it to the VPC. Update the public subnet's route table so that traffic to 0.0.0.0/0 goes through the Internet Gateway.
 
-**Expected:** Private traffic path stays inside hotel walls.
+Launch a small instance in the public subnet. Give it a public IP. Verify you can SSH to it from the internet.
+
+Launch another instance in the private subnet. It has no public IP. Try to SSH to it from the internet. You can't. Now SSH to your public instance and try to connect to the private instance from there. If security groups allow it, you can.
+
+You've built a floor with a public wing and a private wing.
 
 ---
 
-### Cloud Lab D: Security Group vs NACL, Who Blocked It?
-**Time:** 20–30 min
-**Difficulty:** Medium
-**Analogy:** Door guard vs hallway rule.
+### Cloud Lab B: Add a NAT Gateway
 
-**Steps**
-1. SG allows inbound 80 to instance.
-2. NACL blocks ephemeral return ports.
-3. Try web access; it fails.
-4. Remove the block; it works.
+Your private instances can't reach the internet directly. But they might need to download updates.
 
-**Expected:** SG is stateful, NACL is not.
-**Why it matters:** Understand which guard said no.
+Create a NAT Gateway in your public subnet. It needs an Elastic IP (a public address).
 
----
+Update the private subnet's route table. Traffic to 0.0.0.0/0 should go through the NAT Gateway.
 
-### Cloud Lab E: Flow Logs to Find the Drop
-**Time:** 20–30 min
-**Difficulty:** Medium
-**Analogy:** Review the hallway cameras.
+SSH to your private instance (through the public bastion). Try to reach the internet:
 
-**Steps**
-1. Enable flow logs for the subnet.
-2. Trigger a failed connection.
-3. Filter by instance IP/port in logs.
-4. Note `ACCEPT` or `REJECT`.
-5. Identify which layer denied traffic.
+`curl https://example.com`
 
-**Expected:** You can pinpoint the blocked boundary.
+It works. Your private instance can initiate outbound connections. But nobody on the internet can initiate connections to it. The NAT Gateway is the staff exit.
 
 ---
 
-## Teaching Tips
+### Cloud Lab C: Create a VPC Endpoint
 
-- Keep each lab to one printed page so a learner can glance at the whole journey.
-- Close every exercise with a **In a Nutshell** recap or reflection line.
-- Repeat the mantra **Address · Path · Permission** until it becomes second nature.
-- Use callbacks to earlier analogies ("remember the elevator?") so readers connect new facts to familiar images.
-- Adjust firewalls and guardrails minimally; never ask students to disable everything.
+Your instances might access cloud storage or other provider services. By default, that traffic goes through the internet (or NAT Gateway). A VPC endpoint keeps it internal.
+
+Create a gateway endpoint for your provider's object storage service (like S3 on AWS). Associate it with your route tables.
+
+From a private instance, access the storage service. If you have flow logs enabled, you can verify the traffic doesn't leave the VPC.
+
+This is the private service door.
 
 ---
 
-Let’s keep following the envelope (pun intended).
+### Cloud Lab D: Security Groups vs Network ACLs
+
+Create a web server in your public subnet. Configure its security group to allow inbound HTTP (port 80) from anywhere.
+
+Access the web server from your browser. It works.
+
+Now add a network ACL rule to the subnet that denies inbound traffic on port 80.
+
+Try to access the web server again. It fails.
+
+Remove the NACL rule. Access is restored.
+
+Security groups are stateful (allow traffic in, and responses are automatically allowed out). NACLs are stateless (you must explicitly allow both directions). Understanding which layer blocked something is crucial for troubleshooting.
+
+---
+
+You've run the experiments. You've seen addresses, paths, and permissions in action. The theory has become tangible.
+
+One chapter remains: the ending that circles back to the beginning.

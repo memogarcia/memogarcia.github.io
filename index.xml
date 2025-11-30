@@ -12,24 +12,15 @@
     <language>en</language>
     <lastBuildDate>Fri, 31 Oct 2025 00:10:00 -0700</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Understanding Computer Networks by Analogy: Part 5 - Follow the Envelope: Labs &amp; Mini Exercises</title>
+      <title>Understanding Computer Networks by Analogy: Part 5 - Follow the Envelope</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</link>
       <pubDate>Mon, 20 Oct 2025 09:00:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</guid>
-      <description>License for this chapter: CC BY‑NC‑ND 4.0
-Chapter 5: Follow the Envelope: Labs &amp;amp; Mini Exercises Welcome to the hands-on portion of our journey. In the previous chapters, we&amp;rsquo;ve built a model of how networks operate using our building and city analogy. Now, it&amp;rsquo;s time to get our hands dirty and see these concepts in action. It’s time to see if our theoretical building can stand on its own two feet, architecturally speaking.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy: Part 6 - Appendices</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</link>
-      <pubDate>Mon, 20 Oct 2025 16:02:20 +0900</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-6/</guid>
-      <description>License for this chapter: CC BY‑NC‑ND 4.0
-Appendix A: The Analogy Blueprint This is a reference for the core analogies used throughout this book. Use it as a sheet to refresh your memory on the concepts.
-Think in rooms, floors, buildings, and streets. You send an envelope from your room, the concierge guides it across floors and buildings, and the city directory helps you find the right address. When you outgrow your building, you rent a private floor in a hotel and keep your hallways private.</description>
+      <description>License: CC BY-NC-ND 4.0
+Part Five: Follow the Envelope Chapter 17: Hands-On Practice You&amp;rsquo;ve read about buildings, cities, and hotels. Now it&amp;rsquo;s time to explore them yourself.
+This chapter contains practical exercises you can run on your own computer or in a cloud environment. Each exercise connects back to the analogies we&amp;rsquo;ve built. You&amp;rsquo;ll see addresses, paths, and permissions in action.
+The exercises are divided into two groups. The core labs use tools available on most computers.</description>
     </item>
     
     <item>
@@ -51,9 +42,11 @@ Install Argo Rollouts in both clusters: task rollouts:install:all. Optional tool
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</guid>
       <description>A quick-reference blueprint, glossary, and troubleshooting checklist for when you feel lost in the city.
-License for this section: CC BY-NC-ND 4.0
-Appendix A – Blueprint: The Whole Journey at a Glance Use this appendix when you want to see the entire story on one page.
-A.1 Layers by Analogy +----------------------+---------------------------+-------------------------------+ | Layer (TCP/IP) | Analogy | Typical Examples | +----------------------+---------------------------+-------------------------------+ | Application | People talking in rooms | HTTP, DNS, SSH, SMTP, SQL | | Transport | Conversation style | TCP, UDP, QUIC | | Network | City-wide addressing | IP, ICMP, routing, BGP, OSPF | | Link (Data Link + | Hallways and local rules | Ethernet, Wi-Fi, VLANs, ARP | | some Physical) | (per building/floor) | | +----------------------+---------------------------+-------------------------------+ A.</description>
+License: CC BY-NC-ND 4.0
+Epilogue: Full Circle Chapter 19: The Day You Knew Where to Look Remember your first day?
+The network was down. Everyone was staring at you. You had no idea where to start.
+Let&amp;rsquo;s replay that scenario with what you know now.
+The symptoms: nothing internal is working. Email down, Slack down, internal apps down.</description>
     </item>
     
     <item>
@@ -62,11 +55,9 @@ A.1 Layers by Analogy +----------------------+---------------------------+------
       <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>Think of the internet as a city full of buildings and streets.
-Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
-License for this chapter: CC BY-NC-ND 4.0
-What This Chapter Covers In Part 1, we stayed inside a single building: your local network (LAN).
-In this chapter, we step outside into the city and follow one envelope on its journey across the internet.</description>
+      <description>Think of the internet as a city full of buildings and streets. Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
+License: CC BY-NC-ND 4.0
+Part Two: Cities as the Internet Chapter 5: Leaving the Building You&amp;rsquo;ve been living in your building for a while now. You know your floor. You&amp;rsquo;ve sent plenty of messages to your neighbors.</description>
     </item>
     
     <item>
@@ -76,9 +67,8 @@ In this chapter, we step outside into the city and follow one envelope on its jo
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
       <description>Think of the cloud as a hotel: you rent a private floor, connect to the rest of the city through controlled doors, and use badges to decide who can go where.
-License for this chapter: CC BY-NC-ND 4.0
-What This Chapter Covers In Part 1, we treated your local network as a building you own and operate.
-In Part 2, we walked through the city, following your envelopes across the internet.</description>
+License: CC BY-NC-ND 4.0
+Part Three: Hotels as the Cloud Chapter 10: Why Hotels? For years, your company operated out of a building you owned. You knew every hallway. You controlled every lock. When the HVAC broke at two in the morning, someone on your team had to deal with it.</description>
     </item>
     
     <item>
@@ -88,9 +78,8 @@ In Part 2, we walked through the city, following your envelopes across the inter
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
       <description>Networking at scale looks complex, but it still comes down to the same questions: who am I talking to, which path am I using, and what are the rules of the conversation?
-License for this chapter: CC BY-NC-ND 4.0
-What This Chapter Covers In Parts 1–3 we built up a mental model of:
-Buildings as local networks (LANs). A city as the internet (routers, packets, DNS). Hotels as the cloud (VPCs, gateways, IAM).</description>
+License: CC BY-NC-ND 4.0
+Part Four: Advanced Architectures Chapter 14: The Noisy Wireless Market Most of what we&amp;rsquo;ve discussed assumes an orderly world. Cables run between switches. Routers forward packets according to their tables. Everything has a place.</description>
     </item>
     
     <item>
@@ -333,12 +322,10 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
       <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>Think of a network as a building full of rooms, doors, and hallways.
-You move information the same way you’d move letters and packages between apartments.
-License for this chapter: CC BY-NC-ND 4.0
-Why Analogies Help Networking is full of invisible things: signals, packets, addresses, protocols.
-It’s easy to get lost if all you see are diagrams and acronyms.
-Analogies help because they give your brain something familiar to hold on to.</description>
+      <description>Think of a network as a building full of rooms, doors, and hallways. You move information the same way you&amp;rsquo;d move letters and packages between apartments.
+License: CC BY-NC-ND 4.0
+Prologue: The Day Everything Stopped The office is quiet in a way that offices should never be quiet.
+No keyboards clicking. No notification sounds. No music bleeding out of someone&amp;rsquo;s headphones. Just the low hum of the air conditioning and the occasional frustrated sigh.</description>
     </item>
     
     <item>
