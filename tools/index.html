@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -127,25 +128,25 @@
         .theme-toggle:hover {
             background: var(--entry);
         }
-        
+
         /* Mobile responsive improvements */
         @media (max-width: 768px) {
             .container {
                 padding: 16px;
             }
-            
+
             .theme-toggle {
                 position: fixed;
                 top: 16px;
                 right: 16px;
                 z-index: 100;
             }
-            
+
             h1 {
                 font-size: 32px;
                 margin-bottom: 32px;
             }
-            
+
             .tool-card {
                 padding: 20px;
                 min-height: 44px;
@@ -153,16 +154,16 @@
                 flex-direction: column;
                 justify-content: center;
             }
-            
+
             .tool-card h2 {
                 font-size: 20px;
                 margin-bottom: 6px;
             }
-            
+
             .tool-card p {
                 font-size: 15px;
             }
-            
+
             .back-link {
                 font-size: 15px;
                 margin-bottom: 16px;
@@ -172,22 +173,22 @@
                 align-items: center;
             }
         }
-        
+
         @media (max-width: 480px) {
             .container {
                 padding: 12px;
             }
-            
+
             .theme-toggle {
                 top: 12px;
                 right: 12px;
             }
-            
+
             h1 {
                 font-size: 28px;
                 margin-bottom: 24px;
             }
-            
+
             .tools-grid {
                 gap: 16px;
                 margin-top: 32px;
@@ -195,6 +196,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
@@ -231,6 +233,10 @@
                 <h2>Trainer</h2>
                 <p>A simple tool to train on any architecture.</p>
             </a>
+            <a href="/tools/fasting/" class="tool-card">
+                <h2>Fasting Timer</h2>
+                <p>Track your fast and monitor your body's progress.</p>
+            </a>
         </div>
     </div>
     <script>
@@ -252,4 +258,5 @@
         });
     </script>
 </body>
+
 </html>

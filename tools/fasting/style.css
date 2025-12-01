@@ -1,0 +1,218 @@
+/* Fasting Timer Specific Styles */
+
+.app-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--gap);
+    min-height: 100vh;
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Timer Section */
+.timer-section {
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: var(--gap);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.timer-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.time-elapsed {
+    font-size: 4rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--color-text);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.status-badge.active {
+    background: var(--cyberpunk-teal-light);
+    color: var(--cyberpunk-teal);
+    border-color: var(--cyberpunk-teal);
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-lg {
+    height: 3.5rem;
+    padding: 0 2rem;
+    font-size: 1.125rem;
+}
+
+.start-time-display {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: 0.5rem;
+}
+
+/* Stages Section */
+.stages-section {
+    padding: 1.5rem;
+}
+
+.stages-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+.stage-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.stage-icon {
+    font-size: 2.5rem;
+    background: var(--color-bg-secondary);
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.stage-content h3 {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    color: var(--cyberpunk-teal);
+}
+
+.stage-content p {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* Timeline */
+.timeline-container h3 {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-border);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.timeline-item.active {
+    opacity: 1;
+}
+
+.timeline-item.completed {
+    opacity: 0.8;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2.45rem;
+    top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.timeline-item.active .timeline-marker {
+    background: var(--cyberpunk-teal);
+    border-color: var(--cyberpunk-teal);
+    box-shadow: 0 0 0 4px var(--cyberpunk-teal-light);
+}
+
+.timeline-item.completed .timeline-marker {
+    background: var(--cyberpunk-teal);
+    border-color: var(--cyberpunk-teal);
+}
+
+.timeline-time {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.timeline-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+}
+
+.timeline-desc {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .time-elapsed {
+        font-size: 3rem;
+    }
+    
+    .stage-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
