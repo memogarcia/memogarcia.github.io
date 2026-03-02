@@ -1,7 +1,7 @@
 ---
 title: "Understanding Computer Networks by Analogy: Part 3 - Hotels as the Cloud"
 date: 2025-10-18T22:39:16+09:00
-draft: false
+draft: true
 ---
 
 > Think of the cloud as a hotel: you rent a private floor, connect to the rest of the city through controlled doors, and use badges to decide who can go where.
@@ -24,37 +24,37 @@ So you check into a hotel instead.
 
 The hotel is operated by a major cloud provider: Amazon Web Services, Google Cloud, Microsoft Azure. They own the land, the buildings, the power systems, the security guards, the network infrastructure. You rent space from them.
 
-Instead of purchasing a building, you rent a private floor. Instead of hiring maintenance staff, you let the hotel handle facilities. You focus on what happens inside your rooms: your applications, your data, your business logic. The building itself is someone else's problem.
+Instead of purchasing a building, you rent an entire private tower within the hotel complex. Instead of hiring maintenance staff, you let the hotel handle facilities. You focus on what happens inside your rooms: your applications, your data, your business logic. The tower itself is someone else's problem.
 
-The trade-off is control. You don't get to design the electrical system. You can't move walls. The hotel retains master keys for safety and management. But within your floor, you have significant autonomy. You design the layout, control access, decide what goes in each room.
+The trade-off is control. You don't get to design the electrical system. You can't move walls. The hotel retains master keys for safety and management. But within your tower, you have significant autonomy. You design the layout, control access, decide what goes on each floor.
 
 This is the cloud model. Let's see how it maps to networking.
 
 ---
 
-## Chapter 11: Your Private Floor
+## Chapter 11: Your Private Tower
 
-When you check into the cloud hotel, you don't get a random scattering of rooms across different floors. You get your own private floor, isolated from other guests, with a layout you design yourself.
+When you check into the cloud hotel, you don't get a random scattering of rooms across different buildings. You get your own private tower, isolated from other guests, with a layout you design yourself.
 
 This is your Virtual Private Cloud, your VPC.
 
-A VPC is a logically isolated virtual network within a cloud region. You define the IP address range, which is like choosing your room numbering scheme. You create subnets, which are like dividing your floor into wings. You control the routing between those wings and to the outside world.
+A VPC is a logically isolated virtual network within a cloud region. You define the IP address range, which is like choosing your room numbering scheme for the entire building. You create subnets, which are the individual floors within your tower. You control the routing between those floors and to the outside world.
 
-A typical floor plan might look like this:
+A typical tower layout might look like this:
 
-You create a public wing facing the street. This is where you put resources that need to be reachable from the internet: web servers, API endpoints, load balancers. These rooms have windows to the outside world.
+You create a public floor near the lobby. This is where you put resources that need to be reachable from the internet: web servers, API endpoints, load balancers. These rooms have windows to the outside world.
 
-You create a private wing in the back. This is where you put resources that should never be directly reachable: application servers, databases, internal tools. These rooms have no windows. The only way in is through doors you control.
+You create a private floor higher up. This is where you put resources that should never be directly reachable: application servers, databases, internal tools. These rooms have no windows. The only way in is through elevators you control.
 
-You might create additional wings for specific purposes: a wing for batch processing jobs, a wing for shared services, a wing for development environments. Each wing is a subnet with its own routing rules.
+You might create additional floors for specific purposes: a floor for batch processing jobs, a floor for shared services, a floor for development environments. Each floor is a subnet with its own routing rules.
 
-The beauty of a VPC is that while you're designing a logical floor plan, the cloud provider is handling the physical reality. Your "floor" might span multiple physical data centers for redundancy. The isolation between your VPC and someone else's VPC is enforced by the provider's networking fabric. You don't need to understand how they do it. You just need to trust that your floor is private.
+The beauty of a VPC is that while you're designing a logical tower, the cloud provider is handling the physical reality. Your "tower" might span multiple physical data centers for redundancy. The isolation between your VPC and someone else's VPC is enforced by the provider's networking fabric. You don't need to understand how they do it. You only need to trust that your tower is private.
 
 ### Choosing Your Address Space
 
-When you create a VPC, you specify a CIDR block: the range of IP addresses available on your floor. A common choice is something like 10.0.0.0/16, which gives you 65,534 usable addresses. That's more than enough for most applications.
+When you create a VPC, you specify a CIDR block: the range of IP addresses available in your tower. A common choice is something like 10.0.0.0/16, which gives you 65,534 usable addresses. That's more than enough for most applications.
 
-You then carve that range into subnets. Maybe 10.0.1.0/24 for your public wing (254 addresses), 10.0.10.0/24 for your application servers (254 addresses), and 10.0.20.0/24 for your databases (254 addresses). The specific numbers don't matter much. What matters is that you've created logical separation.
+You then carve that range into subnets, or floors. Maybe 10.0.1.0/24 for your public floor (254 addresses), 10.0.10.0/24 for your application servers (254 addresses), and 10.0.20.0/24 for your databases (254 addresses). The specific numbers don't matter much. What matters is that you've created logical separation.
 
 ### A Technical Sidebar: Availability Zones
 
@@ -70,7 +70,7 @@ Your private floor is isolated, but it can't be completely sealed. You need ways
 
 ### The Main Entrance: Internet Gateway
 
-An Internet Gateway is the hotel's main entrance for your floor. It's a two-way door between your VPC and the public internet.
+An Internet Gateway is the hotel's main entrance for your tower. It's a two-way door between your VPC and the public internet.
 
 When you want your web server to be publicly accessible, you do four things. You attach an Internet Gateway to your VPC. You update the route table in your public subnet so that internet-bound traffic goes through the gateway. You assign a public IP address to your web server. And you configure security rules to allow the specific traffic you want.
 
@@ -78,19 +78,19 @@ With those pieces in place, users from anywhere on the internet can reach your s
 
 ### The Staff Exit: NAT Gateway
 
-Your private wing has different requirements. The application servers there should never be directly reachable from the internet. They don't have public IP addresses. They don't appear in any public DNS records. But they still need to reach the outside world sometimes. They need to download software updates, call external APIs, fetch data.
+Your private floor has different requirements. The application servers there should never be directly reachable from the internet. They don't have public IP addresses. They don't appear in any public DNS records. But they still need to reach the outside world sometimes. They need to download software updates, call external APIs, fetch data.
 
 For this, you use a NAT Gateway.
 
 A NAT Gateway sits in your public subnet and provides outbound-only access for your private resources. Think of it as a staff exit at the back of the hotel. Your employees can walk out, conduct their business in the city, and return. But strangers on the street can't use that door to walk in.
 
-When a private server sends a request through the NAT Gateway, the gateway records which internal address made the request. It rewrites the outgoing packets to show its own public IP as the source. When the response comes back, the gateway checks its records and forwards the response to the correct internal server. The external service never sees your private IP addresses.
+When a private server sends a request through the NAT Gateway, the gateway records which internal address made the request by assigning a temporary mail slot (ephemeral port) to the outgoing envelope. It rewrites the outgoing packets to show its own public IP as the source, combined with that temporary port. When the response comes back to that specific port, the gateway checks its records and forwards the response to the correct internal server. This is Network Address and Port Translation (NAPT). The external service never sees your private IP addresses.
 
 ### Private Service Doors: VPC Endpoints
 
 Sometimes your servers need to access cloud services that the provider operates: object storage, managed databases, message queues. The naive approach would be to send that traffic out through the NAT Gateway, across the public internet, and back into the cloud provider's network. It works, but it's inefficient and potentially expensive.
 
-VPC Endpoints provide a better path. They're private doors connecting your floor directly to the hotel's internal amenities. Traffic to supported services stays inside the cloud provider's network. It never touches the public internet. This is faster, cheaper, and more secure.
+VPC Endpoints provide a better path. They're private doors connecting your tower directly to the hotel's internal amenities. Traffic to supported services stays inside the cloud provider's network. It never touches the public internet. This is faster, cheaper, and more secure.
 
 Two types of endpoints exist. Gateway endpoints work for specific high-volume services (like S3 on AWS). They appear as routing table entries: "traffic for this service goes through this endpoint." Interface endpoints work for a broader range of services. They appear as network interfaces with private IP addresses on your subnet. You talk to them the same way you'd talk to any other server on your floor.
 
@@ -126,7 +126,7 @@ These layers overlap. A request might be allowed by the security group but denie
 
 ---
 
-You've designed your cloud floor. You have public and private wings, doors to the outside world, and a badge system controlling access. Your infrastructure is running.
+You've designed your cloud tower. You have public and private floors, doors to the outside world, and a badge system controlling access. Your infrastructure is running.
 
 But modern applications are complicated. They run on wireless networks where everyone shares the air. They need encryption to protect data in transit. They consist of dozens of services that talk to each other constantly.
 
