@@ -1,33 +1,30 @@
 ---
-title: "Multi Region Cloud Training Lab: Part 7.1 - Progressive Delivery with Argo Rollouts"
+title: "Multi-Region Cloud Training: Progressive Delivery with Argo Rollouts"
 date: 2025-10-19T10:45:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-07a-rollouts/
 ---
 
-Problem: Safely test new versions with canary and A/B in each region using Argo Rollouts.
+In the previous section, we manually configured Istio to split traffic between two versions. While powerful, doing this by hand for every release is a fast track to burnout. 
 
-Assumptions/Constraints
+We want an automated controller that says: *"Deploy the new version, send 10% of traffic to it, wait a minute, check Prometheus to see if the error rate spiked. If it looks good, increase to 50%. If it fails, instantly roll back to the old version."*
 
-- Two clusters act as regions. Use two kube contexts.
-- Istio is installed. Namespace `echo` has `istio-injection=enabled`.
-- Argo CD manages manifests, but you can `kubectl apply` to learn.
-- You have Prometheus from Part 9 prereqs or `obs:install:*` tasks.
+This process is called Progressive Delivery, and we're going to implement it using **Argo Rollouts**.
 
-Steps
+### Enter the Rollout Resource
 
-1) Install Argo Rollouts in both clusters: `task rollouts:install:all`.
-   - Optional tooling: `brew install argoproj/tap/kubectl-argo-rollouts`.
-2) Apply manifests via kustomize overlays: `task rollouts:apply:all`.
-   - US overlay: `deploy/rollouts/overlays/us`
-   - EU overlay: `deploy/rollouts/overlays/eu`
-3) Trigger a canary by changing the image tag and committing (or re-apply with new tag).
-4) Watch the rollout: `task rollouts:watch:us` (and `:eu`).
-5) A/B test by sending header `x-user-type: beta` to force traffic to canary.
-6) Promote or abort based on metrics and checks.
+Argo Rollouts replaces the standard Kubernetes `Deployment` object with a custom `Rollout` object. It natively understands how to talk to Istio to adjust traffic weights, and it can query metrics providers (like Prometheus) to make automated promotion decisions.
 
-Example
+First, you'll need to install the Argo Rollouts controller in both of your clusters. We've added tasks for this:
+```bash
+task rollouts:install:all
+```
+*(Tip: Install the CLI plugin locally with `brew install argoproj/tap/kubectl-argo-rollouts` for an excellent terminal UI).*
+
+### Redesigning the Architecture
+
+To make this work, Argo Rollouts requires two distinct Kubernetes `Services`: a "stable" service and a "canary" service. The Rollout controller dynamically updates the pod selectors on these services as it progresses through the release.
 
 ```yaml
 # services.yaml
@@ -35,17 +32,23 @@ apiVersion: v1
 kind: Service
 metadata: { name: echo-stable, namespace: echo }
 spec:
-  selector: { app: echo }
+  selector: { app: echo } # Rollout manages this selector
   ports: [ { port: 80, targetPort: 8080 } ]
 ---
 apiVersion: v1
 kind: Service
 metadata: { name: echo-canary, namespace: echo }
 spec:
-  selector: { app: echo }
+  selector: { app: echo } # Rollout manages this selector
   ports: [ { port: 80, targetPort: 8080 } ]
----
-# virtualservice.yaml (Argo Rollouts adjusts these weights)
+```
+
+Next, we update our Istio `VirtualService`. Instead of hardcoding the weights like we did in Part 7, we set them to 100/0. We are telling Istio the baseline state, and **Argo Rollouts will programmatically modify this VirtualService** in real-time during a release.
+
+We've also added a cool feature here: an A/B testing route. Anyone sending the header `x-user-type: beta` will skip the weight logic entirely and get routed directly to the canary pods.
+
+```yaml
+# virtualservice.yaml
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata: { name: echo-rollouts, namespace: echo }
@@ -53,6 +56,7 @@ spec:
   hosts: [ "echo-stable.echo.svc.cluster.local" ]
   gateways: [ "mesh" ]
   http:
+    # A/B Test: Force beta users to the canary
     - name: ab-test
       match:
         - headers:
@@ -61,13 +65,20 @@ spec:
       route:
         - destination: { host: echo-canary.echo.svc.cluster.local, port: { number: 80 } }
           weight: 100
+    # Primary Route: Argo Rollouts manages these weights
     - name: primary
       route:
         - destination: { host: echo-stable.echo.svc.cluster.local, port: { number: 80 } }
           weight: 100
         - destination: { host: echo-canary.echo.svc.cluster.local, port: { number: 80 } }
           weight: 0
----
+```
+
+### The Rollout Strategy
+
+Now, the main event. We define our `Rollout` object. Notice the `strategy` block. We explicitly define the steps: set weight to 10%, pause for 60 seconds, run an automated Analysis, set weight to 25%, pause, and so on.
+
+```yaml
 # rollout.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
@@ -84,9 +95,6 @@ spec:
         - name: echo
           image: ghcr.io/your-org/echo-api:1.0.0
           ports: [ { containerPort: 8080 } ]
-          readinessProbe:
-            httpGet: { path: /health, port: 8080 }
-            periodSeconds: 3
   strategy:
     canary:
       canaryService: echo-canary
@@ -99,6 +107,7 @@ spec:
       steps:
         - setWeight: 10
         - pause: { duration: 60 }
+        # Automated safety check
         - analysis:
             templates:
               - templateName: success-rate
@@ -106,7 +115,15 @@ spec:
         - pause: { duration: 60 }
         - setWeight: 50
         - pause: { duration: 60 }
----
+```
+
+### The Automated Safety Check (AnalysisTemplate)
+
+How does Argo Rollouts know if the canary is healthy? We define an `AnalysisTemplate`. This tells the controller how to query Prometheus and what constitutes "success". 
+
+In this case, we query Istio's built-in metrics. If the non-5xx success rate drops below 99% during the canary phase, the rollout will automatically abort and route 100% of traffic back to the stable pods.
+
+```yaml
 # analysis.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
@@ -127,25 +144,20 @@ spec:
             sum(rate(istio_requests_total{reporter="destination", destination_workload_namespace="echo"}[1m]))
 ```
 
-Verification/DoD
+### Verification
 
-- Watch canary: `kubectl --context <ctx> -n echo argo rollouts get r echo --watch` or `task rollouts:watch:us`.
-- Generate traffic inside the cluster:
-  - `kubectl --context <ctx> -n echo run curl --rm -it --image=curlimages/curl -- sh`
-  - `while true; do curl -sS http://echo-stable.echo.svc.cluster.local; sleep 0.2; done`
-- A/B header test: `curl -sS -H 'x-user-type: beta' http://echo-stable.echo.svc.cluster.local` returns canary.
-- Promotion succeeds when analysis passes. Abort rolls back to stable.
+To trigger a rollout, simply change the image tag in your Kustomize overlays and commit. Argo CD will sync the new template, and Argo Rollouts will take over.
 
-Argo CD integration
+Watch the magic happen using the CLI tool:
+```bash
+kubectl --context prod-us-east-1 -n echo argo rollouts get rollout echo --watch
+```
 
-- Use the provided ApplicationSet to sync rollouts overlays to both clusters.
-  - `deploy/apps/rollouts-appset.yaml`
-  - Control-plane apply (choose one):
-    - `task argocd:appset:rollouts:us`
-    - `task argocd:appset:rollouts:eu`
-- Ensure both clusters are registered in that Argo CD and labeled with `region` matching overlay names (`us`, `eu`). Example:
-  - `argocd cluster add prod-us-east-1 --name prod-us --label region=us --yes`
-  - `argocd cluster add prod-eu-west-1 --name prod-eu --label region=eu --yes`
+While it's running, you can test the A/B routing header we configured earlier:
+```bash
+curl -sS -H 'x-user-type: beta' http://echo-stable.echo.svc.cluster.local
+```
 
+If the Prometheus metrics are healthy, the rollout will progress to 100% and the new version becomes "stable". If the app starts throwing 500 errors, the controller will abort and retreat to safety. We have achieved safe, automated, progressive delivery across multiple regions.
 
-Previous: [Part 7](/posts/multi-region-series-part-7-cd/) · Next: [Part 8](/posts/multi-region-series-part-8-chaos/)
+[Previous: Part 7](/posts/multi-region-series-part-7-cd/) · [Continue to Part 8: Chaos Testing](/posts/multi-region-series-part-8-chaos/)
