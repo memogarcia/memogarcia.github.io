@@ -10,19 +10,7 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 31 Oct 2025 00:10:00 -0700</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Understanding Computer Networks by Analogy: Part 5 - Follow the Envelope</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</link>
-      <pubDate>Mon, 20 Oct 2025 09:00:00 -0700</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-5/</guid>
-      <description>License: CC BY-NC-ND 4.0
-Part Five: Follow the Envelope Chapter 17: Hands-On Practice You&amp;rsquo;ve read about buildings, cities, and hotels. Now it&amp;rsquo;s time to explore them yourself.
-This chapter contains practical exercises you can run on your own computer or in a cloud environment. Each exercise connects back to the analogies we&amp;rsquo;ve built. You&amp;rsquo;ll see addresses, paths, and permissions in action.
-The exercises are divided into two groups. The core labs use tools available on most computers.</description>
-    </item>
-    
+    <lastBuildDate>Thu, 15 Jan 2026 01:53:23 +0100</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Multi-Region Cloud Training: Progressive Delivery with Argo Rollouts</title>
       <link>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</link>
@@ -31,53 +19,6 @@ The exercises are divided into two groups. The core labs use tools available on 
       <guid>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</guid>
       <description>In the previous section, we manually configured Istio to split traffic between two versions. While powerful, doing this by hand for every release is a fast track to burnout.
 We want an automated controller that says: &amp;ldquo;Deploy the new version, send 10% of traffic to it, wait a minute, check Prometheus to see if the error rate spiked. If it looks good, increase to 50%. If it fails, instantly roll back to the old version.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy: Appendices</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</link>
-      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-appendices/</guid>
-      <description>A quick-reference blueprint, glossary, and troubleshooting checklist for when you feel lost in the city.
-License: CC BY-NC-ND 4.0
-Epilogue: Full Circle Chapter 19: The Day You Knew Where to Look Remember your first day?
-The network was down. Everyone was staring at you. You had no idea where to start.
-Let&amp;rsquo;s replay that scenario with what you know now.
-The symptoms: nothing internal is working. Email down, Slack down, internal apps down.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy: Part 2 - Cities as the Internet</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
-      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>Think of the internet as a city full of buildings and streets. Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
-License: CC BY-NC-ND 4.0
-Part Two: Cities as the Internet Chapter 5: Leaving the Building You&amp;rsquo;ve been living in your building for a while now. You know your floor. You&amp;rsquo;ve sent plenty of messages to your neighbors.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy: Part 3 - Hotels as the Cloud</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</link>
-      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-3/</guid>
-      <description>Think of the cloud as a hotel: you rent a private floor, connect to the rest of the city through controlled doors, and use badges to decide who can go where.
-License: CC BY-NC-ND 4.0
-Part Three: Hotels as the Cloud Chapter 10: Why Hotels? For years, your company operated out of a building you owned. You knew every hallway. You controlled every lock. When the HVAC broke at two in the morning, someone on your team had to deal with it.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy: Part 4 - Advanced Architectures</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</link>
-      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-4/</guid>
-      <description>Networking at scale looks complex, but it still comes down to the same questions: who am I talking to, which path am I using, and what are the rules of the conversation?
-License: CC BY-NC-ND 4.0
-Part Four: Advanced Architectures Chapter 14: The Noisy Wireless Market Most of what we&amp;rsquo;ve discussed assumes an orderly world. Cables run between switches. Routers forward packets according to their tables. Everything has a place.</description>
     </item>
     
     <item>
@@ -303,8 +244,7 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
       <description>Think of a network as a building full of rooms, doors, and hallways. You move information the same way you&amp;rsquo;d move letters and packages between apartments.
 License: CC BY-NC-ND 4.0
-Prologue: The Day Everything Stopped The office is quiet in a way that offices should never be quiet.
-No keyboards clicking. No notification sounds. No music bleeding out of someone&amp;rsquo;s headphones. Just the low hum of the air conditioning and the occasional frustrated sigh.</description>
+Preface: For a Younger Version of Myself This book is for a less handsome version of myself: the university student who could write decent code but went blank the moment someone mentioned &amp;ldquo;subnet masks&amp;rdquo; or &amp;ldquo;routing tables.&amp;rdquo; If that sounds familiar, you are not behind.</description>
     </item>
     
     <item>
@@ -811,8 +751,8 @@ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://memo.mx/books/</guid>
-      <description> This book is currently undergoing its first editorial review.
-Understanding Computer Networks by Analogy: Part 1 Understanding Computer Networks by Analogy: Part 2 Understanding Computer Networks by Analogy: Part 3 Understanding Computer Networks by Analogy: Part 4 Understanding Computer Networks by Analogy: Appendices </description>
+      <description>This book is currently undergoing its first editorial review.
+Understanding Computer Networks by Analogy: Part 1 `</description>
     </item>
     
     <item>

@@ -7,7 +7,8 @@ draft: false
 
 
 1. [Understanding Computer Networks by Analogy: Part 1](/posts/understanding-computer-networks-by-analogy/)  
-2. [Understanding Computer Networks by Analogy: Part 2](/posts/understanding-computer-networks-by-analogy-part-2/)  
+<!-- `2. [Understanding Computer Networks by Analogy: Part 2](/posts/understanding-computer-networks-by-analogy-part-2/)  
 3. [Understanding Computer Networks by Analogy: Part 3](/posts/understanding-computer-networks-by-analogy-part-3/)  
 4. [Understanding Computer Networks by Analogy: Part 4](/posts/understanding-computer-networks-by-analogy-part-4/)
-5. [Understanding Computer Networks by Analogy: Appendices](/posts/understanding-computer-networks-by-analogy-appendices/)  
+5. [Understanding Computer Networks by Analogy: Appendices](/posts/understanding-computer-networks-by-analogy-appendices/)   -->
+`
