@@ -1,67 +1,66 @@
 ---
-title: "Multi Region Cloud Training Lab: Part 3 - Istio Multi Region Mesh"
+title: "Multi-Region Cloud Training: Istio Multi-Region Mesh"
 date: 2025-10-17T09:12:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-03-istio/
 ---
 
-Problem: Enable east to west traffic and consistent policy across clusters.
+Now that we can deploy to multiple clusters, we need them to talk to each other. If a service in the US needs to reach a service in the EU, how does that traffic route? How do we secure it? 
 
-Assumptions/Constraints
+We could expose everything to the public internet via Ingress, but that's a massive security risk for internal API traffic. Instead, we'll use Istio to build a multi-primary, multi-network service mesh. This gives us secure, transparent east-west traffic routing across our regions.
 
-- Cost note: Two clusters stand in for two regions.
-- Same `meshID`, same trust domain, distinct `network` per cluster.
+### The Architecture: East-West Gateways
 
-ASCII Diagram
+Because our two clusters run on different underlying networks (they don't share a flat IP space), pod A in the US cannot directly ping pod B in the EU. 
 
-```
-  Cross cluster via gateway + ServiceEntry (no istioctl)
+To bridge this gap, Istio uses an "East-West Gateway." This is a dedicated load balancer in each cluster that acts as a secure transit point. Traffic leaving the US cluster goes to the EU's East-West Gateway, which then routes it to the correct pod inside the EU network. Crucially, Istio maintains mutual TLS (mTLS) across this entire hop, so the traffic is fully encrypted in transit.
 
-   +-----------+   mTLS mesh   +-----------+
-   | Cluster US|<=============>| Cluster EU|
-   | istiod    |               | istiod    |
-   | east-west | <---15443---- | east-west |
-   | gateway   |               | gateway   |
-   | echo svc  |               | echo svc  |
-   +-----------+               +-----------+
+```text
+  Cross-cluster routing via East-West Gateways
 
-  meshID=training-mesh, trustDomain=corp.local
-  networks: us-net, eu-net; locality prefers same cluster
+   +-----------+     mTLS over public internet     +-----------+
+   | Cluster US|<=================================>| Cluster EU|
+   | istiod    |                                   | istiod    |
+   | east-west | <-------------15443-------------  | east-west |
+   | gateway   |                                   | gateway   |
+   | echo svc  |                                   | echo svc  |
+   +-----------+                                   +-----------+
 ```
 
-Steps
+To make this work, both clusters need to share the same `meshID` and `trustDomain` (so they trust each other's certificates), but they must have distinct `network` names so Istio knows when traffic needs to traverse the gateway.
 
-1) Install Istio on each cluster with matching meshID and trustDomain, unique network.
-2) Expose an east west gateway in each cluster.
-3) Configure cross cluster routing using east west gateways and ServiceEntry. No istioctl.
+### Installation via Helm
 
-Example (Helm values excerpt)
+We'll install Istio using Helm. Notice how we enable `PILOT_ENABLE_MULTINETWORK` and set distinct networks (`us-net` and `eu-net`) for each region.
 
 ```yaml
 # values-istio.yaml
 global:
   meshID: training-mesh
   trustDomain: corp.local
-  network: us-net  # use eu-net in EU cluster
+  # We will override this network value per cluster during install
+  network: us-net 
 pilot:
   env:
     PILOT_ENABLE_MULTINETWORK: "true"
 ```
 
-Install
+Let's apply this to both clusters:
 
 ```bash
-# US cluster
+# US cluster (network: us-net)
 helm upgrade --install istio-base istio/base -n istio-system --create-namespace
 helm upgrade --install istiod istio/istiod -n istio-system -f values-istio.yaml --set global.network=us-net --wait
 
-# EU cluster
+# EU cluster (network: eu-net)
 helm upgrade --install istio-base istio/base -n istio-system --create-namespace --kube-context prod-eu-west-1
 helm upgrade --install istiod istio/istiod -n istio-system -f values-istio.yaml --kube-context prod-eu-west-1 --set global.network=eu-net --wait
 ```
 
-East west gateway
+### Exposing the Gateways
+
+Next, we need to spin up the actual East-West Gateways. We use an `IstioOperator` manifest for this, which tells Istio to create a LoadBalancer specifically for internal mesh traffic.
 
 ```yaml
 apiVersion: install.istio.io/v1alpha1
@@ -80,7 +79,11 @@ spec:
           service: { type: LoadBalancer }
 ```
 
-Cross cluster ServiceEntry (call EU from US through EU gateway)
+### Routing Traffic (The Hard Way)
+
+Normally, people use the `istioctl` command-line tool to magically wire up cross-cluster secrets. But we are engineers, and we want to understand how it actually works under the hood. 
+
+Instead of magic, we'll explicitly define a `ServiceEntry`. This tells the US cluster: "Hey, if someone asks for `echo.eu.mesh.local`, send that traffic out to the EU's East-West Gateway IP address on port 15443."
 
 ```yaml
 apiVersion: networking.istio.io/v1beta1
@@ -92,7 +95,7 @@ spec:
   hosts:
     - echo.eu.mesh.local
   addresses:
-    - 240.0.0.2/32
+    - 240.0.0.2/32 # A dummy VIP for routing
   ports:
     - number: 80
       name: http
@@ -100,33 +103,19 @@ spec:
   resolution: DNS
   location: MESH_EXTERNAL
   endpoints:
+    # Replace this with your actual EU cluster's LoadBalancer IP/DNS
     - address: <EU_EASTWEST_LB_DNS>
       ports: { http: 15443 }
       locality: eu
 ```
 
-Verification/DoD
+### Verification
 
-- From US cluster, `curl http://echo.eu.mesh.local` returns `region=eu` through gateway.
-- Local traffic continues to prefer local cluster by default.
+Once applied, you can jump into a pod in the US cluster and run:
+`curl http://echo.eu.mesh.local`
 
-Observability install (Helm)
+You should get a response back from the EU region. 
 
-```bash
-# US cluster
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo add kiali https://kiali.org/helm-charts
-helm repo update
-kubectl --context prod-us-east-1 create ns observability --dry-run=client -o yaml | kubectl --context prod-us-east-1 apply -f -
-helm --kube-context prod-us-east-1 upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability \
-  --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
-helm --kube-context prod-us-east-1 upgrade --install kiali kiali/kiali-server -n istio-system --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
+You've just built a secure, multi-region transit network. By default, Istio's locality load balancing will always prefer the local cluster, keeping latency low. But if a local service fails, or if you explicitly route across the mesh like we just did, the East-West gateways handle the heavy lifting seamlessly.
 
-# EU cluster (repeat with prod-eu-west-1)
-kubectl --context prod-eu-west-1 create ns observability --dry-run=client -o yaml | kubectl --context prod-eu-west-1 apply -f -
-helm --kube-context prod-eu-west-1 upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability \
-  --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
-helm --kube-context prod-eu-west-1 upgrade --install kiali kiali/kiali-server -n istio-system --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
-```
-
-Previous: [Part 2](/posts/multi-region-series-part-2-argocd/) · Next: [Part 4](/posts/multi-region-series-part-4-identity/)
+[Previous: Part 2](/posts/multi-region-series-part-2-argocd/) · [Continue to Part 4: AWS Identity](/posts/multi-region-series-part-4-identity/)

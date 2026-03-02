@@ -1,48 +1,49 @@
 ---
-title: "Multi Region Cloud Training Lab: Part 4 - AWS Identity (IRSA vs Pod Identity)"
+title: "Multi-Region Cloud Training: AWS Identity (IRSA vs Pod Identity)"
 date: 2025-10-17T09:13:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-04-identity/
 ---
 
-Problem: Let workloads call AWS without node credentials.
+When your applications run in Kubernetes, they eventually need to talk to cloud services—reading from an S3 bucket, publishing to an SNS topic, or querying DynamoDB. 
 
-Assumptions/Constraints
+The absolute worst way to do this is by hardcoding AWS Access Keys into your application's environment variables or secrets. It's a massive security vulnerability waiting to happen. The slightly less terrible way is assigning an IAM role to the underlying EC2 worker nodes, but that breaks the principle of least privilege (every pod on that node gets the same permissions).
 
-- Cost note: Two clusters, not two AWS regions.
-- Choose one path: IRSA or EKS Pod Identity. Do not mix for the same service account.
+We want our identity scoped directly to the Pod. AWS gives us two distinct ways to solve this in Kubernetes: **IRSA (IAM Roles for Service Accounts)** and the newer **EKS Pod Identity**.
 
-ASCII Diagram
+### The Two Paths to Least Privilege
 
-```
-              IRSA path                           Pod Identity path
+Both methods achieve the same goal (giving a specific pod temporary AWS credentials), but they do it in fundamentally different ways. You should choose one path and stick to it—don't mix them for the same application.
+
+```text
+              IRSA Architecture                   Pod Identity Architecture
   +-----------------------------+          +-----------------------------+
   | [Pod + SA aws-sa]           |          | [Pod + SA aws-sa]           |
   |   token (OIDC projected)    |          |   request to EKS agent      |
   +--------------|--------------+          +--------------|--------------+
-                 v                                        v
+                 ▼                                        ▼
          [IAM OIDC Provider]                      [EKS Pod Identity Agent]
-                 |                                        |
-                 v                                        v
-         [STS AssumeRoleWithWebIdentity]          [STS AssumeRole]
-                 |                                        |
-                 v                                        v
+                 │                                        │
+                 ▼                                        ▼
+    [STS AssumeRoleWithWebIdentity]                 [STS AssumeRole]
+                 │                                        │
+                 ▼                                        ▼
              [Temp creds]                           [Temp creds]
-                 \________________________________________/
-                                  |
-                                  v
+                 ╲________________________________________╱
+                                  │
+                                  ▼
                                [AWS APIs]
-
- Notes: IRSA supports Fargate and non EKS clusters with OIDC; Pod Identity is EKS only.
 ```
 
-Steps (IRSA)
+### Option 1: IRSA (IAM Roles for Service Accounts)
 
-1) Create an IAM role that trusts the cluster OIDC provider and service account.
-2) Annotate the workload service account with the role ARN.
+IRSA relies on OpenID Connect (OIDC). Your Kubernetes cluster acts as an identity provider, cryptographically signing a token and handing it to your pod. The pod takes that token to AWS STS, which verifies the signature and hands back temporary credentials. 
 
-Example trust policy snippet
+The beauty of IRSA is its portability. It works on EKS, self-managed clusters on EC2, EKS Anywhere, and Fargate. 
+
+**How to set it up:**
+You create an IAM role with a specific trust policy. Notice how the policy explicitly checks the `sub` (subject) claim to ensure only the `aws-sa` service account in the `echo` namespace can assume this role.
 
 ```json
 {
@@ -62,7 +63,7 @@ Example trust policy snippet
 }
 ```
 
-Kubernetes service account
+Then, you simply annotate your Kubernetes ServiceAccount:
 
 ```yaml
 apiVersion: v1
@@ -74,12 +75,14 @@ metadata:
     eks.amazonaws.com/role-arn: arn:aws:iam::<acct>:role/echo-irsa-role
 ```
 
-Steps (EKS Pod Identity)
+### Option 2: EKS Pod Identity
 
-1) Create an IAM role.
-2) Bind it to a namespace and service account with a Pod Identity association.
+Introduced later to simplify the OIDC boilerplate, Pod Identity relies on an agent running as a DaemonSet on your worker nodes. When a pod needs credentials, it asks the local agent, which handles the STS assumed role dance for it.
 
-Example association
+Pod Identity is much easier to set up, especially across multiple clusters, because you don't need a unique OIDC trust policy for every cluster. However, it only works on EKS (no self-managed clusters) and currently does not support Fargate or Windows pods.
+
+**How to set it up:**
+You create a standard IAM role, and instead of messing with annotations and trust policies, you tell the EKS API to map the role to a specific namespace and service account:
 
 ```bash
 aws eks create-pod-identity-association \
@@ -89,23 +92,14 @@ aws eks create-pod-identity-association \
   --role-arn arn:aws:iam::<acct>:role/echo-podid-role
 ```
 
-Verification/DoD
+### Verification
 
-- A pod using `aws-sa` can call `sts:GetCallerIdentity` and returns the role.
+Regardless of which path you chose, verifying it is simple. Exec into a pod using your `aws-sa` service account and use the AWS CLI to check your identity:
 
-Note: IRSA vs EKS Pod Identity
+```bash
+aws sts get-caller-identity
+```
 
-- Platform scope: IRSA works for EKS and other Kubernetes clusters that use an IAM OIDC provider, including self managed clusters on EC2 and EKS Anywhere. EKS Pod Identity is EKS only and does not support EKS Anywhere or self managed clusters.
-- Node and runtime support: Pod Identity currently supports Linux EC2 worker nodes and does not support Fargate or Windows pods. IRSA supports both EC2 and Fargate.
-- Setup model: IRSA requires an IAM OIDC provider per cluster and trust policy conditions that match a Kubernetes service account. Pods use a projected web identity token. Pod Identity uses an EKS managed agent (DaemonSet) and a Pod Identity association API; the agent vends credentials to pods.
-- Cross account and reuse: Both can access resources in other accounts. Pod Identity added simplified cross account support in 2025. IRSA uses standard cross account trust policies. Pod Identity helps reuse the same role across multiple clusters without editing OIDC trust per cluster.
+If it returns the ARN of your `echo-irsa-role` or `echo-podid-role` instead of your worker node's role, you've successfully implemented least-privilege identity for your workloads.
 
-References
-
-- EKS Pod Identity docs (limits and setup): https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html
-- EKS Pod Identity cross account update (2025 06 12): https://aws.amazon.com/about-aws/whats-new/2025/06/amazon-eks-pod-identity-cross-account-access
-- IRSA overview: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
-- IRSA SDK/credential chain notes: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts-minimum-sdk.html
-- Fargate execution role and IRSA note: https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html
-
-Previous: [Part 3](/posts/multi-region-series-part-3-istio/) · Next: [Part 5](/posts/multi-region-series-part-5-app/)
+[Previous: Part 3](/posts/multi-region-series-part-3-istio/) · [Continue to Part 5: Sample App and Overlays](/posts/multi-region-series-part-5-app/)
