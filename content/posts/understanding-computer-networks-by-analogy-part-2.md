@@ -16,7 +16,7 @@ In Part One, we looked at local networks as apartment buildings. We mapped devic
 
 But what happens when your envelope needs to leave the building entirely?
 
-Maybe you're pulling a Docker image or querying an external API. The journey is the same: the envelope leaves your floor, exits your building, and has to navigate an absolute clusterfuck of city streets and intersections until it finds the right building.
+Maybe you're pulling a Docker image or querying an external API. The journey is the same: the envelope leaves your floor, exits your building, and has to navigate a complex maze of city streets and intersections until it finds the right building.
 
 The internet isn't magic. It's a massive, chaotic, sprawling city that grew without any centralized zoning laws. And to navigate it, you have to understand the routers.
 
@@ -32,7 +32,7 @@ Walk out of the elevator into your building's lobby, and you'll find a guy sitti
 
 The concierge has one job: take envelopes from residents and figure out which street to throw them down next. They have absolutely no idea what the final destination looks like—just the very next step.
 
-That thick binder on the desk is the routing table. It's not a complete map of the city; keeping track of that would be computationally insane. Instead, it's a list of simple, localized rules:
+That thick binder on the desk is the routing table. It's not a complete map of the city; keeping track of that would be too computationally expensive. Instead, it's a list of simple, localized rules:
 - "For buildings on Oak Street, hand the envelope to the courier at the east exit."
 - "For anything in the downtown district, use the main post office drop."
 - "For anything I don't recognize, just throw it at the central hub and let them figure it out."
@@ -55,7 +55,7 @@ Out on the open internet, between different companies, a different beast rules: 
 
 ### When Envelopes Get Lost
 
-Sometimes a concierge is an idiot. Someone writes a bad rule in the binder, and two routers just keep handing the same envelope back and forth to each other at the speed of light, forever. 
+Sometimes a concierge makes a mistake. Someone writes a bad rule in the binder, and two routers just keep handing the same envelope back and forth to each other at the speed of light, forever. 
 
 To prevent this from melting the internet, every envelope carries a counter called Time To Live (TTL). When the envelope leaves your computer, the TTL might be set to 64. Every single time a router touches it, they cross out the number and subtract one. 
 
