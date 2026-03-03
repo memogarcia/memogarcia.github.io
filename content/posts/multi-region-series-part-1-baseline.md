@@ -1,12 +1,12 @@
 ---
-title: "Multi-Region Cloud Training: Building the Baseline"
+title: "Chapter 1: Multi-Region Cloud Training - Building the Baseline"
 date: 2025-10-17T09:10:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-01-baseline/
 ---
 
-Building systems across multiple regions is notoriously difficult. You have to navigate latency, configuration drift, and complex networking topologies. Before we dive into the fun stuff—like GitOps with Argo CD or cross-cluster routing with Istio—we need to establish a rock-solid foundation. 
+Building systems across multiple regions is notoriously difficult. You have to navigate latency, configuration drift, and complex networking topologies. Before we dive into the fun stuff - like GitOps with Argo CD or cross-cluster routing with Istio - we need to establish a rock-solid foundation. 
 
 In this lab series, we're going to build a realistic multi-region deployment from the ground up. 
 

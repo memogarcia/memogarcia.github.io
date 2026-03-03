@@ -1,5 +1,5 @@
 ---
-title: "Multi-Region Cloud Training: CI with GitHub Actions"
+title: "Chapter 6: Multi-Region Cloud Training - CI with GitHub Actions"
 date: 2025-10-17T09:15:00-07:00
 draft: false
 aliases:

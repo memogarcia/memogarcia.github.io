@@ -1,5 +1,5 @@
 ---
-title: "Multi-Region Cloud Training: Sample App and Overlays"
+title: "Chapter 5: Multi-Region Cloud Training - Sample App and Overlays"
 date: 2025-10-17T09:14:00-07:00
 draft: false
 aliases:

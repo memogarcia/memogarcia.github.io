@@ -1,5 +1,5 @@
 ---
-title: "Multi-Region Cloud Training: Istio Multi-Region Mesh"
+title: "Chapter 3: Multi-Region Cloud Training - Istio Multi-Region Mesh"
 date: 2025-10-17T09:12:00-07:00
 draft: false
 aliases:
