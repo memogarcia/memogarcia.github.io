@@ -70,7 +70,7 @@ The analogy:
 
 - **Room** → The device itself (your laptop, phone, printer).
 - **Door** → Network interface card (NIC).
-- **Door label** → **MAC address**: a unique identifier burned into the NIC.
+- **Door label** → **MAC address**: a hardware-level identifier used for local delivery (typically 48 bits). It’s meant to be unique, but it can be spoofed, virtualized, or randomized.
 - **Room number** → **IP address**: how you find the room on a specific floor / subnet.
 
 Some key points:
@@ -147,7 +147,7 @@ Two important concepts live here:
 - **Bandwidth** – The “width” of the hallway. How much data can you push through per second (e.g. 100 Mbps, 1 Gbps).
 - **Latency** – How long it takes for one message to get from your door to another door. Think of it as travel time through the hallway.
 
-A narrow hallway with very fast runners might have good bandwidth (a lot of people per second) but still be slow if the hallway is extremely long (high latency). We will keep revisiting this distinction throughout the book.
+A hallway can be very wide (high bandwidth) but extremely long (high latency). Once you start moving a lot of packages, the throughput can be great, but the first package still takes a while to reach the other end. We will keep revisiting this distinction throughout the book.
 
 ---
 
@@ -380,29 +380,29 @@ Instead of building your own office, you:
 - You pay for everything. Room service, extra towels, data transfer.
 - You don't control the infrastructure. If the hotel elevator breaks, you just have to wait.
 
-## 3.2 Your Private Floor: The VPC
+## 3.2 Your Private Tower: The VPC
 
-When you move into the cloud hotel, you want **your own private floor**.
+When you move into the cloud hotel, you want **your own private tower**.
 This is your **Virtual Private Cloud (VPC)**.
 
 - A VPC is a logically isolated network.
 - You choose the IP address range.
-- You divide the floor into **subnets** (wings).
+- You divide the tower into **subnets** (floors).
 
-**Floor Plan:**
-- **Public Wing**: Lobby, reception. Reachable from the street. (Public Subnet)
-- **Private Wing**: Back-office, safe, accounting. No direct access from the street. (Private Subnet)
+**Tower Plan:**
+- **Public Floor**: Rooms reachable from the street. (Public Subnet)
+- **Private Floor**: Rooms not directly reachable from the street. (Private Subnet)
 
 ## 3.3 The Hotel’s Many Doors: Gateways and Endpoints
 
-Your private floor needs doors.
+Your private tower needs doors.
 
 ### The Main Entrance: The Internet Gateway (IGW)
 - A **two-way door** to the public street.
 - Used for web servers that need to talk to the world.
 
 ### The Staff-Only Exit: The NAT Gateway
-- Rooms in the **private wing** need to download updates, but they shouldn't be reachable from the outside.
+- Rooms on the **private floor** need to download updates, but they shouldn't be reachable from the outside.
 - A **NAT Gateway** is a **staff-only exit**. You can go out, but random strangers can't come in.
 - It’s like a one-way mirror.
 
@@ -486,10 +486,10 @@ Enough theory. Let's break stuff.
 These labs are designed to show you the "Address · Path · Permission" model in action.
 
 ## Lab 01: Follow the Envelope
-**Tools**: `ping`, `traceroute`
-1. **Resolve**: `dig example.com` (Find the address).
+**Tools**: `ping`, `traceroute` (or `tracert` on Windows), DNS lookup (`dig` or `nslookup`)
+1. **Resolve**: `dig example.com` (or `nslookup example.com` on Windows) (Find the address).
 2. **Check**: `ping example.com` (Is it alive?).
-3. **Map**: `traceroute example.com` (See the path).
+3. **Map**: `traceroute example.com` (or `tracert example.com` on Windows) (See the path).
 
 **Why?** You just saw DNS, Routing, and ICMP in action.
 
@@ -501,12 +501,12 @@ These labs are designed to show you the "Address · Path · Permission" model in
 
 ## Lab 03: Ports and Sockets
 **Tools**: Python
-1. Run `python3 -m http.server 8000`.
+1. Run `python3 -m http.server 8000` (or `py -m http.server 8000` on Windows).
 2. Go to `localhost:8000` in your browser.
 3. You just opened a mail slot (Port 8000) and served a file.
 
 ## Lab 04: TCP vs UDP
-**Tools**: `netcat` (nc)
+**Tools**: `netcat` (`nc`) (Windows users often install Nmap and use `ncat`)
 1. **TCP Listener**: `nc -l 9999`
 2. **TCP Sender**: `nc 127.0.0.1 9999`
    - Type stuff. It appears. Reliable.
@@ -516,9 +516,9 @@ These labs are designed to show you the "Address · Path · Permission" model in
 
 ## Lab 05: Troubleshooting Loop
 **Scenario**: A website doesn’t load.
-1. **Address**: Does DNS work? (`dig`)
+1. **Address**: Does DNS work? (`dig` or `nslookup`)
 2. **Path**: Can I reach the gateway? (`ping`)
-3. **Permission**: Is the port open? (`curl -v`)
+3. **Permission**: Is the port open? (`curl -v`) (PowerShell users may need `curl.exe` instead of `curl`)
 
 **Mantra**: Address. Path. Permission. If one fails, you're screwed. Find out which one.
 
@@ -539,7 +539,7 @@ You send an envelope from your room, the concierge guides it across floors and b
 - **Elevator**: Default Gateway
 - **City Directory**: DNS
 - **Hotel**: Cloud Provider
-- **Private Floor**: VPC
+- **Private Tower**: VPC
 - **Main Entrance**: Internet Gateway
 - **Staff Exit**: NAT Gateway
 

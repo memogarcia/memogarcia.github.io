@@ -91,8 +91,8 @@ The network is no longer a mystery. Go build something. And when the inevitable 
 | Layer (TCP/IP) | What It Does | Analogy | Key Protocols | Guardians of This Layer |
 |----------------|--------------|---------|---------------|------------------------|
 | **Application** | Applications talking | People having conversations | HTTP, DNS, SSH, SMTP, TLS | Firewalls, WAFs, Load Balancers |
-| **Transport** | Conversation style & reliability | Registered mail vs postcards | TCP, UDP, QUIC | Host-based firewalls, Network ACLs |
-| **Network** | City-wide addressing & routing | Postal system, city streets | IP (v4/v6), ICMP, routing protocols | Routers, security groups |
+| **Transport** | Conversation style & reliability | Registered mail vs postcards | TCP, UDP, QUIC | Host-based firewalls, Security Groups |
+| **Network** | City-wide addressing & routing | Postal system, city streets | IP (v4/v6), ICMP, routing protocols | Routers, Network ACLs |
 | **Link** | Local delivery on your floor | Hallways, local mail delivery | Ethernet, Wi-Fi, VLANs, ARP | Switches, wireless access points |
 | **Physical** | Raw signals through medium | The actual building materials | Copper, fiber, radio waves | Cables, NICs, antennas |
 
@@ -109,9 +109,9 @@ The network is no longer a mystery. Go build something. And when the inevitable 
 | **Concierge** | Routes mail between floors/Buildings | Router | Network infrastructure | `traceroute` or `tracert` |
 | **City directory** | Phone book/address lookup | DNS | `/etc/resolv.conf` or DNS settings | `dig`, `nslookup`, or `host` |
 | **Hotel chain** | Global managed building provider | Cloud Provider (AWS, Azure, GCP) | Cloud console dashboards | Cloud provider CLI tools |
-| **Private floor** | Your reserved section of the hotel | VPC | Cloud networking dashboards | Cloud provider networking tools |
-| **Public wing** | Rooms open to the public street | Public Subnet | Cloud subnet configuration | Cloud console |
-| **Private wing** | Rooms for internal only | Private Subnet | Cloud subnet configuration | Cloud console |
+| **Private tower** | Your isolated space in the hotel | VPC | Cloud networking dashboards | Cloud provider networking tools |
+| **Public floor** | Subnet with a path to the street | Public Subnet | Cloud subnet configuration | Cloud console |
+| **Private floor** | Subnet without direct inbound from the street | Private Subnet | Cloud subnet configuration | Cloud console |
 | **Main entrance** | Lobby connecting to city streets | Internet Gateway | VPC settings | `aws ec2 describe-internet-gateways` |
 | **Staff exit** | Back door for employees | NAT Gateway | VPC/private subnet settings | Cloud NAT gateway logs |
 | **Private service corridor** | Internal passage to amenities | VPC Endpoint | VPC settings | Cloud endpoint monitoring |
@@ -120,7 +120,7 @@ The network is no longer a mystery. Go build something. And when the inevitable 
 | **Package forwarding service** | Handles specialized deliveries | Load Balancer | Load balancer console | Cloud metrics |
 | **Personal usher** | Helper/mediator outside each room | Sidecar Proxy | Kubernetes pod spec | `kubectl logs` |
 | **Market square** | Shared wireless space | Wireless Network | Wi-Fi settings | Wi-Fi analyzer tools |
-| **Airwave etiquette** | Rules for sharing wireless space | CSMA/CD or CSMA/CA | Protocol implementation | Wireless diagnostics |
+| **Airwave etiquette** | Rules for sharing wireless space | CSMA/CA (Wi-Fi) | Protocol implementation | Wireless diagnostics |
 | **Diplomatic ceremony** | Formal identification & encryption | TLS/SSL Handshake | Browser security info | `openssl s_client` |
 | **Embassy district** | Special secure communication zone | Service Mesh | Kubernetes cluster | `istioctl` or `kubectl` |
 | **Registered mail protocol** | Reliable delivery with tracking | TCP | Transport layer | `tcpdump` or Wireshark |
@@ -130,43 +130,33 @@ The network is no longer a mystery. Go build something. And when the inevitable 
 
 When your browser requests a secure webpage from a cloud-native application, the envelope travels through multiple layers and guardians:
 
-1. **Application Layer (Browser)** - Your browser prepares an HTTPS request, treating it like a letter to be delivered.
+1. **Application Layer (Browser)** - Your browser decides to load `https://example.com` and prepares an HTTP request.
 
-2. **Transport Layer (TCP Connection)** - TCP establishes a registered mail connection with the server, ensuring reliable delivery.
+2. **Name Resolution (DNS)** - DNS resolves the hostname to one or more IP addresses (often from cache).
 
-3. **Name Resolution** - DNS resolves the hostname to an IP address, consulting the city directory.
+3. **Routing Decision** - Your device checks if the destination IP is local (same floor) or remote (requires the elevator lobby).
 
-4. **Routing Decision** - Your device checks if the destination is local (same floor) or remote (requires elevator lobby).
+4. **Link Layer (To Default Gateway)** - If remote, your device uses ARP to learn the default gateway's MAC address, then sends the first frame to the gateway.
 
-5. **Link Layer (To Default Gateway)** - If remote, the packet goes to your default gateway (concierge), using ARP to find its MAC address.
+5. **Internet Journey (IP Routing)** - Routers forward the packet hop by hop across the internet toward the destination network.
 
-6. **Perimeter Security** - The packet passes through security groups (door guards) and network ACLs, which check if traffic is permitted.
+6. **Cloud Front Door** - The packet reaches the public endpoint that owns the hostname/IP (often a CDN or load balancer, sometimes the origin server directly).
 
-7. **Internet Journey** - Routers forward the packet hop by hop across the internet, each concierge making a local decision about the next hop.
+7. **Transport Setup** - The client establishes a transport connection to that front door (TCP handshake for HTTP/1.1 or HTTP/2; QUIC for HTTP/3).
 
-8. **Cloud Edge** - The packet reaches the cloud provider's edge network and is routed to the correct region and VPC (hotel floor).
+8. **TLS Negotiation** - The client performs a TLS handshake with the component that terminates TLS (often the CDN/load balancer, sometimes the origin), verifies the certificate, and establishes encryption keys.
 
-9. **Internet Gateway** - The cloud's Internet Gateway (main entrance) admits traffic to the VPC if security groups permit.
+9. **HTTP Exchange** - The HTTP request and response travel inside the encrypted tunnel.
 
-10. **VPC Routing** - VPC routing tables direct the packet to the appropriate subnet (public or private wing).
+10. **VPC Entry and Routing (If Applicable)** - If the front door forwards traffic into your VPC, route tables deliver it to the correct subnet/tier.
 
-11. **Load Balancer** - An Application Load Balancer (package forwarding service) receives the request and balances it across healthy targets.
+11. **Security Controls (Cloud)** - Network ACLs and security groups allow/deny traffic. If TLS terminates at the edge, a WAF can also inspect the HTTP layer.
 
-12. **Target Instance** - The packet arrives at the target EC2 instance or container, with security groups performing final verification.
+12. **Load Balancing** - A load balancer selects a healthy target instance/pod.
 
-13. **TLS Negotiation** - Your browser and the server perform a TLS handshake (diplomatic ceremony), exchanging certificates and establishing encryption.
+13. **Target Processing (Optional Mesh)** - The request reaches the target (and optionally a sidecar proxy/service mesh), the application processes it, and a response is generated.
 
-14. **Service Mesh Entry** - In a service mesh environment, the request first hits a sidecar proxy (personal usher) rather than the application directly.
-
-15. **Mutual TLS** - The sidecar proxy performs its own TLS handshake with upstream proxies, often requiring mTLS (mutual diplomatic verification).
-
-16. **Internal Routing** - The service mesh routes the request to the appropriate microservice, potentially spanning multiple pods or regions.
-
-17. **Application Processing** - The microservice processes the request and generates a response.
-
-18. **Return Journey** - The response travels back through the same path in reverse: outbound proxy → service mesh → mTLS verification → application → load balancer → VPC → Internet Gateway → internet routers → your gateway → your device.
-
-19. **Your Browser** - Your browser receives the response, closes the TLS tunnel, and renders the result.
+14. **Return Journey** - The response flows back through the same chain. Connections are often kept open and reused; your browser renders the result.
 
 At each step, components are checking permissions, validating identities, and making routing decisions. The entire exchange happens in milliseconds, but it follows the logical path we've traced from rooms to cities to diplomatic districts.
 
@@ -198,7 +188,7 @@ At each step, components are checking permissions, validating identities, and ma
 
 **Encapsulation:** Wrapping data in layers of headers, like putting a letter in an envelope in a bigger envelope.
 
-**Ephemeral Port:** A temporary mail slot your device uses for outbound connections, automatically assigned from a range (usually 32768-60999).
+**Ephemeral Port:** A temporary mail slot your device uses for outbound connections, automatically assigned from a high-numbered range (varies by OS; commonly 49152-65535, and Linux defaults are often 32768-60999).
 
 **Firewall:** A guard that filters traffic based on rules about source, destination, port, and protocol.
 
@@ -216,7 +206,7 @@ At each step, components are checking permissions, validating identities, and ma
 
 **Load Balancer:** A specialized package forwarding service that distributes traffic across multiple destinations.
 
-**MAC Address:** The permanent serial number on a door, identifying a specific network interface. Always 48 bits, written as hex pairs like 00:1A:2B:3C:4D:5E.
+**MAC Address:** A hardware-level identifier used for local delivery on a Layer-2 network. It’s typically a 48-bit value written as hex pairs like 00:1A:2B:3C:4D:5E, but it can be spoofed, virtualized, or randomized.
 
 **MTU (Maximum Transmission Unit):** The largest package that fits through the hallway without being broken up and reassembled.
 
@@ -274,7 +264,7 @@ At each step, components are checking permissions, validating identities, and ma
 
 **VLAN (Virtual LAN):** A logical floor painted on top of physical infrastructure, allowing multiple isolated networks on the same equipment.
 
-**VPC (Virtual Private Cloud):** Your private floor in the cloud hotel, logically isolated from other tenants.
+**VPC (Virtual Private Cloud):** Your private tower in the cloud hotel, logically isolated from other tenants.
 
 **VPC Endpoint:** A private door connecting your VPC directly to cloud provider services without traversing the public internet.
 
@@ -286,7 +276,7 @@ At each step, components are checking permissions, validating identities, and ma
 
 **WAF (Web Application Firewall):** An application-layer guard that inspects HTTP traffic for common attacks against web applications.
 
-**Wi-Fi (Wireless Fidelity):** The wireless market square where devices share airwaves according to CSMA/CA etiquette.
+**Wi-Fi (IEEE 802.11):** The wireless market square where devices share airwaves according to CSMA/CA etiquette. (Despite the myth, "Wi-Fi" doesn't officially stand for "Wireless Fidelity.")
 
 **Wireshark:** A packet analyzer that lets you watch envelopes travel through the network in real-time.
 
@@ -306,14 +296,14 @@ When the network or services seem broken, work systematically from inside out. U
 Is your local device functioning correctly?
 
 - Is the device powered on? Are network interfaces enabled?
-- **Command:** Check interface status with `ip link show` or `ifconfig`
+- **Commands:** Linux: `ip link show`; macOS: `ifconfig`; Windows (PowerShell): `Get-NetAdapter`
 - Do you have an IP address assigned? Check interface configuration.
-- **Command:** `ip -4 addr show` or `ipconfig /all`
+- **Commands:** Linux: `ip -4 addr show`; macOS: `ifconfig` or `ipconfig getifaddr en0`; Windows: `ipconfig /all`
 - Are you on the correct network/subnet? Verify subnet mask configuration.
-- Can you ping yourself (127.0.0.1)? Tests the local TCP/IP stack.
+- Can you ping yourself (127.0.0.1)? Tests your local IP stack (it never leaves your machine).
 - **Command:** `ping 127.0.0.1`
 - Are local firewall rules blocking traffic? Check host-based firewalls.
-- **Command:** `sudo ufw status`, `iptables -L`, or Windows Firewall settings
+- **Commands:** Linux: `sudo ufw status`, `sudo nft list ruleset`, or `sudo iptables -L`; macOS: `sudo pfctl -sr`; Windows: Windows Firewall UI or `Get-NetFirewallRule`
 
 ## Phase 3: Local Floor Connectivity (Same Subnet)
 
@@ -345,10 +335,10 @@ Can you leave your local network?
 
 Can you reach destinations outside your organization?
 
-- Try pinging an external reliable IP address: `ping 1.1.1.1` or `ping 8.8.8.8`
+- Try pinging an external reliable IP address: `ping 1.1.1.1` or `ping 8.8.8.8` (note: ICMP is sometimes blocked, so a ping timeout doesn't always mean "no internet")
 - If these work but domain names fail, proceed to DNS troubleshooting
 - If all external pings fail:
-  - Traceroute to see where packets stop: `traceroute 1.1.1.1`
+  - Traceroute to see where packets stop: `traceroute 1.1.1.1` (macOS/Linux) or `tracert 1.1.1.1` (Windows)
   - Check with ISP or upstream provider
   - Verify perimeter firewalls allow outbound traffic
 
@@ -357,25 +347,30 @@ Can you reach destinations outside your organization?
 Does DNS work correctly?
 
 - Can you resolve a hostname to IP address?
-- **Commands:** `dig google.com`, `nslookup google.com`, or `host google.com`
+- **Commands:** macOS/Linux: `dig google.com` or `host google.com`; Windows: `nslookup google.com` or `Resolve-DnsName google.com`
 - If ping by IP works but by name fails: DNS is the problem
 - Check which DNS servers you're configured to use
-- Try a known public DNS server: `dig @1.1.1.1 google.com`
-- Verify DNS server is reachable: `ping [dns-server-ip]`
+- Try a known public DNS server: `dig @1.1.1.1 google.com` (macOS/Linux) or `Resolve-DnsName google.com -Server 1.1.1.1` (Windows)
+- Verify the DNS server is reachable by querying it directly: `dig @[dns-server-ip] google.com` (macOS/Linux) or `Resolve-DnsName google.com -Server [dns-server-ip]` (Windows)
 - Check for DNSSEC validation failures
-- Review DNS cache: `systemd-resolve --statistics` or `ipconfig /displaydns`
+- Inspect DNS cache / resolver state: Linux (systemd-resolved): `resolvectl statistics`; Windows: `ipconfig /displaydns`; macOS: `scutil --dns` (shows resolver config; cache visibility is limited)
 
 ## Phase 7: Application Layer & TLS Issues
 
 Is the service accepting connections and providing valid identity?
 
-- Try connecting to the service port directly: `telnet [host] [port]` or `nc -zv [host] [port]`
-- Check if the service is listening: `sudo ss -tuln` or `netstat -tuln`
+- Try connecting to the service port directly: `nc -zv [host] [port]` (macOS/Linux), `Test-NetConnection [host] -Port [port]` (Windows PowerShell), or `telnet [host] [port]` (if installed)
+- Check if the service is listening:
+  - Linux: `sudo ss -tuln`
+  - macOS: `sudo lsof -nP -iTCP -sTCP:LISTEN`
+  - Windows: `netstat -ano | findstr LISTENING`
 - Verify TLS certificate validity:
   - **Command:** `openssl s_client -connect [host]:[port] -servername [host]`
-- Check certificate dates: `echo | openssl s_client -connect [host]:443 2>/dev/null | openssl x509 -noout -dates`
+- Check certificate dates:
+  - macOS/Linux: `echo | openssl s_client -connect [host]:443 -servername [host] 2>/dev/null | openssl x509 -noout -dates`
+  - Windows (PowerShell): `echo | openssl s_client -connect [host]:443 -servername [host] | openssl x509 -noout -dates`
 - Verify certificate matches hostname
-- Check for clock skew: `date` (TLS certificates will appear invalid if time is wrong)
+- Check for clock skew: `date` (macOS/Linux) or `Get-Date` (Windows) (TLS certificates will appear invalid if time is wrong)
 - Test with different TLS versions if handshake fails
 
 ## Phase 8: Cloud Infrastructure Issues
