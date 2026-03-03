@@ -20,17 +20,24 @@ Instead of jumping straight into the OSI model, we will build a mental model you
 
 # Prologue: The First Outage
 
-It was 2014, and I was sitting in a windowless conference room at a customer site when their entire production environment went dark. There was no Slack back then to casually alert us, just the frantic, immediate ringing of desk phones and people physically walking into the room to ask what was going on. Because I happened to be the one sitting in front of the terminal with the open terminal, the problem landed squarely in my lap.
+It was 2014. A customer's production database cluster had just vanished from the network. 
 
-I opened a shell and started desperately typing the commands I had blindly copied from runbooks in the past: `ping`, `traceroute`, `nslookup`. The terminal spit back lines of text, IP addresses, timeouts, and scattered asterisks. I could run the tools perfectly fine, but I couldn't actually *read* the output. It was just noise. 
+No gradual degradation. Just gone. 
 
-The customer's lead engineer leaned over my shoulder. "Can you reach the default gateway?" he asked. "Is it a routing issue, or did someone mess up a subnet mask during the firewall change?"
+I was sitting at a terminal in their office. The lead engineer leaned over my shoulder. "We just pushed a rule change to the core ASA," he said, staring at my screen. "Did someone fat-finger the subnet mask on the inside interface? Can you even reach the gateway?"
 
-I felt my stomach drop. I had no idea. I knew what those words meant in theory from my university classes, but looking at a broken system in real-time, with money on the line and people staring at me, I realized I had zero intuition for how the pieces actually connected. I was trying to navigate a foreign city in the dark, relying entirely on rote memorization instead of actually knowing where the streets led.
+I opened a shell. I typed `ping 10.50.2.1`. 
+Destination Host Unreachable. 
+I typed `traceroute 10.50.2.100`. 
+Asterisks. Just a slow crawl of timeouts.
 
-Most of us learn networking this way: in the least friendly environment possible, during a live, bleeding crisis. But it doesn't have to be like that. Networking isn't magic, and it's not just a set of black-box incantations you type when things break. It is built from small, repeatable physical patterns. Once you can picture how those patterns connect—once you have that map we talked about—the command line outputs stop looking like random noise and start telling a story. 
+I knew how to run the commands. I had the runbooks. But I couldn't *read* the output. The engineer was asking if the firewall was routing traffic or if the ARP table was poisoned because someone typed a `/24` instead of a `/23`. I knew the definitions of those words from a textbook, but I couldn't picture the actual path the packets were taking. 
 
-It's time to draw that map.
+I had zero intuition for how the pieces physically connected. 
+
+Most of us learn networking this way. In the dark. During a live outage. We memorize CLI incantations and pray they work. But networking isn't magic. It's built from small, repeatable physical patterns. Once you can visualize how those patterns connect, the terminal stops looking like random noise. It starts telling a story.
+
+Let's draw that map.
 
 ---
 
@@ -52,7 +59,7 @@ The second label is the plastic placard screwed into the wall next to the door. 
 
 This is the foundational interaction of local networking. When two devices on the same floor need to communicate, they don't bother the post office or route traffic out to the internet. They figure out each other's local MAC addresses and slide the data frames right down the shared hallway. It’s fast, isolated, and private from the outside world. 
 
-Staying in the hallway only gets you so far. Eventually, you’ll need to send a message to someone in a completely different building. We need to talk about how these hallways are actually built, and how we find the exit.
+But staying in the hallway only gets you so far. We need to talk about how these hallways are actually built. And how to find the exit.
 
 ---
 
@@ -76,7 +83,7 @@ Regardless of whether your hallway is built from copper, glass, or radio waves, 
 
 Bandwidth is simply the width of the hallway. It dictates how much data can move through it at the exact same time. A 100 Mbps (megabits per second) connection is a relatively narrow hallway; a 10 Gbps fiber connection is a massive, multi-lane concourse. If you're trying to download a massive database dump, you want high bandwidth so you can push all those files through at once. 
 
-Latency is the length of the hallway. It measures how long it takes for a single piece of data to travel from point A to point B. A latency of 10 milliseconds means a packet arrives almost instantly. You can actually have a very wide hallway (high bandwidth) that happens to be incredibly long (high latency). You can carry a ton of data, but it takes a noticeable amount of time to get there—like loading a cargo ship full of hard drives. If you're debugging an issue over an SSH session or on a Zoom call, you care a lot more about low latency than high bandwidth, because you need the conversation to feel immediate and responsive.
+Latency is the length of the hallway. It measures how long it takes for a single piece of data to travel from point A to point B. A latency of 10 milliseconds means a packet arrives almost instantly. You can actually have a very wide hallway (high bandwidth) that happens to be incredibly long (high latency). You can carry a ton of data, but it takes a noticeable amount of time to get there—like loading a cargo ship full of hard drives. If you're debugging over SSH, you care about low latency. You need the terminal to respond instantly. High bandwidth won't save you if the latency is trash.
 
 ---
 
@@ -104,9 +111,9 @@ When you realize the person you want to talk to isn't on your floor, your device
 
 It can't just slide the envelope under a door anymore. It needs to walk to the default gateway. 
 
-In our building, the default gateway is the elevator lobby. It is the designated router connecting your specific floor to the rest of the building, and eventually, to the outside world. Whenever you try to reach an address outside your subnet, your device blindly hands the traffic to the default gateway, stepping into the elevator and trusting the building's infrastructure to figure out the rest of the route. That day in 2014 during the outage, the customer's engineer was basically asking me: "Can your machine even reach the elevator lobby, or are you trapped on your floor?"
+In our building, the default gateway is the elevator lobby. It is the designated router connecting your specific floor to the rest of the building, and eventually, to the outside world. Whenever you try to reach an address outside your subnet, your device blindly hands the traffic to the default gateway, stepping into the elevator and trusting the building's infrastructure to figure out the rest of the route. That day in 2014, the customer's engineer was basically asking me: "Can your machine even reach the elevator lobby, or are you trapped on your floor?"
 
-It's a beautifully simple decision tree: Same floor? Deliver it down the hallway directly. Different floor? Hand it to the elevator and let the default gateway sort it out.
+The decision tree is simple. Same floor? Deliver it down the hallway. Different floor? Hand it to the elevator. Let the gateway sort it out.
 
 ---
 
@@ -134,4 +141,4 @@ The switch guides the frame straight to the elevator lobby. The doors open, the 
 
 You've mastered your floor. You understand how the physical doors, the temporary placards, the physical cables, and the elevator work together to move data locally. Sliding envelopes under local doors is the easy part. 
 
-When your envelope needs to reach a server sitting in a data center three thousand miles away, things get complicated. We have to step into the elevator, leave the building entirely, and navigate the chaotic streets of the city.
+But when your data needs to reach a server three thousand miles away, things get complicated. You have to step into the elevator, leave the building entirely, and navigate the city streets.
