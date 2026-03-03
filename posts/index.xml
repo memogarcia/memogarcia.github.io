@@ -29,8 +29,7 @@ We want an automated controller that says: &amp;ldquo;Deploy the new version, se
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
       <description>Think of the internet as a city full of buildings and streets. Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
 License: CC BY-NC-ND 4.0
-Part Two: Cities as the Internet I have a confession to make: I spent the first five years of my career thinking the internet was basically magic sprinkled on copper wires.
-Not the helpful kind of magic, either.</description>
+Part Two: Cities as the Internet In Part One, we looked at local networks as apartment buildings. We mapped devices to rooms, network interfaces to doors, and subnets to floors. We walked through how your computer slides an envelope down a pneumatic tube to the switch, and how the elevator acts as a gateway to the rest of the building.</description>
     </item>
     
     <item>
@@ -256,7 +255,8 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
       <description>Think of a network as a building full of rooms, doors, and hallways. You move information the same way you&amp;rsquo;d move letters and packages between apartments.
 License: CC BY-NC-ND 4.0
-Preface: For a Younger Version of Myself This book is for the younger, slightly less handsome version of myself who struggled doing subnetting in my networking classes. I remember spending a lot of time trying to imagine how those &amp;ldquo;network configurations&amp;rdquo; look in real time—where they actually &amp;ldquo;live&amp;rdquo; and how that mythical network packet moves through the network.</description>
+Preface: Why We Need Analogies This series is for the younger version of myself who spent way too long staring at a whiteboard while a professor drew endless clouds and cylinders, completely failing to understand subnetting.
+Subnet math is inherently stupid when you are first learning it.</description>
     </item>
     
     <item>
