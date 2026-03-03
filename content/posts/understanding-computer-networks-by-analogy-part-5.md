@@ -214,7 +214,7 @@ This command throws away the actual webpage payload (`-o /dev/null`) and instead
 - **tls:** When the cryptographic ceremony finished.
 - **ttfb (Time To First Byte):** When the server finally got off its ass and handed back the very first piece of actual data. 
 
-If `ttfb` is three seconds higher than `tls`, you can confidently march over to the backend team and tell them their database query is garbage. The network is fine. You can't fix what you can't measure.
+If `ttfb` is three seconds higher than `tls`, you can confidently march over to the backend team and tell them their database query is the bottleneck. The network is fine. You can't fix what you can't measure.
 
 ---
 

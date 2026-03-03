@@ -70,11 +70,11 @@ When your private server sends a request out, the NAT Gateway quickly strips off
 
 Often, your servers need to talk to other services run by the cloud provider itself, like an S3 storage bucket or a managed message queue. 
 
-The stupid way to do this is to send your data out the staff exit (NAT Gateway), drag it all the way across the public internet, and bring it back into the cloud provider's network. This works, but it's slow, it exposes your data to the public streets, and worst of all, cloud providers actively charge you money for pushing data out to the internet.
+The inefficient way to do this is to send your data out the staff exit (NAT Gateway), drag it all the way across the public internet, and bring it back into the cloud provider's network. This works, but it's slow, it exposes your data to the public streets, and worst of all, cloud providers actively charge you money for pushing data out to the internet.
 
 Instead, you install **VPC Endpoints**. 
 
-These are like secret, private service tunnels connecting your specific tower directly to the hotel's internal amenities. Traffic never touches the public internet. It stays within the provider's private, insanely fast network, making it more secure and often avoiding internet egress charges (though the endpoint itself can have its own cost). 
+These are like secret, private service tunnels connecting your specific tower directly to the hotel's internal amenities. Traffic never touches the public internet. It stays within the provider's private, incredibly fast network, making it more secure and often avoiding internet egress charges (though the endpoint itself can have its own cost). 
 
 ---
 

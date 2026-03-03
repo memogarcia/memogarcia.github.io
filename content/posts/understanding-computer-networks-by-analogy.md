@@ -12,11 +12,11 @@ License: CC BY-NC-ND 4.0
 
 # Preface: Why We Need Analogies
 
-This series is for the younger version of myself who spent way too long staring at a whiteboard while a professor drew endless clouds and cylinders, completely failing to understand subnetting. 
+This series is dedicated to the version of me back in university who struggled, spending way too long staring at a whiteboard while a professor drew endless clouds and cylinders, completely failing to understand subnetting. 
 
-Subnet math is inherently stupid when you are first learning it. It’s all `/24`s and `255.255.255.0`s, and nobody tells you what it actually *means* in the real world. I desperately needed to know how a physical network packet moved through a switch, not just what layer of the OSI model it belonged to. I needed a map, not a textbook definition.
+Subnet math can feel incredibly frustrating when you are first learning it. It’s all `/24`s and `255.255.255.0`s, and it can feel like nobody tells you what it actually *means* in the real world. I desperately needed to know how a physical network packet moved through a switch, not just what layer of the OSI model it belonged to. I needed a map, not a textbook definition.
 
-That is why we're using analogies. Analogies aren't perfect, but they give you something tangible to hold onto when you're sweating bullets trying to fix a broken network at 3 AM. We are prioritizing intuition over trivia.
+That is why we're using analogies. I get that analogies have their limits, but honestly, I find this approach more fun. They give you something tangible to hold onto when you're sweating bullets trying to fix a broken network at 3 AM. This isn't a full map, but rather a starting point. We are prioritizing intuition over trivia.
 
 # Prologue: The Time I Broke Everything
 
@@ -57,11 +57,11 @@ When two devices on the same floor need to talk, they just figure out each other
 
 Not all hallways are built the same. The physical medium connecting your door to the rest of the floor dictates how fast you can shove data down it.
 
-In most offices, you're dealing with copper Ethernet cables (Cat5e or Cat6). Think of an Ethernet cable as a private pneumatic tube running directly from your door to a central mailroom on your floor. It's a dedicated, point-to-point link. Copper is cheap and works great, but run it past 100 meters, and the electrical signal turns to garbage.
+In most offices, you're dealing with copper Ethernet cables (Cat5e or Cat6). Think of an Ethernet cable as a private pneumatic tube running directly from your door to a central mailroom on your floor. It's a dedicated, point-to-point link. Copper is cheap and works great, but run it past 100 meters, and the electrical signal degrades heavily.
 
-If you need to connect different floors, buildings, or cross a damn ocean, you use fiber optics. Instead of copper wire, you have thin strands of glass shooting laser pulses. Fiber is insanely fast and goes for kilometers without dropping the signal, but it's fragile and expensive.
+If you need to connect different floors, buildings, or cross an entire ocean, you use fiber optics. Instead of copper wire, you have thin strands of glass shooting laser pulses. Fiber is incredibly fast and goes for kilometers without dropping the signal, but it's fragile and expensive.
 
-Then there's Wi-Fi. If Ethernet is a private tube, Wi-Fi is an open-plan shared lobby. Your device uses radio waves to scream at an access point bolted to the ceiling. Because it's open air, the medium is completely shared. Everyone is shouting over each other in the exact same airspace. If the network is crowded or some idiot fires up a poorly shielded microwave, your connection tanks.
+Then there's Wi-Fi. If Ethernet is a private tube, Wi-Fi is an open-plan shared lobby. Your device uses radio waves to scream at an access point bolted to the ceiling. Because it's open air, the medium is completely shared. Everyone is shouting over each other in the exact same airspace. If the network is crowded or someone fires up a poorly shielded microwave, your connection tanks.
 
 ### Measuring the Hallway
 
@@ -75,7 +75,7 @@ Latency is how long the tube is. It measures how long it takes for a single piec
 
 ## Chapter 3: Floors as Subnets
 
-Imagine if an apartment building had no floors. Just one endless, sprawling warehouse containing thousands of apartments. Finding one specific unit would be hell, and if the building super shouted an announcement over a megaphone, thousands of people would have to stop what they were doing and listen.
+Imagine if an apartment building had no floors. Just one endless, sprawling warehouse containing thousands of apartments. Finding one specific unit would be a nightmare, and if the building super shouted an announcement over a megaphone, thousands of people would have to stop what they were doing and listen.
 
 Architects build floors to group a sane number of rooms together. Networks do this with subnets.
 
@@ -83,7 +83,7 @@ A subnet is just a floor in the building. It logically groups together a chunk o
 
 We break networks into subnets mostly to shut up broadcast traffic. Devices are constantly yelling broadcast messages to everyone on the local segment ("Hey! Who has this IP address?!"). On a floor with thirty devices, fine. On a flat network with five thousand devices, the background noise would bring the whole thing to a grinding halt. 
 
-Subnets also give you security and organization. You can isolate your backend databases on floor 10, and throw the filthy guest Wi-Fi on floor 2.
+Subnets also give you security and organization. You can isolate your backend databases on floor 10, and throw the untrusted guest Wi-Fi on floor 2.
 
 ### Finding the Elevator
 
@@ -105,7 +105,7 @@ Your computer checks the subnet mask. Oh hey, `192.168.10.115` is on the same fl
 
 To physically send the data, your computer needs their MAC address. So, your computer sends a broadcast message yelling to the entire floor: *"Who has IP address `192.168.10.115`? What is your MAC address?"* 
 
-This obnoxious yelling is an ARP request (Address Resolution Protocol). Everyone on the floor hears it and ignores it, except your coworker in 10-115, who yells back: *"That's me! My MAC address is `AA:BB:CC:DD:EE:FF`."* Your computer hastily writes this down in its ARP table so it doesn't have to yell next time.
+This yelling is an ARP request (Address Resolution Protocol). Everyone on the floor hears it and ignores it, except your coworker in 10-115, who yells back: *"That's me! My MAC address is `AA:BB:CC:DD:EE:FF`."* Your computer hastily writes this down in its ARP table so it doesn't have to yell next time.
 
 Now, your computer packages the file into data frames, stamps the destination MAC address on the outside, and shoves it down its private Ethernet tube. 
 

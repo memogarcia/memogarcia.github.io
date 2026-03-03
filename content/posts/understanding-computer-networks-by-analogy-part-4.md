@@ -98,7 +98,7 @@ They use a mathematical trick called a key exchange (usually Ephemeral Diffie-He
 
 An eavesdropper who heard the entire conversation cannot compute the final secret. Even better, because the keys are "ephemeral," they are permanently thrown away the second you close the browser tab. This provides **forward secrecy**—even if a hacker steals the server's master private key three years from now, they cannot decrypt your past conversations.
 
-With the shared secret established, the handshake ends. From that millisecond forward, every single byte of data sent between you and the server looks like absolute garbage to anyone trying to listen in. 
+With the shared secret established, the handshake ends. From that millisecond forward, every single byte of data sent between you and the server looks like unreadable noise to anyone trying to listen in. 
 
 This process used to be heavy and slow, but modern TLS 1.3 has optimized the handshake down to a single round-trip. It is so fast and cheap now that there is no excuse not to use it everywhere—even for the internal traffic moving room-to-room inside your private cloud hotel.
 
