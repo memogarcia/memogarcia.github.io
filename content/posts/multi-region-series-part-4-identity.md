@@ -1,12 +1,12 @@
 ---
-title: "Multi-Region Cloud Training: AWS Identity (IRSA vs Pod Identity)"
+title: "Chapter 4: Multi-Region Cloud Training - AWS Identity (IRSA vs Pod Identity)"
 date: 2025-10-17T09:13:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-04-identity/
 ---
 
-When your applications run in Kubernetes, they eventually need to talk to cloud services—reading from an S3 bucket, publishing to an SNS topic, or querying DynamoDB. 
+When your applications run in Kubernetes, they eventually need to talk to cloud services - reading from an S3 bucket, publishing to an SNS topic, or querying DynamoDB. 
 
 The absolute worst way to do this is by hardcoding AWS Access Keys into your application's environment variables or secrets. It's a massive security vulnerability waiting to happen. The slightly less terrible way is assigning an IAM role to the underlying EC2 worker nodes, but that breaks the principle of least privilege (every pod on that node gets the same permissions).
 
@@ -14,7 +14,7 @@ We want our identity scoped directly to the Pod. AWS gives us two distinct ways 
 
 ### The Two Paths to Least Privilege
 
-Both methods achieve the same goal (giving a specific pod temporary AWS credentials), but they do it in fundamentally different ways. You should choose one path and stick to it—don't mix them for the same application.
+Both methods achieve the same goal (giving a specific pod temporary AWS credentials), but they do it in fundamentally different ways. You should choose one path and stick to it - don't mix them for the same application.
 
 ```text
               IRSA Architecture                   Pod Identity Architecture

@@ -1,5 +1,5 @@
 ---
-title: "Multi-Region Cloud Training: Chaos Testing"
+title: "Chapter 8: Multi-Region Cloud Training - Chaos Testing"
 date: 2025-10-17T09:17:00-07:00
 draft: false
 aliases:

@@ -1,5 +1,5 @@
 ---
-title: "Multi-Region Cloud Training: GitOps with Argo CD"
+title: "Chapter 2: Multi-Region Cloud Training - GitOps with Argo CD"
 date: 2025-10-17T09:11:00-07:00
 draft: false
 aliases:

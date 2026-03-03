@@ -12,7 +12,7 @@
     <language>en</language>
     <lastBuildDate>Thu, 15 Jan 2026 01:53:23 +0100</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Multi-Region Cloud Training: Progressive Delivery with Argo Rollouts</title>
+      <title>Chapter 7.1: Multi-Region Cloud Training - Progressive Delivery with Argo Rollouts</title>
       <link>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</link>
       <pubDate>Sun, 19 Oct 2025 10:45:00 -0700</pubDate>
       
@@ -22,7 +22,7 @@ We want an automated controller that says: &amp;ldquo;Deploy the new version, se
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: Chaos Testing</title>
+      <title>Chapter 8: Multi-Region Cloud Training - Chaos Testing</title>
       <link>https://memo.mx/posts/multi-region-series-part-8-chaos/</link>
       <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
       
@@ -33,7 +33,7 @@ To do this, we&amp;rsquo;ll use Chaos Mesh, a powerful Kubernetes-native chaos e
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: Load Generation and SLOs</title>
+      <title>Chapter 9: Multi-Region Cloud Training - Load Generation and SLOs</title>
       <link>https://memo.mx/posts/multi-region-series-part-9-load/</link>
       <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
       
@@ -44,7 +44,7 @@ Instead of running a load testing tool from our laptops (which introduces intern
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: CD with Istio Traffic Policy</title>
+      <title>Chapter 7: Multi-Region Cloud Training - CD with Istio Traffic Policy</title>
       <link>https://memo.mx/posts/multi-region-series-part-7-cd/</link>
       <pubDate>Fri, 17 Oct 2025 09:16:00 -0700</pubDate>
       
@@ -55,7 +55,7 @@ Since we already have Istio installed for our cross-cluster mesh, we can leverag
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: CI with GitHub Actions</title>
+      <title>Chapter 6: Multi-Region Cloud Training - CI with GitHub Actions</title>
       <link>https://memo.mx/posts/multi-region-series-part-6-ci/</link>
       <pubDate>Fri, 17 Oct 2025 09:15:00 -0700</pubDate>
       
@@ -66,7 +66,7 @@ Instead, we want our Continuous Integration (CI) system to handle the build, and
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: Sample App and Overlays</title>
+      <title>Chapter 5: Multi-Region Cloud Training - Sample App and Overlays</title>
       <link>https://memo.mx/posts/multi-region-series-part-5-app/</link>
       <pubDate>Fri, 17 Oct 2025 09:14:00 -0700</pubDate>
       
@@ -77,17 +77,17 @@ Copying and pasting the entire Deployment.</description>
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: AWS Identity (IRSA vs Pod Identity)</title>
+      <title>Chapter 4: Multi-Region Cloud Training - AWS Identity (IRSA vs Pod Identity)</title>
       <link>https://memo.mx/posts/multi-region-series-part-4-identity/</link>
       <pubDate>Fri, 17 Oct 2025 09:13:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-4-identity/</guid>
-      <description>When your applications run in Kubernetes, they eventually need to talk to cloud services—reading from an S3 bucket, publishing to an SNS topic, or querying DynamoDB.
+      <description>When your applications run in Kubernetes, they eventually need to talk to cloud services - reading from an S3 bucket, publishing to an SNS topic, or querying DynamoDB.
 The absolute worst way to do this is by hardcoding AWS Access Keys into your application&amp;rsquo;s environment variables or secrets. It&amp;rsquo;s a massive security vulnerability waiting to happen. The slightly less terrible way is assigning an IAM role to the underlying EC2 worker nodes, but that breaks the principle of least privilege (every pod on that node gets the same permissions).</description>
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: Istio Multi-Region Mesh</title>
+      <title>Chapter 3: Multi-Region Cloud Training - Istio Multi-Region Mesh</title>
       <link>https://memo.mx/posts/multi-region-series-part-3-istio/</link>
       <pubDate>Fri, 17 Oct 2025 09:12:00 -0700</pubDate>
       
@@ -97,7 +97,7 @@ We could expose everything to the public internet via Ingress, but that&amp;rsqu
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: GitOps with Argo CD</title>
+      <title>Chapter 2: Multi-Region Cloud Training - GitOps with Argo CD</title>
       <link>https://memo.mx/posts/multi-region-series-part-2-argocd/</link>
       <pubDate>Fri, 17 Oct 2025 09:11:00 -0700</pubDate>
       
@@ -107,12 +107,12 @@ The solution is GitOps. We want our GitHub repository to be the absolute single 
     </item>
     
     <item>
-      <title>Multi-Region Cloud Training: Building the Baseline</title>
+      <title>Chapter 1: Multi-Region Cloud Training - Building the Baseline</title>
       <link>https://memo.mx/posts/multi-region-series-part-1-baseline/</link>
       <pubDate>Fri, 17 Oct 2025 09:10:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-1-baseline/</guid>
-      <description>Building systems across multiple regions is notoriously difficult. You have to navigate latency, configuration drift, and complex networking topologies. Before we dive into the fun stuff—like GitOps with Argo CD or cross-cluster routing with Istio—we need to establish a rock-solid foundation.
+      <description>Building systems across multiple regions is notoriously difficult. You have to navigate latency, configuration drift, and complex networking topologies. Before we dive into the fun stuff - like GitOps with Argo CD or cross-cluster routing with Istio - we need to establish a rock-solid foundation.
 In this lab series, we&amp;rsquo;re going to build a realistic multi-region deployment from the ground up.
 A quick note on cost: Running a true multi-region architecture in AWS just for a training lab can get expensive quickly.</description>
     </item>
@@ -244,7 +244,7 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
       <description>Think of a network as a building full of rooms, doors, and hallways. You move information the same way you&amp;rsquo;d move letters and packages between apartments.
 License: CC BY-NC-ND 4.0
-Preface: For a Younger Version of Myself This book is for a less handsome version of myself: the university student who could write decent code but went blank the moment someone mentioned &amp;ldquo;subnet masks&amp;rdquo; or &amp;ldquo;routing tables.&amp;rdquo; If that sounds familiar, you are not behind.</description>
+Preface: For a Younger Version of Myself This book is for the younger, slightly less handsome version of myself who struggled doing subnetting in my networking classes. I remember spending a lot of time trying to imagine how those &amp;ldquo;network configurations&amp;rdquo; look in real time—where they actually &amp;ldquo;live&amp;rdquo; and how that mythical network packet moves through the network.</description>
     </item>
     
     <item>
@@ -745,6 +745,7 @@ If you find anything useful, please どうぞ! License
 DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (C) Guillermo Ramirez Garcia &amp;lt;root@memo.mx&amp;gt; Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed. DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 0.</description>
     </item>
     
+    
     <item>
       <title>Books</title>
       <link>https://memo.mx/books/</link>
@@ -763,6 +764,7 @@ Understanding Computer Networks by Analogy: Part 1 `</description>
       <guid>https://memo.mx/labs/</guid>
       <description>Hands-on training guides.</description>
     </item>
+    
     
   </channel>
 </rss>

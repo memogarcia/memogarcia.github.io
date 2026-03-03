@@ -1,5 +1,5 @@
 ---
-title: "Multi-Region Cloud Training: Progressive Delivery with Argo Rollouts"
+title: "Chapter 7.1: Multi-Region Cloud Training - Progressive Delivery with Argo Rollouts"
 date: 2025-10-19T10:45:00-07:00
 draft: false
 aliases:

@@ -1,5 +1,5 @@
 ---
-title: "Multi-Region Cloud Training: CD with Istio Traffic Policy"
+title: "Chapter 7: Multi-Region Cloud Training - CD with Istio Traffic Policy"
 date: 2025-10-17T09:16:00-07:00
 draft: false
 aliases:
@@ -34,7 +34,7 @@ In Kubernetes, a standard `Service` uses random round-robin load balancing acros
 
 The `DestinationRule` is where we define our subsets (versions) and apply resilience policies. 
 
-One of the most dangerous things in a microservice architecture is a "retry storm"—when a downstream service slows down, upstream services retry aggressively, overwhelming the system and causing a cascading outage. We can prevent this with Istio's connection pooling and outlier detection.
+One of the most dangerous things in a microservice architecture is a "retry storm" - when a downstream service slows down, upstream services retry aggressively, overwhelming the system and causing a cascading outage. We can prevent this with Istio's connection pooling and outlier detection.
 
 ```yaml
 # deploy/base/echo/dr.yaml
@@ -107,6 +107,6 @@ while true; do curl -sS http://echo.echo.svc.cluster.local; sleep 0.1; done
 
 You should see that roughly 1 out of every 10 requests is handled by the `v2` pods. 
 
-While we can manually adjust these weights by committing changes to Git, doing this by hand for every release is tedious and error-prone. In the next section, we'll automate this entire process—the deployment, the traffic shift, the analysis, and the rollback—using Argo Rollouts.
+While we can manually adjust these weights by committing changes to Git, doing this by hand for every release is tedious and error-prone. In the next section, we'll automate this entire process - the deployment, the traffic shift, the analysis, and the rollback - using Argo Rollouts.
 
 [Previous: Part 6](/posts/multi-region-series-part-6-ci/) · [Continue to Part 7.1: Progressive Delivery with Argo Rollouts](/posts/multi-region-series-part-7a-rollouts/)

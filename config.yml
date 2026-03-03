@@ -8,7 +8,6 @@ themesDir: themes
 enableGitInfo: true
 
 # Analytics
-googleAnalytics: "G-ZRB1GGCC9B"
 
 # Features
 enableInlineShortcodes: true
@@ -65,6 +64,7 @@ outputs:
   home:
     - HTML
     - RSS
+    - JSON
 
 # Taxonomies
 taxonomies:
@@ -120,13 +120,6 @@ params:
   ShowToc: true
   # comments: false
 
-  # Favicon
-  favicon: "/favicon.ico"
-  favicon16x16: "/favicon-16x16.png"
-  favicon32x32: "/favicon-32x32.png"
-  apple_touch_icon: "/apple-touch-icon.png"
-  safari_pinned_tab: "/safari-pinned-tab.svg"
-  
   homeInfoParams:
     Title: "いらしゃいませい"
     Content: >
@@ -162,9 +155,12 @@ params:
 
   assets:
     disableHLJS: true
-    # Update theme colors to match cyberpunk palette
-    theme_color: "#0d0221"
-    msapplication_TileColor: "#0d0221"
+    # Favicon
+    favicon: "/favicon.ico"
+    favicon16x16: "/favicon-16x16.png"
+    favicon32x32: "/favicon-32x32.png"
+    apple_touch_icon: "/apple-touch-icon.png"
+    safari_pinned_tab: "/safari-pinned-tab.svg"
 
 markup:
   defaultMarkdownHandler: goldmark
