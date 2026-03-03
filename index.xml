@@ -22,6 +22,18 @@ We want an automated controller that says: &amp;ldquo;Deploy the new version, se
     </item>
     
     <item>
+      <title>Understanding Computer Networks by Analogy: Part 2 - Cities as the Internet</title>
+      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
+      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
+      <description>Think of the internet as a city full of buildings and streets. Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
+License: CC BY-NC-ND 4.0
+Part Two: Cities as the Internet I have a confession to make: I spent the first five years of my career thinking the internet was basically magic sprinkled on copper wires.
+Not the helpful kind of magic, either.</description>
+    </item>
+    
+    <item>
       <title>Chapter 8: Multi-Region Cloud Training - Chaos Testing</title>
       <link>https://memo.mx/posts/multi-region-series-part-8-chaos/</link>
       <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
