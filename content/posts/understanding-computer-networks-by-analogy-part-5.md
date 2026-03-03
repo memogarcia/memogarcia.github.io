@@ -22,7 +22,7 @@ It is time to open the terminal.
 
 This chapter contains hands-on exercises you can run directly from your laptop right now. You aren't just going to read about it; you are going to physically watch a MAC address get discovered, trace a packet as it jumps between cities, and manually construct the two ends of a socket connection. 
 
-You don't need a cloud account for the first section. We are going to rely entirely on the native, ancient tools built into every single operating system. 
+You don't need a cloud account for the first section. We are going to rely mostly on native, ancient tools that ship with your OS. A few labs use common extras like Python, OpenSSL, and netcat; if you don't have them installed, skip that lab or install the tool and come back. 
 
 Some of these commands will work perfectly on the first try. Others will inevitably hang, timeout, or fail because of a strict firewall on your corporate Wi-Fi or a weird router configuration in your apartment. When that happens, don’t immediately Google the error code. Lean on the mental model. Ask yourself: *Did the envelope even make it to the lobby? Did the concierge know the route? Is the bouncer actively rejecting me, or is the mail slot just glued shut?*
 
@@ -46,12 +46,12 @@ Now, let's throw a basic envelope at that building to see if anyone is home:
 
 `ping` literally just hurls an ICMP echo request (a very specific type of envelope) at the destination and waits for them to throw one back. The output shows you the exact round-trip time in milliseconds. If you see "Request timeout," it means the envelope got lost on the streets, or a firewall bouncer at the destination just threw it in the trash without telling you.
 
-Finally, let's map the exact route the envelope took:
+Finally, let's map the route the envelope took:
 - **macOS:** `traceroute google.com`
 - **Linux:** `traceroute -n google.com`
 - **Windows:** `tracert google.com`
 
-Every single line that prints out is a different router (concierge) touching your envelope. You are watching the packet jump from your local floor, to your ISP, to a major internet backbone, all the way to Google's front door. If you ever have a network outage, `traceroute` tells you exactly which concierge dropped the ball.
+Each line that prints out is a hop where some router (concierge) handled your envelope and sent back a receipt. You are watching the packet jump from your local floor, to your ISP, to a major internet backbone, all the way to Google's front door. In a real outage, `traceroute` can't always prove exactly who is at fault (some devices simply don't reply), but it often shows you where the path starts failing.
 
 ---
 
@@ -81,7 +81,7 @@ Let's force it to learn a new one. Find another device on your local Wi-Fi (like
 
 By running that command, your computer just shouted down the wireless hallway: *"Who has this IP? Tell me your MAC address right now!"* Your phone heard it and replied.
 
-Run `arp -a` again. You should see a brand new entry in the notebook. This shouting match is constantly happening in the background of every network on earth; you just forced it to happen on command.
+Run `arp -a` again. You should see a brand new entry in the notebook. (Even if the ping times out, ARP might still succeed, because the MAC lookup happens before the ICMP packet can be delivered.) This shouting match is constantly happening in the background of every network on earth; you just forced it to happen on command.
 
 ---
 
@@ -90,18 +90,21 @@ Run `arp -a` again. You should see a brand new entry in the notebook. This shout
 In Chapter 6, we talked about ports acting as mail slots on a door. Port 80 is for regular web traffic, and Port 443 is for secure HTTPS traffic. Let's actually cut a new mail slot into your computer's door and watch traffic flow through it.
 
 If you have Python installed, open your terminal and run this:
-`python3 -m http.server 8000`
+- **macOS / Linux:** `python3 -m http.server 8000`
+- **Windows:** `py -m http.server 8000` (or `python -m http.server 8000`)
 
 You just opened mail slot 8000 on your laptop and put a tiny Python web server there, sitting in a chair, waiting for envelopes. 
 
 Now, open a *second* terminal window and send an envelope to that exact slot:
-`curl http://127.0.0.1:8000`
+- **macOS / Linux:** `curl http://127.0.0.1:8000`
+- **Windows (PowerShell):** `curl.exe http://127.0.0.1:8000`
+- **Windows (PowerShell alt):** `Invoke-WebRequest http://127.0.0.1:8000 | Select-Object -Expand Content`
 
 The `curl` command writes an HTTP request, addresses it to `127.0.0.1` (the universal, undeniable IP address for "myself"), and shoves it into slot 8000. 
 
 Notice what is happening here: because the destination is your own room, the envelope never actually enters the hallway. It never touches your physical Wi-Fi card or Ethernet port. It is the networking equivalent of passing a note from your left hand to your right hand. Your Python server receives it, processes it, and hands the HTML response right back. 
 
-*Bonus:* Find your actual LAN IP address from Lab 2. Leave the Python server running, pick up your phone (connected to the same Wi-Fi), and type `http://[your-lan-ip]:8000` into your mobile browser. You just sent an envelope across the physical hallway of your house. 
+*Bonus:* Find your actual LAN IP address from Lab 2. Leave the Python server running, pick up your phone (connected to the same Wi-Fi), and type `http://[your-lan-ip]:8000` into your mobile browser. You just sent an envelope across the physical hallway of your house. (On Windows, your firewall might block inbound connections until you allow Python through.)
 
 ---
 
@@ -110,16 +113,17 @@ Notice what is happening here: because the destination is your own room, the env
 A TCP conversation always requires two mail slots: a permanent one on the server, and a temporary (ephemeral) one on your computer to receive the reply. Let's watch this happen in real time.
 
 In your terminal, start a connection to a website that stays open for a second:
-`curl -I https://google.com`
+- **macOS / Linux:** `curl -I https://google.com`
+- **Windows (PowerShell):** `curl.exe -I https://google.com`
 
 Right after you run that (or while it's running if you download a large file), we can inspect all the open mail slots on your machine.
-- **Linux:** `ss -tnp | head`
+- **Linux:** `ss -tn | head` (add `-p` if you want process names and you have permission)
 - **macOS:** `netstat -anp tcp | head`
-- **Windows:** `netstat -ano | find ":443"`
+- **Windows:** `netstat -ano | findstr ":443"`
 
 Look through the output for the connection to `google.com`. You will see two port numbers for that single connection:
 1. **The Remote Port (443):** This is the permanent, well-known mail slot on Google's server reserved specifically for encrypted web traffic.
-2. **The Local Port (e.g., 54321):** This is the temporary burner phone your operating system randomly assigned to `curl`. When the command finishes, the OS immediately destroys that slot so it can be reused. This is exactly how you can have fifty Chrome tabs open without the responses getting jumbled.
+2. **The Local Port (e.g., 54321):** This is the temporary burner phone your operating system assigned to `curl`. When the connection is done, the OS eventually recycles that slot so it can be reused. This is how you can have a ton of simultaneous connections open without responses getting jumbled.
 
 ---
 
@@ -135,7 +139,9 @@ In the first window, open a **TCP** listener on port 9999:
 In the second window, connect to it as a client:
 `nc 127.0.0.1 9999`
 
-Type a message in the client window and hit Enter. It instantly appears in the server window. This is TCP. The two windows performed a formal three-way handshake before you even typed a single character. They confirmed both parties were ready, and TCP is mathematically guaranteeing that your text is delivered. If you go to the server window and kill it (`Ctrl-C`), the client window immediately crashes because it knows the connection dropped.
+*(If `nc -l 9999` fails on your system, try `nc -l -p 9999`. Netcat flag syntax varies a bit across OSes.)*
+
+Type a message in the client window and hit Enter. It instantly appears in the server window. This is TCP. The two windows performed a formal three-way handshake before you even typed a single character. They confirmed both parties were ready, and TCP is guaranteeing that your text is delivered in order. If you go to the server window and kill it (`Ctrl-C`), the client will notice the connection dropped (sometimes immediately, sometimes on the next send) because TCP tracks connection state.
 
 Now, let's try **UDP**.
 In the first window, start a UDP listener on port 9998:
@@ -148,7 +154,7 @@ Type a message. It still appears on the other side, but notice there was no conn
 
 Here is the kicker: go to the first window (the server) and kill it with `Ctrl-C`. Now go back to the client window and keep typing messages. Hit enter. Type another one. Hit enter. 
 
-The client will happily keep sending them into the absolute void, completely unaware that nobody is listening on the other side. UDP does not give a damn. It just throws the postcards out the window at forty miles an hour and keeps driving.
+The client will usually keep sending them into the void because UDP doesn't maintain a connection state. Depending on your OS and the network, you might also see an ICMP error (like "port unreachable") show up after you send to a closed port. Either way, UDP doesn't give you the same "the other side is gone" certainty that TCP does.
 
 ---
 
@@ -159,9 +165,10 @@ In Chapter 15, we talked about the TLS handshake, where a server presents a math
 Let's stop trusting the browser to hide this and demand to see those credentials ourselves. 
 
 Run this command in your terminal:
-`openssl s_client -connect google.com:443 -servername google.com -showcerts < /dev/null`
+- **macOS / Linux:** `openssl s_client -connect google.com:443 -servername google.com -showcerts < /dev/null`
+- **Windows:** `openssl s_client -connect google.com:443 -servername google.com -showcerts` (then hit `Ctrl-C` after the handshake)
 
-This command initiates a TLS connection, forces the server to hand over its passport, dumps the raw diplomatic credentials to your screen, and immediately hangs up. 
+This command initiates a TLS connection, forces the server to hand over its passport, dumps the raw diplomatic credentials to your screen, and then hangs up.
 
 Look through the wall of text for these key pieces of data:
 - **Subject:** This is who the certificate belongs to (the server claiming to be `google.com`).
@@ -172,20 +179,23 @@ Look through the wall of text for these key pieces of data:
 
 ### Lab 8: Timing the City Directory (DNS Caching)
 
-Every new connection starts with a lookup in the city directory, and this takes actual, physical time. When a website feels "sluggish," it is often just a slow DNS server struggling to find the address.
+Most new connections that start from a hostname begin with a lookup in the city directory (DNS). Sometimes the answer is already cached; sometimes it isn't. Either way, DNS lookup takes real time, and when a website feels "sluggish," it can be a slow resolver struggling to find the address.
 
 Let's time a lookup:
-`dig github.com`
+- **macOS / Linux:** `dig github.com`
+- **Windows (PowerShell):** `Measure-Command { Resolve-DnsName github.com }` (or `Measure-Command { nslookup github.com }`)
 
-Look at the bottom of the output for the `Query time`. It might be 40, 50, or even 100 milliseconds. That is how long it took your computer to ask your ISP's DNS server, wait for it to check the global root servers, and report back. 
+Look at the bottom of the output for the `Query time` (or in PowerShell, look at `TotalMilliseconds`). That is how long it took your computer to ask the DNS resolver you’re using (often your router or ISP) and get an answer back. If the resolver didn’t already have the answer cached, *it* may have had to go ask upstream DNS servers (root/TLD/authoritative) before it could reply.
 
 Now run the exact same command again:
-`dig github.com`
+- **macOS / Linux:** `dig github.com`
+- **Windows (PowerShell):** `Measure-Command { Resolve-DnsName github.com }` (or `Measure-Command { nslookup github.com }`)
 
-The `Query time` should plummet to 0 or 1 millisecond. Your operating system (or your local router) wrote the answer down in its local cache. It didn't even bother asking the internet. 
+If the resolver you're querying has the answer cached (often your router or ISP), the `Query time` will usually drop noticeably on the second run. It still includes the round-trip time to that resolver, so don’t expect zero unless your resolver is on your local network.
 
 If you are ever diagnosing a weird network outage where some sites load perfectly and others just spin forever, manually swapping the DNS server is usually the fastest way to prove it is a directory problem, not a physical network break. You can force `dig` to ask Google's public directory instead of your default one:
-`dig @8.8.8.8 github.com`
+- **macOS / Linux:** `dig @8.8.8.8 github.com`
+- **Windows:** `Resolve-DnsName github.com -Server 8.8.8.8` (or `nslookup github.com 8.8.8.8`)
 
 ---
 
@@ -195,7 +205,8 @@ When a user complains that an API is slow, the backend developers immediately bl
 
 `curl` has an incredibly powerful, rarely-used feature for dissecting this exact timeline:
 
-`curl -o /dev/null -s -w "dns=%{time_namelookup} connect=%{time_connect} tls=%{time_appconnect} ttfb=%{time_starttransfer} total=%{time_total}\n" https://google.com`
+- **macOS / Linux:** `curl -o /dev/null -s -w "dns=%{time_namelookup} connect=%{time_connect} tls=%{time_appconnect} ttfb=%{time_starttransfer} total=%{time_total}\n" https://google.com`
+- **Windows (PowerShell):** `curl.exe -o NUL -s -w "dns=%{time_namelookup} connect=%{time_connect} tls=%{time_appconnect} ttfb=%{time_starttransfer} total=%{time_total}\n" https://google.com`
 
 This command throws away the actual webpage payload (`-o /dev/null`) and instead prints out a cumulative timeline of the request in seconds.
 - **dns:** How long it took to read the city directory.
@@ -215,16 +226,18 @@ Every lab so far has been a static test. You throw an envelope and check the rec
 
 *(Warning: this requires admin privileges and will immediately print a massive, terrifying wall of text. Hit `Ctrl-C` to make it stop).*
 
-- **macOS / Linux:** `sudo tcpdump -i any -n`
+- **Linux:** `sudo tcpdump -i any -n`
+- **macOS:** `sudo tcpdump -i en0 -n` (or `en1` if you’re on Wi-Fi)
+- **Windows:** Use Wireshark, or `pktmon` if you want to stay in the terminal.
 
 You are looking at absolute chaos. ARP requests shouting into the void, background applications calling home to AWS, random broadcast packets from your smart TV. This is the background noise of the city.
 
 You can filter the noise to only watch specific mail slots. Let's only watch DNS lookups:
-`sudo tcpdump -i any -n port 53`
+`sudo tcpdump -i any -n port 53` (Linux) or `sudo tcpdump -i en0 -n port 53` (macOS)
 
 Open a new terminal tab and run `ping netflix.com`. Look back at the `tcpdump` window. You will see the exact millisecond the DNS request leaves your machine, and the exact millisecond the answer comes back. 
 
-Being able to read `tcpdump` output is the difference between guessing why a connection is failing and knowing exactly which router dropped the ball.
+Being able to read `tcpdump` output is the difference between guessing why a connection is failing and proving whether the envelopes are leaving your door, whether replies are coming back, and what kind of traffic is actually on the wire.
 
 ---
 

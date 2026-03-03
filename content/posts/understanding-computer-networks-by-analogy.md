@@ -45,9 +45,9 @@ Your network interface is your door. An Ethernet port is a door. A Wi-Fi card is
 
 Every door has two critical labels that dictate how mail gets delivered.
 
-The first label is literally stamped into the metal of the doorknob at the factory. This is your MAC address (Media Access Control). It’s a permanent 48-bit serial number (like `AA:BB:CC:11:22:33`). This makes your specific piece of hardware globally unique. MAC addresses are strictly for local, floor-level deliveries. If your neighbor wants to slide a note under your door, they look for that factory stamp to verify they have the right place.
+The first label is literally stamped into the metal of the doorknob at the factory. This is your MAC address (Media Access Control). It’s typically a 48-bit identifier (like `AA:BB:CC:11:22:33`) used for local, floor-level deliveries inside a single Layer-2 network. It’s meant to be unique, but it can be spoofed, virtualized, or randomized (especially on Wi-Fi), so don’t treat it as a sacred, unchangeable ID. If your neighbor wants to slide a note under your door, they look for that label to verify they have the right place.
 
-The second label is the cheap plastic placard screwed into the wall next to the door. This is your IP address (like `192.168.1.101`). Unlike the permanent doorknob stamp, this placard is temporary and situational. It tells the delivery drivers exactly where you fit into the building's current floor plan. If you take your laptop to a coffee shop, your MAC address stays exactly the same, but the coffee shop network hands you a brand-new IP placard that fits their building.
+The second label is the cheap plastic placard screwed into the wall next to the door. This is your IP address (like `192.168.1.101`). Unlike the MAC label, this placard is temporary and situational. It tells the delivery drivers exactly where you fit into the building's current floor plan. If you take your laptop to a coffee shop, you’ll usually get a brand-new IP placard that fits their building.
 
 When two devices on the same floor need to talk, they just figure out each other's MAC addresses and send the data directly. It's fast, and it never leaves the building. But to understand how that actually happens, we need to talk about the hallways.
 
@@ -69,7 +69,7 @@ We measure these connections with two metrics: bandwidth and latency.
 
 Bandwidth is how wide the tube is. It dictates how much data you can jam through it at the exact same moment. A 10 Gbps fiber link is a massive ten-lane highway compared to a narrow 100 Mbps dirt road. 
 
-Latency is how long the tube is. It measures how long it takes for a single piece of data to travel from point A to point B. A latency of 10 milliseconds means a packet gets there almost instantly. You can easily have massive bandwidth but terrible latency—meaning you can send a ton of data, but it takes forever to actually arrive.
+Latency is how long the tube is. It measures how long it takes for a single piece of data to travel from point A to point B. A latency of 10 milliseconds means a packet gets there almost instantly. You can have a tube that is incredibly wide (high bandwidth) but incredibly long (high latency): once you start streaming, you can move a ton per second, but the first drop still takes a while to reach the other end.
 
 ---
 
@@ -103,7 +103,7 @@ You are in room 10-101 and you need to send a file to your coworker in room 10-1
 
 Your computer checks the subnet mask. Oh hey, `192.168.10.115` is on the same floor. Local delivery. 
 
-To physically send the data, your computer needs their permanent MAC address. So, your computer sends a broadcast message yelling to the entire floor: *"Who has IP address `192.168.10.115`? What is your MAC address?"* 
+To physically send the data, your computer needs their MAC address. So, your computer sends a broadcast message yelling to the entire floor: *"Who has IP address `192.168.10.115`? What is your MAC address?"* 
 
 This obnoxious yelling is an ARP request (Address Resolution Protocol). Everyone on the floor hears it and ignores it, except your coworker in 10-115, who yells back: *"That's me! My MAC address is `AA:BB:CC:DD:EE:FF`."* Your computer hastily writes this down in its ARP table so it doesn't have to yell next time.
 

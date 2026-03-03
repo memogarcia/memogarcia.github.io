@@ -85,7 +85,7 @@ When your browser connects to a web server, it creates a pair of sockets. The se
 
 But your laptop needs a return address, so it assigns itself a temporary port from a high range (like 54321). This is an ephemeral port. Think of it as a cheap burner phone you bought just for this one conversation. The exchange happens between your burner phone and the server's main line. 
 
-This is exactly how your browser handles fifty Chrome tabs open at once. Each tab gets its own burner phone (ephemeral port). When the web server replies, your OS looks at the port number and knows exactly which tab requested the image and which requested the CSS. Close the tab, throw the burner phone in the trash. 
+This is how your OS keeps a bunch of simultaneous conversations straight. Whether it's fifty browser tabs, a package manager downloading updates, and Slack phoning home, each outgoing connection gets its own burner phone (ephemeral port). When the web server replies, your OS looks at the port numbers and knows exactly which connection gets the data. When the connection is done, the OS throws that burner phone in the trash so it can reuse the number later. 
 
 ### The Matryoshka Doll of Envelopes
 
@@ -93,7 +93,7 @@ Your message doesn't travel in a single envelope. It's encapsulated—stuffed in
 
 When you load a web page, your browser writes an HTTP request. The OS stuffs it into a TCP segment (the first envelope), which adds the source and destination port numbers. 
 
-Then, the OS stuffs that TCP segment inside an IP packet (the second envelope). This adds the source and destination IP addresses and the TTL counter. Routers only look at this IP envelope; they don't give a damn about the TCP ports inside.
+Then, the OS stuffs that TCP segment inside an IP packet (the second envelope). This adds the source and destination IP addresses and the TTL counter. Routers on the open internet forward traffic based on this IP envelope; most of the time they don't care about the TCP ports inside (though middleboxes like firewalls, NATs, and load balancers absolutely can).
 
 Finally, to get the packet out of your physical door and to the local switch, your network card stuffs the IP packet into an Ethernet frame (the shipping box). This adds the local MAC addresses. 
 
@@ -123,7 +123,7 @@ This reliability costs time. But for loading a webpage or querying a database, i
 
 UDP doesn't care about handshakes. No acknowledgments, no sequence numbers, no flow control. It takes your datagram, throws it at the IP address, and immediately moves on. 
 
-We use UDP when being fast and fresh is infinitely more important than being complete. Think of a multiplayer first-person shooter. If the server drops a packet showing your opponent's location from 500 milliseconds ago, you do not want it later. You want their *current* location in the very next packet. Old data is useless data. The application just drops the corrupted frame and keeps moving.
+We use UDP when being fast and fresh is infinitely more important than being complete. Think of a multiplayer first-person shooter. If a packet showing your opponent's location from 500 milliseconds ago shows up late, you do not want it. You want their *current* location in the very next packet. Old data is useless data. The application just drops the stale update and keeps moving.
 
 ---
 
@@ -131,7 +131,7 @@ We use UDP when being fast and fresh is infinitely more important than being com
 
 We have routers moving envelopes and TCP/UDP handling delivery. But there is a massive problem: you know your friend's name, but you don't know her street address. 
 
-When you type `github.com` into your browser, the router has absolutely no idea what to do with that. Routers only read IP addresses. You know the name of the building, but you don't have its map coordinates.
+When you type `github.com` into your browser, your router never even sees that name. It only ever sees IP addresses on the envelopes it forwards. You know the name of the building, but you don't have its map coordinates.
 
 This is why the city has a directory: DNS (Domain Name System). 
 
@@ -139,15 +139,19 @@ DNS is the internet's phonebook. It translates names that human brains can remem
 
 When your browser asks, "Where is github.com?", it doesn't query one massive database. DNS is a distributed, hierarchical system of delegation.
 
-Your computer asks the root servers. The root servers say, "I don't know, but here is the server in charge of all `.com` domains. Go ask them."
-You ask the `.com` TLD server. It says, "I don't know the exact IP, but GitHub registered that name. Here is GitHub's authoritative server. Go ask them."
-Finally, you ask GitHub's server: "What is the IP for `github.com`?" It hands you an A Record (the IP address). You cache it locally, and the connection begins. 
+Your computer usually doesn't talk to the root servers directly. It asks a **recursive resolver** (often your router, your ISP, or your company's DNS server). If the resolver doesn't already have the answer cached, *it* does the legwork:
+
+It asks the root servers: "Who handles `.com`?" The root servers reply with the `.com` servers.
+It asks a `.com` TLD server: "Who handles `github.com`?" The TLD server replies with GitHub's authoritative DNS servers.
+Finally, it asks GitHub's authoritative server: "What is the IP for `github.com`?" It returns records (often an A record for IPv4 and/or an AAAA record for IPv6, sometimes via CNAMEs). The resolver caches the answer, your machine caches it too, and the connection begins.
 
 ### Why It's Always DNS
 
 There's a reason we joke that "It's always DNS." When DNS breaks, the internet doesn't technically go down—it just becomes unusable for humans. If a DNS server crashes, you could still reach the server by typing its IP address into your browser... but no one remembers the IP address.
 
-DNS relies heavily on caching. Every record has a TTL. If the TTL is 24 hours, the internet aggressively caches the IP address. This makes the web incredibly fast, but if you suddenly have to migrate your website to a new server with a new IP, you're screwed. You have to wait a full 24 hours for the entire world's caches to expire and look up the new address. 
+DNS relies heavily on caching. Every record has a TTL, which is basically "how long are caches allowed to remember this answer?"
+
+If the TTL is 24 hours, resolvers are allowed to keep serving the old IP for up to 24 hours after you change it. That makes the web fast, but it makes migrations annoying. The practical move is to lower the TTL *before* a planned cutover so caches age out quickly, then raise it again afterward. Even then, some caches behave badly or have their own minimums, so expect a messy tail.
 
 The city is chaotic, but it has rules. Envelopes go to concierges. Binders dictate routes. Packets move hop by hop. 
 

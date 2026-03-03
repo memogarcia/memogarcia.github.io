@@ -4,7 +4,7 @@ date: 2025-10-18T22:39:16+09:00
 draft: true
 ---
 
-> Think of the cloud as a hotel: you rent a private floor, connect to the rest of the city through controlled doors, and use badges to decide who can go where.
+> Think of the cloud as a hotel: you rent a private tower, connect to the rest of the city through controlled doors, and use badges to decide who can go where.
 
 License: CC BY-NC-ND 4.0
 
@@ -26,7 +26,7 @@ Instead of buying a building, you rent a private tower within their massive hote
 
 This trade-off is the entire point of cloud computing. You lose the ability to physically inspect the router or design the electrical grid, but within your rented tower, you have complete software-defined autonomy to build the network however you want.
 
-## Chapter 11: Designing Your Floors (VPCs)
+## Chapter 11: Designing Your Tower (VPCs)
 
 When you check into this cloud hotel, they don't just scatter your servers across random rooms next to strangers. They hand you a logically isolated environment. 
 
@@ -42,7 +42,7 @@ Then, you build a private floor higher up (e.g., `10.0.10.0/24`). This is where 
 
 Here is where the physical analogy bends, but in a way that saves your job. Because cloud providers operate at an absurd scale, they don't want a single power outage or flood to take down your entire tower. So they divide their geographical regions into **Availability Zones (AZs)**. An AZ is a completely separate physical data center located miles away from the others, with an independent power grid and flood plain. 
 
-When you design your VPC, you aren't just building floors in a single physical building; you are effortlessly stretching your logical tower across multiple Availability Zones. You can put your primary database on the private floor in AZ-A, and a replica on the exact same private floor over in AZ-B. To your application, it just looks like they are down the hall from each other. If a tornado rips the roof off AZ-A, your private floor continues operating seamlessly in AZ-B. You just let the cloud provider worry about replacing the wet carpets.
+When you design your VPC, you aren't just building floors in a single physical building; you are designing a logical tower that can span multiple Availability Zones. In many clouds (including AWS), each subnet (each "floor") lives inside one specific AZ, so you usually create matching public/private floors in each zone. You can put your primary database on the private floor in AZ-A, and a replica on a corresponding private floor in AZ-B. To your application, it can feel like they are down the hall from each other, but physically they are in separate buildings connected by the hotel's fiber. If a tornado rips the roof off AZ-A, your system can fail over to AZ-B while you let the cloud provider worry about replacing the wet carpets.
 
 ---
 
@@ -74,7 +74,7 @@ The stupid way to do this is to send your data out the staff exit (NAT Gateway),
 
 Instead, you install **VPC Endpoints**. 
 
-These are like secret, private service tunnels connecting your specific tower directly to the hotel's internal amenities. Traffic never touches the public internet. It stays entirely within the provider's private, insanely fast fiber network, making it more secure and completely avoiding those outbound data charges. 
+These are like secret, private service tunnels connecting your specific tower directly to the hotel's internal amenities. Traffic never touches the public internet. It stays within the provider's private, insanely fast network, making it more secure and often avoiding internet egress charges (though the endpoint itself can have its own cost). 
 
 ---
 
