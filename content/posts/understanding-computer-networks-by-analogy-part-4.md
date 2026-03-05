@@ -4,7 +4,7 @@ date: 2025-10-18T22:39:16+09:00
 draft: true
 ---
 
-> Networking at scale looks complex, but it still comes down to the same questions: who am I talking to, which path am I using, and what are the rules of the conversation?
+> Networking at scale still comes back to the same questions: who is talking, which path is in use, and what rules shape the exchange.
 
 License: CC BY-NC-ND 4.0
 
@@ -12,132 +12,205 @@ License: CC BY-NC-ND 4.0
 
 # Part Four: Advanced Architectures
 
-## From Hotel Halls to Open Air
+The earlier parts gave you a stable map: rooms, floors, buildings, streets, towers, and gateways.
 
-So you've designed your cloud hotel tower. You have public and private floors, you've controlled the doors to the outside world, and your IAM badge system is perfectly dialed in. Your infrastructure is humming along nicely. 
+That map is still useful, but real systems add complications that do not fit neatly into straight hallways:
 
-I used to think getting that architecture right was the finish line. Then I spent a week watching a junior engineer completely melt down trying to troubleshoot three problems that our beautiful cloud design didn't solve at all.
+- wireless links where everyone shares the medium
+- encrypted sessions where the useful data is hidden from the path
+- service-to-service traffic that stays mostly inside the environment
 
-First, the sales team was constantly complaining that their video calls dropped whenever they walked into Conference Room B. Our cloud isolation was mathematically perfect, but the physical world doesn't care about our math. The Wi-Fi was awful.
-
-Second, the security team flagged us for sending plain text database queries inside our VPC, on a private subnet. "But it's on our private floor!" I argued. They didn't care. In a shared hotel, you still lock your bathroom door.
-
-Finally, our new microservices architecture was falling apart. We had dozens of tiny services calling each other constantly. The old model of putting a concierge at the front door broke down completely because almost all of our traffic was internal—moving from room to room—and nobody knew what was actually going on in the hallways.
-
-Part Four is about dealing with these messy, advanced realities. We are going to look at what happens when the physical hallway disappears entirely (Wi-Fi), how to lock your doors even when you are "home" (TLS), and how to manage the chaos when a hundred different applications all start talking at the exact same time (Service Meshes).
+This part is about those complications.
 
 ---
 
 ## Chapter 14: The Noisy Market Square
 
-For most of this book, we've relied on the concept of the hallway. Whether it was a physical copper Ethernet cable or a virtual subnet in the cloud, the hallway gave every conversation a dedicated, isolated pathway. 
+Wired Ethernet is easy to picture because each device usually has a dedicated link to a switch.
 
-Wireless networks destroy the hallway. 
+Wi-Fi is different. The medium is shared.
 
-When your laptop connects to Wi-Fi, there is no private corridor connecting you to the router. The hallway is made entirely of air. And absolutely everyone in range is forced to share that exact same air: your laptop, your phone, the smart TV in the lobby, the Bluetooth headphones across the room, and the microwave in the kitchen. 
+If the hallway analogy helped in Part One, think of this chapter as the point where the hallway opens into a crowded square. Devices are no longer taking turns on private tubes. They are competing for time on shared radio space.
 
-It is no longer a private corridor. It is a crowded market square, with dozens of people trying to shout over each other. 
+### Taking turns to speak
 
-### Taking Turns to Speak
+On old shared Ethernet, collisions were a direct problem. Modern switched Ethernet mostly avoids that because each device gets its own link.
 
-On old-school shared Ethernet (think hubs), if two computers talked at the exact same time, the electrical signals would collide and garble. The computers could actually *detect* the collision (CSMA/CD), back off for a moment, and try again. On modern switched, full-duplex Ethernet, you almost never deal with collisions because each device has its own point-to-point link to the switch.
+Wi-Fi cannot rely on the same model. Radios contend for a shared channel, and devices have to be careful about when they transmit.
 
-Your Wi-Fi radio cannot do this. It cannot listen while it is actively shouting. By the time it would realize it was talking over someone else, the transmission is already over. 
+That is why Wi-Fi uses **CSMA/CA**: Carrier Sense Multiple Access with Collision Avoidance.
 
-Because Wi-Fi can't detect collisions, it has to actively avoid them using a protocol called **CSMA/CA** (Carrier Sense Multiple Access with Collision Avoidance). 
+The basic idea is:
 
-Before your laptop sends a packet, it stops and listens to the air. If the market square is perfectly quiet, it transmits immediately. But if the air is busy—if someone else is already talking—your laptop bites its tongue, waits a completely random amount of time, and then tries to speak again. 
+1. Listen before transmitting.
+2. If the medium is busy, wait.
+3. Retry after a randomized delay.
 
-This works fine when you are sitting alone in your living room. But if you are in a crowded conference center with three hundred other laptops, everyone is constantly waiting for the air to clear. Your theoretical "gigabit speed" plummets simply because your device spends most of its time politely waiting for its turn to speak.
+This does not eliminate contention. It manages it.
 
-### Picking a Quieter Corner (Bands and Channels)
+### Channels, bands, and interference
 
-To help manage this shouting match, the air is divided into frequency **bands**, and those bands are chopped up into smaller **channels**.
+Not all Wi-Fi pain is caused by weak signal. Much of it is caused by competition and noise.
 
-For a long time, everything used the **2.4 GHz band**. The physical waves of 2.4 GHz are wide, meaning they punch through concrete walls really well. The problem is that it only has three channels that don't overlap with each other, and *everything* uses it—old laptops, baby monitors, and microwave ovens. Using 2.4 GHz today is like trying to have a conversation standing next to a running jet engine. 
+- The **2.4 GHz band** travels well through walls but has less clean channel space and more interference sources.
+- The **5 GHz band** offers more spectrum and often less interference, but range is usually shorter.
+- The **6 GHz band** offers even more room, with newer standards such as Wi-Fi 6E and Wi-Fi 7, but device support and range constraints matter.
 
-Eventually, engineers moved us to the **5 GHz band**. The waves are tighter, meaning they bounce off walls instead of going through them, giving you much shorter range. But it offers vastly more channels. It is like moving your conversation out of the main market square and into a quieter side alley. 
+If performance drops in a conference room full of laptops, the likely story is not "the ISP got worse at noon." It is often local contention on the shared medium.
 
-Modern routers are now pushing into the **6 GHz band** (using standards like Wi-Fi 6E and Wi-Fi 7). This offers a massive highway of fresh, uncongested channels, at the cost of even shorter physical range. This is the constant trade-off of wireless evolution: as we push from the 54 Mbps speeds of the early 2000s up to the multi-gigabit speeds of Wi-Fi 7, we are essentially trading wall-penetrating distance for wider, quieter channels.
+### Signal-to-noise ratio
 
-### The Metric That Explains Most Pain: SNR
+A strong signal is helpful. It is not the whole story.
 
-People constantly look at the "bars" on their Wi-Fi icon and assume four bars means a fast connection. But a strong signal does not guarantee good performance. 
+What often matters more is **SNR**, the signal-to-noise ratio:
 
-What actually matters is the **Signal-to-Noise Ratio (SNR)**. 
+- high signal + low noise = cleaner communication
+- high signal + high noise = lots of retransmission and lower real throughput
 
-If the router is shouting loudly (high signal) and the room is quiet (low noise), you have a high SNR. The data flows perfectly. 
+This is why a device can show several bars and still feel unstable in practice.
 
-But if the router is shouting loudly (high signal) and there are three other routers, a Bluetooth speaker, and a microwave also shouting at the exact same volume (high noise), your SNR is terrible. Your laptop has no idea what the router is saying. It has to constantly ask the router to repeat itself, which destroys your throughput and causes massive lag spikes. 
+### A failure case to keep in mind
 
-When your Wi-Fi feels slow or jittery, it is very often an SNR problem. You don't necessarily need a bigger antenna; you might just need to find a quieter channel.
+If a user says, "Wi-Fi is slow in one room but fine near the hallway," you should not jump straight to DNS, routers, or cloud infrastructure. Start locally:
+
+- channel congestion
+- poor SNR
+- overlapping access points
+- physical obstruction
+
+The problem may be several meters from the user, not several network hops away.
+
+### Where the analogy bends
+
+Market squares do not capture hidden-node problems, roaming behavior, rate adaptation, MIMO, retransmission logic, or controller behavior. Keep the square picture for contention and shared medium, not for the full radio stack.
 
 ---
 
 ## Chapter 15: The Diplomatic Ceremony
 
-Back in the physical city, if you hand a transparent envelope to a concierge, anyone standing in the lobby can read it. Your packets travel through public streets, unmanaged switches, and third-party ISPs where anyone with a packet sniffer can intercept them. 
+So far we have mostly talked about where packets go.
 
-Inside your cloud hotel, you might think you are safe. After all, it's your private tower. But here is a lesson I learned the hard way during a brutal security audit: in a shared building, you still lock your doors. When your messages leave your private tower—whether they are going to another hotel in another city or just to the hotel's shared S3 buckets—they are traveling through public hallways. We failed the audit because we were sending unencrypted database queries across the VPC. The auditor kindly reminded us that "private" in the cloud is just a matter of degrees. 
+Now we need to talk about who can read them.
 
-Today, we fix this with **TLS** (Transport Layer Security). 
+On an unencrypted path, devices on the path can inspect the payload. On a modern network, that is rarely acceptable for web traffic, APIs, authentication flows, or internal service calls carrying sensitive data.
 
-When you connect to a modern website using HTTPS, your browser and the server do not just start shouting data at each other. They perform a highly structured diplomatic ceremony called the TLS handshake. This ceremony exists to do exactly two things: prove the server is who it claims to be, and invent a secret language that only the two of you understand.
+That is where **TLS** comes in.
 
-### The Handshake
+### What TLS is doing
 
-The ceremony begins with an introduction. Your browser reaches out and says, "Hello, I want to talk securely. Here is a list of all the encryption methods I understand." The server replies, "Hello. Let's use this specific encryption method."
+TLS has two main jobs:
 
-Next, the server has to prove its identity. It hands your browser a **Certificate**. This document essentially says, "I am `example.com`, and here is my public key." But you can't just trust a piece of paper handed to you by a stranger. This is where **Certificate Authorities (CAs)** come in. 
+1. Authenticate the server you are talking to.
+2. Establish keys so the session can be encrypted in transit.
 
-A CA is a trusted third-party organization (like Let's Encrypt or DigiCert) that acts as a notary. They mathematically sign the server's certificate, vouching for them. Your operating system actually comes pre-loaded with a list of "Root CAs" that it inherently trusts. Your browser looks at the server's certificate, sees the trusted signature, checks the expiration date, and verifies the name. If anything looks sketchy, the browser throws a massive red warning screen. If it checks out, the ceremony continues.
+The handshake is a setup phase, not the application data itself.
 
-Now comes the magic trick. Both sides need to agree on a single, shared secret password to encrypt the rest of the conversation, but they have to agree on it *while talking in a crowded room where everyone can hear them*. 
+### The certificate step
 
-They use a mathematical trick called a key exchange (usually Ephemeral Diffie-Hellman). Through some clever math, each side generates a temporary public value, shouts it across the room to the other side, and then independently derives the exact same secret key. 
+When your client connects to `example.com`, the server presents a certificate.
 
-An eavesdropper who heard the entire conversation cannot compute the final secret. Even better, because the keys are "ephemeral," they are permanently thrown away the second you close the browser tab. This provides **forward secrecy**—even if a hacker steals the server's master private key three years from now, they cannot decrypt your past conversations.
+The client validates:
 
-With the shared secret established, the handshake ends. From that millisecond forward, every single byte of data sent between you and the server looks like unreadable noise to anyone trying to listen in. 
+- whether the certificate name matches the host it intended to reach
+- whether the certificate is still valid
+- whether it chains back to a trusted certificate authority
 
-This process used to be heavy and slow, but modern TLS 1.3 has optimized the handshake down to a single round-trip. It is so fast and cheap now that there is no excuse not to use it everywhere—even for the internal traffic moving room-to-room inside your private cloud hotel.
+If that validation fails, a well-behaved client warns or aborts. That is not bureaucracy for its own sake. It is the mechanism that prevents an attacker from presenting the wrong identity and hoping you will not notice.
+
+### The key exchange step
+
+Modern TLS also establishes shared session keys using ephemeral key exchange. In practice, this often means ECDHE-based exchange in TLS 1.2 or TLS 1.3.
+
+The useful mental model is simple:
+
+- both sides participate in creating a temporary session secret
+- the secret is not the same as the server's long-term certificate key
+- old sessions are harder to decrypt later because the session keys are temporary
+
+That is the intuition behind **forward secrecy**.
+
+### Internal traffic matters too
+
+Teams sometimes assume that "private network" means "safe enough to skip encryption."
+
+Sometimes the risk model allows that. Often it does not.
+
+Inside a cloud environment, traffic may stay on provider-managed networks, but that does not automatically mean every internal hop should be treated as fully trusted. Compliance rules, multi-tenant systems, east-west service traffic, and operational visibility concerns often push teams toward encrypting internal traffic as well.
+
+### A realistic failure case
+
+If a client suddenly cannot connect over HTTPS, the cause might be:
+
+- expired certificate
+- hostname mismatch
+- missing intermediate certificate
+- unsupported cipher/protocol combination
+- wrong system time on the client
+
+"TLS failed" is a category, not a diagnosis.
+
+### Where the analogy bends
+
+Diplomatic ceremony is useful for the trust-establishment part, but TLS is mathematics and protocol state, not an exchange of paper passports in a lobby. Use the analogy to remember the goals: identity verification and encrypted session setup.
 
 ---
 
 ## Chapter 16: Personal Ushers in the Hallways
 
-So your cloud tower has guards at the front entrance (gateways), stateful bouncers at every room door (security groups), and an exact list of who is allowed to do what (IAM). You even added TLS so that anyone walking through the public areas is speaking in code. 
+In a microservices system, most traffic is not coming from the public internet. It is service-to-service traffic inside the environment.
 
-If this were 2012, you'd be done. 
+That changes the operational burden.
 
-But in a modern microservices architecture, most of your traffic isn't coming from the outside world. It is room-to-room. The API Gateway calls the Authentication Service, which calls the User Service, which calls the Database. For every one request that comes through the front door, a hundred tiny internal conversations happen in the hallways. 
+You still need routing, retries, observability, policy, and encryption, but now those concerns repeat across dozens or hundreds of internal calls.
 
-How do you secure, monitor, and route all of that internal chaos?
+One answer to that problem is a **service mesh**.
 
-One answer is the **Service Mesh**. 
+### The core idea
 
-Remember the concierges from Part Two? The ones with the giant BGP binders managing traffic between buildings in the city? A service mesh is exactly like that, but evolved for the cloud hotel. Instead of putting one big concierge at the front door of the building, a service mesh assigns a highly trained, personal usher to stand outside *every single room* on your floor. 
+In the classic sidecar model, each service instance gets a companion proxy. The application talks to the local proxy. The proxy applies traffic policy, handles mutual TLS, gathers telemetry, and forwards traffic to the next destination.
 
-The application running inside the room never actually touches the hallway. When the User Service wants to talk to the Database, it just blindly hands the envelope out the door. The usher (which engineers call a **sidecar proxy**) takes the envelope, figures out which service instance it should talk to (and which rules apply), encrypts the message, and carries it down the hall. 
+That arrangement can centralize cross-cutting concerns that would otherwise be reimplemented in each service.
 
-### Why You Pay the Ushers
+### Why teams adopt meshes
 
-These sidecar proxies are incredibly powerful because they operate entirely independent of your application code. The developers building the User Service don't have to write complex retry logic or encryption libraries; they just write business logic and let the ushers handle the networking.
+A mesh can help with:
 
-1. **Security:** The ushers automatically perform Mutual TLS (mTLS). When an usher reaches the Database room, it presents its certificate to the Database's usher. They verify each other's identities and encrypt the traffic. Every single conversation inside your private tower gets the exact same military-grade encryption as your public web traffic, without you having to configure a single certificate manually.
-2. **Traffic Control:** Because the ushers control the flow, you can give them complex instructions. You can say, "Send 90% of the traffic to the old User Service, but send 10% to the new version we just deployed." If the new version crashes, the ushers immediately reroute the traffic back to the old one. If a service is totally broken, the usher will stop sending envelopes there entirely (a pattern called circuit breaking) so the rest of the hotel doesn't back up.
-3. **Observability:** Because every single envelope passes through an usher, the mesh can consistently capture and export the same kinds of metrics across services. When something inevitably breaks at 2 AM, you don't have to guess where the bottleneck is. The mesh gives you a god's-eye view of who is talking to whom, and which room started dropping envelopes.
+- **mTLS** between services
+- retries and timeouts
+- traffic shifting during rollout
+- circuit breaking
+- uniform telemetry
 
-### Is the Mesh Worth It?
+Those are real advantages when a platform team is trying to create consistent network behavior across many services owned by different teams.
 
-There is a catch. A service mesh adds massive operational complexity. 
+### The tradeoff
 
-You are injecting thousands of tiny proxies into your network, which adds a tiny fraction of latency to every request. You also have to manage the "control plane"—the central brain that tells all the ushers what the rules are. 
+A mesh also adds components, latency overhead, operational complexity, and another control plane that can fail in its own interesting ways.
 
-If you only have a monolithic application or a handful of services, a mesh is absolute overkill. But if you have fifty different microservices maintained by ten different engineering teams, a mesh (like **Istio**, the heavy-duty industry standard, or **Linkerd**, a much lighter alternative) is often the only way to retain your sanity. It moves the burden of security and observability away from the application developers and puts it squarely into the infrastructure.
+If you run a small system, a service mesh may be unnecessary.
 
----
+If you run a large multi-team platform, the consistency benefits may outweigh the cost.
 
-The hotel metaphor has limits, but it holds up surprisingly well. You've learned that physical wireless spaces are just noisy markets where everyone has to take turns shouting. You've learned that even inside your private cloud tower, you still need the cryptographic ceremony of TLS to lock your doors. And you've learned that when you have hundreds of applications talking at once, you need an army of ushers to manage the chaos.
+### A note on changing implementations
 
-The map is complete. You know the building, the city, the hotel, and the secret tunnels underneath it all. Part Five is where we stop drawing the map, open up the terminal, and actually start walking the streets.
+The sidecar picture is still the easiest place to start, but it is not the only implementation model. Some meshes now move parts of the data plane or policy model out of the sidecar pattern. Keep the concept separate from one specific product design.
+
+### A failure case worth remembering
+
+If service A cannot reach service B in a mesh-enabled environment, the cause might be:
+
+- DNS or service discovery failure
+- mesh policy denial
+- certificate rotation issue
+- timeout or retry behavior hiding the real latency source
+- the target service being healthy enough to answer probes but not real requests
+
+That is why service-mesh troubleshooting is still networking work. The labels change, but the questions remain familiar.
+
+### Where the analogy bends
+
+No human usher is renegotiating certificates and exporting metrics between rooms. The analogy is useful because it places the network logic outside the application process. That is the real lesson.
+
+At this point, the map is complete enough to be useful in live systems.
+
+The next step is to stop reading about the city and start walking through it with real tools.

@@ -4,7 +4,7 @@ date: 2025-10-18T22:39:16+09:00
 draft: true
 ---
 
-> Think of the cloud as a hotel: you rent a private tower, connect to the rest of the city through controlled doors, and use badges to decide who can go where.
+> Think of the cloud as a hotel: you rent space inside someone else's property, define your own internal layout, and rely on a mix of network paths and identity rules to decide who can reach what.
 
 License: CC BY-NC-ND 4.0
 
@@ -12,102 +12,205 @@ License: CC BY-NC-ND 4.0
 
 # Part Three: Hotels as the Cloud
 
+Up to this point, you have owned the building. You decide the cabling, the switches, the floor plan, and the routers.
+
+Cloud computing changes the ownership model, not the need for networking discipline.
+
+You are still building networks. You are still making routing and security decisions. You are simply doing it inside infrastructure owned and operated by a provider.
+
+The hotel analogy helps because it separates two responsibilities:
+
+- The provider runs the property.
+- You define the parts you rent and the rules inside them.
+
+---
+
 ## Chapter 10: The Hotel Tower
 
-For years, companies ran out of buildings they actually owned. Building and managing your own physical data center is exactly like owning your own office building. You have absolute, god-like control over every single wire and switch, but you also have to deal with the miserable, physical reality of it. When the primary HVAC unit dies at two in the morning on a holiday weekend, it's *your* pager that goes off, and someone on your team has to drive to the site and deal with it.
+Imagine you stop running your own building and move into a large hotel complex.
 
-If your business suddenly explodes and you need to handle massive traffic spikes or expand to Europe, it takes months of signing leases, ordering hardware, racking servers, and paying guys to run fiber. The capital expense is nauseating.
+You no longer manage the concrete, the generators, the chillers, or the physical security perimeter. The provider does that. What you manage is your logical space inside the property: your networks, your instances, your services, and your policies.
 
-Eventually, you get tired of playing real estate developer. You check into a hotel.
+That tradeoff is the core of cloud infrastructure.
 
-The hotel is operated by a major cloud provider: Amazon Web Services (AWS), Google Cloud (GCP), or Microsoft Azure. They own the dirt, the concrete, the massive redundant power systems, and the physical security guards with guns. You just rent the space.
+You give up direct access to physical devices. In exchange, you gain a faster way to provision networks, add capacity, and spread systems across failure domains without buying the underlying hardware yourself.
 
-Instead of buying a building, you rent a private tower within their massive hotel complex. Instead of hiring an HVAC guy, you let the hotel handle the facilities. You only care about what happens inside your rooms: your applications and your data. 
+This is why cloud discussions often sound abstract. The cables and switches still exist. They are simply hidden behind APIs, route tables, and service controls.
 
-This trade-off is the entire point of cloud computing. You lose the ability to physically inspect the router or design the electrical grid, but within your rented tower, you have complete software-defined autonomy to build the network however you want.
+### A practical scene
 
-## Chapter 11: Designing Your Tower (VPCs)
+Suppose your team needs to launch a new environment for staging by the end of the day.
 
-When you check into this cloud hotel, they don't just scatter your servers across random rooms next to strangers. They hand you a logically isolated environment. 
+In a traditional data center model, you might need spare hardware, switch ports, rack space, firewall changes, and a maintenance window. In a cloud model, you can often create the network, the instances, and the security policy in minutes.
 
-In AWS and Google Cloud, this is called a **Virtual Private Cloud (VPC)**. In Azure, it's a VNet. It is your private tower. 
+That does not remove networking work. It compresses the time in which you can make a networking mistake.
 
-The very first thing you have to do when you get your tower is establish a numbering system. You define an IP address range (usually using CIDR notation like `10.0.0.0/16`), giving you over 65,000 available room numbers to play with. 
+### Where the analogy bends
 
-Once you have your address space, you start carving out your floors (**subnets**). 
+A cloud provider is not literally a hotel in one building. It is a global fleet of facilities, software control planes, and managed services. The hotel picture is useful because it teaches the responsibility boundary, not because it matches the underlying physical layout.
 
-You might build a public floor near the lobby (e.g., `10.0.1.0/24`). This is where you put the stuff that actually *needs* to talk directly to the internet, like web servers or load balancers. These rooms essentially have windows facing the busy street.
+---
 
-Then, you build a private floor higher up (e.g., `10.0.10.0/24`). This is where you hide the sensitive stuff: application backend servers, internal tools, and the databases holding your customers' credit card data. These rooms have no windows to the outside world. The only way in is through internal elevators you explicitly control. 
+## Chapter 11: Designing Your Tower
 
-Here is where the physical analogy bends, but in a way that saves your job. Because cloud providers operate at an absurd scale, they don't want a single power outage or flood to take down your entire tower. So they divide their geographical regions into **Availability Zones (AZs)**. An AZ is a completely separate physical data center located miles away from the others, with an independent power grid and flood plain. 
+Inside the hotel, you still need your own internal layout.
 
-When you design your VPC, you aren't just building floors in a single physical building; you are designing a logical tower that can span multiple Availability Zones. In many clouds (including AWS), each subnet (each "floor") lives inside one specific AZ, so you usually create matching public/private floors in each zone. You can put your primary database on the private floor in AZ-A, and a replica on a corresponding private floor in AZ-B. To your application, it can feel like they are down the hall from each other, but physically they are in separate buildings connected by the hotel's fiber. If a tornado rips the roof off AZ-A, your system can fail over to AZ-B while you let the cloud provider worry about replacing the wet carpets.
+In AWS and Google Cloud you create a **VPC**. In Azure you create a **VNet**. The names differ, but the purpose is similar: define a logically isolated network space for your resources.
+
+You start by choosing an address range, such as `10.0.0.0/16`. Then you divide that space into subnets according to role, trust level, and routing needs.
+
+Typical patterns include:
+
+- A **public subnet** for components that accept inbound internet traffic, often through a load balancer.
+- A **private subnet** for application servers, workers, or databases that should not accept direct public inbound traffic.
+
+The reason for the split is not style. It is control. Public-facing systems and internal systems usually need different reachability rules, different routing, and different monitoring expectations.
+
+### Availability zones and failure domains
+
+This is where you need precision.
+
+Cloud providers divide regions into failure domains, commonly called **Availability Zones (AZs)**. The exact design varies by provider.
+
+- In AWS, subnets are tied to a specific AZ.
+- In GCP, subnets are regional.
+- In Azure, behavior depends on the service and topology you choose.
+
+So the hotel analogy bends here. You are no longer placing rooms on one literal floor in one literal building. You are defining a logical network that may span multiple physical facilities, with provider-specific rules about how resources map to those facilities.
+
+What stays constant is the design goal: avoid putting all critical components in one failure domain when you can spread risk across more than one.
+
+### A design pattern that survives the analogy
+
+If you run a public application with a database backend, a common layout is:
+
+- Public entry points in multiple zones
+- Application instances in private subnets
+- Database instances or replicas distributed according to the service's high-availability model
+
+That is the same mental move you would make in a physical environment: separate exposure levels and reduce single points of failure.
+
+### Where the analogy bends
+
+VPCs, VNets, subnets, and zones are software-defined abstractions backed by provider-specific infrastructure. The hotel tower picture is useful for isolation and layout. It becomes misleading if you assume one provider's details apply to all the others.
 
 ---
 
 ## Chapter 12: Doors to the World
 
-Your private tower is perfectly isolated, which is great for security but terrible for business. A hotel with no exits is just a prison. You need controlled ways to communicate with the rest of the city. In cloud networking, these controlled exits are called **gateways**.
+An isolated tower is safe, but not very useful. Systems need paths in and out.
 
-### The Main Entrance
+Cloud platforms provide those paths through different gateway and routing constructs.
 
-If you have a web server sitting on your public floor, you want people from all over the world to be able to visit it. To make this happen, you attach an **Internet Gateway** to your VPC. 
+### The public entrance
 
-Think of the Internet Gateway as the grand lobby doors of your hotel. It is a massive, two-way entrance. Once you install these doors and slap a public IP address on your web server, tourists from anywhere on the internet can walk right in and request a web page, and your server can hand the response right back out through those same doors.
+If a service must accept traffic from the public internet, you need a path for that traffic to reach the network that hosts the service.
 
-### The Staff Exit
+In AWS, an **Internet Gateway (IGW)** is one of the components that makes this possible. But the presence of an IGW alone does not make a workload public. Reachability still depends on route tables, public IP assignment, security groups, network ACLs, and any load balancers or proxies in front.
 
-But what about your database and application servers hiding up on the private floor? They don't have public IP addresses. You absolutely do not want tourists walking in. But occasionally, they still need to reach the outside world—maybe to download a critical Linux security patch or fetch data from an external API. 
+That detail matters in troubleshooting. A workload can be inside a VPC with an IGW attached and still be unreachable from the internet because one of the other required conditions is missing.
 
-For this, you install a **NAT Gateway** (Network Address Translation). 
+### The outbound-only path
 
-A NAT Gateway is essentially a one-way staff exit at the back of the hotel. Your internal servers can walk out, do their business in the city, and return with their packages. But if a stranger on the street tries to open that door from the outside, it is locked solid. 
+Private workloads often need outbound access without accepting inbound internet connections. A **NAT Gateway** or similar egress path solves that problem.
 
-When your private server sends a request out, the NAT Gateway quickly strips off your internal IP address, slaps its own public IP on the envelope, and assigns a temporary mail slot (an ephemeral port) so it can remember who sent it. When the patch downloads and the response comes back, it checks its ledger, swaps the internal IP back onto the envelope, and hands it to the right server. The outside world never even knows your private server exists.
+The idea is straightforward:
 
-### Private Service Doors
+- Internal hosts initiate outbound traffic.
+- The egress component rewrites source addressing as needed.
+- Return traffic is mapped back to the originating internal flow.
 
-Often, your servers need to talk to other services run by the cloud provider itself, like an S3 storage bucket or a managed message queue. 
+This allows patching, package downloads, API calls, and similar outbound activity while keeping the internal host from being directly addressable from the public internet.
 
-The inefficient way to do this is to send your data out the staff exit (NAT Gateway), drag it all the way across the public internet, and bring it back into the cloud provider's network. This works, but it's slow, it exposes your data to the public streets, and worst of all, cloud providers actively charge you money for pushing data out to the internet.
+### Provider service endpoints
 
-Instead, you install **VPC Endpoints**. 
+Many cloud workloads need to access managed services such as object storage, queues, or key management.
 
-These are like secret, private service tunnels connecting your specific tower directly to the hotel's internal amenities. Traffic never touches the public internet. It stays within the provider's private, incredibly fast network, making it more secure and often avoiding internet egress charges (though the endpoint itself can have its own cost). 
+Without a private endpoint, that traffic may still remain on the provider's backbone in practice, but it often follows a public-style addressing path or a NAT/internet egress model from your point of view. Private endpoints give you a clearer and more explicit private path, along with tighter policy control.
+
+That is the operational benefit:
+
+- clearer routing
+- more predictable security posture
+- less dependence on general-purpose internet egress
+
+### A failure case worth keeping in mind
+
+If a private instance cannot download packages, the cause might be:
+
+- no route to the egress path
+- a broken NAT configuration
+- DNS failure
+- a security rule blocking the return traffic
+
+The symptom "cannot reach the internet" is not a diagnosis. In cloud environments, it is often a route-table or identity detail two layers away from where you first look.
+
+### Where the analogy bends
+
+Cloud gateways are not just physical doors. They are combinations of routing, addressing, and provider-managed services. The door picture helps with directionality. It does not replace the need to inspect the actual route tables and security policy.
 
 ---
 
 ## Chapter 13: Badges and Security Guards
 
-Locking the doors to your tower is just the physical perimeter. The much harder question to answer in a massive hotel is: *who are you, and what are you actually allowed to touch once you are inside?*
+Network reachability is only part of cloud security.
 
-In a physical office building, you manage this with keycards. When a new hire starts, they get a badge that opens the front door and the breakroom, but it won't let them into the server room. 
+The other part is identity.
 
-In the cloud, this system is called **IAM** (Identity and Access Management). 
+If networking answers "Can this packet get there?", identity and policy answer "Should this caller be allowed to do this operation?"
 
-IAM is the absolute core of cloud security, and it constantly answers two separate questions: 
-1. **Authentication:** Are you actually who you say you are? (Checked via passwords, MFA tokens, or API keys).
-2. **Authorization:** Okay, I know who you are. Are you allowed to do this specific thing? (Checked via JSON policy documents).
+### IAM: who are you, and what may you do?
 
-Every single identity in your cloud must follow the principle of least privilege. If a web server only needs to read photos from a specific storage bucket, you do not give it a master admin keycard. You give it a badge that strictly allows `s3:GetObject` on that exact bucket, and nothing else. 
+IAM stands for **Identity and Access Management**.
 
-You assign these badges to human users, but more importantly, you assign them to machines using **IAM Roles**. An IAM Role is like a temporary visitor's badge. Instead of hardcoding permanent API keys into your application's source code (which is exactly how you end up on the front page of Hacker News for a massive data breach when a dev accidentally commits them to GitHub), your server simply assumes a Role when it boots up. It gets temporary credentials from the cloud provider that expire automatically. 
+It governs identities such as users, roles, and service accounts, along with policies describing which API actions or service-level operations those identities may perform.
 
-### The Security Checkpoints
+This is where many teams mix concepts.
 
-Because cloud engineers are paranoid by nature, they don't just rely on one lock. They use multiple layers of security checkpoints that all have to agree before a packet is allowed through. 
+IAM is not a replacement for routing or firewall rules. A packet that cannot reach the service will fail before IAM matters. And many services require both:
 
-1. **Network ACLs (The Perimeter Fence):** These operate at the floor (subnet) level. They are incredibly dumb but blisteringly fast. They look at every single packet independently and say, "Is this IP address on the blocklist?" They are great for banning an entire country's IP range from ever touching your floor. 
-2. **Security Groups (The Bouncers):** These operate at the specific room (instance) level. Unlike ACLs, they are *stateful*. If the bouncer lets your server send a request out, they automatically remember the conversation and let the response back in. You use Security Groups to say, "Only allow incoming traffic on port 443 into this specific web server."
-3. **IAM Policies (The Vault Keypad):** Even if a packet makes it past the fence and the bouncers and actually reaches a database, IAM steps in at the last microsecond and asks, "Does the identity attached to this request actually have permission to execute this specific command?"
+- network reachability
+- valid identity and authorization
 
-All three of these layers overlap. A packet might make it through the security group just fine, only to get violently rejected by an IAM policy because it tried to delete a table it shouldn't have. This is defense in depth. 
+### Security groups and network ACLs
 
----
+In AWS terms, two common network controls are:
 
-You have designed your cloud tower. You have public floors and private floors, you've built staff exits to the city, and you've handed out carefully restricted badges to every machine. 
+- **Security Groups**: stateful rules attached to instances or interfaces
+- **Network ACLs**: subnet-level stateless rules
 
-But modern applications are complicated. They run on wireless networks where everyone shares the air. They need mathematical encryption to protect data in transit. They consist of dozens of microservices that talk to each other constantly.
+You can think of them as different checkpoints, but remember what they actually inspect: packet attributes such as source, destination, protocol, and port.
 
-In Part Four, we leave the basic infrastructure behind and dive into these advanced concepts.
+IAM is different. It generally evaluates API calls and service permissions, not every packet on the wire.
+
+### A realistic troubleshooting example
+
+Suppose an application server cannot read from an object storage bucket.
+
+The failure might be:
+
+- no network path to the service endpoint
+- DNS resolving to the wrong target
+- egress blocked by security rules
+- missing IAM permission such as `s3:GetObject`
+
+All of those can produce a user report that sounds identical: "the app cannot reach storage."
+
+That is why cloud troubleshooting needs two parallel questions:
+
+1. Can the network path reach the service?
+2. Does the caller have permission to do the thing it is attempting?
+
+### Temporary credentials
+
+One of the most valuable cloud patterns is using roles or service accounts to issue temporary credentials rather than storing long-lived secrets in source code or instance images.
+
+This reduces the blast radius of leaks and makes rotation more manageable. It also gives you cleaner audit trails because the identity is explicit.
+
+### Where the analogy bends
+
+Badges and guards are useful pictures, but cloud authorization often happens deep inside service APIs, not at a literal doorway. The right lesson to keep is that network access and permission checks are separate systems that often fail independently.
+
+At this point, you have a cloud tower with internal layout, public and private paths, and layered controls over both network traffic and identity.
+
+The next step is to look at cases where the clean hallway picture starts to blur: wireless networking, encryption, and dense service-to-service traffic.
