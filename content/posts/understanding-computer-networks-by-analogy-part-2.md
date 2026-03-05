@@ -4,7 +4,7 @@ date: 2025-10-18T22:39:16+09:00
 draft: false
 ---
 
-> Think of the internet as a city full of buildings and streets. Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
+> Think of the internet as a city full of buildings and streets. Routers are the desks that hand envelopes from one network to the next, and DNS is the directory that keeps names connected to addresses.
 
 License: CC BY-NC-ND 4.0
 
@@ -12,149 +12,208 @@ License: CC BY-NC-ND 4.0
 
 # Part Two: Cities as the Internet
 
-In Part One, we looked at local networks as apartment buildings. We mapped devices to rooms, network interfaces to doors, and subnets to floors. We walked through how your computer slides an envelope down a pneumatic tube to the switch, and how the elevator acts as a gateway to the rest of the building.
+In Part One, the packet stayed inside one building. That was enough to explain local delivery, ARP, switches, and subnets.
 
-But what happens when your envelope needs to leave the building entirely?
+Now the envelope has to leave the building.
 
-Maybe you're pulling a Docker image or querying an external API. The journey is the same: the envelope leaves your floor, exits your building, and has to navigate a complex maze of city streets and intersections until it finds the right building.
+The internet is not one network. It is a large collection of networks connected to each other. The building analogy still helps, but now we need streets, intersections, and a directory.
 
-The internet isn't magic. It's a massive, chaotic, sprawling city that grew without any centralized zoning laws. And to navigate it, you have to understand the routers.
+The key change is scope. Inside one floor, you care about MAC addresses and local delivery. Across the city, you care about IP addresses, routing decisions, and name resolution.
 
 ---
 
 ## Chapter 5: The Concierge with the Map
 
-When you walk out of your building's front door to send a message across town, you hit the city streets. This is the internet. The streets are the physical fiber connections between networks, and the intersections are routers. 
+Imagine you leave your building with an envelope addressed to another building across town.
 
-The system that makes it work is actually pretty brilliant: nobody knows the whole map, but everyone knows enough to pass the envelope to the next guy.
+You do not need a full map of the city. You need to know where to hand the envelope next.
 
-Walk out of the elevator into your building's lobby, and you'll find a guy sitting behind the front desk with a thick binder. This is the concierge (your edge router). 
+That is how routing works.
 
-The concierge has one job: take envelopes from residents and figure out which street to throw them down next. They have absolutely no idea what the final destination looks like—just the very next step.
+At the edge of your network is a router. In this analogy, think of it as a desk in the lobby that knows the next useful direction for each destination range.
 
-That thick binder on the desk is the routing table. It's not a complete map of the city; keeping track of that would be too computationally expensive. Instead, it's a list of simple, localized rules:
-- "For buildings on Oak Street, hand the envelope to the courier at the east exit."
-- "For anything in the downtown district, use the main post office drop."
-- "For anything I don't recognize, just throw it at the central hub and let them figure it out."
+The router does not usually know the entire path in one shot. It consults a routing table and chooses the next hop. That next hop may be another router, which repeats the same process.
 
-Each rule specifies a destination network and a "next hop." The next hop is just another router—another concierge at another intersection—who will look at the envelope, check their own binder, and pass it along.
+### Reading the binder
 
-*(A quick note on the analogy: Calling a router a "concierge" starts to break down when you realize that cities are geographic, but networks are topological. Two routers sitting in the same physical rack in Virginia might be hundreds of "miles" apart topologically. But stick with me.)*
+A routing table is a set of rules:
 
-### Static vs. Dynamic Routes
+- If the destination is in this network, send it out this interface.
+- If the destination is in that network, send it to this next hop.
+- If nothing more specific matches, use the default route.
 
-How does the concierge fill out that binder? 
+That last rule matters. The default route is what keeps every host and router from needing a complete map of the world.
 
-Sometimes, a network admin physically types a rule into the router. These are static routes. They are written in sharpie. If the admin knows that traffic to the accounting subnet should always go through port 2, they write it down. Static routes are great until someone trips over a power cable and the route goes down, and your concierge keeps blindly throwing envelopes into a brick wall because the binder said so.
+### Static and dynamic routes
 
-The internet, however, changes constantly. Fiber cuts happen. Backhoes destroy conduits. To handle this, the concierges constantly gossip with each other. "Hey, my link to the financial district just died. Route around me." This gossip uses routing protocols, which dynamically update the binders in real-time. 
+Some routes are entered manually. Those are static routes.
 
-Inside a single corporate campus, routers use interior protocols like OSPF. OSPF is like a group of concierges constantly maintaining a hyper-accurate, localized map. It calculates the mathematically shortest path and adapts in seconds if a hallway collapses.
+Static routes are simple and predictable. They are also rigid. If the path changes underneath them, they do not adapt on their own.
 
-Out on the open internet, between different companies, a different beast rules: BGP (Border Gateway Protocol). BGP isn't about finding the fastest path; it's about business logic, money, and petty politics. It's how AT&T negotiates routes with Comcast. A BGP route might say, "To reach this network, go through Company A, because peering with Company B costs us too much money." 
+Other routes are learned dynamically through routing protocols.
 
-### When Envelopes Get Lost
+Inside one organization, a protocol such as OSPF helps routers share reachability information and react to link changes. Across the public internet, BGP helps organizations tell each other which networks they can reach and under what policy.
 
-Sometimes a concierge makes a mistake. Someone writes a bad rule in the binder, and two routers just keep handing the same envelope back and forth to each other at the speed of light, forever. 
+BGP is not "the shortest path" protocol in the way many people first imagine. It is closer to policy-driven path selection between administrative domains. Cost, business relationships, filtering, and export policy all shape the route.
 
-To prevent this from melting the internet, every envelope carries a counter called Time To Live (TTL). When the envelope leaves your computer, the TTL might be set to 64. Every single time a router touches it, they cross out the number and subtract one. 
+### When packets loop
 
-If that counter hits zero, the router stops. It throws the envelope straight into the trash and sends a postcard back to you saying, "Time Exceeded." This simple countdown prevents routing loops from taking down the whole city. 
+Routing mistakes happen. If two routers hand a packet back and forth, the packet cannot be allowed to circle forever.
 
-`traceroute` actually abuses this TTL mechanism. It sends a packet with a TTL of 1, and the first router kills it and replies. Then it sends a TTL of 2, and the second router kills it and replies. It forces every router along the path to expose itself, letting you map out the journey hop by hop.
+That is why IP packets carry a **Time To Live (TTL)** field. Each router decrements it. When it reaches zero, the router discards the packet and typically sends back an ICMP "Time Exceeded" message.
 
----
+That behavior is the reason `traceroute` works.
 
-## Chapter 6: The Appliances Inside the Apartment
+Different implementations use UDP, ICMP, or TCP probes, but the idea is the same: send packets with gradually increasing TTL values and observe which hop reports back. The result is a clue about the path, not a perfect map. Some routers do not reply. Some paths are asymmetric. Some middleboxes rate-limit or filter the responses.
 
-Every envelope has an outside (the routing headers) and an inside (the actual payload). 
+### Where the analogy bends
 
-But an IP address only gets the envelope to a specific apartment (the server). When the envelope slides under the door of room 10-101, who actually opens it? 
-
-You don't just have one thing running in your apartment. You have a TV, a fridge, a microwave. In a server, these are your applications. A single Linux box might be running a web server, an SSH daemon, and a Postgres database all at once. The envelope needs to reach the correct appliance.
-
-That is what port numbers are for.
-
-A port number is a specific appliance inside the apartment. When a packet arrives, the port number tells the OS exactly which application gets the data. Port 80 is the web server. Port 443 is the secure web server. Port 22 is SSH. 
-
-### Sockets and Burner Phones
-
-A socket is the combination of an IP address and a port. It uniquely identifies one specific end of a conversation (e.g., `192.168.1.50:443`). 
-
-When your browser connects to a web server, it creates a pair of sockets. The server's socket is obvious: its IP plus port 443. 
-
-But your laptop needs a return address, so it assigns itself a temporary port from a high range (like 54321). This is an ephemeral port. Think of it as a cheap burner phone you bought just for this one conversation. The exchange happens between your burner phone and the server's main line. 
-
-This is how your OS keeps a bunch of simultaneous conversations straight. Whether it's fifty browser tabs, a package manager downloading updates, and Slack phoning home, each outgoing connection gets its own burner phone (ephemeral port). When the web server replies, your OS looks at the port numbers and knows exactly which connection gets the data. When the connection is done, the OS throws that burner phone in the trash so it can reuse the number later. 
-
-### The Matryoshka Doll of Envelopes
-
-Your message doesn't travel in a single envelope. It's encapsulated—stuffed inside an envelope, which is inside another envelope.
-
-When you load a web page, your browser writes an HTTP request. The OS stuffs it into a TCP segment (the first envelope), which adds the source and destination port numbers. 
-
-Then, the OS stuffs that TCP segment inside an IP packet (the second envelope). This adds the source and destination IP addresses and the TTL counter. Routers on the open internet forward traffic based on this IP envelope; most of the time they don't care about the TCP ports inside (though middleboxes like firewalls, NATs, and load balancers absolutely can).
-
-Finally, to get the packet out of your physical door and to the local switch, your network card stuffs the IP packet into an Ethernet frame (the shipping box). This adds the local MAC addresses. 
-
-The local switch opens the shipping box (Ethernet frame). The city routers look at the medium envelope (IP packet). When the message finally hits the destination server, it strips off the IP envelope, reads the small TCP envelope to find the port number, and hands the raw HTTP request to the web server application.
+Routers are not human concierges standing at geographic intersections. Networks are topological, not architectural. Two devices may be physically close and still be many routing decisions apart. Keep the analogy for the decision process, not for physical distance.
 
 ---
 
-## Chapter 7: The Meticulous Courier and the Paperboy
+## Chapter 6: Mail Slots Inside the Room
 
-The internet has two main ways to deliver your data. 
+An IP address gets traffic to the right host. It does not tell the host which application should receive the data.
 
-The first is the meticulous courier. You hire a guy who refuses to leave the destination until the recipient signs for every single page of a contract, in order. If a page gets lost, he radios back and demands a replacement. It's slow and annoying, but you have an ironclad guarantee that the document arrived perfectly.
+That is where ports come in.
 
-The second is the paperboy in a moving truck. The truck blasts by the apartment at forty miles an hour, and the paperboy hurls a rolled-up newspaper at your balcony. He doesn't stop. He doesn't check if you caught it. He doesn't care if a dog ran off with it. It's incredibly fast, requires zero overhead, and is completely unreliable.
+Within our building analogy, a port is a mail slot assigned to a particular service on the device.
 
-In networking, the courier is TCP. The paperboy is UDP. 
+One machine may have several services listening at the same time:
 
-### TCP: The Meticulous Courier
+- Web traffic on port `80` or `443`
+- SSH on port `22`
+- A database on a port such as `5432` or `3306`
 
-TCP is the workhorse. It ensures your software updates aren't corrupted. Before TCP sends a single byte of actual data, it forces the two servers to do a formal three-way handshake (SYN, SYN-ACK, ACK) just to prove they can hear each other.
+When a packet arrives, the operating system looks at the transport header and decides which listening service should receive it.
 
-Once established, TCP assigns a sequence number to every packet. The receiving server constantly sends back acknowledgments. If a packet goes missing, the server notices a skipped number and demands a retransmission. TCP also handles flow control—if the network is congested, it automatically throttles back so it doesn't make the traffic jam worse. 
+### Sockets and temporary return addresses
 
-This reliability costs time. But for loading a webpage or querying a database, it's non-negotiable.
+A socket is one endpoint of a conversation, identified by an IP address and a port.
 
-### UDP: The Paperboy
+If your browser connects to `203.0.113.20:443`, your own machine also needs a unique local endpoint for the return path. So the OS picks an ephemeral source port, perhaps something like `54321`.
 
-UDP doesn't care about handshakes. No acknowledgments, no sequence numbers, no flow control. It takes your datagram, throws it at the IP address, and immediately moves on. 
+Now the conversation has two endpoints:
 
-We use UDP when being fast and fresh is infinitely more important than being complete. Think of a multiplayer first-person shooter. If a packet showing your opponent's location from 500 milliseconds ago shows up late, you do not want it. You want their *current* location in the very next packet. Old data is useless data. The application just drops the stale update and keeps moving.
+- Local socket: `192.168.1.50:54321`
+- Remote socket: `203.0.113.20:443`
+
+That is how one laptop can hold many simultaneous connections without mixing the replies together.
+
+### Encapsulation: envelope inside envelope
+
+The data you care about travels inside several headers.
+
+For a typical web request over TCP on Ethernet, the stack looks like this:
+
+1. Your application creates data, such as an HTTP request.
+2. TCP wraps it with source and destination ports.
+3. IP wraps that with source and destination IP addresses.
+4. Ethernet or Wi-Fi wraps that again for the local hop.
+
+Each layer answers a different question:
+
+- Port: which service?
+- IP: which host?
+- MAC: which local next hop?
+
+### Where the analogy bends
+
+Do not picture a packet literally sliding under a door and into a tiny physical mail slot. Ports are logical identifiers in the transport layer. The mail-slot analogy is useful because it teaches the correct distinction: host selection and service selection are different problems.
+
+---
+
+## Chapter 7: Registered Mail and Postcards
+
+Once you know the destination host and the destination port, you still need to choose a style of delivery.
+
+That is the transport protocol.
+
+### TCP: registered mail
+
+TCP is the careful option.
+
+It starts with a handshake so both sides agree that the conversation exists. It numbers the data stream. It expects acknowledgments. If data is lost, it retransmits. It also manages flow control and congestion control so one side does not overwhelm the other or the network path.
+
+This makes TCP a good fit for web pages, file transfers, APIs, and database traffic where missing or reordered data is a real problem.
+
+### UDP: postcards
+
+UDP is much lighter.
+
+It does not create a long-lived reliable session in the same way. It sends datagrams with far less overhead and leaves reliability, ordering, and recovery to the application if those features are needed.
+
+That makes UDP useful for cases where timeliness matters more than perfect replay of old data, such as voice, video, gaming, DNS queries, and protocols that build their own control logic on top.
+
+### The real tradeoff
+
+It is tempting to summarize this as "TCP is safe, UDP is fast." That is directionally useful, but too simple.
+
+Real applications choose based on behavior:
+
+- Do I need ordered delivery?
+- Do I need retransmission?
+- Is stale data worse than missing data?
+- Will the application handle recovery itself?
+
+If you keep those questions in view, the transport choice starts to make sense.
+
+### Where the analogy bends
+
+Postcards and registered mail are helpful pictures, but both TCP and UDP are just inputs to higher-level application behavior. Modern protocols such as QUIC run over UDP and then rebuild reliability and encryption in user space. So do not stop at "UDP means unreliable." Ask what the application does on top of it.
 
 ---
 
 ## Chapter 8: The City Directory
 
-We have routers moving envelopes and TCP/UDP handling delivery. But there is a massive problem: you know your friend's name, but you don't know her street address. 
+So far, all of our examples have assumed you already know the destination IP address.
 
-When you type `github.com` into your browser, your router never even sees that name. It only ever sees IP addresses on the envelopes it forwards. You know the name of the building, but you don't have its map coordinates.
+In real life, you usually start with a name.
 
-This is why the city has a directory: DNS (Domain Name System). 
+You type `github.com`, not `140.82.112.4`.
 
-DNS is the internet's phonebook. It translates names that human brains can remember into the IP addresses that routers need to navigate.
+DNS is the directory service that maps names to records the network can use.
 
-When your browser asks, "Where is github.com?", it doesn't query one massive database. DNS is a distributed, hierarchical system of delegation.
+### The recursive lookup
 
-Your computer usually doesn't talk to the root servers directly. It asks a **recursive resolver** (often your router, your ISP, or your company's DNS server). If the resolver doesn't already have the answer cached, *it* does the legwork:
+Your machine usually asks a recursive resolver first. That resolver may be your router, your ISP, a public DNS provider, or your organization's internal DNS service.
 
-It asks the root servers: "Who handles `.com`?" The root servers reply with the `.com` servers.
-It asks a `.com` TLD server: "Who handles `github.com`?" The TLD server replies with GitHub's authoritative DNS servers.
-Finally, it asks GitHub's authoritative server: "What is the IP for `github.com`?" It returns records (often an A record for IPv4 and/or an AAAA record for IPv6, sometimes via CNAMEs). The resolver caches the answer, your machine caches it too, and the connection begins.
+If the resolver already has the answer cached, it replies immediately.
 
-### Why It's Always DNS
+If not, it walks the hierarchy:
 
-There's a reason we joke that "It's always DNS." When DNS breaks, the internet doesn't technically go down—it just becomes unusable for humans. If a DNS server crashes, you could still reach the server by typing its IP address into your browser... but no one remembers the IP address.
+1. It asks a root server where to find the top-level domain.
+2. It asks the TLD servers where to find the domain's authoritative servers.
+3. It asks the authoritative servers for the record.
 
-DNS relies heavily on caching. Every record has a TTL, which is basically "how long are caches allowed to remember this answer?"
+Then it returns the answer and caches it according to the record's TTL.
 
-If the TTL is 24 hours, resolvers are allowed to keep serving the old IP for up to 24 hours after you change it. That makes the web fast, but it makes migrations annoying. The practical move is to lower the TTL *before* a planned cutover so caches age out quickly, then raise it again afterward. Even then, some caches behave badly or have their own minimums, so expect a messy tail.
+### Why DNS failures are confusing
 
-The city is chaotic, but it has rules. Envelopes go to concierges. Binders dictate routes. Packets move hop by hop. 
+When DNS breaks, users often report that "the internet is down." Sometimes that is true. Often it is not.
 
-But what if you don't want to own a building? What if you don't want to run routers, manage cables, or deal with any of this physical hardware? 
+If name resolution fails, the network path to the destination may still be healthy. You simply do not have the address needed to begin the connection.
 
-You stop building real estate. You start renting. You move into the Cloud.
+That is why one of the fastest diagnostic moves is to separate:
+
+- Can I reach a known IP address?
+- Can I resolve the hostname?
+
+Those two tests tell different stories.
+
+### TTL and migrations
+
+TTL is the timer attached to a DNS answer that tells caches how long they may keep it.
+
+If you plan to move a service to a new IP, lowering the TTL well before the cutover can reduce the time that old answers linger in caches. It does not guarantee instant convergence. Different clients, recursive resolvers, and applications cache differently. But it improves your chances.
+
+### Where the analogy bends
+
+Real DNS is not a single city phone book. It is a distributed system with caching at multiple layers: browser, OS, local resolver, recursive resolver, and authoritative servers. The directory analogy is useful because it tells you the function. It becomes misleading if you imagine one master database.
+
+At this point, the packet can leave the local building, travel across the city, arrive at the correct building, and find the right mail slot.
+
+The next question is different: what if you do not want to own the building at all?
+
+That is where the cloud enters the story.

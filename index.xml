@@ -27,9 +27,10 @@ We want an automated controller that says: &amp;ldquo;Deploy the new version, se
       <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>Think of the internet as a city full of buildings and streets. Routers are concierges, gateways are elevators, packets are envelopes, and DNS is the city directory that keeps everyone from getting lost.
+      <description>Think of the internet as a city full of buildings and streets. Routers are the desks that hand envelopes from one network to the next, and DNS is the directory that keeps names connected to addresses.
 License: CC BY-NC-ND 4.0
-Part Two: Cities as the Internet In Part One, we looked at local networks as apartment buildings. We mapped devices to rooms, network interfaces to doors, and subnets to floors. We walked through how your computer slides an envelope down a pneumatic tube to the switch, and how the elevator acts as a gateway to the rest of the building.</description>
+Part Two: Cities as the Internet In Part One, the packet stayed inside one building. That was enough to explain local delivery, ARP, switches, and subnets.
+Now the envelope has to leave the building.</description>
     </item>
     
     <item>
@@ -253,9 +254,10 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
       <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>Think of a network as a building full of rooms, doors, and hallways. You move information the same way you&amp;rsquo;d move letters and packages between apartments.
+      <description>Think of a network as a building full of rooms, doors, and hallways. You move information the same way you would move letters and packages between apartments.
 License: CC BY-NC-ND 4.0
-Preface: Why We Need Analogies This series is dedicated to the version of me back in university who struggled, spending way too long staring at a whiteboard while a professor drew endless clouds and cylinders, completely failing to understand subnetting.</description>
+Preface: Why We Need Analogies I wrote this for the version of me who could type ping and traceroute but still had no picture of what the packet was doing.
+That gap matters. Subnet masks, ARP tables, and routing entries are not hard because they are abstract.</description>
     </item>
     
     <item>
