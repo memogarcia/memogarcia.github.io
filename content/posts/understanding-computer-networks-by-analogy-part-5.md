@@ -12,17 +12,17 @@ License: CC BY-NC-ND 4.0
 
 # Part Five: Follow the Envelope
 
-You can only learn so much from diagrams.
+Diagrams help until they do not.
 
-At some point you need to watch your own machine resolve a name, choose a route, discover a MAC address, open a socket, and negotiate encryption. That is what this part is for.
+Sooner or later you need to watch your own machine ask the City Directory for an address, choose a route, discover a MAC address, open a Mail Slot, and start sending envelopes. That is what this part is for.
 
-These labs are intentionally simple. They are not certification exercises. They are small ways to connect the mental model to live system behavior.
+These labs stay small on purpose. They are not trying to simulate a data center. They are here so you can watch the map move under your hands.
 
 As you work through them, keep one rule in mind:
 
 > Treat every command result as a clue, not a verdict.
 
-A timeout suggests one class of problem. It does not name the culprit by itself. A working `ping` tells you something useful. It does not prove the application is healthy. Good troubleshooting is mostly the discipline of reading each clue at the right level.
+A timeout proves less than people want it to. A working `ping` proves less than people want it to. Read each result for what it shows, and no more.
 
 ---
 
@@ -200,7 +200,7 @@ Run the same command again.
 
 If the recursive resolver already has the answer cached on the second run, the query time will often drop. It will not necessarily drop to zero, because you are still measuring the round-trip to the resolver itself.
 
-This matters in production work. DNS problems are not only about "no answer." They can also be about slow answers, stale answers, split-horizon answers, or a resolver that has lost reachability to its upstreams.
+If a resolver starts answering slowly, users rarely say "DNS is slow." They say the site feels sticky or the app hangs before it opens. That is one reason to time the lookup instead of assuming the problem starts at the server.
 
 ### Lab 9: Break Down a Slow HTTPS Request
 
@@ -216,7 +216,7 @@ Read the output carefully:
 - `tls` suggests how long TLS setup added
 - `ttfb` suggests how long until the server began responding
 
-If `ttfb` is much larger than the earlier phases, the server or application path may be the slow part. If `dns` dominates, the resolver path deserves attention. The point is not to assign blame quickly. The point is to stop guessing.
+If `ttfb` is much larger than the earlier phases, the server or application path may be the slow part. If `dns` dominates, the resolver path deserves attention. Follow the biggest delay first. It will usually take you closer to the real problem than arguing in the abstract.
 
 ### Lab 10: Watch Traffic on the Wire
 
@@ -246,17 +246,15 @@ If the traffic is encrypted, `tcpdump` will still show you metadata such as addr
 
 ## Conclusion: The Map and the Territory
 
-You started with one room, one door, and one local floor. From there you moved out to routing, DNS, cloud networks, encryption, and service-to-service traffic.
+You now have a map you can carry into a real incident: the room, the door, the floor, the elevator lobby, the concierge, the city directory, the tower.
 
-The goal was never to make you memorize every RFC or every provider-specific feature. The goal was to give you a map that holds up under pressure.
-
-When something fails now, you can usually start with a small set of questions:
+When something fails, start smaller than the panic:
 
 - Do I have the right address?
 - Is the path available?
 - Is the service listening?
 - Is the identity or policy layer blocking me?
 
-Those questions are simple, but they travel well. They work on a home network. They work in a VPC. They work in a container platform at 2 AM when a rollout goes wrong.
+Those questions hold up on a home network, in a VPC, or in the middle of a bad rollout at 2 AM.
 
-If this series has done its job, network problems should feel less like magic and more like investigation.
+If this series worked, the network should feel less like magic and more like a place you can walk through.

@@ -20,13 +20,13 @@ They are not a replacement for the chapters. They are the compressed version of 
 
 ## Chapter 19: Back to the First Outage
 
-At the beginning of this series, I described the uncomfortable feeling of staring at terminal output without knowing which part of the network story it represented.
+At the beginning of this series, I started with the feeling that matters most: staring at terminal output and not knowing which part of the story it belongs to.
 
-That is the real skill this book tries to build.
+That confusion is the gap this book tries to close.
 
-Not the ability to recite acronyms. Not the ability to win an argument about the OSI model. The useful skill is knowing what question comes next when the first answer is incomplete.
+Not memorizing acronyms. Not winning arguments about the OSI model. The useful skill is knowing what question comes next when the first answer is incomplete.
 
-### The five questions that travel well
+### Five questions to start with
 
 When something breaks, start here:
 
@@ -36,13 +36,13 @@ When something breaks, start here:
 4. **Which rule might be denying the action?** Firewall, security group, route table, IAM policy, certificate validation, or application auth.
 5. **What evidence would narrow this down?** One more packet capture, one DNS query, one route lookup, one log line.
 
-These questions are simple on purpose. They keep you from turning one failure into ten guesses.
+During an incident, simple questions are useful because they survive stress. You can still ask them when the chat is noisy and everyone has a theory.
 
 ### Replaying the original scene
 
-Imagine the outage again.
+Picture that first outage again.
 
-Internal tools are failing. People say "the network is down." That report is emotionally accurate and technically useless.
+Internal tools are failing. Someone says "the network is down." That sentence matches the mood better than the evidence.
 
 So you begin to narrow it.
 
@@ -51,31 +51,29 @@ So you begin to narrow it.
 3. You can reach a public IP such as `1.1.1.1`.
 4. Requests by hostname fail.
 
-At that point you do **not** yet know every answer, but you know something important: routing to at least some external destinations works, while name resolution is failing somewhere in the path.
+Now you know something concrete: routing to at least some external destinations works, while name resolution is failing somewhere in the path.
 
 Now test the resolver itself.
 
 If your configured DNS server is an internal address and it does not answer, you have a stronger lead. If you query a public resolver and public names start working, that tells you the network path is probably usable for public traffic. It does **not** mean your internal services are fixed. Internal zones may still depend on the corporate resolver.
 
-That distinction matters in real incidents. Switching to `1.1.1.1` may help you prove that the problem is internal DNS. It may not restore access to `db.internal.example.com`.
+In a real incident, that distinction saves time. Switching to `1.1.1.1` may help you prove that the problem is internal DNS. It may not restore access to `db.internal.example.com`.
 
-That is the difference between a workaround and a fix.
-
-The fix is to restore or fail over the internal DNS service, correct the broken configuration, or bring the missing resolver back into service. The disciplined part is not the exact command. The disciplined part is the sequence of narrowing tests.
+The fix is to restore or fail over the internal DNS service, correct the broken configuration, or bring the missing resolver back into service. The hard part is not the exact command. The hard part is keeping the sequence clean when people start guessing.
 
 The network stops feeling like a black box when you can describe which step is failing and what evidence supports that claim.
 
 ---
 
-## A Final Word
+## Keep the map small
 
-The analogy in this book is intentionally simple: buildings, floors, hallways, lobbies, streets, towers, and directories.
+The map in this book is small on purpose: buildings, floors, hallways, lobbies, streets, towers, and directories.
 
-Real networks are more complicated than that. They include retransmissions, asymmetric paths, policy routing, certificate chains, provider-specific control planes, caching behavior, and application quirks that the analogy only hints at.
+Real networks are messier than that. They include retransmissions, asymmetric paths, policy routing, certificate chains, provider control planes, caches that lie to you, and application behavior the analogy only brushes against.
 
-That is fine.
+The map does not need to contain all of it. It only needs to stop you from groping in the dark.
 
-The point of a good model is not to capture every detail. It is to help you ask better questions under pressure. If this series did that, then it did its job.
+If it helped you name the next question instead of taking the first guess, it did the job.
 
 ---
 

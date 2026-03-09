@@ -191,16 +191,16 @@ Then it returns the answer and caches it according to the record's TTL.
 
 ### Why DNS failures are confusing
 
-When DNS breaks, users often report that "the internet is down." Sometimes that is true. Often it is not.
+When DNS breaks, the report you hear is usually some version of "the internet is down." The browser spins. Slack stops loading. Someone says the Wi-Fi is acting up.
 
-If name resolution fails, the network path to the destination may still be healthy. You simply do not have the address needed to begin the connection.
+The path to the destination may still be fine. What is missing is the address.
 
-That is why one of the fastest diagnostic moves is to separate:
+So split the problem in two:
 
 - Can I reach a known IP address?
 - Can I resolve the hostname?
 
-Those two tests tell different stories.
+Those two answers tell different stories. One is about the path. The other is about the directory.
 
 ### TTL and migrations
 
@@ -212,8 +212,6 @@ If you plan to move a service to a new IP, lowering the TTL well before the cuto
 
 Real DNS is not a single city phone book. It is a distributed system with caching at multiple layers: browser, OS, local resolver, recursive resolver, and authoritative servers. The directory analogy is useful because it tells you the function. It becomes misleading if you imagine one master database.
 
-At this point, the packet can leave the local building, travel across the city, arrive at the correct building, and find the right mail slot.
+By now the envelope can leave your building, cross the city, and find the right room and mail slot.
 
-The next question is different: what if you do not want to own the building at all?
-
-That is where the cloud enters the story.
+The next change is ownership. What happens when the building belongs to someone else?

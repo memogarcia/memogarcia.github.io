@@ -60,25 +60,25 @@ If performance drops in a conference room full of laptops, the likely story is n
 
 ### Signal-to-noise ratio
 
-A strong signal is helpful. It is not the whole story.
+You can have a strong signal and still have miserable Wi-Fi.
 
-What often matters more is **SNR**, the signal-to-noise ratio:
+The radio does not care only about strength. It also cares about how much noise it has to fight. That is where **SNR**, the signal-to-noise ratio, matters:
 
 - high signal + low noise = cleaner communication
 - high signal + high noise = lots of retransmission and lower real throughput
 
-This is why a device can show several bars and still feel unstable in practice.
+That is why a laptop can show several bars and still stutter through a call.
 
-### A failure case to keep in mind
+### One common complaint
 
-If a user says, "Wi-Fi is slow in one room but fine near the hallway," you should not jump straight to DNS, routers, or cloud infrastructure. Start locally:
+If one conference room falls apart at 1 PM while the hallway works fine, do not jump straight to DNS, routers, or cloud infrastructure. Start locally:
 
 - channel congestion
 - poor SNR
 - overlapping access points
 - physical obstruction
 
-The problem may be several meters from the user, not several network hops away.
+The problem may be a few meters from the user, not a dozen hops away.
 
 ### Where the analogy bends
 
@@ -96,9 +96,9 @@ On an unencrypted path, devices on the path can inspect the payload. On a modern
 
 That is where **TLS** comes in.
 
-### What TLS is doing
+### Before the envelope opens
 
-TLS has two main jobs:
+TLS has two jobs before the application starts talking:
 
 1. Authenticate the server you are talking to.
 2. Establish keys so the session can be encrypted in transit.
@@ -115,13 +115,13 @@ The client validates:
 - whether the certificate is still valid
 - whether it chains back to a trusted certificate authority
 
-If that validation fails, a well-behaved client warns or aborts. That is not bureaucracy for its own sake. It is the mechanism that prevents an attacker from presenting the wrong identity and hoping you will not notice.
+If that validation fails, a well-behaved client warns or aborts. The warning is irritating when you are in a hurry, but it is doing real work: the client is refusing to trust the wrong identity.
 
 ### The key exchange step
 
 Modern TLS also establishes shared session keys using ephemeral key exchange. In practice, this often means ECDHE-based exchange in TLS 1.2 or TLS 1.3.
 
-The useful mental model is simple:
+You do not need the math for a first pass. Hold on to the shape of it:
 
 - both sides participate in creating a temporary session secret
 - the secret is not the same as the server's long-term certificate key
@@ -131,15 +131,13 @@ That is the intuition behind **forward secrecy**.
 
 ### Internal traffic matters too
 
-Teams sometimes assume that "private network" means "safe enough to skip encryption."
+Private does not always mean trusted.
 
-Sometimes the risk model allows that. Often it does not.
-
-Inside a cloud environment, traffic may stay on provider-managed networks, but that does not automatically mean every internal hop should be treated as fully trusted. Compliance rules, multi-tenant systems, east-west service traffic, and operational visibility concerns often push teams toward encrypting internal traffic as well.
+Inside a cloud environment, traffic may stay on the provider backbone, but that does not mean every internal hop deserves blind trust. Compliance rules, multi-tenant systems, east-west traffic, and simple caution often push teams toward encrypting internal traffic too.
 
 ### A realistic failure case
 
-If a client suddenly cannot connect over HTTPS, the cause might be:
+If HTTPS suddenly stops working on a service that worked yesterday, do not stop at the phrase "TLS issue." Look for the ordinary break first:
 
 - expired certificate
 - hostname mismatch
@@ -147,7 +145,7 @@ If a client suddenly cannot connect over HTTPS, the cause might be:
 - unsupported cipher/protocol combination
 - wrong system time on the client
 
-"TLS failed" is a category, not a diagnosis.
+Those failures land in the same bucket on an incident call, but they are different repairs.
 
 ### Where the analogy bends
 
@@ -165,13 +163,13 @@ You still need routing, retries, observability, policy, and encryption, but now 
 
 One answer to that problem is a **service mesh**.
 
-### The core idea
+### A proxy at every door
 
-In the classic sidecar model, each service instance gets a companion proxy. The application talks to the local proxy. The proxy applies traffic policy, handles mutual TLS, gathers telemetry, and forwards traffic to the next destination.
+In the classic sidecar model, each service gets a companion proxy beside it. The application hands the envelope to the local proxy first. The proxy applies traffic policy, handles mutual TLS, gathers telemetry, and forwards the request to the next destination.
 
 That arrangement can centralize cross-cutting concerns that would otherwise be reimplemented in each service.
 
-### Why teams adopt meshes
+### Why teams bother
 
 A mesh can help with:
 
@@ -183,9 +181,9 @@ A mesh can help with:
 
 Those are real advantages when a platform team is trying to create consistent network behavior across many services owned by different teams.
 
-### The tradeoff
+### What it costs
 
-A mesh also adds components, latency overhead, operational complexity, and another control plane that can fail in its own interesting ways.
+A mesh buys consistency by adding more moving parts. You get another control plane, more proxies, more certificates, and more ways for a healthy application to look broken.
 
 If you run a small system, a service mesh may be unnecessary.
 
@@ -205,12 +203,10 @@ If service A cannot reach service B in a mesh-enabled environment, the cause mig
 - timeout or retry behavior hiding the real latency source
 - the target service being healthy enough to answer probes but not real requests
 
-That is why service-mesh troubleshooting is still networking work. The labels change, but the questions remain familiar.
+When service A cannot reach service B in a mesh, the labels are newer but the work is familiar. You still ask where the path stops, which rule says no, and whether the target is actually answering real traffic.
 
 ### Where the analogy bends
 
-No human usher is renegotiating certificates and exporting metrics between rooms. The analogy is useful because it places the network logic outside the application process. That is the real lesson.
+No human usher is renegotiating certificates and exporting metrics between rooms. Keep the usher picture for one narrow point: some of the network behavior now lives beside the application, not inside it.
 
-At this point, the map is complete enough to be useful in live systems.
-
-The next step is to stop reading about the city and start walking through it with real tools.
+The map is sturdy enough now. The next part is where you watch it move on a real machine.
