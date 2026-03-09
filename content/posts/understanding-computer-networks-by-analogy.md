@@ -16,7 +16,7 @@ I wrote this for the version of me who could type `ping` and `traceroute` but st
 
 That gap matters. Subnet masks, ARP tables, and routing entries are not hard because they are abstract. They are hard because they are abstract *and* invisible. If nobody gives you a picture, you end up memorizing syntax without building intuition.
 
-That is why this series uses analogy on purpose. The goal is not to replace the real model. The goal is to give you a stable mental picture you can carry into a terminal session at 3 AM when a service is down and the output starts to blur together.
+I use analogy here because packets are invisible until you have seen enough failures to picture the trip in your head. When you are in a terminal at 3 AM and the output starts to smear together, that picture is often what keeps you from guessing.
 
 When the analogy stops being accurate, I will say so directly. A good analogy should make your next diagnostic step clearer, not make you confidently wrong.
 
