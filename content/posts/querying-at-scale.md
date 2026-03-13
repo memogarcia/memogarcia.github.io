@@ -1,7 +1,7 @@
 ---
 title: "Querying at scale"
 date: 2026-03-12T19:59:00+09:00
-draft: true
+draft: false
 ---
 
 > Does this email already exist?

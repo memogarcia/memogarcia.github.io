@@ -1,7 +1,7 @@
 ---
 title: "SRE at scale"
 date: 2026-03-12T19:50:00+09:00
-draft: true
+draft: false
 ---
 
 > The severity of an incident is not determined by the technology that failed, but by the number of people impacted by it.
