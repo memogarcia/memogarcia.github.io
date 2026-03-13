@@ -10,7 +10,53 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 12 Mar 2026 20:24:00 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 13 Mar 2026 17:07:00 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deployment observability when splitting CI and CD</title>
+      <link>https://memo.mx/posts/deployment-observability-dagger-argocd/</link>
+      <pubDate>Fri, 13 Mar 2026 17:07:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/deployment-observability-dagger-argocd/</guid>
+      <description>You used to have a single place to look at your build and your deploy, now you have two systems.
+GitHub Actions doing both CI and CD is simple. Push code, the workflow builds it, the workflow deploys it. One pipeline, one log, one place to check. The deploy step is right there after the build step. You can see the whole thing.
+This simplicity is a trap. I wrote about this before.</description>
+    </item>
+    
+    <item>
+      <title>Bazel</title>
+      <link>https://memo.mx/posts/bazel/</link>
+      <pubDate>Fri, 13 Mar 2026 16:14:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/bazel/</guid>
+      <description>Why does my build work on my machine but not on yours?
+If you&amp;rsquo;ve asked this more than once, the answer is almost always: your build system is lying to you. It&amp;rsquo;s pulling in implicit state from the environment, from cached artifacts, from the order things happened to run last Tuesday. Make and most build tools are fine until they aren&amp;rsquo;t, and you only find out they aren&amp;rsquo;t during an incident.</description>
+    </item>
+    
+    <item>
+      <title>Querying at scale</title>
+      <link>https://memo.mx/posts/querying-at-scale/</link>
+      <pubDate>Thu, 12 Mar 2026 19:59:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/querying-at-scale/</guid>
+      <description>Does this email already exist?
+Same query. Completely different answer depending on whether the table has 100 rows or a billion.
+100 users Anything works.
+SELECT EXISTS (SELECT 1 FROM users WHERE email = &amp;#39;memo@example.com&amp;#39;); No index? Doesn&amp;rsquo;t matter. The database scans 100 rows in microseconds. Add a UNIQUE constraint and move on. Your bottleneck at this scale is probably your CI pipeline.
+10,000 users Still comfortable, but add the index:</description>
+    </item>
+    
+    <item>
+      <title>SRE at scale</title>
+      <link>https://memo.mx/posts/sre-at-scale/</link>
+      <pubDate>Thu, 12 Mar 2026 19:50:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/sre-at-scale/</guid>
+      <description>The severity of an incident is not determined by the technology that failed, but by the number of people impacted by it.
+A 3-person team can run an incident in a Slack thread. A 300-person organization cannot.
+That gap is where SRE gets interesting.
+What changes At small scale, the person who gets paged probably wrote the code. At large scale, the person who gets paged might not know which team owns the failing component.</description>
+    </item>
+    
     <item>
       <title>Chapter 7.1: Multi-Region Cloud Training - Progressive Delivery with Argo Rollouts</title>
       <link>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</link>
