@@ -80,6 +80,50 @@ One of the reasons to pick Dagger over raw GitHub Actions is that Dagger Cloud g
 
 But this only covers the CI half. You still need Argo CD for the CD half. Accept that these are two separate systems with two separate observability surfaces.
 
+### 5. A Grafana dashboard that ties it together
+
+Dagger Cloud shows CI. Argo CD UI shows CD. Neither shows both. If you want one place to answer "what happened to my commit?", build a Grafana dashboard that pulls from both.
+
+The idea is a deployment tracker. One row per commit, columns showing the state at each stage:
+
+```
++---------+--------+------------+----------+------------+----------+
+|         |        | Dagger     |          | Argo CD    | Health   |
+| Commit  | Author | Build      | Tag Push | Sync       | Check    |
++---------+--------+------------+----------+------------+----------+
+| abc123  | memo   | ok   42s   | ok       | ok   18s   | healthy  |
+| def456  | alice  | ok   38s   | ok       | syncing    | pending  |
+| 789fed  | bob    | FAIL       | --       | --         | --       |
++---------+--------+------------+----------+------------+----------+
+```
+
+Below that, time-series panels:
+
+```
++------------------------------+  +------------------------------+
+| CI Build Duration (p95)      |  | Time from Commit to Deploy   |
+|                              |  |                              |
+| 50s |       _.               |  |  5m |   ..                   |
+| 40s |   _.-' '-.             |  |  4m |   || ..                |
+| 30s |.-'       '-._          |  |  3m |.--''-''--              |
+|     +--------------->        |  |     +--------------->        |
+|      Mon  Tue  Wed  Thu      |  |      Mon  Tue  Wed  Thu      |
++------------------------------+  +------------------------------+
+
++------------------------------+  +------------------------------+
+| Argo CD Sync Failures        |  | Deploy Frequency             |
+|                              |  |                              |
+|  3 |         ..              |  |  8 |      ..                  |
+|  2 |   ..    ||              |  |  6 |   .. || ..               |
+|  1 |   ||    ''              |  |  4 |.--''-''-''--             |
+|    +--------------->         |  |    +--------------->          |
+|     Mon  Tue  Wed  Thu       |  |     Mon  Tue  Wed  Thu        |
++------------------------------+  +------------------------------+
+```
+
+The data sources: Dagger Cloud exposes build metrics via its API. Argo CD exposes application state via its API and Prometheus metrics (`argocd_app_sync_total`, `argocd_app_health_status`). Git commit metadata comes from your Git provider's API or a webhook receiver.
+
+The dashboard won't build itself. But once it exists, the team stops context-switching between three UIs to answer one question.
 
 ## The mental model shift
 

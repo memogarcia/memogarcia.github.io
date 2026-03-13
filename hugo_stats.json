@@ -114,6 +114,7 @@
       "3-stringfile-manipulation",
       "4-daggers-own-observability",
       "4-gluing-services-together",
+      "5-a-grafana-dashboard-that-ties-it-together",
       "5-debugging",
       "6-web-servers",
       "a-failure-case-worth-remembering",
