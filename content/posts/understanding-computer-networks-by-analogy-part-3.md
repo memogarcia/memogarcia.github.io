@@ -18,10 +18,7 @@ The hotel changes who owns the property. It does not spare you the networking wo
 
 You still choose the tower layout, the floors, the routes, and the rules about who gets in. You are simply doing that work inside infrastructure owned and operated by a provider.
 
-The hotel analogy helps because it separates two responsibilities:
-
-- The provider runs the property.
-- You define the parts you rent and the rules inside them.
+The hotel analogy helps because it separates two responsibilities: the provider runs the concrete and the generators, while you define the tower you rent and the rules inside it.
 
 ---
 
@@ -43,7 +40,7 @@ Suppose you need a staging environment before the day ends.
 
 In a data center, that request can turn into emails, rack diagrams, firewall tickets, and waiting for someone to tell you which switch port is free. In the cloud, you can usually stand up the network, the instances, and the security policy before lunch.
 
-The work did not disappear. It only got faster to do well, and faster to do badly.
+The work did not disappear. It only got faster to do well, and faster to do badly. Your instance is now reachable from the internet, assuming you remembered the other seven things that also need to be true.
 
 ### Where the analogy bends
 
@@ -82,11 +79,7 @@ Across providers, the naming changes. The design instinct does not: do not pile 
 
 ### One layout you will see often
 
-If you run a public application with a database backend, a common layout is:
-
-- Public entry points in multiple zones
-- Application instances in private subnets
-- Database instances or replicas distributed according to the service's high-availability model
+If you run a public application with a database backend, a common layout is public entry points in multiple zones, application instances in private subnets, and database instances or replicas distributed according to the service's high-availability model.
 
 That is the same mental move you would make in a physical environment: separate exposure levels and reduce single points of failure.
 
@@ -108,7 +101,7 @@ If a service must accept traffic from the public internet, you need a path for t
 
 In AWS, an **Internet Gateway (IGW)** is one of the components that makes this possible. But the presence of an IGW alone does not make a workload public. Reachability still depends on route tables, public IP assignment, security groups, network ACLs, and any load balancers or proxies in front.
 
-That detail matters in troubleshooting. A workload can be inside a VPC with an IGW attached and still be unreachable from the internet because one of the other required conditions is missing.
+That detail matters in troubleshooting. A workload can sit inside a VPC with an IGW attached and still be unreachable from the internet because one of the other six conditions is missing.
 
 ### The outbound-only path
 
@@ -136,12 +129,7 @@ The benefit is not cosmetic. It is easier to reason about:
 
 ### A failure case worth keeping in mind
 
-If a private instance hangs on `apt update` or cannot pull a container image, start with the egress path:
-
-- no route to the egress path
-- a broken NAT configuration
-- DNS failure
-- a security rule blocking the return traffic
+If a private instance hangs on `apt update` or cannot pull a container image, start with the egress path. No route to the egress component, a broken NAT configuration, DNS failure, or a security rule blocking the return traffic all produce the same symptom: the instance reports that it has no internet.
 
 That failure gets reported as "no internet" almost every time. Usually the break is more specific than that.
 
@@ -153,59 +141,33 @@ Cloud gateways are not just physical doors. They are combinations of routing, ad
 
 ## Chapter 13: Badges and Security Guards
 
-Network reachability is only part of cloud security.
-
-The other part is identity.
+Network reachability is only part of cloud security. The other part is identity.
 
 If networking answers "Can this packet get there?", identity and policy answer "Should this caller be allowed to do this operation?"
 
 ### IAM: who are you, and what may you do?
 
-IAM stands for **Identity and Access Management**.
+IAM stands for **Identity and Access Management**. It governs identities such as users, roles, and service accounts, along with policies describing which API actions or service-level operations those identities may perform.
 
-It governs identities such as users, roles, and service accounts, along with policies describing which API actions or service-level operations those identities may perform.
-
-This is where many teams mix concepts.
-
-IAM is not a replacement for routing or firewall rules. A packet that cannot reach the service will fail before IAM matters. And many services require both:
-
-- network reachability
-- valid identity and authorization
+This is where many teams mix concepts. IAM is not a replacement for routing or firewall rules. A packet that cannot reach the service will fail before IAM matters. Many services require both network reachability and valid identity.
 
 ### Security groups and network ACLs
 
-In AWS terms, two common network controls are:
-
-- **Security Groups**: stateful rules attached to instances or interfaces
-- **Network ACLs**: subnet-level stateless rules
-
-You can think of them as different checkpoints, but remember what they actually inspect: packet attributes such as source, destination, protocol, and port.
+In AWS terms, two common network controls are security groups (stateful rules attached to instances or interfaces) and network ACLs (subnet-level stateless rules). You can think of them as different checkpoints, but remember what they actually inspect: packet attributes such as source, destination, protocol, and port.
 
 IAM is different. It generally evaluates API calls and service permissions, not every packet on the wire.
 
 ### A realistic troubleshooting example
 
-Suppose your application can read and write locally all day, then hangs the moment it tries to fetch an object from storage.
-
-The failure might be:
-
-- no network path to the service endpoint
-- DNS resolving to the wrong target
-- egress blocked by security rules
-- missing IAM permission such as `s3:GetObject`
+Suppose your application can read and write locally all day, then hangs the moment it tries to fetch an object from storage. The failure might be no network path to the service endpoint, DNS resolving to the wrong target, egress blocked by security rules, or a missing IAM permission such as `s3:GetObject`.
 
 From the application's point of view, those failures can feel almost identical: timeout, access denied, missing object, vague SDK error.
 
-So keep two questions on the table at the same time:
-
-1. Can the network path reach the service?
-2. Does the caller have permission to do the thing it is attempting?
+So keep two questions on the table at the same time: Can the network path reach the service? Does the caller have permission to do the thing it is attempting?
 
 ### Temporary credentials
 
-One of the most valuable cloud patterns is using roles or service accounts to issue temporary credentials rather than storing long-lived secrets in source code or instance images.
-
-This reduces the blast radius of leaks and makes rotation more manageable. It also gives you cleaner audit trails because the identity is explicit.
+One of the most valuable cloud patterns is using roles or service accounts to issue temporary credentials rather than storing long-lived secrets in source code or instance images. This reduces the blast radius of leaks and makes rotation more manageable. It also gives you cleaner audit trails because the identity is explicit.
 
 ### Where the analogy bends
 

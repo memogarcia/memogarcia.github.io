@@ -36,17 +36,7 @@ If the hallway analogy helped in Part One, think of this chapter as the point wh
 
 On old shared Ethernet, collisions were a direct problem. Modern switched Ethernet mostly avoids that because each device gets its own link.
 
-Wi-Fi cannot rely on the same model. Radios contend for a shared channel, and devices have to be careful about when they transmit.
-
-That is why Wi-Fi uses **CSMA/CA**: Carrier Sense Multiple Access with Collision Avoidance.
-
-The basic idea is:
-
-1. Listen before transmitting.
-2. If the medium is busy, wait.
-3. Retry after a randomized delay.
-
-This does not eliminate contention. It manages it.
+Wi-Fi cannot rely on the same model. Radios contend for a shared channel, and devices have to be careful about when they transmit. That is why Wi-Fi uses **CSMA/CA**: Carrier Sense Multiple Access with Collision Avoidance. The basic idea is listen before transmitting, wait if the medium is busy, and retry after a randomized delay. This does not eliminate contention. It manages it.
 
 ### Channels, bands, and interference
 
@@ -137,15 +127,7 @@ Inside a cloud environment, traffic may stay on the provider backbone, but that 
 
 ### A realistic failure case
 
-If HTTPS suddenly stops working on a service that worked yesterday, do not stop at the phrase "TLS issue." Look for the ordinary break first:
-
-- expired certificate
-- hostname mismatch
-- missing intermediate certificate
-- unsupported cipher/protocol combination
-- wrong system time on the client
-
-Those failures land in the same bucket on an incident call, but they are different repairs.
+If HTTPS suddenly stops working on a service that worked yesterday, do not stop at the phrase "TLS issue." Look for the ordinary break first: expired certificate, hostname mismatch, missing intermediate certificate, unsupported cipher/protocol combination, or wrong system time on the client. Those failures land in the same bucket on an incident call, but they are different repairs.
 
 ### Where the analogy bends
 
@@ -171,15 +153,7 @@ That arrangement can centralize cross-cutting concerns that would otherwise be r
 
 ### Why teams bother
 
-A mesh can help with:
-
-- **mTLS** between services
-- retries and timeouts
-- traffic shifting during rollout
-- circuit breaking
-- uniform telemetry
-
-Those are real advantages when a platform team is trying to create consistent network behavior across many services owned by different teams.
+A mesh can help with mTLS between services, retries and timeouts, traffic shifting during rollout, circuit breaking, and uniform telemetry. Those are real advantages when a platform team is trying to create consistent network behavior across many services owned by different teams.
 
 ### What it costs
 
@@ -195,13 +169,7 @@ The sidecar picture is still the easiest place to start, but it is not the only 
 
 ### A failure case worth remembering
 
-If service A cannot reach service B in a mesh-enabled environment, the cause might be:
-
-- DNS or service discovery failure
-- mesh policy denial
-- certificate rotation issue
-- timeout or retry behavior hiding the real latency source
-- the target service being healthy enough to answer probes but not real requests
+If service A cannot reach service B in a mesh-enabled environment, the cause might be DNS or service discovery failure, mesh policy denial, certificate rotation issue, timeout or retry behavior hiding the real latency source, or the target service being healthy enough to answer probes but not real requests.
 
 When service A cannot reach service B in a mesh, the labels are newer but the work is familiar. You still ask where the path stops, which rule says no, and whether the target is actually answering real traffic.
 
