@@ -53,9 +53,9 @@ languages:
           identifier: labs
           pageRef: /labs
           weight: 6
-        - name: Books
-          identifier: books
-          pageRef: /books
+        - name: Networks by Analogy
+          identifier: networks-by-analogy
+          url: "https://networksbyanalogy.com/"
           weight: 7
         - name: About
           pageRef: /about
