@@ -67,7 +67,7 @@ For example:
 
 ## Why GitOps is important and what value does it bring to my organization?
 
-Automation is a competency that any organization must master to bring order in this chaotic landscape. Once people, code, and tools are in place, new automation opportunities to modernize start to become more apparent to the organization. GitOps is just one of the ways to ensure control and confidence over how, when, and what you deliver.
+Automation brings order. Once you automate basic tasks, new opportunities become obvious. GitOps is one framework to ensure control and confidence over your delivery pipeline.
 
 FAQ.
 

@@ -14,7 +14,7 @@ Bazel's pitch is simple. Builds should be deterministic. Same inputs, same outpu
 
 Bazel models builds as a directed acyclic graph. Every target declares its inputs and outputs explicitly. If nothing changed, nothing rebuilds. If one file changed, only the targets that depend on it rebuild. This sounds obvious. Most build tools claim to do this. Bazel actually enforces it by sandboxing each action so it can't read files it didn't declare as inputs.
 
-That sandboxing is the key insight. It's not just an optimization. It's a correctness guarantee.
+That sandboxing is the key insight. It is a correctness guarantee.
 
 ## BUILD files
 
