@@ -61,7 +61,7 @@ Typical patterns include:
 - A **public subnet** for components that accept inbound internet traffic, often through a load balancer.
 - A **private subnet** for application servers, workers, or databases that should not accept direct public inbound traffic.
 
-The reason for the split is not style. It is control. Public-facing systems and internal systems usually need different reachability rules, different routing, and different monitoring expectations.
+We split them for control. Public-facing systems and internal systems require different reachability rules, routing paths, and monitoring expectations.
 
 ### Availability zones and failure domains
 
@@ -121,7 +121,7 @@ Many cloud workloads need to access managed services such as object storage, que
 
 Without a private endpoint, that traffic may still remain on the provider's backbone in practice, but it often follows a public-style addressing path or a NAT/internet egress model from your point of view. Private endpoints give you a clearer and more explicit private path, along with tighter policy control.
 
-The benefit is not cosmetic. It is easier to reason about:
+This makes the network easier to reason about:
 
 - clearer routing
 - more predictable security posture

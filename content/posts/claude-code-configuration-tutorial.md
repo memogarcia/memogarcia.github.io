@@ -8,11 +8,9 @@ draft: true
 
 You've installed Claude Code. You've written some Python. Maybe you've even built a few APIs. But every time you start a new project, you're doing the same dance: manually formatting code, forgetting to run tests, missing edge cases in reviews, and switching mental contexts between documentation and implementation.
 
-What if your AI assistant could handle all of this... automatically?
+We are going to build a task management API to demonstrate Claude Code's configuration system. The goal is an environment where Claude formats your code, reviews it for security issues, adapts its output style, and integrates with external services.
 
-Here's what we're actually building: a task management API that progressively gains superpowers through Claude Code's configuration system. By the end, you'll have an environment where Claude automatically formats your code, reviews it for security issues, adapts its output style based on what you're doing, and even integrates with external services.
-
-But here's the thing... most tutorials show you isolated features. This one shows you how they work together.
+Most tutorials show you isolated features. This one shows you how they work together.
 
 ## What You'll Actually Learn
 
@@ -838,11 +836,9 @@ task-api/
 └── .env
 ```
 
-Remember: configuration is powerful, but it's not magic. It's about encoding your best practices so they happen automatically. Start with what annoys you most, automate that, then build from there.
+Configuration is just a way to encode your best practices so they happen automatically. Start with what annoys you most, automate it, and build from there.
 
-The best development environment is the one that gets out of your way and lets you focus on solving interesting problems.
-
-Now go build something cool.
+The best development environment stays out of your way.
 
 ---
 
