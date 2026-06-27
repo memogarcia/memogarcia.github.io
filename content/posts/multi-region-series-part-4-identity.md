@@ -55,6 +55,7 @@ You create an IAM role with a specific trust policy. Notice how the policy expli
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
+          "<cluster-oidc>:aud": "sts.amazonaws.com",
           "<cluster-oidc>:sub": "system:serviceaccount:echo:aws-sa"
         }
       }
@@ -82,7 +83,33 @@ Introduced later to simplify the OIDC boilerplate, Pod Identity relies on an age
 Pod Identity is much easier to set up, especially across multiple clusters, because you don't need a unique OIDC trust policy for every cluster. However, it only works on EKS (no self-managed clusters) and currently does not support Fargate or Windows pods.
 
 **How to set it up:**
-You create a standard IAM role, and instead of messing with annotations and trust policies, you tell the EKS API to map the role to a specific namespace and service account:
+First install the EKS Pod Identity agent add-on in the cluster:
+
+```bash
+aws eks create-addon \
+  --cluster-name prod-us \
+  --addon-name eks-pod-identity-agent
+```
+
+Then create a role that trusts the Pod Identity service principal. The role trust policy must allow both `sts:AssumeRole` and `sts:TagSession`:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "Service": "pods.eks.amazonaws.com" },
+      "Action": [
+        "sts:AssumeRole",
+        "sts:TagSession"
+      ]
+    }
+  ]
+}
+```
+
+Finally, tell the EKS API to map the role to a specific namespace and service account:
 
 ```bash
 aws eks create-pod-identity-association \
@@ -98,6 +125,15 @@ Regardless of which path you chose, verifying it is simple. Exec into a pod usin
 
 ```bash
 aws sts get-caller-identity
+```
+
+If your app image does not include the AWS CLI, run a short-lived check pod with the same service account:
+
+```bash
+kubectl -n echo run aws-check --rm -it --restart=Never \
+  --image=amazon/aws-cli \
+  --overrides='{"spec":{"serviceAccountName":"aws-sa"}}' \
+  -- sts get-caller-identity
 ```
 
 If it returns the ARN of your `echo-irsa-role` or `echo-podid-role` instead of your worker node's role, you've successfully implemented least-privilege identity for your workloads.

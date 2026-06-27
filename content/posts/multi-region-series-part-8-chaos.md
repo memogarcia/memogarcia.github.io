@@ -18,8 +18,16 @@ First, we need to install the Chaos Mesh operator in one of our clusters (we'll 
 
 ```bash
 helm repo add chaos-mesh https://charts.chaos-mesh.org
-helm upgrade --install chaos-mesh chaos-mesh/chaos-mesh -n chaos-testing --create-namespace --set dashboard.create=true
+helm upgrade --install chaos-mesh chaos-mesh/chaos-mesh \
+  -n chaos-testing \
+  --create-namespace \
+  --set dashboard.create=true \
+  --set dnsServer.create=false \
+  --set chaosDaemon.runtime=containerd \
+  --set chaosDaemon.socketPath=/run/containerd/containerd.sock
 ```
+
+If your cluster is K3s, the containerd socket is often `/run/k3s/containerd/containerd.sock`. The Taskfile in this repo sets the correct socket per lab cluster.
 
 With the operator running, we define "Chaos Experiments" as Custom Resource Definitions (CRDs). The operator reads these manifests and executes the destructive actions.
 
@@ -69,10 +77,12 @@ spec:
   mode: all
   selector:
     namespaces: [ "echo" ]
+    labelSelectors:
+      app: echo
   delay:
     latency: '200ms'
     jitter: '50ms'
-  duration: '5m'
+  duration: '1m'
 ```
 
 **What to watch for:**

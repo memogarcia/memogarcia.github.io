@@ -29,19 +29,13 @@ We could manually create an Argo CD `Application` resource for every app in ever
 
 ### Labeling and Registration
 
-First, Argo CD needs to know our clusters exist and what "region" they represent. We do this by applying a label directly to the `kube-system` namespace, which is a common pattern for identifying cluster-wide metadata.
+First, Argo CD needs to know our clusters exist and what "region" they represent. The ApplicationSet cluster generator reads labels from Argo CD's registered cluster secrets, not from Kubernetes namespace labels.
+
+Assuming you have Argo CD running in a control cluster (or one of your regions acting as the control plane), register each cluster with a `region` label. This gives Argo CD the credentials it needs to deploy resources on your behalf and gives the ApplicationSet a safe selector.
 
 ```bash
-# Label the clusters so our ApplicationSet can target them
-kubectl --context prod-us-east-1 label ns kube-system region=us --overwrite
-kubectl --context prod-eu-west-1 label ns kube-system region=eu --overwrite
-```
-
-Next, assuming you have Argo CD running in a control cluster (or one of your regions acting as the control plane), you need to register these clusters. This gives Argo CD the credentials it needs to deploy resources on your behalf.
-
-```bash
-argocd cluster add prod-us-east-1 --name prod-us --yes
-argocd cluster add prod-eu-west-1 --name prod-eu --yes
+argocd cluster add prod-us-east-1 --name prod-us --label region=us --yes
+argocd cluster add prod-eu-west-1 --name prod-eu --label region=eu --yes
 ```
 
 ### Writing the ApplicationSet
@@ -58,8 +52,13 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    # Target all registered clusters
-    - clusters: {}
+    # Target only registered clusters with an explicit region label
+    - clusters:
+        selector:
+          matchExpressions:
+            - key: region
+              operator: In
+              values: [ "us", "eu" ]
   template:
     metadata:
       name: 'echo-{{name}}'
@@ -72,8 +71,8 @@ spec:
         repoURL: https://github.com/your-org/your-repo
         targetRevision: main
         # Here is the clever part: we dynamically inject the region label
-        # to pick the correct overlay (e.g., overlays/us/echo or overlays/eu/echo)
-        path: deploy/overlays/{{metadata.labels.region}}/echo
+        # to pick the correct overlay (e.g., deploy/rollouts/overlays/us)
+        path: deploy/rollouts/overlays/{{metadata.labels.region}}
       syncPolicy:
         automated: 
           prune: true

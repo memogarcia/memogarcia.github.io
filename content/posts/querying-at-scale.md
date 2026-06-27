@@ -20,14 +20,19 @@ No index? Doesn't matter. The database scans 100 rows in microseconds. Add a `UN
 
 ## 10,000 users
 
-Still comfortable, but add the index:
+Still comfortable, but add a unique index:
 
 ```sql
 CREATE UNIQUE INDEX idx_users_email ON users (email);
 ```
 
+Most products treat email as case-insensitive. If yours does, make the constraint match the rule instead:
 
-B-tree. O(log n). For 10K rows that's about 14 comparisons. You won't think about it again.
+```sql
+CREATE UNIQUE INDEX idx_users_email_lower ON users (lower(email));
+```
+
+B-tree. Fast enough. The useful property is enforcement. The database rejects duplicates even when your application has a race.
 
 ## 1 million users
 
@@ -43,22 +48,22 @@ The index still works. The problems are elsewhere.
 
 Now you're making architecture decisions.
 
-Your B-tree index on 100 million emails is several gigabytes. It probably doesn't fit in memory anymore. Some lookups hit disk, and disk I/O is orders of magnitude slower.
+Your B-tree index on 100 million emails can be several gigabytes. The risk is the hot part no longer fits in memory, write amplification hurts, or random reads start showing up in latency.
 
-**Hash indexes.** For equality checks (which this is), a hash index is O(1). PostgreSQL supports them. If you don't need range scans on the email column, consider it.
+**Do not replace the unique B-tree with a PostgreSQL hash index.** Hash indexes handle equality lookups, but PostgreSQL unique indexes are B-trees. The unique constraint is still the thing protecting the data.
 
-**Partitioning.** Split the table by email hash. Each partition gets a smaller index that fits in memory.
+**Partitioning.** Split the table by a stored email hash if it solves a measured problem. Each partition gets a smaller index, and pruning can keep lookups predictable. In PostgreSQL, a unique constraint on a partitioned table must include the partition key, so design this before it becomes your identity boundary.
 
-**Bloom filters.** Put one in front of the database. A Bloom filter answers "definitely not here" without touching disk. If it says "maybe here," you fall through to the database. False positives but no false negatives.
+**Bloom filters.** Put one in front of the database if most checks are misses. A Bloom filter answers "definitely not here" without touching disk. If it says "maybe here," you fall through to the database. False positives, no false negatives, but only if the filter is kept current. The database constraint still decides.
 
 ```
-Request → Bloom Filter → "not here" → allow signup
-                       → "maybe"   → query database
+Request → Bloom Filter → "not here" → try insert
+                       → "maybe"   → query database or try insert
 ```
 
 ## 1 billion users
 
-A single database won't work. You're sharding.
+A single database might still work for some workloads. Usually, the operational problem pushes you toward sharding before the query syntax changes.
 
 ### Sharding
 
@@ -68,17 +73,17 @@ Hash the email, pick a shard:
 shard_id = hash(email) % num_shards
 ```
 
-Each shard holds a subset. Lookups go to exactly one shard. The trade-off is operational: rebalancing, failover, and anything that isn't a single-key lookup becomes painful.
+Each shard holds a subset. Lookups go to exactly one shard. Uniqueness stays local as long as the same normalized email always routes to the same shard. The trade-off is operational: rebalancing, failover, and anything that isn't a single-key lookup becomes painful.
 
-### Bloom filters become mandatory
+### Bloom filters become useful
 
-1 billion entries. A Bloom filter with 1% false positive rate costs about 1.2 GB of memory. Sounds like a lot until you compare it to a database query on every signup attempt.
+1 billion entries. A Bloom filter with 1% false positive rate costs about 1.2 GB of memory. Useful if misses dominate. Wasteful if almost every request needs a write anyway.
 
-**Cuckoo filters** are worth knowing about too. They support deletion (Bloom filters don't) and perform better near capacity.
+**Cuckoo filters** are worth knowing about too if you need deletion. Basic Bloom filters do not delete cleanly.
 
-### Async validation
+### Async work
 
-At this scale, maybe you don't validate synchronously. Accept the signup, write to a queue, check later. If the email exists, notify the user after the fact. You're trading immediate consistency for availability. When your user table is larger than most countries, that's a reasonable trade.
+Async work is fine for welcome emails, enrichment, and abuse checks. It is a bad fit for email uniqueness. If you accept the signup first and check later, you are choosing an account-merge problem. Keep uniqueness in the write path.
 
 ## Summary
 
@@ -87,7 +92,5 @@ At this scale, maybe you don't validate synchronously. Accept the signup, write 
 | 100 | Full scan | O(n) |
 | 10K | B-tree | O(log n) |
 | 1M | B-tree + pooling + conflict handling | O(log n) |
-| 100M | Hash index + partitions + Bloom filter | O(1) amortized |
-| 1B | Sharding + Bloom filter + async | O(1) per shard |
-
-The SQL barely changes. The infrastructure around it changes completely.
+| 100M | B-tree + optional partitioning/filter | O(log n) |
+| 1B | Sharding + per-shard unique constraint | O(log shard) |

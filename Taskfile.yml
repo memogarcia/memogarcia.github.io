@@ -6,20 +6,22 @@ vars:
   IMAGE: "{{.REGISTRY}}/{{.APP}}:{{.TAG}}"
   TAG: "{{.TAG | default .GIT_SHA}}"
   GIT_SHA: { sh: "git rev-parse --short HEAD || echo dev" }
-  CTX_US: "{{.CTX_US | default "prod-us-east-1"}}"
-  CTX_EU: "{{.CTX_EU | default "prod-eu-west-1"}}"
+  CTX_US: '{{.CTX_US | default "prod-us-east-1"}}'
+  CTX_EU: '{{.CTX_EU | default "prod-eu-west-1"}}'
   ISTIO_NS: "istio-system"
   ARGO_NS: "argocd"
-  MESH_ID: "{{.MESH_ID | default "training-mesh"}}"
-  TRUST_DOMAIN: "{{.TRUST_DOMAIN | default "corp.local"}}"
+  MESH_ID: '{{.MESH_ID | default "training-mesh"}}'
+  TRUST_DOMAIN: '{{.TRUST_DOMAIN | default "corp.local"}}'
+  CHAOS_SOCKET_US: '{{.CHAOS_SOCKET_US | default "/run/k3s/containerd/containerd.sock"}}'
+  CHAOS_SOCKET_EU: '{{.CHAOS_SOCKET_EU | default "/run/containerd/containerd.sock"}}'
 tasks:
   ctx:list:
     cmds:
       - kubectl config get-contexts
   k:ver:
     cmds:
-      - kubectl --context {{.CTX_US}} version --short || true
-      - kubectl --context {{.CTX_EU}} version --short || true
+      - kubectl --context {{.CTX_US}} version
+      - kubectl --context {{.CTX_EU}} version
 
   # --- Istio ---
   istio:repo:
@@ -93,12 +95,12 @@ tasks:
     deps: [chaos:repo]
     cmds:
       - kubectl --context {{.CTX_US}} create ns chaos-testing --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
-      - helm --kube-context {{.CTX_US}} upgrade --install chaos-mesh chaos-mesh/chaos-mesh -n chaos-testing --set dashboard.create=true --wait
+      - helm --kube-context {{.CTX_US}} upgrade --install chaos-mesh chaos-mesh/chaos-mesh -n chaos-testing --set dashboard.create=true --set dnsServer.create=false --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath={{.CHAOS_SOCKET_US}} --wait
   chaos:install:eu:
     deps: [chaos:repo]
     cmds:
       - kubectl --context {{.CTX_EU}} create ns chaos-testing --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
-      - helm --kube-context {{.CTX_EU}} upgrade --install chaos-mesh chaos-mesh/chaos-mesh -n chaos-testing --set dashboard.create=true --wait
+      - helm --kube-context {{.CTX_EU}} upgrade --install chaos-mesh chaos-mesh/chaos-mesh -n chaos-testing --set dashboard.create=true --set dnsServer.create=false --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath={{.CHAOS_SOCKET_EU}} --wait
   chaos:install:all:
     deps: [chaos:install:us, chaos:install:eu]
 
@@ -122,18 +124,14 @@ tasks:
     deps: [obs:repo]
     cmds:
       - kubectl --context {{.CTX_US}} create ns observability --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
-      - helm --kube-context {{.CTX_US}} upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability \
-          --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
-      - helm --kube-context {{.CTX_US}} upgrade --install kiali kiali/kiali-server -n {{.ISTIO_NS}} \
-          --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
+      - helm --kube-context {{.CTX_US}} upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability --set-string prometheus-node-exporter.hostRootFsMount.mountPropagation= --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
+      - helm --kube-context {{.CTX_US}} upgrade --install kiali kiali/kiali-server -n {{.ISTIO_NS}} --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
   obs:install:eu:
     deps: [obs:repo]
     cmds:
       - kubectl --context {{.CTX_EU}} create ns observability --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
-      - helm --kube-context {{.CTX_EU}} upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability \
-          --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
-      - helm --kube-context {{.CTX_EU}} upgrade --install kiali kiali/kiali-server -n {{.ISTIO_NS}} \
-          --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
+      - helm --kube-context {{.CTX_EU}} upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability --set-string prometheus-node-exporter.hostRootFsMount.mountPropagation= --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
+      - helm --kube-context {{.CTX_EU}} upgrade --install kiali kiali/kiali-server -n {{.ISTIO_NS}} --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
   obs:install:all:
     deps: [obs:install:us, obs:install:eu]
 
@@ -175,11 +173,11 @@ tasks:
   rollouts:watch:us:
     desc: Watch rollout status (requires kubectl-argo-rollouts)
     cmds:
-      - kubectl --context {{.CTX_US}} -n echo argo rollouts get rollout echo --watch || kubectl --context {{.CTX_US}} -n echo get rollout echo -o yaml
+      - kubectl argo rollouts get rollout echo --context {{.CTX_US}} -n echo --watch || kubectl --context {{.CTX_US}} -n echo get rollout echo -o yaml
   rollouts:watch:eu:
     desc: Watch rollout status (requires kubectl-argo-rollouts)
     cmds:
-      - kubectl --context {{.CTX_EU}} -n echo argo rollouts get rollout echo --watch || kubectl --context {{.CTX_EU}} -n echo get rollout echo -o yaml
+      - kubectl argo rollouts get rollout echo --context {{.CTX_EU}} -n echo --watch || kubectl --context {{.CTX_EU}} -n echo get rollout echo -o yaml
 
   rollouts:image:us:
     desc: Update echo image in US rollout (set REGISTRY/APP/TAG)

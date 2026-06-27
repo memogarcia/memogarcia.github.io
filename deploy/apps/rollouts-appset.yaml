@@ -5,7 +5,14 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - clusters: {}
+    - clusters:
+        selector:
+          matchExpressions:
+            - key: region
+              operator: In
+              values:
+                - us
+                - eu
   template:
     metadata:
       name: 'echo-rollouts-{{name}}'

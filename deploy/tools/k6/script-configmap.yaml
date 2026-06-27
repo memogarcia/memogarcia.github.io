@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-scripts
+  namespace: echo
+data:
+  script.js: |
+    import http from 'k6/http';
+    import { sleep } from 'k6';
+
+    export const options = {
+      vus: 200,
+      duration: '3m'
+    };
+
+    export default function() {
+      http.get('http://echo-stable.echo.svc.cluster.local/');
+      sleep(0.1);
+    }

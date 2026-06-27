@@ -103,7 +103,7 @@ spec:
         istio:
           virtualService:
             name: echo-rollouts
-            routes: [ "primary", "ab-test" ]
+            routes: [ "primary" ]
       steps:
         - setWeight: 10
         - pause: { duration: 60 }
@@ -116,6 +116,8 @@ spec:
         - setWeight: 50
         - pause: { duration: 60 }
 ```
+
+The `ab-test` route can stay in the `VirtualService`, but do not list it under `trafficRouting.istio.virtualService.routes`. Argo Rollouts should manage the weighted `primary` route only. The header-only route sends 100% of matching traffic to the canary service, so it is not a stable/canary weighted route.
 
 ### The Automated Safety Check (AnalysisTemplate)
 

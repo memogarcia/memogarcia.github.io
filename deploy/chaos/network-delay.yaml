@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: delay-echo
+  namespace: chaos-testing
+spec:
+  action: delay
+  mode: all
+  selector:
+    labelSelectors:
+      app: echo
+    namespaces: [ "echo" ]
+  delay:
+    latency: "200ms"
+    jitter: "50ms"
+  duration: "1m"

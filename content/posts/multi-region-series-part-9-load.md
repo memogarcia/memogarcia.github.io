@@ -46,7 +46,7 @@ data:
     
     export default function() { 
       // Hit the local service
-      http.get('http://echo.echo.svc.cluster.local/'); 
+      http.get('http://echo-stable.echo.svc.cluster.local/');
       sleep(0.1); 
     }
 ```
