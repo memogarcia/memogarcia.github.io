@@ -1,5 +1,5 @@
 ---
-title: "Why I Built verachi.io"
+title: "Why I built verachi.io"
 date: 2026-06-27T11:19:23+09:00
 draft: false
 ---
