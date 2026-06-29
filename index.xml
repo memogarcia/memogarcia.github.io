@@ -10,7 +10,17 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 27 Jun 2026 11:19:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 Jun 2026 00:00:00 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SaaS Template</title>
+      <link>https://memo.mx/posts/saas-template/</link>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/saas-template/</guid>
+      <description>How many tokens does &amp;ldquo;building a SaaS project&amp;rdquo; cost and how many of those are non-requirements? The parts you need but are not core to the product.
+I have asked my trusted codex to build SaaS foundations several times already. Auth, tenant isolation, billing, transactional email, database migrations, structured logging, feature flags and so on. Every new project starts with the same same intention, however each time is a different implementation.</description>
+    </item>
+    
     <item>
       <title>Why I built verachi.io</title>
       <link>https://memo.mx/posts/why-i-built-verachi/</link>
