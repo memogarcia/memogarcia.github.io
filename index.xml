@@ -12,7 +12,7 @@
     <language>en</language>
     <lastBuildDate>Sat, 27 Jun 2026 11:19:23 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Why I Built verachi.io</title>
+      <title>Why I built verachi.io</title>
       <link>https://memo.mx/posts/why-i-built-verachi/</link>
       <pubDate>Sat, 27 Jun 2026 11:19:23 +0900</pubDate>
       
@@ -48,10 +48,11 @@ If you&amp;rsquo;ve asked this more than once, the answer is almost always: your
       
       <guid>https://memo.mx/posts/querying-at-scale/</guid>
       <description>Does this email already exist?
-Same query. Completely different answer depending on whether the table has 100 rows or a billion.
+How you answer depends on scale.
 100 users Anything works.
-SELECT EXISTS (SELECT 1 FROM users WHERE email = &amp;#39;memo@example.com&amp;#39;); No index? Doesn&amp;rsquo;t matter. The database scans 100 rows in microseconds. Add a UNIQUE constraint and move on. Your bottleneck at this scale is probably your CI pipeline.
-10,000 users Still comfortable, but add a unique index:</description>
+SELECT EXISTS (SELECT 1 FROM users WHERE email = &amp;#39;me@memo.mx&amp;#39;); No index? Doesn&amp;rsquo;t matter. The database scans 100 rows in microseconds. Add a UNIQUE constraint and move on.
+10,000 users Still comfortable, but add a unique index:
+CREATE UNIQUE INDEX idx_users_email ON users (email); Most products treat email as case-insensitive. If yours does, make the constraint match the rule instead:</description>
     </item>
     
     <item>
@@ -74,18 +75,6 @@ What changes At small scale, the person who gets paged probably wrote the code. 
       <guid>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</guid>
       <description>In the previous section, we manually configured Istio to split traffic between two versions. While powerful, doing this by hand for every release is a fast track to burnout.
 We want an automated controller that says: &amp;ldquo;Deploy the new version, send 10% of traffic to it, wait a minute, check Prometheus to see if the error rate spiked. If it looks good, increase to 50%. If it fails, instantly roll back to the old version.</description>
-    </item>
-    
-    <item>
-      <title>Understanding Computer Networks by Analogy: Part 2 - Cities as the Internet</title>
-      <link>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</link>
-      <pubDate>Sat, 18 Oct 2025 22:39:16 +0900</pubDate>
-      
-      <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy-part-2/</guid>
-      <description>Think of the internet as a city full of buildings and streets. Routers are the desks that hand envelopes from one network to the next, and DNS is the directory that keeps names connected to addresses.
-License: CC BY-NC-ND 4.0
-Part Two: Cities as the Internet In Part One, the packet stayed inside one building. That was enough to explain local delivery, ARP, switches, and subnets.
-Now the envelope has to leave the building.</description>
     </item>
     
     <item>
@@ -304,15 +293,14 @@ The journey is where the fun is, not at the destination Allow yourself to be hap
     </item>
     
     <item>
-      <title>Understanding Computer Networks by Analogy: Part 1 - Buildings as Networks</title>
+      <title>Understanding Computer Networks by Analogy: Chapter 1 - The Room, the Door, and the Room Number</title>
       <link>https://memo.mx/posts/understanding-computer-networks-by-analogy/</link>
       <pubDate>Fri, 20 Dec 2024 01:53:23 +0100</pubDate>
       
       <guid>https://memo.mx/posts/understanding-computer-networks-by-analogy/</guid>
-      <description>Think of a network as a building full of rooms, doors, and hallways. You move information the same way you would move letters and packages between apartments.
+      <description>Think of a network as a building full of rooms, doors, and room numbers. A packet starts to make sense when you can picture where it is trying to go.
 License: CC BY-NC-ND 4.0
-Preface: Why We Need Analogies I wrote this for the version of me who could type ping and traceroute but still had no picture of what the packet was doing.
-That gap matters. Subnet masks, ARP tables, and routing entries are not hard because they are abstract.</description>
+Part One: Buildings as Networks Chapter 1: The Room, the Door, and the Room Number The building Imagine a building full of rooms, each with a purpose. Some are for sleeping, some for storing utilities, some for parties.</description>
     </item>
     
     <item>

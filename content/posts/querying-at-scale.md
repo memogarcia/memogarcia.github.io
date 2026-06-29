@@ -6,17 +6,17 @@ draft: false
 
 > Does this email already exist?
 
-Same query. Completely different answer depending on whether the table has 100 rows or a billion.
+How you answer depends on scale.
 
 ## 100 users
 
 Anything works.
 
 ```sql
-SELECT EXISTS (SELECT 1 FROM users WHERE email = 'memo@example.com');
+SELECT EXISTS (SELECT 1 FROM users WHERE email = 'me@memo.mx');
 ```
 
-No index? Doesn't matter. The database scans 100 rows in microseconds. Add a `UNIQUE` constraint and move on. Your bottleneck at this scale is probably your CI pipeline.
+No index? Doesn't matter. The database scans 100 rows in microseconds. Add a `UNIQUE` constraint and move on.
 
 ## 10,000 users
 
@@ -36,11 +36,11 @@ B-tree. Fast enough. The useful property is enforcement. The database rejects du
 
 ## 1 million users
 
-The index still works. The problems are elsewhere.
+The index still works. Maybe slowdowns are somewhere else.
 
-**Connection pooling.** Every signup request hits the database. Under concurrent traffic, you'll exhaust connections if you're not pooling them (PgBouncer, application-level pooling, etc.).
+**Connection pooling.** Every signup hits the database. Under concurrent traffic you exhaust connections unless you pool them (PgBouncer, application-level pooling).
 
-**Race conditions.** Two users, same email, same millisecond. The `UNIQUE` constraint catches it, but your application needs to handle that constraint violation instead of crashing with a 500.
+The same email can arrive twice in the same millisecond. The `UNIQUE` constraint rejects the second insert; your application has to treat that as a conflict instead of crashing with a 500.
 
 **Replication lag.** Reading from a replica? There's a window where a just-inserted email hasn't propagated yet. You check the replica, it says "doesn't exist," you insert on the primary, and the unique constraint fires anyway. Design for this. Either read from the primary for signup validation, or handle the conflict gracefully.
 
@@ -73,7 +73,7 @@ Hash the email, pick a shard:
 shard_id = hash(email) % num_shards
 ```
 
-Each shard holds a subset. Lookups go to exactly one shard. Uniqueness stays local as long as the same normalized email always routes to the same shard. The trade-off is operational: rebalancing, failover, and anything that isn't a single-key lookup becomes painful.
+Each shard holds a subset. Lookups go to exactly one shard. Uniqueness stays local as long as the same normalized email always routes to the same shard. Rebalancing and failover get harder, and anything that isn't a single-key lookup now spans multiple shards.
 
 ### Bloom filters become useful
 
