@@ -1,5 +1,5 @@
 ---
-title: "SaaS Template"
+title: "Saving tokens with a SaaS template"
 date: 2026-06-29T00:00:00+09:00
 draft: false
 ---
