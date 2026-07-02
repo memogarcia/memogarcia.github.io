@@ -6,7 +6,7 @@ draft: false
 
 How many tokens does "building a SaaS project" cost and how many of those are non-requirements? The parts you need but are not core to the product.
 
-I have asked my trusted codex to build SaaS foundations several times already. Auth, tenant isolation, billing, transactional email, database migrations, structured logging, feature flags and so on. Every new project starts with the same same intention, however each time is a different implementation.
+I have asked my trusted codex to build SaaS foundations several times already. Auth, tenant isolation, billing, transactional email, database migrations, structured logging, feature flags and so on. Every new project starts with the same intention, however each time is a different implementation.
 
 This is why I decided to templateize the bits and pieces that I always need but sucks to recreate every time.
 
@@ -116,7 +116,7 @@ A SaaS needs a security posture before it has customers.
 
 ### Agent security sweep
 
-Automated scanners catch the boring failures. The agent still owns the verdict.
+Scanners catch the boring failures. The agent still makes the call.
 
 - [ ] Semgrep runs against application code with security rules enabled. Every high-confidence finding is fixed or waived with a code pointer.
 - [ ] Trivy scans the filesystem for vulnerabilities, secrets, and misconfiguration. If the project ships containers, the built image is scanned before release.
@@ -168,7 +168,7 @@ The template hooks up Resend. In development, sends are captured locally to avoi
 
 ### Testing
 
-This is where "it works on my machine" goes to die.
+If it passes only on your laptop, it does not pass.
 
 - [ ] Unit tests cover the business logic and pure functions.
 - [ ] Integration tests run against real Postgres with RLS on, and real Redis. Mocking the data layer hides the exact bugs RLS exists to catch.
@@ -287,7 +287,7 @@ Before pointing DNS at it:
 
 ## AI Token Hygiene
 
-This is the economics part. I want to spend prompts on the product, not on rebuilding foundations.
+This is the economics part. Every prompt spent rebuilding foundations is a prompt not spent on the product.
 
 The workflow with an LLM agent looks like this:
 1. Select the stack profile (`next-postgres` or `cloudflare-workers-d1`).
@@ -331,19 +331,19 @@ Run `npm run template:check` before declaring the task done.
 
 ## Non-Requirements for v1.0
 
-I deliberately kept these out of the starter. Each one has a real cost if you adopt it before the product asks for it.
+I deliberately kept these out of the starter. Each one costs you if you adopt it before the product asks for it.
 
-- **Product-specific business domains**: The template stops at generic SaaS plumbing. Domain models live in the product, where they change weekly. Hardcoding them here freezes opinions that expire inside a sprint.
-- **Custom data layers beyond Drizzle**: Drizzle is enough until you have a workload that proves otherwise: heavy analytics, a graph traversal, or a separate search index. A layer added on speculation becomes maintenance tax with no user value.
-- **Enterprise SSO or MFA by default**: SAML and OIDC enterprise flows bring metadata dance, IdP debugging, and SCIM provisioning. Ship them when a contract requires it, not so the README looks complete.
-- **Active-active multi-region**: This is a year of latency tuning, conflict resolution, and failover rehearsal for a customer base that does not exist yet. Single-region with tested backups wins until traffic and revenue justify the complexity.
-- **Event sourcing or microservices**: Both are answers to organizational scale, not startup problems. A well-factored monolith deploys faster, onboards faster, and fails in fewer places. Split when a team boundary forces it.
-- **SOC 2 evidence collection automation**: Compliance automation is valuable, but only after you know which controls your auditor will demand. Build evidence around the controls you actually run, not a checklist you downloaded.
+- **Product-specific business domains**: The template stops at SaaS plumbing. Domain models change weekly and belong in the product. Hardcoding them here locks in opinions you outgrow fast.
+- **Custom data layers beyond Drizzle**: Drizzle is enough until a workload proves otherwise. Heavy analytics or a separate search index would justify a new layer. Adding one on speculation is maintenance you pay for with no feature in return.
+- **Enterprise SSO or MFA by default**: SAML and OIDC bring IdP debugging and SCIM provisioning. Ship them when a contract requires it.
+- **Active-active multi-region**: This buys you a year of failover work for customers you do not have. Single-region with tested backups is the right answer until traffic and revenue say otherwise.
+- **Event sourcing or microservices**: These solve organizational scale, and a startup does not have that problem. A well-factored monolith deploys faster and fails in fewer places. Split when a team boundary forces it.
+- **SOC 2 evidence collection automation**: Worth doing once you know which controls your auditor will demand. Build evidence around the controls you run.
 
-A template should make important work easier. It should not become a museum of every idea you once had.
+A template should make the real work easier. Everything else is overhead.
 
 ## Keeping the Foundation Boring
 
-A template can easily become a trap. It can force every product into the same shape, carry stale opinions, and hide critical complexity behind defaults you never read.
+A template can become a trap. It pushes every product into the same shape and hides complexity behind defaults you never read.
 
-Question every choice. Keep the foundation boring, and spend the saved attention on the specific value your customers actually pay for.
+Question every choice. Keep the foundation boring, and spend the saved attention on the product.

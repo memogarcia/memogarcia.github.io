@@ -18,7 +18,7 @@
       
       <guid>https://memo.mx/posts/saas-template/</guid>
       <description>How many tokens does &amp;ldquo;building a SaaS project&amp;rdquo; cost and how many of those are non-requirements? The parts you need but are not core to the product.
-I have asked my trusted codex to build SaaS foundations several times already. Auth, tenant isolation, billing, transactional email, database migrations, structured logging, feature flags and so on. Every new project starts with the same same intention, however each time is a different implementation.</description>
+I have asked my trusted codex to build SaaS foundations several times already. Auth, tenant isolation, billing, transactional email, database migrations, structured logging, feature flags and so on. Every new project starts with the same intention, however each time is a different implementation.</description>
     </item>
     
     <item>
