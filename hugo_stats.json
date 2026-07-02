@@ -124,6 +124,7 @@
       "advanced-authorization-with-opa-and-keycloak",
       "advanced-traffic-management-patterns",
       "agent",
+      "agent-security-sweep",
       "ai-token-hygiene",
       "alerting-and-incident-response",
       "api-behavior",

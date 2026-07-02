@@ -97,7 +97,7 @@ I use Drizzle for typed queries, but SQL migrations stay the source of truth.
 
 A SaaS needs a security posture before it has customers.
 
-- [ ] No API keys, session tokens, or machine credentials in Git, verified by a secret scanner in CI.
+- [ ] No API keys, session tokens, or machine credentials in Git, verified by Gitleaks or an equivalent secret scanner in CI.
 - [ ] Secrets are injected through the environment or a secret manager, and rotation is documented for each one.
 - [ ] TLS everywhere, HSTS in production.
 - [ ] Strict CORS allowlist. No wildcard origins with credentials.
@@ -108,11 +108,24 @@ A SaaS needs a security posture before it has customers.
 - [ ] Idempotency keys are required for webhook handlers and payment processing.
 - [ ] File uploads have size limits and content-type validation, and are served from an origin that never executes them.
 - [ ] Encryption at rest: encrypted volumes, S3 SSE, field-level encryption for identifiers like email or tax IDs.
-- [ ] Dependency scanning fails CI on high-severity advisories from `npm audit` or osv-scanner. Known-CVE code does not ship.
-- [ ] Container images are scanned if you ship containers.
+- [ ] Dependency scanning fails CI on high-severity advisories from `npm audit` and `osv-scanner`, with waivers tied to a CVE, version, and expiry date. Known-CVE code does not ship.
+- [ ] Container images are scanned with Trivy, Grype, or an equivalent scanner if you ship containers.
 - [ ] Sensitive mutations append to an append-only audit table. You need it the first time a customer asks "who changed this."
 - [ ] Admin routes require re-authentication or step-up MFA.
 - [ ] Any endpoint that fetches user-supplied URLs (webhooks, imports) is guarded against SSRF.
+
+### Agent security sweep
+
+Automated scanners catch the boring failures. The agent still owns the verdict.
+
+- [ ] Semgrep runs against application code with security rules enabled. Every high-confidence finding is fixed or waived with a code pointer.
+- [ ] Trivy scans the filesystem for vulnerabilities, secrets, and misconfiguration. If the project ships containers, the built image is scanned before release.
+- [ ] Dependency scanning runs with `osv-scanner` and the package manager audit. Lockfile changes include scanner output in the PR notes.
+- [ ] Secret scanning runs on the full repository history with Gitleaks or an equivalent tool when the agent first takes over the repo.
+- [ ] IaC and deployment config are scanned with `trivy config`, Checkov, tfsec, or the repo's chosen equivalent.
+- [ ] GitHub Actions are checked with zizmor or an equivalent workflow scanner for token permissions, unpinned actions, script injection, and unsafe pull request triggers.
+- [ ] The agent performs a manual pass for auth, tenant isolation, IDOR, SSRF, webhook replay, file uploads, and payment state changes. Scanner output is input, not the final answer.
+- [ ] `SECURITY_REVIEW.md` records commands, tool versions, findings, links to fixes, and links to any `PRODUCT.md` waivers.
 
 ### Billing
 
@@ -174,7 +187,8 @@ This is where "it works on my machine" goes to die.
 - [ ] Lint, typecheck, unit tests, and build run on every PR.
 - [ ] Integration and end-to-end suites run on every PR, or at minimum before every deploy.
 - [ ] Every PR gets a preview deploy so reviewers see the change running.
-- [ ] Secret scanning and the dependency audit run in the pipeline.
+- [ ] Secret scanning, dependency audit, Semgrep, and Trivy run in the pipeline, with severity gates documented.
+- [ ] Workflow and IaC scanners run when `.github/workflows`, Dockerfiles, Terraform, or Kubernetes manifests change.
 - [ ] The pipeline is the only path to production. No manual deploys from laptops.
 - [ ] Build artifacts are immutable and tagged with the commit SHA.
 - [ ] `npm run template:check` passes.
@@ -282,7 +296,8 @@ The workflow with an LLM agent looks like this:
 4. Define the first paid workflow.
 5. Add the minimum required database tables and server routes.
 6. Walk the production-readiness checklist and check items with evidence, or record waivers.
-7. Run template hygiene checks (`npm run template:check`).
+7. Run the agent security sweep and write `SECURITY_REVIEW.md`.
+8. Run template hygiene checks (`npm run template:check`).
 
 Use this prompt to bootstrap your SaaS from the template:
 
@@ -303,6 +318,13 @@ done only when you can point to the code, config, or passing test that
 proves it. If an item does not apply, record a waiver with a reason in
 PRODUCT.md. The project is not production ready while any item is neither
 checked nor waived.
+
+Run the security sweep before declaring the task done: Semgrep for code,
+Trivy for filesystem, IaC, and container images, `osv-scanner` plus the
+package manager audit for dependencies, Gitleaks or equivalent for secrets,
+and zizmor, Checkov, or tfsec where the repo uses workflows or IaC.
+Fix findings or record waivers in PRODUCT.md, and summarize commands and
+tool versions in SECURITY_REVIEW.md.
 
 Run `npm run template:check` before declaring the task done.
 ```
