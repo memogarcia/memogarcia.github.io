@@ -25,123 +25,251 @@ The repo is a Next.js SaaS starter containing the reusable parts I keep needing:
 
 This has actually saved shit loads of tokens and time.
 
-## The Auth and User Lifecycle
+## The production-readiness checklist
 
-"We need auth" usually means login and logout. But it keeps out email verification, session revocation, rate limiting, and password reset flows.
+The rest of this post is the checklist I hand to an agent. Every item is written as a verifiable statement: an item gets checked only when you can point at the code, the config, or the passing test that proves it. "Probably fine" stays unchecked. An item that does not apply gets a written waiver with a reason, not a silent skip.
 
-When you build multi-tenant software, user management is CRUD plus consequences.
+The rule for an agent walking this list: production ready means every item is either checked with evidence or waived in `PRODUCT.md`. Nothing else counts.
 
-### What we shipped:
-- **Cookie-based sessions**: HttpOnly, SameSite, and CSRF protection.
-- **Verification flows**: Signup, email verification, password reset, and resend tokens.
-- **Lifecycle API routes**: Login, logout, registration, and reset endpoints.
-- **Password hashing**: Argon2id with tuned parameters. No bcrypt, no MD5, no plain SHA.
-- **Session lifecycle**: Absolute and idle expiry, rotating IDs on privilege change, and a revoke-all-sessions path.
-- **Enumeration prevention**: Login, reset, and signup return identical messages and timing, so an attacker cannot probe which emails exist.
-- **Brute-force throttling**: Per-account and per-IP limits applied before the password is ever read.
-- **MFA**: TOTP enrollment, hashed recovery codes, and scratch codes for the moment a device is lost.
-- **Breached password check**: K-anonymity lookups against Have I Been Pwned at signup and on rotation.
+### Product definition
 
-### What the product must decide:
-- **SSO and MFA**: At what point does client risk justify adding SAML or hardware keys?
-- **Deletion policies**: When a user clicks "Delete Account," does the data vanish immediately, or is it soft-deleted for a 30-day grace period? What happens to shared tenant data, historic invoices, and audit logs?
-- **Support-assisted recovery**: How does support verify identity when a user loses access to their email?
-- **Social login**: Google and GitHub cut signup friction but force a decision about account linking and merge conflicts when the same email appears twice.
-- **Session policy**: How long is "logged in" for a billing admin versus a read-only viewer? Sliding sessions feel friendly; absolute caps limit blast radius.
+- [ ] `PRODUCT.md` names the target user, the pain, and the first paid workflow.
+- [ ] `ARCHITECTURE.md` records the data model, the integration boundaries, and the stack profile.
+- [ ] `DESIGN.md` defines the visual language and component primitives.
+- [ ] The first paid workflow works end to end: signup, do the thing, pay.
+- [ ] Every template feature the product does not use is disabled in `config/features.json`.
 
-## Multi-Tenancy and Isolation
+### Auth and user lifecycle
 
-Multi-tenant SaaS needs a **HARD** boundary. If one tenant can read another's data, it means a lawsuit.
+"We need auth" usually means login and logout. But it keeps out email verification, session revocation, rate limiting, and password reset flows. When you build multi-tenant software, user management is CRUD plus consequences.
 
-I use Postgres Row-Level Security (RLS) driven by `app.tenant_id` and `app.user_id` context. Before running reads or writes, the server sets these values inside the transaction.
+- [ ] Sessions are HttpOnly, Secure, SameSite cookies with CSRF protection.
+- [ ] Passwords hash with Argon2id and tuned parameters. No bcrypt, no MD5, no plain SHA.
+- [ ] Signup, email verification, password reset, and token resend flows work end to end.
+- [ ] Login, logout, registration, and reset endpoints exist and are rate limited.
+- [ ] Sessions have absolute and idle expiry, and session IDs rotate on privilege change.
+- [ ] A revoke-all-sessions path exists and is exposed to the user.
+- [ ] Login, reset, and signup return identical messages and timing whether or not the account exists, so an attacker cannot probe which emails are registered.
+- [ ] Brute-force throttling applies per account and per IP, before the password is ever read.
+- [ ] MFA: TOTP enrollment, hashed recovery codes, and scratch codes for the moment a device is lost.
+- [ ] New and rotated passwords are checked against Have I Been Pwned with k-anonymity lookups.
+- [ ] Verification and reset tokens are single-use, expire, and are stored hashed.
+- [ ] Account deletion follows a written policy (immediate wipe vs. 30-day soft delete) that covers shared tenant data, historic invoices, and audit logs.
 
-### The isolation checklist:
-- **Database context**: Setting tenant and user context before every query.
-- **Indexes**: Composite indexes that include tenant identifiers to keep queries fast.
-- **Tenants vs. Workspaces**: The schema allows one tenant (the billing entity) to own multiple workspaces (the collaboration boundaries).
-- **Entitlements**: Enforcing plan limits (seats, usage, storage) on the server, not just hiding buttons in the React UI.
-- **Tenant deletion**: Cascading deletes that clean up files, databases, and external records without hitting resource timeouts.
-- **Invitations and roles**: Signed email invites plus a role hierarchy (owner, admin, member, viewer). Permissions are enforced server-side, never inferred from UI state.
-- **Default-deny sharing**: Cross-tenant reads are impossible by default. Any sharing is an explicit, audited grant, never an opt-out.
-- **Audit log**: Privileged actions append a tenant-scoped record with actor, target, and before/after state.
-- **Onboarding**: Creating a tenant seeds default config, the first admin, and plan entitlements in one transaction. No half-created tenants.
-- **Data export**: A signed job dumps tenant data as CSV or JSON on demand. Users should be able to leave.
+Decisions to record before launch:
 
-## Database and Security Baseline
+- [ ] SSO threshold: which client risk or contract size justifies SAML or hardware keys.
+- [ ] Support-assisted recovery: how support verifies identity when a user loses email access.
+- [ ] Social login: whether it exists, and the account-linking rule when the same email appears twice.
+- [ ] Session length per role: a billing admin versus a read-only viewer, sliding versus absolute caps.
 
-A SaaS needs a security posture before it has customers. I use Drizzle for typed queries, but SQL migrations stay the source of truth.
+### Multi-tenancy and isolation
 
-### The baseline:
-- **Immutable migrations**: Once a migration runs in production, it is locked. Drift is fixed by shipping a new migration.
-- **Secrets hygiene**: No API keys, session tokens, or machine credentials in Git.
-- **Network security**: TLS everywhere, HSTS in production, and strict CORS allowlists.
-- **Content Security Policy**: CSP headers with nonce support plumbed through Next.js middleware.
-- **Rate limiting**: API-level limits on auth routes and resource creation endpoints.
-- **Idempotency keys**: Required for webhook handlers and payment processing to prevent double-billing.
-- **Boundary validation**: Every input is parsed through a schema (zod) at the edge. Handlers never see unvalidated data.
-- **Audit trail**: Sensitive mutations append to an append-only table. You need it the first time a customer asks "who changed this."
-- **Dependency scanning**: CI fails on high-severity advisories from `npm audit` or osv-scanner. Known-CVE code does not ship.
-- **Encryption**: TLS in transit, encrypted volumes and S3 SSE at rest, field-level encryption for identifiers like email or tax IDs.
-- **Migration review rules**: No destructive change without a backfill. Add the column, backfill, deploy the reads, then drop. Forward-only, always.
+Multi-tenant SaaS needs a **HARD** boundary. If one tenant can read another's data, it means a lawsuit. I use Postgres RLS driven by `app.tenant_id` and `app.user_id` context, set inside the transaction before any read or write.
 
-## Operational Plumbing
+- [ ] Every tenant-scoped table has RLS enabled and forced, including for the table owner.
+- [ ] The server sets tenant and user context inside the transaction before every query.
+- [ ] A test proves a user in tenant A cannot read or write tenant B's rows through any API route.
+- [ ] Composite indexes include the tenant identifier so scoped queries stay fast.
+- [ ] Tenants (the billing entity) and workspaces (the collaboration boundary) are modeled separately.
+- [ ] Plan limits (seats, usage, storage) are enforced on the server, not just hidden buttons in the React UI.
+- [ ] Tenant deletion cascades through rows, files, and external records without hitting resource timeouts.
+- [ ] Invitations are signed email invites with a role hierarchy (owner, admin, member, viewer) enforced server-side, never inferred from UI state.
+- [ ] Cross-tenant sharing is default-deny. Any sharing is an explicit, audited grant, never an opt-out.
+- [ ] Privileged actions append a tenant-scoped audit record with actor, target, and before/after state.
+- [ ] Tenant creation seeds default config, the first admin, and plan entitlements in one transaction. No half-created tenants.
+- [ ] A signed export job dumps tenant data as CSV or JSON on demand. Users should be able to leave.
 
-Day-two operations require plumbing that is painful to build during a launch.
+### Database and migrations
 
-### Transactional Email
-The template hooks up Resend. In development, email sends are captured locally to avoid spamming real addresses.
-- **Deliverability**: SPF, DKIM, and DMARC config rules.
-- **Separation**: Transactional mail runs on a separate subdomain from marketing campaigns to protect sender reputation.
-- **Bounce and complaint handling**: Resend webhooks feed a suppression list so you stop sending to addresses that rejected you. Sending to a known complainer tanks deliverability for everyone.
-- **Unsubscribe**: A one-click `List-Unsubscribe` header and a working opt-out link. Required for bulk mail in most jurisdictions.
-- **Templates**: MJML or react-email compiled to inline-CSS HTML, with a plaintext alternative. Plaintext is not optional for deliverability.
+I use Drizzle for typed queries, but SQL migrations stay the source of truth.
+
+- [ ] Migrations that ran in production are immutable. Drift is fixed by shipping a new migration.
+- [ ] Destructive changes follow expand-and-contract: add the column, backfill, deploy the reads, then drop. Forward-only, always.
+- [ ] Migrations run in the deploy pipeline before new code serves traffic.
+- [ ] A database backup runs automatically before every production migration.
+- [ ] Rollback safety: the current schema still works with the previous app version.
+- [ ] Connection pooling is configured with limits matched to the database plan.
+- [ ] Slow-query logging is on, and the hot paths are checked for N+1 queries.
+- [ ] A retention policy is written per table: what expires, what persists, what gets anonymized.
+
+### Security baseline
+
+A SaaS needs a security posture before it has customers.
+
+- [ ] No API keys, session tokens, or machine credentials in Git, verified by a secret scanner in CI.
+- [ ] Secrets are injected through the environment or a secret manager, and rotation is documented for each one.
+- [ ] TLS everywhere, HSTS in production.
+- [ ] Strict CORS allowlist. No wildcard origins with credentials.
+- [ ] CSP headers with nonce support plumbed through Next.js middleware.
+- [ ] The remaining headers are set: `X-Content-Type-Options`, `Referrer-Policy`, `frame-ancestors`.
+- [ ] Every input is parsed through a schema (zod) at the edge. Handlers never see unvalidated data.
+- [ ] Rate limits cover auth routes and resource-creation endpoints.
+- [ ] Idempotency keys are required for webhook handlers and payment processing.
+- [ ] File uploads have size limits and content-type validation, and are served from an origin that never executes them.
+- [ ] Encryption at rest: encrypted volumes, S3 SSE, field-level encryption for identifiers like email or tax IDs.
+- [ ] Dependency scanning fails CI on high-severity advisories from `npm audit` or osv-scanner. Known-CVE code does not ship.
+- [ ] Container images are scanned if you ship containers.
+- [ ] Sensitive mutations append to an append-only audit table. You need it the first time a customer asks "who changed this."
+- [ ] Admin routes require re-authentication or step-up MFA.
+- [ ] Any endpoint that fetches user-supplied URLs (webhooks, imports) is guarded against SSRF.
 
 ### Billing
-Stripe integration handles checkout redirects, billing portal sessions, and signed webhooks.
-- **Idempotent Webhooks**: We store provider events in an event log before processing them, preventing double-processing on network retries.
-- **Downgrade paths**: What happens when a subscription fails? We map out grace periods and read-only states rather than shutting off access immediately.
-- **Trials and dunning**: Trial start and end dates, card-required versus not, and an automated retry schedule for failed payments with customer emails.
-- **Usage metering**: If pricing is metered, usage is recorded on the write path and reconciled nightly. Invoicing at request time is how you underbill.
-- **Proration and tax**: Plan changes prorate. Stripe Tax handles VAT and GST so you do not build a tax engine you do not understand.
+
+Stripe handles checkout redirects, billing portal sessions, and signed webhooks.
+
+- [ ] Webhook signatures are verified, and provider events are stored in an event log before processing.
+- [ ] Replayed or out-of-order webhook events cannot double-bill or double-provision. Tested, not assumed.
+- [ ] Failed payments map to grace periods and read-only states, not an instant shutoff.
+- [ ] Trials have explicit start and end dates, a card-required decision, and an automated dunning schedule with customer emails.
+- [ ] Metered usage is recorded on the write path and reconciled nightly. Invoicing at request time is how you underbill.
+- [ ] Plan changes prorate. Stripe Tax handles VAT and GST so you do not build a tax engine you do not understand.
+- [ ] A Stripe test-clock run covers the full lifecycle: trial, convert, payment failure, dunning, cancel.
+- [ ] Invoices carry the legal fields your jurisdictions require: company name, address, tax ID.
+
+### Transactional email
+
+The template hooks up Resend. In development, sends are captured locally to avoid spamming real addresses.
+
+- [ ] SPF, DKIM, and DMARC records exist and verify.
+- [ ] Transactional mail runs on a separate subdomain from marketing campaigns to protect sender reputation.
+- [ ] Bounce and complaint webhooks feed a suppression list. Sending to a known complainer tanks deliverability for everyone.
+- [ ] Bulk mail carries a one-click `List-Unsubscribe` header and a working opt-out link.
+- [ ] Templates compile to inline-CSS HTML with a plaintext alternative. Plaintext is not optional for deliverability.
+- [ ] Every auth email (verify, reset, invite) has been sent and opened on staging, links included.
+
+### Background jobs and scheduled work
+
+- [ ] The job queue retries with backoff, and failures land in a dead-letter state someone can see.
+- [ ] Jobs are idempotent or guarded, so a retry cannot apply twice.
+- [ ] Scheduled jobs are monitored: a missed run raises an alert.
+- [ ] Long jobs checkpoint or chunk so a deploy does not lose work in flight.
+
+### API behavior
+
+- [ ] Errors return one consistent shape with a machine-readable code. Stack traces never leak to clients.
+- [ ] Every list endpoint paginates. No unbounded queries.
+- [ ] Mutations validate ownership (tenant, resource) server-side, never from the client payload.
+- [ ] Every outbound call (Stripe, Resend, S3) has an explicit timeout. No default-infinite waits.
+- [ ] 429 responses include `Retry-After`.
+
+### Testing
+
+This is where "it works on my machine" goes to die.
+
+- [ ] Unit tests cover the business logic and pure functions.
+- [ ] Integration tests run against real Postgres with RLS on, and real Redis. Mocking the data layer hides the exact bugs RLS exists to catch.
+- [ ] An isolation suite proves cross-tenant denial for every tenant-scoped table.
+- [ ] End-to-end tests cover the money paths: signup, login, the first paid workflow, checkout, cancel.
+- [ ] Webhook handlers are tested with replayed, duplicated, and out-of-order events.
+- [ ] Migration tests: a fresh database migrates from zero, and a copy of the production schema migrates forward.
+- [ ] Auth edge cases are tested: expired session, revoked session, CSRF failure, throttled login.
+- [ ] Email flows are asserted against the local capture, including link targets.
+- [ ] A load test records baseline p95 latency and the max sustainable request rate on the hot paths.
+- [ ] Failure injection: the app degrades sanely when Redis, S3, Stripe, or email is down. Tested, not assumed.
+- [ ] The whole suite passes in CI, not just on a laptop.
+
+### CI/CD
+
+- [ ] Lint, typecheck, unit tests, and build run on every PR.
+- [ ] Integration and end-to-end suites run on every PR, or at minimum before every deploy.
+- [ ] Every PR gets a preview deploy so reviewers see the change running.
+- [ ] Secret scanning and the dependency audit run in the pipeline.
+- [ ] The pipeline is the only path to production. No manual deploys from laptops.
+- [ ] Build artifacts are immutable and tagged with the commit SHA.
+- [ ] `npm run template:check` passes.
+
+### Deployment and release
+
+- [ ] Deploys are zero-downtime: rolling or blue-green, health-checked before traffic shifts.
+- [ ] Rollback restores the previous version in minutes, and the procedure has been executed at least once, not just written down.
+- [ ] Feature flags gate risky changes. Flipping a flag does not require a deploy.
+- [ ] Every deploy records SHA, time, and deployer, and posts somewhere humans read.
+- [ ] Staging runs the same migrations, env validation, and services as production.
+- [ ] Environment variables are validated at startup. A missing variable means immediate exit with a clear error.
+- [ ] Dev, staging, and production have separate credentials and share nothing.
+
+### Infrastructure
+
+- [ ] Infrastructure is reproducible: IaC, or at minimum a setup script that has been run from scratch.
+- [ ] TLS certificates auto-renew and expiry is monitored.
+- [ ] Static assets go through a CDN with cache headers set deliberately.
+- [ ] The database and object store are not reachable from the public internet.
+- [ ] Capacity headroom for 10x current traffic is either automatic (autoscaling) or documented.
+- [ ] Liveness and readiness probes are separate. Liveness says the process is up; readiness says it can serve traffic, including after a dependency recovers.
+- [ ] SIGTERM drains in-flight requests and closes the database pool before the container exits. Hard kills drop user work.
 
 ### Observability
-I include structured JSON logging and OpenTelemetry (OTLP) metrics/traces, toggled via feature flags.
-- **Attributable actions**: Logs include `tenant_id` and `user_id` context where safe.
-- **Webhooks and queues**: Dedicated dashboards trace external callback latency and retry rates.
-- **Error tracking**: A Sentry-class client captures exceptions with release and commit SHA attached. A stack trace without a release is a dead end.
-- **Alerting with ownership**: Every page routes to a human and a rotation. An alert without an owner gets ignored until it has one, and that is how outages compound.
-- **Trace sampling**: Head sampling for the common path, tail sampling for errors and slow spans, so traces stay affordable as traffic grows.
 
-## Reliability and Support
+- [ ] Structured JSON logs include `tenant_id` and `user_id` context where safe.
+- [ ] OTLP metrics and traces export, toggled via feature flags.
+- [ ] A scrubber test asserts that passwords, tokens, and card numbers never appear in logs.
+- [ ] Error tracking captures exceptions with release and commit SHA attached. A stack trace without a release is a dead end.
+- [ ] Dedicated dashboards trace webhook and queue latency and retry rates.
+- [ ] One dashboard shows the golden signals: latency, traffic, errors, saturation.
+- [ ] Trace sampling: head sampling for the common path, tail sampling for errors and slow spans, so traces stay affordable as traffic grows.
+- [ ] Product events (signup, activation, checkout) are captured so you can tell whether anyone uses the thing.
+
+### Alerting and incident response
+
+- [ ] Every page routes to a human and a rotation. An alert without an owner gets ignored until it has one, and that is how outages compound.
+- [ ] Every alert links to a runbook: what it means and the first three commands to run.
+- [ ] SLOs exist for the money paths (login, checkout, first workflow) and alerts fire on burn rate, not point failures.
+- [ ] Uptime checks run from outside your own infrastructure.
+- [ ] A public status page exists, and someone knows how to post to it. It sets expectations and absorbs support load while you are fixing the thing.
+- [ ] The incident process is written: severity levels, who communicates, where the postmortem lands.
+
+### Backups and disaster recovery
+
+- [ ] Database backups run on a schedule, plus before every migration.
+- [ ] A restore drill has been performed into a fresh database with the test suite run against it. On a calendar, not only before a migration. A backup you have never restored is a rumor.
+- [ ] User files in object storage are versioned or backed up.
+- [ ] RPO and RTO are written down, and the backup schedule actually meets them.
+- [ ] Backups live in a separate account or region from production.
+- [ ] Secrets and infrastructure config are recoverable if the primary account is lost.
+
+### Support and admin
 
 Support is part of the product. If your engineers have to run raw SQL queries to reset a user's MFA or override a plan limit, you aren't ready for production.
 
-### Operational workflows:
-- **Backups**: Automated database dumps before migrations. A backup you have never restored is a rumor.
-- **Admin tools**: Scoped, audited tenant search and plan overrides.
-- **Impersonation**: If support needs to log in as a user to debug an issue, it must be time-bound, logged, and trigger a notification to the user.
-- **Rollbacks**: The deployment pipeline must support zero-downtime rollbacks for both the application container and database schema changes.
-- **Health endpoints**: Separate liveness and readiness probes. Liveness says the process is up; readiness says it can serve traffic, including after a dependency recovers.
-- **Graceful shutdown**: SIGTERM drains in-flight requests and closes the database pool before the container exits. Hard kills drop user work.
-- **Restore drills**: A backup is a rumor until you restore it into a fresh database and run the suite against it. Schedule these on a calendar, not only before a migration.
-- **Status page**: A public page where incidents get posted. It sets expectations and absorbs support load while you are fixing the thing.
+- [ ] Admin tools cover scoped, audited tenant search and plan overrides.
+- [ ] Support can reset MFA, resend verification, and adjust seats through the admin UI, with audit records.
+- [ ] Impersonation is time-bound, logged, and triggers a notification to the user.
+- [ ] A support inbox exists and routes to a human.
 
-## Developer and User Experience
+### UX baseline
 
-A template should reduce setup friction. It needs a single startup path and clear boundaries.
+- [ ] Empty states, loading screens, and 404/500 error boundaries exist.
+- [ ] Core flows work with keyboard navigation and semantic HTML.
+- [ ] Settings and main dashboards render on mobile.
+- [ ] Forms have inline validation, accessible errors bound to inputs, and submit states that block double-submits.
+- [ ] Skeletons cover first paint, and optimistic updates roll back on error. The interface should not freeze while it waits on the server.
+- [ ] Core flows pass an automated accessibility check (axe or equivalent) with no critical violations.
 
-### UX baseline:
-- **State handling**: Empty states, loading screens, and 404/500 error boundaries.
-- **Accessibility**: Keyboard navigation and semantic HTML targets from day one.
-- **Mobile layout**: Responsive views for settings and main dashboards.
-- **Forms**: Inline validation, accessible error messages bound to inputs, and submit states that block double-submits.
-- **Optimistic UI**: Skeletons for first paint, optimistic updates with rollback on error. The interface should not freeze while it waits on the server.
+### Legal and compliance
 
-### Developer loop:
-- **Product briefs**: Before writing code, fill out `PRODUCT.md` (target user, pain, first paid workflow).
-- **Environment validation**: App environment variables are validated at startup. If a variable is missing, the process exits immediately with a clear error.
-- **CI checks**: Lint, typecheck, unit tests, and build run on every PR, plus a preview deploy so reviewers see the change running.
-- **Seed data**: One command loads demo tenants, users, and plans. A new contributor should have a working app in minutes, not an afternoon.
+- [ ] Privacy policy and terms of service are published and linked from signup.
+- [ ] Cookie consent exists where your jurisdictions require it.
+- [ ] GDPR basics: export on demand (covered above), deletion on request, and a subprocessor list.
+- [ ] A DPA is ready if you sell to companies that will ask for one.
+- [ ] The data residency decision is recorded, even if the answer is "single region."
+- [ ] A monitored security contact exists (`security.txt`).
+
+### Documentation
+
+- [ ] The README gets a new contributor from clone to a running app with seed data in minutes: one command loads demo tenants, users, and plans.
+- [ ] Runbooks exist for the top failure modes.
+- [ ] Architecture decisions are recorded, even at one paragraph each.
+- [ ] Support staff have docs for the admin tools.
+
+### The launch gate
+
+Before pointing DNS at it:
+
+- [ ] Every item above is checked with evidence or waived with a reason in `PRODUCT.md`.
+- [ ] A restore drill and a rollback have both been executed within the last month.
+- [ ] The pager routes to a person who is awake this week.
+- [ ] The load test passed at expected launch traffic plus headroom.
 
 ## AI Token Hygiene
 
@@ -153,7 +281,8 @@ The workflow with an LLM agent looks like this:
 3. Disable unused template features in `config/features.json`.
 4. Define the first paid workflow.
 5. Add the minimum required database tables and server routes.
-6. Run template hygiene checks (`npm run template:check`).
+6. Walk the production-readiness checklist and check items with evidence, or record waivers.
+7. Run template hygiene checks (`npm run template:check`).
 
 Use this prompt to bootstrap your SaaS from the template:
 
@@ -168,6 +297,13 @@ DESIGN.md defines the visual language and component primitives.
 Preserve the template boundaries. Do not widen auth, billing, or observability.
 Do not add a new data layer, queue, or framework the template does not already use.
 Implement only the first paid workflow described in PRODUCT.md.
+
+Then walk the production-readiness checklist top to bottom. Mark an item
+done only when you can point to the code, config, or passing test that
+proves it. If an item does not apply, record a waiver with a reason in
+PRODUCT.md. The project is not production ready while any item is neither
+checked nor waived.
+
 Run `npm run template:check` before declaring the task done.
 ```
 
