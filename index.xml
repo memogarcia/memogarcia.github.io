@@ -10,7 +10,19 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 29 Jun 2026 00:00:00 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 10 Jul 2026 14:30:00 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>I vibe coded the app of my dreams</title>
+      <link>https://memo.mx/posts/i-vibe-coded-the-app-of-my-dreams/</link>
+      <pubDate>Fri, 10 Jul 2026 14:30:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/i-vibe-coded-the-app-of-my-dreams/</guid>
+      <description>For a while I&amp;rsquo;ve been thinking about an app to keep track of my health properly, where I&amp;rsquo;m in control, fully local LLMs (with the option to use remote LLMs if desired).
+I&amp;rsquo;m getting old and I&amp;rsquo;ve been going more and more to multiple doctors and clinics, and I wanted a place to centralize and visualize my health in an easy way.
+It&amp;rsquo;s open source: https://github.com/memogarcia/my-health
+It&amp;rsquo;s not medical advice. Any real decision belongs with a doctor.</description>
+    </item>
+    
     <item>
       <title>Saving tokens with a SaaS template</title>
       <link>https://memo.mx/posts/saas-template/</link>
