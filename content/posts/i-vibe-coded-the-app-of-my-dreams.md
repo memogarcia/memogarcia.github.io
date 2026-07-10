@@ -8,7 +8,7 @@ For a while I've been thinking about an app to keep track of my health properly,
 
 I'm getting old and I've been going more and more to multiple doctors and clinics, and I wanted a place to centralize and visualize my health in an easy way.
 
-![main-area](../img/me-main-page.png)
+![main-area](/img/me-main-page.png)
 
 It's open source: https://github.com/memogarcia/my-health
 
