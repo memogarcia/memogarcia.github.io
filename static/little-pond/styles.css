@@ -1,0 +1,147 @@
+:root {
+  color-scheme: light;
+  --background: #f6f1dc;
+  --surface: #fffdf4;
+  --ink: #124f56;
+  --muted: #506b68;
+  --line: #cbd8c7;
+  --accent: #dce8ad;
+  --focus: #a45b28;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--ink);
+  font-family: ui-rounded, "SF Pro Rounded", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+a {
+  color: var(--ink);
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  text-decoration-thickness: 0.16em;
+}
+
+a:focus-visible {
+  border-radius: 0.2rem;
+  outline: 0.2rem solid var(--focus);
+  outline-offset: 0.2rem;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header__inner,
+main,
+footer {
+  width: min(100% - 2rem, 44rem);
+  margin-inline: auto;
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 4.5rem;
+}
+
+.brand {
+  font-size: 1.15rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+}
+
+main {
+  padding-block: 3.5rem 4rem;
+}
+
+h1,
+h2 {
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  max-width: 14ch;
+  margin: 0 0 0.75rem;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+}
+
+h2 {
+  margin: 2.5rem 0 0.5rem;
+  font-size: 1.35rem;
+}
+
+p,
+ul {
+  max-width: 68ch;
+}
+
+.intro {
+  margin: 0 0 2.5rem;
+  color: var(--muted);
+  font-size: 1.15rem;
+}
+
+.notice {
+  margin-block: 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.contact {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.65rem 1rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.65rem;
+  background: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+footer {
+  padding-block: 1.5rem 2.5rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 32rem) {
+  .site-header__inner {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-block: 1rem;
+  }
+
+  main {
+    padding-top: 2.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
