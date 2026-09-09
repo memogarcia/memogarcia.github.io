@@ -1,0 +1,10 @@
+{{ $language := .Type | default "text" }}
+{{ $code := .Inner }}
+{{ if transform.CanHighlight $language }}
+  {{ $result := transform.HighlightCodeBlock . (dict "noClasses" false "lineNos" false) }}
+  {{ $code = $result.Inner }}
+{{ end }}
+<figure class="code-block">
+  <figcaption><span>{{ upper $language }}</span><button class="copy-code" type="button" aria-live="polite" hidden>Copy</button></figcaption>
+  <pre tabindex="0" aria-label="{{ $language }} code"><code class="chroma">{{ $code }}</code></pre>
+</figure>

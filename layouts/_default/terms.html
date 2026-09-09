@@ -1,0 +1,6 @@
+{{ define "main" }}
+<main id="main" class="article-main">
+  <header class="article-heading"><h1>{{ .Title }}</h1></header>
+  {{ partial "memo/post-list.html" .Pages }}
+</main>
+{{ end }}

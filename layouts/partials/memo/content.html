@@ -1,0 +1,3 @@
+{{/* Hugo 0.128 code render hooks cover fences, but not indented Markdown code. */}}
+{{ $plainBlock := `<figure class="code-block"><figcaption><span>TEXT</span><button class="copy-code" type="button" aria-live="polite" hidden>Copy</button></figcaption><pre tabindex="0" aria-label="text code"><code>${1}</code></pre></figure>` }}
+{{ return (replaceRE `(?s)<pre><code>(.*?)</code></pre>` $plainBlock . | safeHTML) }}

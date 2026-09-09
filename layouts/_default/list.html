@@ -1,0 +1,20 @@
+{{ define "main" }}
+<main id="main">
+  {{ if .IsHome }}
+  <section class="intro" aria-labelledby="welcome">
+    <h1 id="welcome" lang="ja">{{ site.Params.homeInfoParams.Title }}</h1>
+    <div>{{ site.Params.homeInfoParams.Content | markdownify }}</div>
+    <a class="intro-link" href="https://networksbyanalogy.com/">Networks by Analogy <span aria-hidden="true">↗</span></a>
+  </section>
+  <section id="writing" class="writing" aria-label="Writing">
+    {{ partial "memo/post-list.html" (where site.RegularPages "Section" "posts").ByDate.Reverse }}
+  </section>
+  {{ else }}
+  <header class="article-heading"><h1>{{ .Title }}</h1></header>
+  {{ with .Content }}<div class="prose">{{ partial "memo/content.html" . }}</div>{{ end }}
+  <section class="writing" aria-label="{{ .Title }}">
+    {{ partial "memo/post-list.html" .Pages.ByDate.Reverse }}
+  </section>
+  {{ end }}
+</main>
+{{ end }}

@@ -1,0 +1,10 @@
+{{ define "main" }}
+<main id="main" class="article-main">
+  <header class="article-heading"><h1>{{ .Title }}</h1></header>
+  <label for="search-input">Search your way through the writing</label>
+  <input id="search-input" class="search-input" type="search" autocomplete="off" data-index="{{ "index.json" | relURL }}" aria-describedby="search-status">
+  <p id="search-status" class="eyebrow" role="status">Enter a word or phrase.</p>
+  <ol id="search-results" class="post-list" aria-label="Search results"></ol>
+  <noscript><p>Search needs JavaScript. <a href="{{ "archives/" | relURL }}">Browse the archive</a>.</p></noscript>
+</main>
+{{ end }}

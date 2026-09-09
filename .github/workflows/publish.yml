@@ -3,6 +3,8 @@ name: Build and Deploy Hugo Site
 on:
   push:
     branches: [master]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -20,9 +22,25 @@ jobs:
       - name: Build Hugo site
         run: hugo --minify
 
+      - name: Check generated site
+        run: python3 scripts/check-site.py public
+
+      - name: Check browser scripts
+        run: |
+          node scripts/theme.test.cjs
+          node scripts/code.test.cjs
+          node scripts/search.test.cjs
+
+      - name: Upload built site for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: blog-preview
+          path: public
+
       - name: Deploy to publish branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: public
           publish_branch: gh-pages

@@ -1,0 +1,53 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ if not .IsHome }}{{ .Title }} · {{ end }}{{ site.Title }}</title>
+{{ $description := site.Params.description }}
+{{ if .IsPage }}{{ $description = .Summary | plainify | truncate 180 }}{{ end }}
+{{ with .Description }}{{ $description = . }}{{ end }}
+<meta name="description" content="{{ $description }}">
+{{ if or (not hugo.IsProduction) .Draft .Params.robotsNoIndex }}<meta name="robots" content="noindex, nofollow">{{ end }}
+<link rel="canonical" href="{{ .Params.canonicalURL | default .Permalink }}">
+<link rel="icon" href="{{ "favicon.ico" | relURL }}">
+<link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}">
+{{ range .AlternativeOutputFormats }}<link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink }}">{{ end }}
+{{ $theme := resources.Get "blog/theme.js" | fingerprint }}
+<script src="{{ $theme.RelPermalink }}"></script>
+{{ $style := resources.Get "blog/style.css" | fingerprint }}
+<link rel="stylesheet" href="{{ $style.RelPermalink }}">
+{{ if eq .Section "posts" }}
+{{ with .File }}
+  {{ with resources.Get (printf "blog/posts/%s.css" .BaseFileName) }}
+    {{ $pageStyle := . | fingerprint }}
+    <link rel="stylesheet" href="{{ $pageStyle.RelPermalink }}">
+  {{ end }}
+{{ end }}
+{{ end }}
+{{ $code := resources.Get "blog/code.js" | fingerprint }}
+<script src="{{ $code.RelPermalink }}" defer></script>
+{{ if eq .Layout "search" }}
+  {{ $search := resources.Get "blog/search.js" | fingerprint }}
+  <script src="{{ $search.RelPermalink }}" defer></script>
+{{ end }}
+{{ template "_internal/opengraph.html" . }}
+{{ template "_internal/twitter_cards.html" . }}
+{{ $schema := dict "@context" "https://schema.org" "@type" "WebSite" "name" site.Title "url" site.BaseURL }}
+{{ if and .IsPage (eq .Section "posts") }}
+  {{ $schema = dict "@context" "https://schema.org" "@type" "BlogPosting" "headline" .Title "url" .Permalink "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00") "author" (dict "@type" "Person" "name" site.Params.author) }}
+{{ end }}
+<script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+{{ if and hugo.IsProduction (not site.Config.Privacy.GoogleAnalytics.Disable) }}
+{{ with site.Config.Services.GoogleAnalytics.ID }}
+<script>
+  if (!{{ site.Config.Privacy.GoogleAnalytics.RespectDoNotTrack }} || !['1', 'yes'].includes(navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack)) {
+    const analytics = document.createElement('script');
+    analytics.async = true;
+    analytics.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent({{ . }});
+    document.head.append(analytics);
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', {{ . }}, { anonymize_ip: true });
+  }
+</script>
+{{ end }}
+{{ end }}

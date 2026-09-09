@@ -1,0 +1,4 @@
+{{/* Keep the page title as the only h1, including older book chapters. */}}
+{{ $level := .Level }}
+{{ if and (lt $level 6) (findRE `(?m)^# ` .Page.RawContent) }}{{ $level = add $level 1 }}{{ end }}
+{{ printf "<h%d id=%q>%s</h%d>" $level .Anchor .Text $level | safeHTML }}

@@ -1,0 +1,40 @@
+{{ define "main" }}
+{{ $isPost := eq .Section "posts" }}
+{{ $isLabIndex := eq .File.Path "labs/index.md" }}
+{{ $isLab := and $isPost (hasPrefix .File.BaseFileName "multi-region-") }}
+{{ $back := printf "%s#writing" site.Home.RelPermalink }}
+{{ if $isLab }}{{ $back = "labs/" | relURL }}{{ end }}
+<main id="main" class="article-main">
+  {{ if $isPost }}
+  <div class="article-top">
+    <a class="back-link" href="{{ $back }}">← Back</a>
+    <p class="eyebrow"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time></p>
+  </div>
+  {{ end }}
+  <article>
+    <header class="article-heading"><h1>{{ .Title }}</h1></header>
+    {{ if $isLabIndex }}
+      {{ with .Description }}<p class="labs-intro">{{ . }}</p>{{ end }}
+      <div class="lab-index">{{ .Content }}</div>
+    {{ else }}
+      <div class="prose">{{ partial "memo/content.html" .Content }}</div>
+    {{ end }}
+  </article>
+  {{ if $isPost }}
+  <div class="article-end">
+    <a href="{{ $back }}">← Back</a>
+    {{ if $isLab }}
+      {{ $current := .RelPermalink }}
+      {{ $labs := sort (where site.RegularPages "File.BaseFileName" "like" "^multi-region-(learning|series-)") "File.BaseFileName" }}
+      {{ range $i, $lab := $labs }}
+        {{ if and (eq $lab.RelPermalink $current) (lt (add $i 1) (len $labs)) }}
+          {{ with index $labs (add $i 1) }}<a href="{{ .RelPermalink }}">Next →</a>{{ end }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ with .PrevInSection }}<a href="{{ .RelPermalink }}">Next →</a>{{ end }}
+    {{ end }}
+  </div>
+  {{ end }}
+</main>
+{{ end }}

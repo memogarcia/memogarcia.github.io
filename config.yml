@@ -1,8 +1,8 @@
 baseURL: "https://memo.mx"
 title: Memo Garcia
-theme: PaperMod
+theme: PaperMod # Fallback helpers and shortcodes; site layouts own the presentation.
 
-publishDir: .
+publishDir: public
 themesDir: themes
 
 enableGitInfo: true
@@ -95,8 +95,8 @@ params:
   keywords: ["software engineer", "devops", "cloud", "kubernetes", "python"]
   
   # SEO & Open Graph
-  images: ["papermod-cover.png"]
-  ogImage: "/papermod-cover.png"
+  images: ["apple-touch-icon.png"]
+  ogImage: "/apple-touch-icon.png"
   locale: en_US
   
   # Schema.org
@@ -111,7 +111,7 @@ params:
     Referrer-Policy: "strict-origin-when-cross-origin"
     Permissions-Policy: "geolocation=(), microphone=(), camera=()"
 
-  defaultTheme: dark # Changed from auto to dark
+  defaultTheme: auto
   # disableThemeToggle: true
   ShowShareButtons: false
   ShowReadingTime: true
@@ -173,7 +173,7 @@ markup:
       unsafe: true
       hardWraps: false
   highlight:
-    noClasses: true
+    noClasses: false
     codeFences: true
     guessSyntax: true
     style: solarized-dark
@@ -238,12 +238,21 @@ caches:
     
 # Module Configuration (if using Hugo Modules)
 module:
+  mounts:
+    - source: static
+      target: static
+      excludeFiles:
+        - "**/node_modules/**"
+        - "**/.DS_Store"
+    # Preserve existing /img/ URLs without moving legacy content.
+    - source: content/img
+      target: static/img
   noProxy: "none"
   noVendor: ""
   
 # Build Configuration
 build:
-  writeStats: true
+  writeStats: false
   noJSConfigInAssets: false
   useResourceCacheWhen: fallback
 

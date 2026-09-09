@@ -5,3 +5,8 @@
 
 TONE_OF_VOICE.md
 worklog.md
+public/
+resources/
+.playwright-cli/
+output/
+preview/
