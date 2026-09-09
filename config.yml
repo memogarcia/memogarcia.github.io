@@ -49,6 +49,10 @@ languages:
     weight: 1
     menu:
       main:
+        - name: Short Stories
+          identifier: short-stories
+          pageRef: /posts
+          weight: 5
         - name: Labs
           identifier: labs
           pageRef: /labs
