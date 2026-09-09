@@ -22,7 +22,6 @@
   </article>
   {{ if $isPost }}
   <div class="article-end">
-    <a href="{{ $back }}">← Back</a>
     {{ if $isLab }}
       {{ $current := .RelPermalink }}
       {{ $labs := sort (where site.RegularPages "File.BaseFileName" "like" "^multi-region-(learning|series-)") "File.BaseFileName" }}
