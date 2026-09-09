@@ -1,0 +1,7 @@
+/* This stylesheet belongs only to Focus. Shared navigation still works as usual. */
+.article-heading h1 { font: 400 20px var(--sans); letter-spacing: 0; }
+.prose { max-width: none; padding: 16px 0 32px; }
+.prose p { font: 400 clamp(64px, 12vw, 128px)/1.05 var(--serif); letter-spacing: -.06em; text-wrap: balance; }
+@media (max-width: 600px) {
+  .prose { padding-block: 8px 24px; }
+}

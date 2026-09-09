@@ -5,8 +5,8 @@
     <link>https://memo.mx/</link>
     <description>Recent content on Memo Garcia</description>
     <image>
-      <url>https://memo.mx/papermod-cover.png</url>
-      <link>https://memo.mx/papermod-cover.png</link>
+      <url>https://memo.mx/apple-touch-icon.png</url>
+      <link>https://memo.mx/apple-touch-icon.png</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
@@ -19,8 +19,7 @@
       <guid>https://memo.mx/posts/i-vibe-coded-the-app-of-my-dreams/</guid>
       <description>For a while I&amp;rsquo;ve been thinking about an app to keep track of my health properly, where I&amp;rsquo;m in control, fully local LLMs (with the option to use remote LLMs if desired).
 I&amp;rsquo;m getting old and I&amp;rsquo;ve been going more and more to multiple doctors and clinics, and I wanted a place to centralize and visualize my health in an easy way.
-It&amp;rsquo;s open source: https://github.com/memogarcia/my-health
-It&amp;rsquo;s not medical advice. Any real decision belongs with a doctor.</description>
+It&amp;rsquo;s open source: https://github.com/memogarcia/my-health It&amp;rsquo;s not medical advice. Any real decision belongs with a doctor.</description>
     </item>
     
     <item>
@@ -50,7 +49,7 @@ I have asked my trusted codex to build SaaS foundations several times already. A
       <guid>https://memo.mx/posts/deployment-observability-dagger-argocd/</guid>
       <description>You used to have a single place to look at your build and your deploy, now you have two systems.
 GitHub Actions doing both CI and CD is simple. Push code, the workflow builds it, the workflow deploys it. One pipeline, one log, one place to check. The deploy step is right there after the build step. You can see the whole thing.
-This simplicity is a trap. I wrote about this before.</description>
+This simplicity is a trap. I wrote about this before .</description>
     </item>
     
     <item>
@@ -72,9 +71,9 @@ If you&amp;rsquo;ve asked this more than once, the answer is almost always: your
       <description>Does this email already exist?
 How you answer depends on scale.
 100 users Anything works.
-SELECT EXISTS (SELECT 1 FROM users WHERE email = &amp;#39;me@memo.mx&amp;#39;); No index? Doesn&amp;rsquo;t matter. The database scans 100 rows in microseconds. Add a UNIQUE constraint and move on.
+SQLCopy SELECT EXISTS (SELECT 1 FROM users WHERE email = &amp;#39;me@memo.mx&amp;#39;); No index? Doesn&amp;rsquo;t matter. The database scans 100 rows in microseconds. Add a UNIQUE constraint and move on.
 10,000 users Still comfortable, but add a unique index:
-CREATE UNIQUE INDEX idx_users_email ON users (email); Most products treat email as case-insensitive. If yours does, make the constraint match the rule instead:</description>
+SQLCopy CREATE UNIQUE INDEX idx_users_email ON users (email); Most products treat email as case-insensitive. If yours does, make the constraint match the rule instead:</description>
     </item>
     
     <item>
@@ -224,7 +223,7 @@ Many developers and project managers have shared with me (and online!</descripti
       
       <guid>https://memo.mx/posts/istio-virtualservices-production/</guid>
       <description>Problem You need safe, predictable traffic control in prod. VirtualServices + DestinationRules give version routing, timeouts/retries, and circuit breaking without touching code.
-Approach Define versioned subsets in a DestinationRule. Route via VirtualService with weights (canary → rollout). Add timeout, retries, and outlier detection. Shift weights, watch metrics, then cut over. Example (Config) # vs-dr.yaml apiVersion: networking.istio.io/v1beta1 kind: DestinationRule metadata: name: svc namespace: prod spec: host: svc.prod.svc.cluster.local subsets: - name: v1 labels: version: v1 - name: v2 labels: version: v2 trafficPolicy: tls: mode: ISTIO_MUTUAL outlierDetection: consecutive5xx: 5 interval: 5s baseEjectionTime: 30s maxEjectionPercent: 50 --- apiVersion: networking.</description>
+Approach Define versioned subsets in a DestinationRule. Route via VirtualService with weights (canary → rollout). Add timeout, retries, and outlier detection. Shift weights, watch metrics, then cut over. Example (Config) YAMLCopy # vs-dr.yaml apiVersion: networking.istio.io/v1beta1 kind: DestinationRule metadata: name: svc namespace: prod spec: host: svc.prod.svc.cluster.local subsets: - name: v1 labels: version: v1 - name: v2 labels: version: v2 trafficPolicy: tls: mode: ISTIO_MUTUAL outlierDetection: consecutive5xx: 5 interval: 5s baseEjectionTime: 30s maxEjectionPercent: 50 --- apiVersion: networking.</description>
     </item>
     
     <item>
@@ -333,7 +332,7 @@ Part One: Buildings as Networks Chapter 1: The Room, the Door, and the Room Numb
       <guid>https://memo.mx/posts/systems-thinking/</guid>
       <description>What is a system? A set of pieces that work together to perform a function. When those pieces work together, emergence arises!
 Emergence as a concept refers to the idea that the whole is greater than the sum of its parts. New properties and behaviors emerge at the system level that cannot be understood by analyzing the parts in isolation.
-Systems thinking is bla bla bla, you can read it from wikipedia.</description>
+Systems thinking is bla bla bla, you can read it from wikipedia .</description>
     </item>
     
     <item>
@@ -342,10 +341,10 @@ Systems thinking is bla bla bla, you can read it from wikipedia.</description>
       <pubDate>Sat, 04 May 2024 00:55:24 +0900</pubDate>
       
       <guid>https://memo.mx/posts/aws-iam-crossaccount-roles/</guid>
-      <description>In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole.
+      <description>In AWS, in order to access resources in other accounts without creating new users or handling passwords, you can use sts:AssumeRole .
 Let&amp;rsquo;s say that you have some resources in AccountA (AWS Managed Prometheus for example) that you want to access from AccountB
 Account A In AccountA create a role account_a_role that has 2 types of policies:
-a Trust Relationship that define which entities can assume this role { &amp;#34;Version&amp;#34;: &amp;#34;2012-10-17&amp;#34;, &amp;#34;Statement&amp;#34;: [ { &amp;#34;Sid&amp;#34;: &amp;#34;AllowAssumeRoleFromAccountB&amp;#34;, &amp;#34;Effect&amp;#34;: &amp;#34;Allow&amp;#34;, &amp;#34;Principal&amp;#34;: { &amp;#34;AWS&amp;#34;: &amp;#34;arn:aws:iam::ACCOUNT_B_ID:role/account_b_role&amp;#34; }, &amp;#34;Action&amp;#34;: &amp;#34;sts:AssumeRole&amp;#34; } ] } You can also set Conditions to filter which entities can AssumeRole and even configure AssumeRoleWithWebIdentity for users who have been authenticated with a web identity provider.</description>
+a Trust Relationship that define which entities can assume this role JSONCopy { &amp;#34;Version&amp;#34;: &amp;#34;2012-10-17&amp;#34;, &amp;#34;Statement&amp;#34;: [ { &amp;#34;Sid&amp;#34;: &amp;#34;AllowAssumeRoleFromAccountB&amp;#34;, &amp;#34;Effect&amp;#34;: &amp;#34;Allow&amp;#34;, &amp;#34;Principal&amp;#34;: { &amp;#34;AWS&amp;#34;: &amp;#34;arn:aws:iam::ACCOUNT_B_ID:role/account_b_role&amp;#34; }, &amp;#34;Action&amp;#34;: &amp;#34;sts:AssumeRole&amp;#34; } ] } You can also set Conditions to filter which entities can AssumeRole and even configure AssumeRoleWithWebIdentity for users who have been authenticated with a web identity provider.</description>
     </item>
     
     <item>
@@ -442,7 +441,7 @@ Guessing as a Strategy Guessing gets a bad reputation. In technology, it is a re
       <guid>https://memo.mx/posts/generations/</guid>
       <description>Society seems to follow a cycle of moods that last around 20 years each.
 Each cycle is called &amp;ldquo;Turning&amp;rdquo;
-NOTE This is an unfalsifiable theory, so take it with a grain of salt.
+NOTE This is an unfalsifiable theory , so take it with a grain of salt.
 High The first turning is a high, which occurs after a crisis. During the high, institutions are strong and individualism is weak. Society is confident about where it wants to go collectively, though those outside the majoritarian center often feel stifled by conformity</description>
     </item>
     
@@ -489,7 +488,7 @@ When changes in one component require a new interface it propagates those “req
       <description>Docker multi-stage build is a great way to build a container images with a minimal footprint.
 Compiled languages like Go or Rust can take advantage of this by just shipping a binary to a container
 This is an example from the official docs:
-FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.</description>
+DOCKERFILECopy FROM golang:1.16 WORKDIR /go/src/github.com/alexellis/href-counter/ RUN go get -d -v golang.org/x/net/html COPY app.go ./ RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o app . FROM alpine:latest RUN apk --no-cache add ca-certificates WORKDIR /root/ COPY --from=0 /go/src/github.</description>
     </item>
     
     <item>
@@ -533,8 +532,7 @@ Distribution complexity: Sharing code requires the right interpreter + pip regis
       <pubDate>Thu, 20 Oct 2022 00:03:30 +0100</pubDate>
       
       <guid>https://memo.mx/posts/is-openstack-losing/</guid>
-      <description>Update Jan 2023: Is OpenStack Still Needed in 2022? - Thierry Carrez, Open Infrastructure Foundation
-And why Kubernetes “won”.
+      <description>Update Jan 2023: Is OpenStack Still Needed in 2022? - Thierry Carrez, Open Infrastructure Foundation And why Kubernetes “won”.
 I owe my career to OpenStack and to all its contributors. I have made excellent friends, I learned a lot from them and the project itself.
 For that and more, thanks a lot OpenStack.
 However…
@@ -547,9 +545,7 @@ Even though OpenStack has never been better, I can’t shake the feeling that is
       <pubDate>Mon, 17 Oct 2022 05:53:23 +0900</pubDate>
       
       <guid>https://memo.mx/posts/lateralus/</guid>
-      <description>TOOL Website
-TOOL - Lateralus
-Black Then White are All I see In my infancy Red and yellow then came to be Reaching out to me Lets me see As below so above and beyond I imagine Drawn beyond the lines of reason Push the envelope Watch it bend Over thinking, over analyzing, separates the body from the mind Withering my intuition, missing opportunities and I must Feed my will to feel my moment Drawing way outside the lines Black Then White are All I see In my infancy Red and yellow then came to be Reaching out to me Lets me see There is So Much More and Beckons me To look through to these Infinite possibilities As below so above and beyond I imagine Drawn outside the lines of reason Push the envelope Watch it bend Over thinking, over analyzing, separates the body from the mind Withering my intuition, leaving opportunities behind Feed my will to feel this moment Urging me to cross the line Reaching out to embrace the random Reaching out to embrace whatever may come I embrace my desire to I embrace my desire to Feel the rhythm To feel connected Enough to step aside and Weep like a widow To feel inspired To fathom the power To witness the beauty To bathe in the fountain To swing on the spiral To swing on the spiral To swing on the spiral Of our divinity and Still be a human With my feet upon the ground I lose myself between the sounds And open wide to suck it in I feel it move across my skin I&amp;#39;m reaching up and reaching out I&amp;#39;m reaching for the random or Whatever will bewilder me Whatever will bewilder me And following our will and wind We may just go where no one&amp;#39;s been We&amp;#39;ll ride the spiral to the end And may just go where no one&amp;#39;s been Spiral out, keep going Spiral out, keep going Spiral out, keep going Spiral out, keep going </description>
+      <description> TOOL Website TOOL - Lateralus TEXTCopy Black Then White are All I see In my infancy Red and yellow then came to be Reaching out to me Lets me see As below so above and beyond I imagine Drawn beyond the lines of reason Push the envelope Watch it bend Over thinking, over analyzing, separates the body from the mind Withering my intuition, missing opportunities and I must Feed my will to feel my moment Drawing way outside the lines Black Then White are All I see In my infancy Red and yellow then came to be Reaching out to me Lets me see There is So Much More and Beckons me To look through to these Infinite possibilities As below so above and beyond I imagine Drawn outside the lines of reason Push the envelope Watch it bend Over thinking, over analyzing, separates the body from the mind Withering my intuition, leaving opportunities behind Feed my will to feel this moment Urging me to cross the line Reaching out to embrace the random Reaching out to embrace whatever may come I embrace my desire to I embrace my desire to Feel the rhythm To feel connected Enough to step aside and Weep like a widow To feel inspired To fathom the power To witness the beauty To bathe in the fountain To swing on the spiral To swing on the spiral To swing on the spiral Of our divinity and Still be a human With my feet upon the ground I lose myself between the sounds And open wide to suck it in I feel it move across my skin I&amp;#39;m reaching up and reaching out I&amp;#39;m reaching for the random or Whatever will bewilder me Whatever will bewilder me And following our will and wind We may just go where no one&amp;#39;s been We&amp;#39;ll ride the spiral to the end And may just go where no one&amp;#39;s been Spiral out, keep going Spiral out, keep going Spiral out, keep going Spiral out, keep going </description>
     </item>
     
     <item>
@@ -569,20 +565,7 @@ Why is your system required? This will help you find the reason why this system 
       
       <guid>https://memo.mx/posts/my-favourite-horror-movies/</guid>
       <description>In no particular order:
-The wailing | Gokseong
-Noroi | The Curse
-The Medium
-Late Night with the Devil
-The Dark and the Wicked
-When Evil Lurks | Cuando Acecha La Maldad
-Perfect Blue | Pâfekuto burû
-Satan’s Slaves | Pengabdi Setan
-Satan&amp;rsquo;s Slaves: Communion | Pengabdi Setan 2: Communion
-Kairo | Pulse
-Aterrados
-Incantation | Zhou
-Gonjiam: Haunted Asylum | Gon-ji-am
-A Tale Of Two Sisters | Janghwa, Hongryeon</description>
+The wailing | Gokseong Noroi | The Curse The Medium Late Night with the Devil The Dark and the Wicked When Evil Lurks | Cuando Acecha La Maldad Perfect Blue | Pâfekuto burû Satan’s Slaves | Pengabdi Setan Satan&amp;rsquo;s Slaves: Communion | Pengabdi Setan 2: Communion Kairo | Pulse Aterrados Incantation | Zhou Gonjiam: Haunted Asylum | Gon-ji-am A Tale Of Two Sisters | Janghwa, Hongryeon Hereditary The Shining The Babadook The Witch Veronica Deadstream Channel Zero </description>
     </item>
     
     <item>
@@ -591,21 +574,7 @@ A Tale Of Two Sisters | Janghwa, Hongryeon</description>
       <pubDate>Wed, 12 Oct 2022 00:03:30 +0100</pubDate>
       
       <guid>https://memo.mx/posts/learning-resources/</guid>
-      <description>Tools for better thinking
-The Catalog of Design Patterns
-Learn X in Y minutes
-XMind
-Amazon EKS Blueprints for Terraform
-AWS Architecture Blog
-Cloud Design Patterns
-AWS in plain English
-AWS Solutions
-AWS Well-Architected
-Distributed Load Testing on AWS
-Istio by example
-High scalability
-Kubernetes Failure Stories
-AWS Prescriptive Guidance Patterns</description>
+      <description> Tools for better thinking The Catalog of Design Patterns Learn X in Y minutes XMind Amazon EKS Blueprints for Terraform AWS Architecture Blog Cloud Design Patterns AWS in plain English AWS Solutions AWS Well-Architected Distributed Load Testing on AWS Istio by example High scalability Kubernetes Failure Stories AWS Prescriptive Guidance Patterns </description>
     </item>
     
     <item>
@@ -617,7 +586,7 @@ AWS Prescriptive Guidance Patterns</description>
       <description>When installing GitLab in air-gapped mode using helm charts first you need to pull the required images for the target version to your private container registry.
 But is not straightforward to find which container tags map to which GitLab version.
 An easy way to find which tags you need is to print the helm templates first and get the values from there.
-helm \ -n gitlab \ template \ gitlab gitlab/gitlab \ --version 6.</description>
+BASHCopy helm \ -n gitlab \ template \ gitlab gitlab/gitlab \ --version 6.</description>
     </item>
     
     <item>
@@ -695,7 +664,7 @@ We often wonder whether the same techniques and toolchains of these modern stack
       
       <guid>https://memo.mx/posts/git-multiple-identities/</guid>
       <description>Be very carrefull in your setup : any misconfiguration make all the git config to fail silently !
-Setup multiple git ssh identities for git Generate your SSH keys as per your git provider documentation. Add each public SSH keys to your git providers acounts. In your ~/.ssh/config, set each ssh key for each repository as in this exemple: Host github.com HostName github.com User git IdentityFile ~/.ssh/github_private_key IdentitiesOnly=yes Host gitlab.com Hostname gitlab.</description>
+Setup multiple git ssh identities for git Generate your SSH keys as per your git provider documentation. Add each public SSH keys to your git providers acounts. In your ~/.ssh/config, set each ssh key for each repository as in this exemple: BASHCopy Host github.com HostName github.com User git IdentityFile ~/.ssh/github_private_key IdentitiesOnly=yes Host gitlab.</description>
     </item>
     
     <item>
@@ -706,8 +675,8 @@ Setup multiple git ssh identities for git Generate your SSH keys as per your git
       <guid>https://memo.mx/posts/i3wm-wsl2/</guid>
       <description>WSL configuration Install i3
 sudo apt install i3 -y Create an init script
-vim ~/src/scripts/i3launch.sh #!/bin/zsh source ~/.zshrc # If not running interactively, don&amp;#39;t do anything [ -z &amp;#34;$PS1&amp;#34; ] &amp;amp;&amp;amp; return export DISPLAY=$(awk &amp;#39;/nameserver / {print $2; exit}&amp;#39; /etc/resolv.conf 2&amp;gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&amp;#34;is not running&amp;#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root
-wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsrv from powershell</description>
+vim ~/src/scripts/i3launch.sh SHELLCopy #!/bin/zsh source ~/.zshrc # If not running interactively, don&amp;#39;t do anything [ -z &amp;#34;$PS1&amp;#34; ] &amp;amp;&amp;amp; return export DISPLAY=$(awk &amp;#39;/nameserver / {print $2; exit}&amp;#39; /etc/resolv.conf 2&amp;gt;/dev/null):0 export LIBGL_ALWAYS_INDIRECT=1 dbus_status=$(service dbus status) if [[ $dbus_status = *&amp;#34;is not running&amp;#34;* ]]; then sudo service dbus --full-restart fi i3 To run WSL2 as root
+wsl.exe -d Ubuntu-20.</description>
     </item>
     
     <item>
@@ -717,10 +686,9 @@ wsl.exe -d Ubuntu-20.04 -u root -- /bin/bash Windows configuration Install vcxsr
       
       <guid>https://memo.mx/posts/doc-fzf/</guid>
       <description>Fuzzy Search documentation from the CLI.
-See it in action here https://terminalizer.com/view/2c3935cf1418
-Disclaimer This tool was built to learn FZF capabilities. Feel free to use it or extend it.
-Usage doc-fzf ansible doc-fzf ansible -q yum Installation pip3 install doc-fzf Verify your installation:
-doc-fzf -h usage: doc-fzf.py [-h] [-q QUERY] module_name doc-fzf. positional arguments: module_name Name of the module to search optional arguments: -h, --help show this help message and exit -q QUERY Query the docs Extending Doc-FZF doc-fzf is a modular application.</description>
+See it in action here https://terminalizer.com/view/2c3935cf1418 Disclaimer This tool was built to learn FZF capabilities. Feel free to use it or extend it.
+Usage BASHCopy doc-fzf ansible doc-fzf ansible -q yum Installation BASHCopy pip3 install doc-fzf Verify your installation:
+BASHCopy doc-fzf -h usage: doc-fzf.py [-h] [-q QUERY] module_name doc-fzf. positional arguments: module_name Name of the module to search optional arguments: -h, --help show this help message and exit -q QUERY Query the docs Extending Doc-FZF doc-fzf is a modular application.</description>
     </item>
     
     <item>
@@ -730,7 +698,7 @@ doc-fzf -h usage: doc-fzf.py [-h] [-q QUERY] module_name doc-fzf. positional arg
       
       <guid>https://memo.mx/posts/pynetbox/</guid>
       <description>Usage:
-pip install pynetbox ansible ansible all -i hosts/env -m setup --tree /tmp/facts/env #!/opt/netbox/bin/python import argparse import json import os import sys import pynetbox import yaml import urllib3 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) if sys.version_info &amp;lt; (3, 6): print(&amp;#34;Python 3.6 is required&amp;#34;) sys.exit(2) def to_json(in_dict): return json.dumps(in_dict, sort_keys=True, indent=4) def load_configuration(path=&amp;#34;/etc/ansible/netbox.yml&amp;#34;): &amp;#34;&amp;#34;&amp;#34; Load netbox configuration /etc/ansible/netbox.yml &amp;#34;&amp;#34;&amp;#34; try: with open(path, &amp;#34;r&amp;#34;) as fd: return yaml.safe_load(fd) except yaml.YAMLError as yml_error: print(yml_error) NETBOX_ENDPOINT = load_configuration()[&amp;#34;netbox_endpoint&amp;#34;] NETBOX_TOKEN = load_configuration()[&amp;#34;netbox_token&amp;#34;] if not NETBOX_ENDPOINT: raise OSError(&amp;#34;environmet var NETBOX_ENDPOINT not set&amp;#34;) if not NETBOX_TOKEN: raise OSError(&amp;#34;environmet var NETBOX_TOKEN not set&amp;#34;) nb = pynetbox.</description>
+pip install pynetbox ansible ansible all -i hosts/env -m setup --tree /tmp/facts/env PYTHONCopy #!/opt/netbox/bin/python import argparse import json import os import sys import pynetbox import yaml import urllib3 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) if sys.version_info &amp;lt; (3, 6): print(&amp;#34;Python 3.6 is required&amp;#34;) sys.exit(2) def to_json(in_dict): return json.dumps(in_dict, sort_keys=True, indent=4) def load_configuration(path=&amp;#34;/etc/ansible/netbox.yml&amp;#34;): &amp;#34;&amp;#34;&amp;#34; Load netbox configuration /etc/ansible/netbox.yml &amp;#34;&amp;#34;&amp;#34; try: with open(path, &amp;#34;r&amp;#34;) as fd: return yaml.safe_load(fd) except yaml.YAMLError as yml_error: print(yml_error) NETBOX_ENDPOINT = load_configuration()[&amp;#34;netbox_endpoint&amp;#34;] NETBOX_TOKEN = load_configuration()[&amp;#34;netbox_token&amp;#34;] if not NETBOX_ENDPOINT: raise OSError(&amp;#34;environmet var NETBOX_ENDPOINT not set&amp;#34;) if not NETBOX_TOKEN: raise OSError(&amp;#34;environmet var NETBOX_TOKEN not set&amp;#34;) nb = pynetbox.</description>
     </item>
     
     <item>
@@ -751,8 +719,7 @@ Knowing versus Understanding</description>
       
       <guid>https://memo.mx/posts/waju/</guid>
       <description>Waju or whatever is called is a game that until this day I don&amp;rsquo;t know from where it comes. But, is fun.
-Edit: The game is based on a German game called Mensch ärgere Dich nicht
-Goal The goal of the game is very simple:
+Edit: The game is based on a German game called Mensch ärgere Dich nicht Goal The goal of the game is very simple:
 Move your marbles for one lap from your home to your goal. Don&amp;rsquo;t worry about winning but don&amp;rsquo;t let anyone else win. Have fun. Board The board has six main components:</description>
     </item>
     
@@ -771,7 +738,7 @@ Move your marbles for one lap from your home to your goal. Don&amp;rsquo;t worry
       <pubDate>Tue, 04 Dec 2018 13:10:28 +0100</pubDate>
       
       <guid>https://memo.mx/posts/linux-matebook/</guid>
-      <description>This laptop has very decent specs:
+      <description>This laptop has very decent specs :
 8th Generation Intel® Core™ i7-8550U processor GPU: NVIDIA® GeForce® MX150 with 2 GB GDDR5 / Intel® UHD Graphics 620 16 GB LPDDR3 2133 MHz BT 4.1 (compatible with 3.0 and 2.1+EDR) 512 GB NVMe PCIe SSD Don&amp;rsquo;t expect running workstation level workloads in this machine but it is a wonderful dev machine.
 Things I don&amp;rsquo;t like about the laptop Palm rejection on Linux Sound, it only outputs sound to two speakers on Linux and it has a werid noise under high volumes.</description>
     </item>
@@ -782,8 +749,7 @@ Things I don&amp;rsquo;t like about the laptop Palm rejection on Linux Sound, it
       <pubDate>Sat, 05 May 2018 18:53:14 +0100</pubDate>
       
       <guid>https://memo.mx/posts/openstack-containers/</guid>
-      <description>Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer
-Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
+      <description>Note This is a Work-In-Progress Document and the most up-to-date information is available at: github.com/memogarcia/openstack-deployer Deploying OpenStack using containers allows easy customisation and flexibility on how to deploy the platform for development, testing and production environments.
 Current deployment: stable/queens
 Host configuration The default configuration for this environment is composed by 3 main components that need to run on the host:
 Docker Libvirtd OpenVSwitch Docker will act as the control plane for OpenStack while the host will provide the hypervisor, network and storage.</description>
@@ -798,7 +764,7 @@ Docker Libvirtd OpenVSwitch Docker will act as the control plane for OpenStack w
       <description>A Certificate Authority or CA is an entity that signs digital certificates. These digital certificates are used to validate the connection while using secure mechanisms.
 Generating a root CA We will use a root CA to create intermediate CA&amp;rsquo;s which are trusted to sign certificates on its behalf.
 First, prepare the environment.
-mkdir /root/ca &amp;amp;&amp;amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &amp;gt; serial Then download the template for /root/ca/openssl.</description>
+BASHCopy mkdir /root/ca &amp;amp;&amp;amp; cd /root/ca mkdir certs crl newcerts private chmod 700 private touch index.txt echo 1000 &amp;gt; serial Then download the template for /root/ca/openssl.</description>
     </item>
     
     <item>
@@ -808,8 +774,7 @@ mkdir /root/ca &amp;amp;&amp;amp; cd /root/ca mkdir certs crl newcerts private c
       
       <guid>https://memo.mx/posts/pratai/</guid>
       <description>Note This is a Work-In-Progress Document.
-Read the docs at memogarcia/pratai-docs
-Abstract Pratai provides an incredibly flexible and resilient platform to migrate workloads to the cloud that respond to events without having to manage any server or network.
+Read the docs at memogarcia/pratai-docs Abstract Pratai provides an incredibly flexible and resilient platform to migrate workloads to the cloud that respond to events without having to manage any server or network.
 How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (disclaimer, from now on I will refer to code as functions), that will react to an event without worrying about anything else, the platform handles the execution.</description>
     </item>
     
@@ -821,7 +786,7 @@ How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (di
       <guid>https://memo.mx/about/</guid>
       <description>My blog is intended as a self reference and I don’t provide any support unless specified.
 If you find anything useful, please どうぞ! License
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (C) Guillermo Ramirez Garcia &amp;lt;root@memo.mx&amp;gt; Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed. DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 0.</description>
+BASHCopy DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (C) Guillermo Ramirez Garcia &amp;lt;root@memo.mx&amp;gt; Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed.</description>
     </item>
     
     

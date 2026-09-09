@@ -1,6 +1,0 @@
-resources:
-  - ns.yaml
-  - services.yaml
-  - virtualservice.yaml
-  - analysis.yaml
-  - rollout.yaml
