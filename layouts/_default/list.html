@@ -5,6 +5,7 @@
     <h1 id="welcome" lang="ja">{{ site.Params.homeInfoParams.Title }}</h1>
     <div>{{ site.Params.homeInfoParams.Content | markdownify }}</div>
     <a class="intro-link" href="https://networksbyanalogy.com/">Networks by Analogy <span aria-hidden="true">↗</span></a>
+    <a class="intro-link" href="https://magneticenterprises.com/">Magnetic Enterprises <span aria-hidden="true">↗</span></a>
   </section>
   <section id="writing" class="writing" aria-label="Writing">
     {{ partial "memo/post-list.html" (where site.RegularPages "Section" "posts").ByDate.Reverse }}

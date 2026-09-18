@@ -50,7 +50,7 @@ languages:
     menu:
       main:
         - name: Short Stories
-          identifier: short-stories
+          identifier: stories
           pageRef: /stories
           weight: 5
         - name: Labs

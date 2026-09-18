@@ -1,18 +1,20 @@
 {{ define "main" }}
 {{ $isPost := eq .Section "posts" }}
+{{ $isStory := eq .Section "stories" }}
 {{ $isLabIndex := eq .File.Path "labs/index.md" }}
 {{ $isLab := and $isPost (hasPrefix .File.BaseFileName "multi-region-") }}
 {{ $back := printf "%s#writing" site.Home.RelPermalink }}
 {{ if $isLab }}{{ $back = "labs/" | relURL }}{{ end }}
+{{ if $isStory }}{{ $back = "stories/" | relURL }}{{ end }}
 <main id="main" class="article-main">
-  {{ if $isPost }}
+  {{ if or $isPost $isStory }}
   <div class="article-top">
     <a class="back-link" href="{{ $back }}">← Back</a>
   </div>
   {{ end }}
   <article>
     <header class="article-heading">
-      {{ if $isPost }}
+      {{ if or $isPost $isStory }}
       <p class="eyebrow"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time></p>
       {{ end }}
       <h1>{{ .Title }}</h1>
@@ -24,7 +26,7 @@
       <div class="prose">{{ partial "memo/content.html" .Content }}</div>
     {{ end }}
   </article>
-  {{ if $isPost }}
+  {{ if or $isPost $isStory }}
   <div class="article-end">
     {{ if $isLab }}
       {{ $current := .RelPermalink }}
