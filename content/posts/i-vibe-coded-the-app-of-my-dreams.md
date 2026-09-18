@@ -1,7 +1,7 @@
 ---
 title: "I vibe coded the app of my dreams"
 date: 2026-07-10T14:30:00+09:00
-draft: false
+draft: true
 ---
 
 For a while I've been thinking about an app to keep track of my health properly, where I'm in control, fully local LLMs (with the option to use remote LLMs if desired).
