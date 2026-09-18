@@ -12,15 +12,16 @@
     <language>en</language>
     <lastBuildDate>Fri, 18 Sep 2026 12:38:00 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>How I design UI with AI</title>
+      <title>How I design UI/UX with AI</title>
       <link>https://memo.mx/posts/how-i-design-ui-with-ai/</link>
       <pubDate>Fri, 18 Sep 2026 12:38:00 +0900</pubDate>
       
       <guid>https://memo.mx/posts/how-i-design-ui-with-ai/</guid>
-      <description>Why did my AI-generated interfaces keep looking amateurish?
-I asked a model for a complete React view in one prompt. It returned four hundred lines of nested JSX and Tailwind classes. The page looked fine for thirty seconds, then fell apart when I resized the browser or connected real state.
-I spent days arguing with prompts about padding, broken hover states, and sidebars that stopped aligning after every “refinement.”
-The model was writing code before I had made decisions about layout, density, or behavior.</description>
+      <description>When designing UI/UX interfaces, code is the worst place to start.
+The order that works for me is: Image, ASCII, contracts, component.
+1. Image I start in ChatGPT, but I ask for images before code. I don’t use Figma because I don’t know how :(.
+I describe the product philosophy instead of aesthetic buzzwords:
+Create a brutally minimal UI for a desktop application. Reduce, simplify, and subtract what is not needed.</description>
     </item>
     
     <item>
