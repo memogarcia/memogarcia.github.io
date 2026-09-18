@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Image to component</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #eeeae2; color: #20221f; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px; }
+    main { width: min(100%, 1024px); margin: auto; }
+    header { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 20px; }
+    h1 { margin: 0; font: 600 clamp(22px, 4vw, 34px)/1.1 Georgia, serif; letter-spacing: -.03em; }
+    header p { max-width: 440px; margin: 0; color: #646961; font-size: 14px; line-height: 1.5; }
+    [role="tablist"] { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid #d5d1c8; border-radius: 7px; background: #f8f6f1; padding: 4px; }
+    [role="tab"] { min-height: 44px; padding-inline: 4px; border: 0; border-radius: 4px; background: transparent; color: #646961; font: 600 12px/1 inherit; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; cursor: pointer; }
+    [role="tab"][aria-selected="true"] { background: #273129; color: #fff; }
+    [role="tab"]:focus-visible, input:focus-visible, .result:focus-visible { outline: 2px solid #667b63; outline-offset: 2px; }
+    [role="tabpanel"] { margin-top: 12px; min-height: 540px; border: 1px solid #d5d1c8; border-radius: 7px; background: #f8f6f1; overflow: hidden; }
+    [role="tabpanel"][hidden] { display: none; }
+    .concept { display: grid; place-items: center; padding: 18px; }
+    .concept img { display: block; width: 100%; height: auto; border: 1px solid #d5d1c8; border-radius: 5px; }
+    .ascii { margin: 0; padding: 36px; overflow: auto; color: #30362f; font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
+    .stage { min-height: 540px; display: grid; place-items: center; padding: 32px; background: #d9d9d4; }
+    .dialog { width: min(100%, 650px); border: 1px solid #c6c8c2; border-radius: 7px; background: #fbfbf8; box-shadow: 0 24px 64px rgba(28, 31, 27, .18); overflow: hidden; }
+    .search { position: relative; padding: 18px; border-bottom: 1px solid #dfe1dc; }
+    .search-icon { position: absolute; left: 34px; top: 32px; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; color: #5c625b; pointer-events: none; }
+    input { width: 100%; min-height: 48px; padding: 0 48px; border: 1px solid #b8bcb5; border-radius: 5px; background: #fff; color: #20221f; font: 16px/1 inherit; }
+    kbd { border: 1px solid #d1d3ce; border-radius: 3px; background: #f3f3ef; padding: 2px 5px; color: #666c64; font: 11px/1.2 ui-monospace, monospace; }
+    .escape { position: absolute; right: 32px; top: 33px; }
+    section { padding: 14px 12px 6px; }
+    section + section { border-top: 1px solid #e3e4df; }
+    h2 { margin: 0 10px 7px; color: #6b7169; font-size: 11px; letter-spacing: .1em; }
+    .result { width: 100%; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; min-height: 58px; padding: 8px 12px; border: 0; border-radius: 5px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+    .result[hidden] { display: none; }
+    .result:hover, .result[aria-selected="true"] { background: #e8ece6; }
+    .icon { display: grid; place-items: center; color: #485147; }
+    .icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+    .copy { min-width: 0; }
+    .copy strong, .copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .copy strong { font-size: 14px; font-weight: 600; }
+    .copy small { margin-top: 3px; color: #737970; font-size: 12px; }
+    .meta { color: #747a72; font-size: 12px; }
+    .footer { display: flex; justify-content: flex-end; gap: 14px; padding: 12px 18px 16px; color: #747a72; font-size: 11px; }
+    .empty { padding: 44px 20px; color: #737970; text-align: center; font-size: 14px; }
+    @media (max-width: 680px) {
+      body { padding: 14px; }
+      header { display: block; }
+      header p { margin-top: 8px; }
+      [role="tab"] { font-size: 11px; letter-spacing: .02em; }
+      [role="tabpanel"] { min-height: 460px; }
+      .ascii { padding: 20px; font-size: 11px; }
+      .stage { min-height: 460px; padding: 12px; }
+      .footer { justify-content: flex-start; flex-wrap: wrap; }
+      .meta { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Image → ASCII → component</h1>
+      <p>One command palette, refined in three representations. The final stage adds the behavior an image cannot show.</p>
+    </header>
+
+    <div role="tablist" aria-label="Design stages">
+      <button role="tab" id="tab-image" aria-controls="panel-image" aria-selected="false" tabindex="-1">1. Image</button>
+      <button role="tab" id="tab-ascii" aria-controls="panel-ascii" aria-selected="false" tabindex="-1">2. ASCII</button>
+      <button role="tab" id="tab-component" aria-controls="panel-component" aria-selected="true">3. Component</button>
+    </div>
+
+    <div role="tabpanel" id="panel-image" aria-labelledby="tab-image" hidden>
+      <div class="concept"><img src="/img/ui-with-ai-command-palette-concept.png" alt="Generated concept for a minimal work tracker command palette"></div>
+    </div>
+
+    <div role="tabpanel" id="panel-ascii" aria-labelledby="tab-ascii" hidden>
+      <pre class="ascii" aria-label="ASCII wireframe">+-----------------------------------------------------------------+
+|  Search projects, tasks, docs…                             Esc   |
++-----------------------------------------------------------------+
+|  WORK & PROJECTS                                                |
+|  &gt; Cluster ingress migration        Core Platform               |
+|    Core Platform                    Project                     |
+|                                                                 |
+|  ACTIONS                                                        |
+|    Create new task                 C                            |
+|    Workspace settings              Settings &gt; Workspace         |
++-----------------------------------------------------------------+
+|  ↑↓ Navigate        Enter Open        Esc Close                  |
++-----------------------------------------------------------------+</pre>
+    </div>
+
+    <div role="tabpanel" id="panel-component" aria-labelledby="tab-component">
+      <div class="stage">
+        <div class="dialog" role="dialog" aria-label="Command palette">
+          <div class="search">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg>
+            <input id="search" type="text" inputmode="search" autocomplete="off" placeholder="Search projects, tasks, docs…" aria-label="Search projects, tasks, and documents">
+            <kbd class="escape">Esc</kbd>
+          </div>
+          <div id="results">
+            <section aria-labelledby="work-heading">
+              <h2 id="work-heading">WORK &amp; PROJECTS</h2>
+              <button class="result" data-search="cluster ingress migration core platform" aria-selected="true"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M9 8h6M9 12h6M9 16h4"></path></svg></span><span class="copy"><strong>Cluster ingress migration</strong><small>Core Platform</small></span><span class="meta">In progress</span></button>
+              <button class="result" data-search="core platform project" aria-selected="false"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H10l2 2h6.5A2.5 2.5 0 0 1 21 9.5v7A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5Z"></path></svg></span><span class="copy"><strong>Core Platform</strong><small>Project</small></span><span class="meta">8 tasks</span></button>
+            </section>
+            <section aria-labelledby="action-heading">
+              <h2 id="action-heading">ACTIONS</h2>
+              <button class="result" data-search="create new task" aria-selected="false"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></span><span class="copy"><strong>Create new task</strong><small>Add work to this workspace</small></span><kbd>C</kbd></button>
+              <button class="result" data-search="workspace settings" aria-selected="false"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1m-8.6 8.6-2.1 2.1"></path></svg></span><span class="copy"><strong>Workspace settings</strong><small>Manage workspace preferences</small></span><span class="meta">Settings › Workspace</span></button>
+            </section>
+          </div>
+          <div class="footer" aria-live="polite"><span id="status">↑↓ Navigate</span><span>Enter Open</span><span>Esc Clear</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('[role="tabpanel"]')];
+    const search = document.querySelector('#search');
+    const results = [...document.querySelectorAll('.result')];
+    const resultsRoot = document.querySelector('#results');
+    const status = document.querySelector('#status');
+    let selected = 0;
+
+    function showTab(tab) {
+      tabs.forEach(item => {
+        const active = item === tab;
+        item.setAttribute('aria-selected', active);
+        item.tabIndex = active ? 0 : -1;
+      });
+      panels.forEach(panel => panel.hidden = panel.id !== tab.getAttribute('aria-controls'));
+    }
+
+    function visibleResults() { return results.filter(result => !result.hidden); }
+
+    function select(index) {
+      const visible = visibleResults();
+      if (!visible.length) return;
+      selected = (index + visible.length) % visible.length;
+      results.forEach(result => result.setAttribute('aria-selected', false));
+      visible[selected].setAttribute('aria-selected', true);
+      visible[selected].scrollIntoView({ block: 'nearest' });
+    }
+
+    tabs.forEach((tab, index) => tab.addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      const next = (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      showTab(tabs[next]);
+      tabs[next].focus();
+    }));
+    tabs.forEach(tab => tab.addEventListener('click', () => showTab(tab)));
+    results.forEach(result => result.addEventListener('click', () => {
+      status.textContent = `Opened ${result.querySelector('strong').textContent}`;
+    }));
+
+    search.addEventListener('input', () => {
+      const query = search.value.trim().toLowerCase();
+      results.forEach(result => result.hidden = !result.dataset.search.includes(query));
+      resultsRoot.querySelector('.empty')?.remove();
+      if (!visibleResults().length) resultsRoot.insertAdjacentHTML('beforeend', '<p class="empty">No matching work</p>');
+      selected = 0;
+      select(0);
+    });
+
+    search.addEventListener('keydown', event => {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        select(selected + (event.key === 'ArrowDown' ? 1 : -1));
+      }
+      if (event.key === 'Escape') {
+        search.value = '';
+        search.dispatchEvent(new Event('input'));
+      }
+      if (event.key === 'Enter') visibleResults()[selected]?.click();
+    });
+
+    document.addEventListener('keydown', event => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        showTab(document.querySelector('#tab-component'));
+        search.focus();
+      }
+    });
+
+    console.assert(tabs.length === 3 && panels.length === 3, 'Each design stage needs one tab and panel');
+    console.assert(results.length === 4, 'The component example should match the four ASCII rows');
+  </script>
+</body>
+</html>

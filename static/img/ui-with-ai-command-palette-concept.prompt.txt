@@ -1,0 +1,11 @@
+Use case: ui-mockup
+Asset type: editorial illustration for a technical blog post about designing UI with AI
+Primary request: Create a polished desktop application concept showing a command palette for a work tracker. The palette is centered over a quiet application canvas. It contains a search field and grouped results for work and projects, then actions. Keep it plausible enough to translate into a real HTML component.
+Scene/backdrop: neutral desktop app workspace with a restrained left icon rail and faint content behind the dialog
+Style/medium: high-fidelity product UI mockup, flat native interface, no device frame, no perspective
+Composition/framing: 16:10 landscape, straight-on view, generous margins, centered command palette
+Lighting/mood: quiet and focused
+Color palette: off-white, charcoal, muted gray, one restrained moss green accent
+Text (verbatim): "Search projects, tasks, docs…"; "WORK & PROJECTS"; "Cluster ingress migration"; "Core Platform"; "ACTIONS"; "Create new task"; "Workspace settings"
+Constraints: one clear primary surface, subtle 1px borders, readable typography, compact density, no gradients, no glassmorphism, no decorative dashboard charts, no bright status pills
+Avoid: logos, watermark, marketing copy, oversized rounded cards, purple, neon colors, 3D effects
