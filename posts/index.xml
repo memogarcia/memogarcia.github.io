@@ -17,11 +17,10 @@
       <pubDate>Fri, 18 Sep 2026 12:38:00 +0900</pubDate>
       
       <guid>https://memo.mx/posts/how-i-design-ui-with-ai/</guid>
-      <description>When designing UI/UX interfaces, code is the worst place to start.
+      <description>Code is the worst place to start UI/UX work.
 The order that works for me is: Image, ASCII, contracts, component.
-1. Image I start in ChatGPT, but I ask for images before code. I don’t use Figma because I don’t know how :(.
-I describe the product philosophy instead of aesthetic buzzwords:
-Create a brutally minimal UI for a desktop application. Reduce, simplify, and subtract what is not needed.</description>
+UI/UX takes repeated refinement. Each pass changes the next one. The more I understand the problem and the people using the product, the more intention I can put into the interface.
+1. Image I start in ChatGPT, but I ask for images before code. I don’t use Figma because I don’t know how :(.</description>
     </item>
     
     <item>
