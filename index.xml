@@ -10,7 +10,16 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 18 Sep 2026 12:38:00 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 18 Sep 2026 13:45:00 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>JWST finally found why the universe is expanding at an accelerating rate...</title>
+      <link>https://memo.mx/stories/jwst-accelerating-expansion/</link>
+      <pubDate>Fri, 18 Sep 2026 13:45:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/stories/jwst-accelerating-expansion/</guid>
+      <description>It is running away&amp;hellip;</description>
+    </item>
+    
     <item>
       <title>How I design UI/UX with AI</title>
       <link>https://memo.mx/posts/how-i-design-ui-with-ai/</link>
@@ -789,15 +798,6 @@ How it works The goal of Pratai is simple. Deploy &amp;ldquo;code&amp;rdquo; (di
       <description>My blog is intended as a self reference and I don’t provide any support unless specified.
 If you find anything useful, please どうぞ! License
 BASHCopy DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE Version 2, December 2004 Copyright (C) Guillermo Ramirez Garcia &amp;lt;root@memo.mx&amp;gt; Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed.</description>
-    </item>
-    
-    <item>
-      <title>Short stories</title>
-      <link>https://memo.mx/stories/</link>
-      <pubDate>Sat, 01 Jan 2000 00:00:00 +0000</pubDate>
-      
-      <guid>https://memo.mx/stories/</guid>
-      <description></description>
     </item>
     
     

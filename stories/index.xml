@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Short stories on Memo Garcia</title>
+    <link>https://memo.mx/stories/</link>
+    <description>Recent content in Short stories on Memo Garcia</description>
+    <image>
+      <url>https://memo.mx/apple-touch-icon.png</url>
+      <link>https://memo.mx/apple-touch-icon.png</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 01 Jan 2000 00:00:00 +0000</lastBuildDate><atom:link href="https://memo.mx/stories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>JWST finally found why the universe is expanding at an accelerating rate...</title>
+      <link>https://memo.mx/stories/jwst-accelerating-expansion/</link>
+      <pubDate>Fri, 18 Sep 2026 13:45:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/stories/jwst-accelerating-expansion/</guid>
+      <description>It is running away&amp;hellip;</description>
+    </item>
+    
+  </channel>
+</rss>

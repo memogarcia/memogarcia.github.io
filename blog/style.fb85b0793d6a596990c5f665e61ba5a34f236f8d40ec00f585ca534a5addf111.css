@@ -130,7 +130,8 @@ nav a:hover { text-decoration: underline; }
 .intro h1 { margin: 0 0 28px; font-family: "Hiragino Mincho ProN", "Yu Mincho", var(--serif); font-size: clamp(28px, 5vw, 48px); font-weight: 500; letter-spacing: -.04em; line-height: 1.3; }
 .intro p { margin: 0; font-size: 15px; line-height: 1.8; color: var(--muted); }
 .intro p + p { margin-top: 0; }
-.intro-link { display: inline-block; margin-top: 28px; padding: 12px 0; font-size: 12px; line-height: 1.6; text-decoration-color: var(--line); }
+.intro-link { display: block; width: fit-content; margin-top: 28px; padding: 4px 0; font-size: 12px; line-height: 1.6; text-decoration-color: var(--line); }
+.intro-link + .intro-link { margin-top: 4px; }
 .intro-link span { margin-left: 8px; }
 .writing { border-top: 1px solid var(--line); scroll-margin-top: 24px; }
 .post-list { padding: 0; margin: 0; list-style: none; }
