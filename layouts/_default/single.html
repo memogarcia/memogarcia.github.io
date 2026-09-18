@@ -8,11 +8,15 @@
   {{ if $isPost }}
   <div class="article-top">
     <a class="back-link" href="{{ $back }}">← Back</a>
-    <p class="eyebrow"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time></p>
   </div>
   {{ end }}
   <article>
-    <header class="article-heading"><h1>{{ .Title }}</h1></header>
+    <header class="article-heading">
+      {{ if $isPost }}
+      <p class="eyebrow"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time></p>
+      {{ end }}
+      <h1>{{ .Title }}</h1>
+    </header>
     {{ if $isLabIndex }}
       {{ with .Description }}<p class="labs-intro">{{ . }}</p>{{ end }}
       <div class="lab-index">{{ .Content }}</div>
@@ -27,11 +31,11 @@
       {{ $labs := sort (where site.RegularPages "File.BaseFileName" "like" "^multi-region-(learning|series-)") "File.BaseFileName" }}
       {{ range $i, $lab := $labs }}
         {{ if and (eq $lab.RelPermalink $current) (lt (add $i 1) (len $labs)) }}
-          {{ with index $labs (add $i 1) }}<a href="{{ .RelPermalink }}">Next →</a>{{ end }}
+          {{ with index $labs (add $i 1) }}<a class="next-link" href="{{ .RelPermalink }}">Next lab →</a>{{ end }}
         {{ end }}
       {{ end }}
     {{ else }}
-      {{ with .PrevInSection }}<a href="{{ .RelPermalink }}">Next →</a>{{ end }}
+      {{ with .PrevInSection }}<a class="next-link" href="{{ .RelPermalink }}">Next story →</a>{{ end }}
     {{ end }}
   </div>
   {{ end }}
