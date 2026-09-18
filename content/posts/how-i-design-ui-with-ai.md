@@ -4,9 +4,11 @@ date: 2026-09-18T12:38:00+09:00
 draft: false
 ---
 
-When designing UI/UX interfaces, code is the worst place to start.
+Code is the worst place to start UI/UX work.
 
 The order that works for me is: Image, ASCII, contracts, component.
+
+UI/UX takes repeated refinement. Each pass changes the next one. The more I understand the problem and the people using the product, the more intention I can put into the interface.
 
 ## 1. Image
 
@@ -23,7 +25,7 @@ The image sets a visual direction. It does not provide a specification.
   <figcaption>The generated concept. Useful for direction, unreliable for implementation detail.</figcaption>
 </figure>
 
-An image gives you posture, contrast, and visual density. It cannot define behavior: how the dialog handles wrapped text, narrow viewports, or the Escape key.
+An image gives you contrast and visual density. It cannot define behavior: how the dialog handles wrapped text, narrow viewports, or the Escape key.
 
 ## 2. ASCII
 
@@ -81,7 +83,7 @@ The second is the design contract (`DESIGN.md`). It records the rules that survi
 ```markdown
 # Product design system
 
-- Quiet, dense, and text-first
+- Quiet and text-first
 - One primary action per view
 - White, gray, and charcoal surfaces
 - Semantic color only for warnings and destructive actions

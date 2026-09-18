@@ -5,32 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Image to component</title>
   <style>
-    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #eeeae2; color: #20221f; }
+    @font-face {
+      font-family: "Source Serif 4";
+      src: url("/fonts/source-serif-4/roman.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 200 900;
+      font-display: swap;
+    }
+    :root {
+      --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color-scheme: light;
+      font-family: var(--sans);
+      background: #eeeae2;
+      color: #20221f;
+    }
     * { box-sizing: border-box; }
     body { margin: 0; padding: 24px; }
     main { width: min(100%, 1024px); margin: auto; }
     header { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 20px; }
-    h1 { margin: 0; font: 600 clamp(22px, 4vw, 34px)/1.1 Georgia, serif; letter-spacing: -.03em; }
-    header p { max-width: 440px; margin: 0; color: #646961; font-size: 14px; line-height: 1.5; }
+    h1 { max-width: 15ch; margin: 0; font: 520 clamp(30px, 5vw, 44px)/1.02 var(--serif); letter-spacing: -.035em; text-wrap: balance; }
+    header p { max-width: 48ch; margin: 0; color: #646961; font: 400 16px/1.5 var(--serif); letter-spacing: -.005em; }
     [role="tablist"] { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid #d5d1c8; border-radius: 7px; background: #f8f6f1; padding: 4px; }
-    [role="tab"] { min-height: 44px; padding-inline: 4px; border: 0; border-radius: 4px; background: transparent; color: #646961; font: 600 12px/1 inherit; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; cursor: pointer; }
+    [role="tab"] { min-height: 44px; padding-inline: 4px; border: 0; border-radius: 4px; background: transparent; color: #646961; font: 650 11px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; cursor: pointer; }
     [role="tab"][aria-selected="true"] { background: #273129; color: #fff; }
     [role="tab"]:focus-visible, input:focus-visible, .result:focus-visible { outline: 2px solid #667b63; outline-offset: 2px; }
     [role="tabpanel"] { margin-top: 12px; min-height: 540px; border: 1px solid #d5d1c8; border-radius: 7px; background: #f8f6f1; overflow: hidden; }
     [role="tabpanel"][hidden] { display: none; }
     .concept { display: grid; place-items: center; padding: 18px; }
     .concept img { display: block; width: 100%; height: auto; border: 1px solid #d5d1c8; border-radius: 5px; }
-    .ascii { margin: 0; padding: 36px; overflow: auto; color: #30362f; font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
+    .ascii { margin: 0; padding: 36px; overflow: auto; color: #30362f; font: 13px/1.75 var(--mono); white-space: pre; }
     .stage { min-height: 540px; display: grid; place-items: center; padding: 32px; background: #d9d9d4; }
     .dialog { width: min(100%, 650px); border: 1px solid #c6c8c2; border-radius: 7px; background: #fbfbf8; box-shadow: 0 24px 64px rgba(28, 31, 27, .18); overflow: hidden; }
     .search { position: relative; padding: 18px; border-bottom: 1px solid #dfe1dc; }
     .search-icon { position: absolute; left: 34px; top: 32px; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; color: #5c625b; pointer-events: none; }
-    input { width: 100%; min-height: 48px; padding: 0 48px; border: 1px solid #b8bcb5; border-radius: 5px; background: #fff; color: #20221f; font: 16px/1 inherit; }
-    kbd { border: 1px solid #d1d3ce; border-radius: 3px; background: #f3f3ef; padding: 2px 5px; color: #666c64; font: 11px/1.2 ui-monospace, monospace; }
+    input { width: 100%; min-height: 48px; padding: 0 48px; border: 1px solid #b8bcb5; border-radius: 5px; background: #fff; color: #20221f; font: 400 16px/1.25 var(--sans); }
+    kbd { border: 1px solid #d1d3ce; border-radius: 3px; background: #f3f3ef; padding: 2px 5px; color: #666c64; font: 500 11px/1.2 var(--mono); }
     .escape { position: absolute; right: 32px; top: 33px; }
     section { padding: 14px 12px 6px; }
     section + section { border-top: 1px solid #e3e4df; }
-    h2 { margin: 0 10px 7px; color: #6b7169; font-size: 11px; letter-spacing: .1em; }
+    h2 { margin: 0 10px 7px; color: #6b7169; font: 700 11px/1.2 var(--sans); letter-spacing: .1em; }
     .result { width: 100%; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; min-height: 58px; padding: 8px 12px; border: 0; border-radius: 5px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
     .result[hidden] { display: none; }
     .result:hover, .result[aria-selected="true"] { background: #e8ece6; }
@@ -38,17 +53,20 @@
     .icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
     .copy { min-width: 0; }
     .copy strong, .copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .copy strong { font-size: 14px; font-weight: 600; }
-    .copy small { margin-top: 3px; color: #737970; font-size: 12px; }
-    .meta { color: #747a72; font-size: 12px; }
+    .copy strong { font-size: 16px; font-weight: 600; line-height: 1.2; letter-spacing: -.01em; }
+    .copy small { margin-top: 3px; color: #737970; font-size: 13px; line-height: 1.3; }
+    .meta { color: #747a72; font-size: 11px; font-variant-numeric: tabular-nums; }
     .footer { display: flex; justify-content: flex-end; gap: 14px; padding: 12px 18px 16px; color: #747a72; font-size: 11px; }
-    .empty { padding: 44px 20px; color: #737970; text-align: center; font-size: 14px; }
+    .empty { padding: 44px 20px; color: #737970; text-align: center; font-size: 13px; }
     @media (max-width: 680px) {
       body { padding: 14px; }
       header { display: block; }
       header p { margin-top: 8px; }
-      [role="tab"] { font-size: 11px; letter-spacing: .02em; }
+      h1 { max-width: none; }
+      [role="tab"] { letter-spacing: .02em; }
       [role="tabpanel"] { min-height: 460px; }
+      input { padding-right: 16px; }
+      .escape { display: none; }
       .ascii { padding: 20px; font-size: 11px; }
       .stage { min-height: 460px; padding: 12px; }
       .footer { justify-content: flex-start; flex-wrap: wrap; }
@@ -64,12 +82,12 @@
     </header>
 
     <div role="tablist" aria-label="Design stages">
-      <button role="tab" id="tab-image" aria-controls="panel-image" aria-selected="false" tabindex="-1">1. Image</button>
+      <button role="tab" id="tab-image" aria-controls="panel-image" aria-selected="true">1. Image</button>
       <button role="tab" id="tab-ascii" aria-controls="panel-ascii" aria-selected="false" tabindex="-1">2. ASCII</button>
-      <button role="tab" id="tab-component" aria-controls="panel-component" aria-selected="true">3. Component</button>
+      <button role="tab" id="tab-component" aria-controls="panel-component" aria-selected="false" tabindex="-1">3. Component</button>
     </div>
 
-    <div role="tabpanel" id="panel-image" aria-labelledby="tab-image" hidden>
+    <div role="tabpanel" id="panel-image" aria-labelledby="tab-image">
       <div class="concept"><img src="/img/ui-with-ai-command-palette-concept.png" alt="Generated concept for a minimal work tracker command palette"></div>
     </div>
 
@@ -89,7 +107,7 @@
 +-----------------------------------------------------------------+</pre>
     </div>
 
-    <div role="tabpanel" id="panel-component" aria-labelledby="tab-component">
+    <div role="tabpanel" id="panel-component" aria-labelledby="tab-component" hidden>
       <div class="stage">
         <div class="dialog" role="dialog" aria-label="Command palette">
           <div class="search">
@@ -187,6 +205,7 @@
 
     console.assert(tabs.length === 3 && panels.length === 3, 'Each design stage needs one tab and panel');
     console.assert(results.length === 4, 'The component example should match the four ASCII rows');
+    console.assert(!document.querySelector('#panel-image').hidden, 'The walkthrough should start with the generated image');
   </script>
 </body>
 </html>
