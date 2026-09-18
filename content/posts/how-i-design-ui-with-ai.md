@@ -1,7 +1,7 @@
 ---
 title: "How I design UI with AI"
 date: 2026-09-18T12:38:00+09:00
-draft: true
+draft: false
 ---
 
 Why did my AI-generated interfaces keep looking amateurish?
