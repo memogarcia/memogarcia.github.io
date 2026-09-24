@@ -1,7 +1,7 @@
 ---
 title: "I vibe coded the app of my dreams"
 date: 2026-09-24T16:30:00+09:00
-draft: true
+draft: false
 ---
 
 As I get older, I find myself visiting doctors and clinics more often. The problem is that every visit leaves me with another piece of paper, or prescription, and none of these records are connected.
