@@ -1,7 +1,7 @@
 ---
 title: "How (I think) TARDIS move through Space and Time"
-date: 2020-08-20T07:53:23+01:00
-draft: true
+date: 2026-09-20T07:53:23+01:00
+draft: false
 ---
 
 **Disclaimer** I'm not an astrophysicist, this is just a fun thought experiment.
@@ -23,9 +23,11 @@ Now let’s say that you have the means to “escape” this dimension into the 
 
 Imagine now that you move from one extreme of this line to the other and then “You” decide to go back to the 1st dimension. From the perspective of anyone in that dimension you teleported.
 
+![A one-dimensional line blocks travel from A to B; a route through a two-dimensional plane goes around the obstacle.](/img/timespace-line-to-plane.png)
+
 Now, extrapolate this idea to the 3rd dimension. You are a 2nd dimenision being who can move from left to right but suddenly you move to the 3rd dimension. Now you have an extra degree of freedom.
 
-![dimension1](/img/dimension1.png)
+![A route lifts off a two-dimensional plane, crosses above a closed circle, and returns outside it through three-dimensional space.](/img/timespace-plane-to-space.png)
 
 
 Imagine “escaping” to a higher dimension where is easy to just see “everything” on the previous dimension at once and have the capabilities of “go back” to that dimension but at a different location. From the perspective of anyone in that dimension you teleported.
@@ -36,6 +38,8 @@ Imagine for a second the 3rd dimension as a 1 dimension “object”. Everything
 
 How does the 4th dimension will look like? as a line of 3rd dimension points.
 
+![Three snapshots of the same three-dimensional region at different times, arranged along a time arrow.](/img/timespace-spacetime.png)
+
 Can you do the same you did for the 1st and 2nd dimension movement? of course (hypothetically).
 
 You as a 3rd dimension being “escape” to the 4th dimension, suddenly you have free access to that left and right of that line and you decided to move to a specific point in that line. From the perspective of anyone in that dimension you teleported.
@@ -43,5 +47,7 @@ You as a 3rd dimension being “escape” to the 4th dimension, suddenly you hav
 Now, extrapolating again, the 5th dimension is nothing more than a “3D” time and space “object” which envelops the 1st, 2nd, 3rd and 4th dimension.
 
 Having access to this dimension means that you can freely move in time and space because is available to you as lower dimensions.
+
+![A fictional model of the TARDIS leaving a simplified spacetime map at A and returning at an earlier event B through an imagined extra direction.](/img/timespace-fictional-shortcut.png)
 
 So, you are the TARDIS and want to go to England in 1909 to fight some weeping angels you need to go to the 5th dimension, find the X,Y,Z+T coordinates and teleport there.
