@@ -30,11 +30,11 @@ Front matter stays limited to `title`, `date`, and `draft`. Existing posts and U
 
 ## Comments and reactions
 
-Published posts use [Giscus](https://giscus.app/) for comments and reactions, including thumbs up and thumbs down. Readers sign in with GitHub to participate. Threads live in the repository's Announcements discussion category and are created on the first comment or reaction.
+Published posts, short stories, and the About page use [Giscus](https://giscus.app/) for comments and reactions, including thumbs up and thumbs down. Readers sign in with GitHub to participate. Threads live in the repository's Announcements discussion category and are created on the first comment or reaction.
 
 `params.giscus` in `config.yml` holds the repository and category IDs. Set `enabled: false` to turn off the embed. The Giscus app must be installed on this repository and GitHub Discussions must remain enabled.
 
-Threads use the post's URL path with strict matching. Changing a post title keeps its thread; changing its URL path requires migrating the thread. The embed loads lazily and follows the site's Light, Dark, or Device theme. Preview builds link threads back to the canonical `memo.mx` post URL. Drafts, index pages, and About have no embed.
+Threads use each page's URL path with strict matching. Changing a title keeps its thread; changing its URL path requires migrating the thread. The embed loads lazily and follows the site's Light, Dark, or Device theme. Preview builds link threads back to the canonical `memo.mx` page URL. Drafts and index pages have no embed. `layouts/partials/memo/comments-enabled.html` controls availability for both the embed and its backlink metadata.
 
 `assets/blog/giscus.css` styles the iframe with the blog's Source Serif 4 font, quiet borders, and green controls. The `giscus-light.css` and `giscus-dark.css` palettes mirror `style.css`; update both when changing the site's colors. Hugo combines them into three fingerprinted stylesheets, including a Device theme that follows system appearance.
 

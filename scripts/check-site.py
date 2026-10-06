@@ -47,24 +47,30 @@ assert not any(path.is_file() for folder in root.rglob('node_modules') for path 
 for folder in ('preview', 'content', 'themes', 'layouts', 'scripts'):
     assert not (root / folder).exists(), f'Source folder leaked into build: {folder}'
 
-posts = 0
+published = {'posts': 0, 'stories': 0}
 drafts = 0
-for source in (repo / 'content/posts').glob('*.md'):
-    front = source.read_text().split('---', 2)[1]
-    draft = bool(re.search(r'^draft:\s*true\s*$', front, re.M))
-    date_match = re.search(r'^date:\s*(.+)$', front, re.M)
-    # Some existing posts use a one-digit hour, which Hugo accepts.
-    date_text = re.sub(r'T(\d):', r'T0\1:', date_match[1].strip().strip('"\'').replace('Z', '+00:00')) if date_match else '0001-01-01T00:00:00+00:00'
-    date = datetime.fromisoformat(date_text)
-    if date.tzinfo is None:
-        date = date.replace(tzinfo=timezone.utc)
-    path = root / 'posts' / source.stem / 'index.html'
-    if draft or date > datetime.now(timezone.utc):
-        assert not path.exists(), f'Draft/future post published: {source.name}'
-        drafts += 1
-    else:
-        assert path.is_file(), f'Published post missing: {source.name}'
-        posts += 1
+comment_pages = {root / 'about/index.html'}
+giscus_enabled = bool(re.search(r'^  giscus:\s*\n    enabled:\s*true\s*$', (repo / 'config.yml').read_text(), re.M))
+for section in published:
+    for source in (repo / 'content' / section).glob('*.md'):
+        if source.stem == '_index':
+            continue
+        front = source.read_text().split('---', 2)[1]
+        draft = bool(re.search(r'^draft:\s*true\s*$', front, re.M))
+        date_match = re.search(r'^date:\s*(.+)$', front, re.M)
+        # Some existing posts use a one-digit hour, which Hugo accepts.
+        date_text = re.sub(r'T(\d):', r'T0\1:', date_match[1].strip().strip('"\'').replace('Z', '+00:00')) if date_match else '0001-01-01T00:00:00+00:00'
+        date = datetime.fromisoformat(date_text)
+        if date.tzinfo is None:
+            date = date.replace(tzinfo=timezone.utc)
+        path = root / section / source.stem / 'index.html'
+        if draft or date > datetime.now(timezone.utc):
+            assert not path.exists(), f'Draft/future content published: {source.name}'
+            drafts += 1
+        else:
+            assert path.is_file(), f'Published content missing: {source.name}'
+            published[section] += 1
+            comment_pages.add(path)
 
 checked = 0
 comments = 0
@@ -77,17 +83,17 @@ for path in root.rglob('*.html'):
     assert page.h1 == 1, f'Expected one page title: {path}'
     assert page.canonical, f'Missing canonical URL: {path}'
     assert page.pre == page.blocks, f'Unstyled code blocks: {path}'
+    assert bool(page.comments) == (giscus_enabled and path in comment_pages), f'Incorrect comments availability: {path}'
     if page.comments:
-        assert path.relative_to(root).parts[0] == 'posts', f'Comments leaked onto a non-post page: {path}'
         assert len(page.comments) == 1, f'Duplicate comments embed: {path}'
         settings = page.comments[0]
         for key in ('repo', 'repo-id', 'category', 'category-id'):
             assert settings.get(f'data-{key}'), f'Missing Giscus {key}: {path}'
         assert settings.get('data-mapping') == 'pathname', f'Unstable comment mapping: {path}'
         assert settings.get('data-strict') == '1', f'Comment matching must be strict: {path}'
-        assert settings.get('data-reactions-enabled') == '1', f'Post reactions disabled: {path}'
+        assert settings.get('data-reactions-enabled') == '1', f'Page reactions disabled: {path}'
         assert settings.get('data-loading') == 'lazy', f'Comments must load lazily: {path}'
-        assert page.backlink, f'Missing canonical discussion backlink: {path}'
+        assert page.backlink == page.canonical, f'Incorrect canonical discussion backlink: {path}'
         assert any('/blog/comments.' in asset for asset in page.assets), f'Missing comments loader: {path}'
         for mode in ('light', 'dark', 'device'):
             theme = settings.get(f'data-theme-{mode}')
@@ -114,4 +120,4 @@ ET.parse(root / 'index.xml')
 ET.parse(root / 'sitemap.xml')
 assert (root / 'img/me-main-page.png').is_file(), 'Legacy image mount missing'
 assert (root / 'img/chapter-1-title.png').is_file(), 'New image mount missing'
-print(f'Checked {checked} pages, {posts} published posts, {drafts} excluded drafts/future posts, {comments} comment embeds, assets, code blocks, RSS, sitemap, search, and page styles.')
+print(f'Checked {checked} pages, {published["posts"]} published posts, {published["stories"]} published stories, {drafts} excluded drafts/future pages, {comments} comment embeds, assets, code blocks, RSS, sitemap, search, and page styles.')

@@ -7,7 +7,7 @@
 <meta name="description" content="{{ $description }}">
 {{ if or (not hugo.IsProduction) .Draft .Params.robotsNoIndex }}<meta name="robots" content="noindex, nofollow">{{ end }}
 <link rel="canonical" href="{{ .Params.canonicalURL | default .Permalink }}">
-{{ if and (eq .Section "posts") (not .Draft) site.Params.giscus.enabled }}
+{{ if partial "memo/comments-enabled.html" . }}
 <meta name="giscus:backlink" content="{{ .Permalink }}">
 {{ end }}
 <link rel="icon" href="{{ "favicon.ico" | relURL }}">
