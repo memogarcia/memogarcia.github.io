@@ -25,7 +25,7 @@ function mount(mode, present = true, origin = 'https://memo.mx') {
   };
   runInNewContext(source, {
     URL,
-    window: { location: { href: `${origin}/posts/focus/` } },
+    window: { location: new URL(`${origin}/posts/focus/`) },
     document: {
       documentElement,
       querySelector: () => present ? container : null,
@@ -85,7 +85,14 @@ for (const mode of ['light', 'dark', 'device', undefined]) {
     });
   }
 }
-// Built previews load their own CSS, rather than pointing to production assets.
-assert.equal(mount('light', true, 'http://127.0.0.1:4174').script.dataset.theme,
-  'http://127.0.0.1:4174/blog/giscus-light-theme.hash.css');
-console.log('Comments loading, custom themes, delayed iframe loading, theme changes, preview URLs, and message-origin checks passed.');
+// Local previews remain styled when browsers block iframe requests to loopback.
+for (const origin of ['http://localhost:4174', 'http://127.0.0.1:4174', 'http://[::1]:4174']) {
+  for (const mode of ['light', 'dark', 'device']) {
+    const app = mount(mode, true, origin);
+    const expected = mode === 'device' ? 'preferred_color_scheme' : mode;
+    assert.equal(app.script.dataset.theme, expected);
+    app.loadFrame();
+    assert.equal(app.messages.pop().message.giscus.setConfig.theme, expected);
+  }
+}
+console.log('Comments loading, custom themes, delayed iframe loading, theme changes, local previews, and message-origin checks passed.');

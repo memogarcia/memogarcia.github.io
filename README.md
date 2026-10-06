@@ -38,6 +38,8 @@ Threads use the post's URL path with strict matching. Changing a post title keep
 
 `assets/blog/giscus.css` styles the iframe with the blog's Source Serif 4 font, quiet borders, and green controls. The `giscus-light.css` and `giscus-dark.css` palettes mirror `style.css`; update both when changing the site's colors. Hugo combines them into three fingerprinted stylesheets, including a Device theme that follows system appearance.
 
+Localhost previews use Giscus's built-in themes because browsers can block its iframe from fetching local stylesheets. Review the custom theme on a public HTTPS preview or the published site.
+
 ## Checks and publishing
 
 Do not run Hugo locally; this repository's agent rules prohibit it. Pull requests and manual runs of **Build and Deploy Hugo Site** build with Hugo 0.128.0, run checks, and attach a `blog-preview` artifact without deploying. Only a push to `master` deploys that workflow's build.
@@ -45,10 +47,8 @@ Do not run Hugo locally; this repository's agent rules prohibit it. Pull request
 After downloading a built artifact to `public/`, serve it locally:
 
 ```sh
-python3 scripts/preview.py public
+python3 -m http.server 4174 --bind 127.0.0.1 --directory public
 ```
-
-The preview server allows Giscus to fetch the custom styles and fonts from its iframe. It listens only on localhost.
 
 Local checks that do not run Hugo:
 
