@@ -124,6 +124,13 @@ params:
   ShowToc: true
   # comments: false
 
+  giscus:
+    enabled: true
+    repo: memogarcia/memogarcia.github.io
+    repo_id: MDEwOlJlcG9zaXRvcnkyNjA4NjIzOTE=
+    category: Announcements
+    category_id: DIC_kwDOD4xxt84DHK5Q
+
   homeInfoParams:
     Title: "いらしゃいませい"
     Content: >

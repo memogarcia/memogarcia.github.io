@@ -26,6 +26,9 @@
       <div class="prose">{{ partial "memo/content.html" .Content }}</div>
     {{ end }}
   </article>
+  {{ if and $isPost (not .Draft) }}
+    {{ partial "memo/comments.html" . }}
+  {{ end }}
   {{ if or $isPost $isStory }}
   <div class="article-end">
     {{ if $isLab }}
