@@ -10,7 +10,9 @@
 
   const updateTheme = () => {
     const mode = document.documentElement.dataset.theme;
-    const theme = mode === 'light' || mode === 'dark' ? mode : 'preferred_color_scheme';
+    const path = mode === 'light' ? container.dataset.themeLight
+      : mode === 'dark' ? container.dataset.themeDark : container.dataset.themeDevice;
+    const theme = new URL(path, window.location.href).href;
     script.dataset.theme = theme;
     container.querySelector('iframe.giscus-frame')?.contentWindow?.postMessage(
       { giscus: { setConfig: { theme } } },

@@ -1,0 +1,15 @@
+/* Keep this palette aligned with the light theme in style.css. */
+main {
+  --paper: #faf7f2;
+  --ink: #1a1c18;
+  --muted: #666c62;
+  --line: #e8e4db;
+  --accent: #364a32;
+  --code-surface: #f2eee5;
+  --code-key: #2c5282;
+  --code-string: #3e6837;
+  --code-comment: #666e63;
+  --code-number: #8c562e;
+  --danger: #a33a32;
+  color-scheme: light;
+}

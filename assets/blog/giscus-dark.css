@@ -1,0 +1,15 @@
+/* Keep this palette aligned with the dark theme in style.css. */
+main {
+  --paper: #161816;
+  --ink: #f1efe6;
+  --muted: #959d90;
+  --line: #2b332b;
+  --accent: #b9cca1;
+  --code-surface: #1f241f;
+  --code-key: #9bc2e6;
+  --code-string: #a9c898;
+  --code-comment: #8c9688;
+  --code-number: #dab188;
+  --danger: #e49b91;
+  color-scheme: dark;
+}

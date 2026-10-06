@@ -4,12 +4,17 @@ const { readFileSync } = require('node:fs');
 const { runInNewContext } = require('node:vm');
 const source = readFileSync(`${__dirname}/../assets/blog/comments.js`, 'utf8');
 
-function mount(mode, present = true) {
+function mount(mode, present = true, origin = 'https://memo.mx') {
   let script, onChange, onLoad, frame;
   const messages = [];
   const documentElement = { dataset: { theme: mode } };
   const container = {
-    dataset: { repo: 'owner/blog', mapping: 'pathname', strict: '1', loading: 'lazy' },
+    dataset: {
+      repo: 'owner/blog', mapping: 'pathname', strict: '1', loading: 'lazy',
+      themeLight: '/blog/giscus-light-theme.hash.css',
+      themeDark: '/blog/giscus-dark-theme.hash.css',
+      themeDevice: '/blog/giscus-device-theme.hash.css',
+    },
     querySelector: () => frame,
     addEventListener(event, callback, capture) {
       assert.equal(event, 'load');
@@ -19,6 +24,8 @@ function mount(mode, present = true) {
     append(value) { script = value; },
   };
   runInNewContext(source, {
+    URL,
+    window: { location: { href: `${origin}/posts/focus/` } },
     document: {
       documentElement,
       querySelector: () => present ? container : null,
@@ -51,7 +58,8 @@ assert.equal(mount('light', false).script, undefined);
 
 for (const mode of ['light', 'dark', 'device', undefined]) {
   const app = mount(mode);
-  const expected = ['light', 'dark'].includes(mode) ? mode : 'preferred_color_scheme';
+  const themeURL = value => `https://memo.mx/blog/giscus-${value}-theme.hash.css`;
+  const expected = themeURL(['light', 'dark'].includes(mode) ? mode : 'device');
   assert.equal(app.script.src, 'https://giscus.app/client.js');
   assert.equal(app.script.dataset.theme, expected);
   assert.equal(app.script.dataset.loading, 'lazy');
@@ -60,11 +68,11 @@ for (const mode of ['light', 'dark', 'device', undefined]) {
 
   // Change appearance before the iframe exists, then load it later.
   app.setTheme('dark');
-  assert.equal(app.script.dataset.theme, 'dark');
+  assert.equal(app.script.dataset.theme, themeURL('dark'));
   assert.equal(app.messages.length, 0);
   app.loadFrame();
   assert.deepEqual(app.messages.pop(), {
-    message: { giscus: { setConfig: { theme: 'dark' } } },
+    message: { giscus: { setConfig: { theme: themeURL('dark') } } },
     origin: 'https://giscus.app',
   });
 
@@ -72,9 +80,12 @@ for (const mode of ['light', 'dark', 'device', undefined]) {
   for (const next of ['light', 'dark', 'device']) {
     app.setTheme(next);
     assert.deepEqual(app.messages.pop(), {
-      message: { giscus: { setConfig: { theme: next === 'device' ? 'preferred_color_scheme' : next } } },
+      message: { giscus: { setConfig: { theme: themeURL(next) } } },
       origin: 'https://giscus.app',
     });
   }
 }
-console.log('Comments loading, saved themes, delayed iframe loading, theme changes, and message-origin checks passed.');
+// Built previews load their own CSS, rather than pointing to production assets.
+assert.equal(mount('light', true, 'http://127.0.0.1:4174').script.dataset.theme,
+  'http://127.0.0.1:4174/blog/giscus-light-theme.hash.css');
+console.log('Comments loading, custom themes, delayed iframe loading, theme changes, preview URLs, and message-origin checks passed.');

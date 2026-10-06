@@ -89,6 +89,10 @@ for path in root.rglob('*.html'):
         assert settings.get('data-loading') == 'lazy', f'Comments must load lazily: {path}'
         assert page.backlink, f'Missing canonical discussion backlink: {path}'
         assert any('/blog/comments.' in asset for asset in page.assets), f'Missing comments loader: {path}'
+        for mode in ('light', 'dark', 'device'):
+            theme = settings.get(f'data-theme-{mode}')
+            assert theme and theme.startswith(f'/blog/giscus-{mode}-theme.'), f'Missing custom Giscus {mode} theme: {path}'
+            page.assets.append(theme)
         comments += 1
     for asset in page.assets:
         url = urlparse(asset)

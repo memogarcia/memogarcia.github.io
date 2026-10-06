@@ -1,5 +1,12 @@
 {{ with site.Params.giscus }}
 {{ if .enabled }}
+{{ $base := resources.Get "blog/giscus.css" }}
+{{ $light := resources.Get "blog/giscus-light.css" }}
+{{ $dark := resources.Get "blog/giscus-dark.css" }}
+{{ $deviceDark := resources.FromString "blog/giscus-device-dark.css" (printf "@media (prefers-color-scheme: dark) {\n%s\n}" $dark.Content) }}
+{{ $lightTheme := slice $light $base | resources.Concat "blog/giscus-light-theme.css" | minify | fingerprint }}
+{{ $darkTheme := slice $dark $base | resources.Concat "blog/giscus-dark-theme.css" | minify | fingerprint }}
+{{ $deviceTheme := slice $light $deviceDark $base | resources.Concat "blog/giscus-device-theme.css" | minify | fingerprint }}
 <section class="post-comments" aria-label="Comments and reactions">
   <div class="giscus"
        data-repo="{{ .repo }}"
@@ -12,6 +19,9 @@
        data-emit-metadata="0"
        data-input-position="top"
        data-lang="en"
+       data-theme-light="{{ $lightTheme.RelPermalink }}"
+       data-theme-dark="{{ $darkTheme.RelPermalink }}"
+       data-theme-device="{{ $deviceTheme.RelPermalink }}"
        data-loading="lazy"></div>
   <noscript><p><a href="https://github.com/{{ .repo }}/discussions">Read or join the discussion on GitHub.</a></p></noscript>
 </section>
