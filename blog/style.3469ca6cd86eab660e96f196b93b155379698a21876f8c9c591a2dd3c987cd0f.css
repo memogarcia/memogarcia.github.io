@@ -205,6 +205,8 @@ nav a:hover { text-decoration: underline; }
 .article-end { margin-top: 56px; padding-block: 8px; display: flex; justify-content: flex-end; gap: 24px; }
 .article-end a { display: inline-flex; min-height: 36px; align-items: center; font: 13px var(--mono); color: var(--muted); text-decoration: none; transition: color 0.15s ease; }
 .article-end a:hover { color: var(--accent); text-decoration: none; }
+.post-comments { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line); }
+.post-comments noscript { color: var(--muted); font-size: 13px; }
 .article-main + .site-footer { margin-top: 48px; }
 @media (max-width: 600px) {
   body { padding-inline: 20px; }
