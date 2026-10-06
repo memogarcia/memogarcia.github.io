@@ -17,6 +17,8 @@ class Page(HTMLParser):
         super().__init__()
         self.h1 = self.headers = self.pre = self.blocks = 0
         self.assets = []
+        self.comments = []
+        self.backlink = None
         self.canonical = None
         self.feed(text)
 
@@ -27,6 +29,10 @@ class Page(HTMLParser):
         self.headers += 'site-header' in classes
         self.pre += tag == 'pre'
         self.blocks += 'code-block' in classes
+        if 'giscus' in classes:
+            self.comments.append(attrs)
+        if tag == 'meta' and attrs.get('name') == 'giscus:backlink':
+            self.backlink = attrs.get('content')
         if tag == 'script' and 'src' in attrs:
             self.assets.append(attrs['src'])
         if tag == 'link' and attrs.get('rel') == 'stylesheet':
@@ -61,6 +67,7 @@ for source in (repo / 'content/posts').glob('*.md'):
         posts += 1
 
 checked = 0
+comments = 0
 for path in root.rglob('*.html'):
     if path.relative_to(root).parts[0] in ('tools', 'little-pond'):
         continue
@@ -70,6 +77,19 @@ for path in root.rglob('*.html'):
     assert page.h1 == 1, f'Expected one page title: {path}'
     assert page.canonical, f'Missing canonical URL: {path}'
     assert page.pre == page.blocks, f'Unstyled code blocks: {path}'
+    if page.comments:
+        assert path.relative_to(root).parts[0] == 'posts', f'Comments leaked onto a non-post page: {path}'
+        assert len(page.comments) == 1, f'Duplicate comments embed: {path}'
+        settings = page.comments[0]
+        for key in ('repo', 'repo-id', 'category', 'category-id'):
+            assert settings.get(f'data-{key}'), f'Missing Giscus {key}: {path}'
+        assert settings.get('data-mapping') == 'pathname', f'Unstable comment mapping: {path}'
+        assert settings.get('data-strict') == '1', f'Comment matching must be strict: {path}'
+        assert settings.get('data-reactions-enabled') == '1', f'Post reactions disabled: {path}'
+        assert settings.get('data-loading') == 'lazy', f'Comments must load lazily: {path}'
+        assert page.backlink, f'Missing canonical discussion backlink: {path}'
+        assert any('/blog/comments.' in asset for asset in page.assets), f'Missing comments loader: {path}'
+        comments += 1
     for asset in page.assets:
         url = urlparse(asset)
         if url.netloc and url.netloc not in ('memo.mx', '127.0.0.1:4174', 'localhost:4174'):
@@ -90,4 +110,4 @@ ET.parse(root / 'index.xml')
 ET.parse(root / 'sitemap.xml')
 assert (root / 'img/me-main-page.png').is_file(), 'Legacy image mount missing'
 assert (root / 'img/chapter-1-title.png').is_file(), 'New image mount missing'
-print(f'Checked {checked} pages, {posts} published posts, {drafts} excluded drafts/future posts, assets, code blocks, RSS, sitemap, search, and page styles.')
+print(f'Checked {checked} pages, {posts} published posts, {drafts} excluded drafts/future posts, {comments} comment embeds, assets, code blocks, RSS, sitemap, search, and page styles.')

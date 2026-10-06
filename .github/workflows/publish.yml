@@ -28,6 +28,7 @@ jobs:
       - name: Check browser scripts
         run: |
           node scripts/theme.test.cjs
+          node scripts/comments.test.cjs
           node scripts/code.test.cjs
           node scripts/search.test.cjs
 

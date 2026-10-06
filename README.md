@@ -28,6 +28,14 @@ Front matter stays limited to `title`, `date`, and `draft`. Existing posts and U
 - `layouts/partials/memo/`: shared header, metadata, footer, and post list.
 - `assets/blog/posts/<post-filename>.css`: optional styling loaded only for that post. For example, `focus.css` styles `content/posts/focus.md`. No extra front matter is needed.
 
+## Comments and reactions
+
+Published posts use [Giscus](https://giscus.app/) for comments and reactions, including thumbs up and thumbs down. Readers sign in with GitHub to participate. Threads live in the repository's Announcements discussion category and are created on the first comment or reaction.
+
+`params.giscus` in `config.yml` holds the repository and category IDs. Set `enabled: false` to turn off the embed. The Giscus app must be installed on this repository and GitHub Discussions must remain enabled.
+
+Threads use the post's URL path with strict matching. Changing a post title keeps its thread; changing its URL path requires migrating the thread. The embed loads lazily and follows the site's Light, Dark, or Device theme. Preview builds link threads back to the canonical `memo.mx` post URL. Drafts, index pages, and About have no embed.
+
 ## Checks and publishing
 
 Do not run Hugo locally; this repository's agent rules prohibit it. Pull requests and manual runs of **Build and Deploy Hugo Site** build with Hugo 0.128.0, run checks, and attach a `blog-preview` artifact without deploying. Only a push to `master` deploys that workflow's build.
@@ -42,6 +50,7 @@ Local checks that do not run Hugo:
 
 ```sh
 node scripts/theme.test.cjs
+node scripts/comments.test.cjs
 node scripts/code.test.cjs
 node scripts/search.test.cjs
 python3 scripts/check-site.py public
