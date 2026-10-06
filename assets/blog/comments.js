@@ -10,7 +10,12 @@
 
   const updateTheme = () => {
     const mode = document.documentElement.dataset.theme;
-    const theme = mode === 'light' || mode === 'dark' ? mode : 'preferred_color_scheme';
+    const path = mode === 'light' ? container.dataset.themeLight
+      : mode === 'dark' ? container.dataset.themeDark : container.dataset.themeDevice;
+    // Browsers can block the external iframe from fetching loopback assets.
+    const local = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+    const theme = local ? (mode === 'light' || mode === 'dark' ? mode : 'preferred_color_scheme')
+      : new URL(path, window.location.href).href;
     script.dataset.theme = theme;
     container.querySelector('iframe.giscus-frame')?.contentWindow?.postMessage(
       { giscus: { setConfig: { theme } } },
