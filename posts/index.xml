@@ -39,10 +39,10 @@ In the TV show, the TARDIS is able to move through space and time at will, but h
       <pubDate>Fri, 18 Sep 2026 12:38:00 +0900</pubDate>
       
       <guid>https://memo.mx/posts/how-i-design-ui-with-ai/</guid>
-      <description>Code is the worst place to start UI/UX work.
-The order that works for me is: Image, ASCII, contracts, component.
-UI/UX takes repeated refinement. Each pass changes the next one. The more I understand the problem and the people using the product, the more intention I can put into the interface.
-1. Image I start in ChatGPT, but I ask for images before code. I don’t use Figma because I don’t know how :(.</description>
+      <description>Make people&amp;rsquo;s lives easier, not your interface more impressive.
+Code is the worst place to start UI/UX work.
+When you ask a model for a component in one prompt, it has to invent the user&amp;rsquo;s goal, information architecture, visual hierarchy, and failure states at the same time. You get four hundred lines of polished markup where the user still has no idea where to click.
+UI/UX takes repeated refinement. Each pass constrains the next one.</description>
     </item>
     
     <item>
