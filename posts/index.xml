@@ -12,14 +12,13 @@
     <language>en</language>
     <lastBuildDate>Sat, 26 Sep 2026 00:50:00 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>I vibe coded the app of my dreams</title>
-      <link>https://memo.mx/posts/i-vibe-coded-the-app-of-my-dreams/</link>
+      <title>I built the app of my dreams</title>
+      <link>https://memo.mx/posts/i-built-the-app-of-my-dreams/</link>
       <pubDate>Thu, 24 Sep 2026 16:30:00 +0900</pubDate>
       
-      <guid>https://memo.mx/posts/i-vibe-coded-the-app-of-my-dreams/</guid>
-      <description>Updated 10 November 2026 to reflect the current Better Me build.
-As I get older, I find myself visiting doctors and clinics more often. Every visit leaves me with another piece of paper or prescription. None of these records are connected.
-I started Better Me because I wanted one place to keep them. The first version had an interactive 3D body. I could tap an organ and attach a report. It also tracked fasting and daily habits.</description>
+      <guid>https://memo.mx/posts/i-built-the-app-of-my-dreams/</guid>
+      <description>As I get older, I find myself visiting doctors and clinics more often. The problem is that every visit leaves me with another piece of paper, or prescription, and none of these records are connected.
+In Better Me, I can keep those papers with my medicines and readings, then pull them together before an appointment. The Visit page shows what changed since the last visit and keeps the questions I want to ask.</description>
     </item>
     
     <item>
