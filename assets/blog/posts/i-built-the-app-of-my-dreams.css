@@ -1,0 +1,32 @@
+/* Keep the actual app captures readable, with no cropping or device mockups. */
+.prose figure.app-screen {
+  max-width: 360px;
+  margin: 36px auto;
+}
+.prose figure.app-screen img {
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+.prose figure.app-pair {
+  display: inline-block;
+  vertical-align: top;
+  width: calc(50% - 14px);
+  margin: 20px 0 28px;
+}
+.prose figure.app-pair + figure.app-pair { margin-left: 20px; }
+.prose figure.import-flow { max-width: 640px; margin: 40px auto; }
+.prose figure.import-flow img { width: 100%; margin: 0; }
+.prose figure.app-screen figcaption,
+.prose figure.import-flow figcaption { margin-top: 14px; }
+.prose figure.app-screen figcaption p,
+.prose figure.import-flow figcaption p { margin: 0; }
+@media (max-width: 560px) {
+  .prose figure.app-pair,
+  .prose figure.app-pair + figure.app-pair {
+    display: block;
+    width: 100%;
+    margin: 28px auto;
+  }
+}

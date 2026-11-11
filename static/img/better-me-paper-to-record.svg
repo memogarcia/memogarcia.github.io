@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="900" viewBox="0 0 640 900" role="img" aria-labelledby="title desc">
+  <title id="title">From paper to a saved record</title>
+  <desc id="desc">Photograph, scan or import a report. Prepare the page, read it with Apple Vision and parse the printed table. A second OCR pass flags disagreements. Review the date and values against the paper, then save the paper and selected values to the encrypted vault.</desc>
+  <rect width="640" height="900" rx="24" fill="#f1eee6"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" fill="#252d27">
+    <text x="40" y="54" font-size="15" letter-spacing="2">BETTER ME · ON YOUR IPHONE</text>
+    <text x="40" y="105" font-family="Georgia, serif" font-size="34">From paper to a saved record</text>
+    <path d="M70 190V770" stroke="#aab5a3" stroke-width="2" fill="none"/>
+    <g fill="#fffdf8" stroke="#d8dace">
+      <rect x="110" y="145" width="490" height="112" rx="14"/>
+      <rect x="110" y="285" width="490" height="172" rx="14"/>
+      <rect x="110" y="485" width="490" height="174" rx="14" fill="#e1eadb" stroke="#98aa8e"/>
+      <rect x="110" y="687" width="490" height="126" rx="14"/>
+    </g>
+    <g fill="#364a32">
+      <circle cx="70" cy="185" r="22"/><circle cx="70" cy="325" r="22"/>
+      <circle cx="70" cy="525" r="22"/><circle cx="70" cy="727" r="22"/>
+    </g>
+    <g fill="#fffdf8" text-anchor="middle" font-size="20">
+      <text x="70" y="192">1</text><text x="70" y="332">2</text><text x="70" y="532">3</text><text x="70" y="734">4</text>
+    </g>
+    <g font-size="26" font-weight="600">
+      <text x="136" y="188">Bring in the paper</text>
+      <text x="136" y="328">Read the printed table</text>
+      <text x="136" y="528">Check it against the paper</text>
+      <text x="136" y="730">Save what you choose</text>
+    </g>
+    <g font-size="23" fill="#505b50">
+      <text x="136" y="226">Photograph, scan or import a file.</text>
+      <text x="136" y="367">Prepare the page. Read with Vision.</text>
+      <text x="136" y="401">Parse the values and their units.</text>
+      <text x="136" y="435">Read again; flag disagreements.</text>
+      <text x="136" y="568">Review the date and each value.</text>
+      <text x="136" y="602">Correct it, select it, or leave it out.</text>
+      <text x="136" y="636">You can keep just the paper.</text>
+      <text x="136" y="768">Paper + selected values.</text>
+      <text x="136" y="800">Linked in the encrypted vault.</text>
+    </g>
+    <text x="320" y="862" text-anchor="middle" font-size="20" fill="#505b50">Uncertain values start unchecked.</text>
+  </g>
+</svg>

@@ -10,7 +10,9 @@ In Better Me, I can keep those papers with my medicines and readings, then pull 
 
 **Show my doctor** opens a report I can hand over on the phone or share as a PDF. It compares readings over equal periods and puts each lab result beside the previous one.
 
-{{< figure src="/img/better-me-visit-comparisons.png" alt="Better Me report comparing resting heart rate and heart rate variability with the previous 88 days, using sample records." width="360" caption="The report compares equal periods. Simulator screenshot with sample records." >}}
+{{< figure class="app-screen app-pair" src="/img/better-me-doctor-report.png" link="/img/better-me-doctor-report.png" alt="Better Me doctor report showing the chosen doctor, report dates, and a medicine list with sample records." width="360" caption="Prepare the report for a visit. Sample records in the simulator." >}}
+
+{{< figure class="app-screen app-pair" src="/img/better-me-visit-comparisons.png" link="/img/better-me-visit-comparisons.png" alt="Better Me report comparing resting heart rate and heart rate variability with the previous 88 days, using sample records." width="360" caption="Compare readings over equal periods. Sample records in the simulator." >}}
 
 I can scan a Japanese pharmacy slip's supported QR code instead of typing each medicine. Apple Health readings come directly from Health, with permission.
 
@@ -22,9 +24,7 @@ I can photograph a report, scan it, or import a file. Apple Vision reads the Eng
 
 A second pass reads the page again and flags disagreements. I check the date and compare the values with the paper before saving. Uncertain results start unchecked; I can correct them or just keep the paper without extracting anything.
 
-[![Mooomooo sequence diagram showing a lab report passing through page preparation, Apple Vision, parsing, a second OCR pass, human review, and encrypted storage.](/img/better-me-lab-results-flow.jpg)](/img/better-me-lab-results-flow.jpg)
-
-*The import flow in Mooomooo. Open the image to read it at full size.*
+{{< figure class="import-flow" src="/img/better-me-paper-to-record.svg" link="/img/better-me-paper-to-record.svg" alt="Four steps from paper to record: import a report; read and cross-check the printed table; review dates and values against the paper; save the paper and selected values in the encrypted vault. Uncertain values start unchecked." width="640" height="900" caption="I check the paper before saving the values." >}}
 
 The saved results link back to the source page. Missing values stay missing, and the app doesn't label a result good or bad. It shows the printed range. Comparing records around a medicine change doesn't establish what caused the change.
 
@@ -32,7 +32,7 @@ The saved results link back to the source page. Missing values stay missing, and
 
 I choose the dates and sections the doctor sees. The same choices apply to the PDF. Hiding something from the report doesn't delete it.
 
-{{< figure src="/img/better-me-sharing-controls.png" alt="Better Me Show or hide screen with switches for readings, symptoms, medicines, test results, papers, health summary, and questions." width="360" caption="Choose what appears in the doctor view and PDF. Simulator screenshot." >}}
+{{< figure class="app-screen" src="/img/better-me-sharing-controls.png" link="/img/better-me-sharing-controls.png" alt="Better Me Show or hide screen with switches for readings, symptoms, medicines, test results, papers, health summary, and questions." width="360" caption="Choose what appears in the doctor view and PDF. Simulator screenshot." >}}
 
 The records are encrypted on my iPhone, with no account or cloud sync. There is no external AI connection. Usage and crash reporting are off by default, and I choose when to share or export records.
 
