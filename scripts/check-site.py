@@ -55,7 +55,10 @@ for section in published:
     for source in (repo / 'content' / section).glob('*.md'):
         if source.stem == '_index':
             continue
-        front = source.read_text().split('---', 2)[1]
+        text = source.read_text()
+        front_match = re.match(r'\A---\s*\n(.*?)^---\s*$', text, re.M | re.S)
+        # Hugo accepts content without front matter, including empty files.
+        front = front_match[1] if front_match else ''
         draft = bool(re.search(r'^draft:\s*true\s*$', front, re.M))
         date_match = re.search(r'^date:\s*(.+)$', front, re.M)
         # Some existing posts use a one-digit hour, which Hugo accepts.
