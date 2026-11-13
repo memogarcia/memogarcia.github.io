@@ -12,6 +12,41 @@
     <language>en</language>
     <lastBuildDate>Fri, 13 Nov 2026 16:57:16 +0900</lastBuildDate><atom:link href="https://memo.mx/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Proof of Human Intent</title>
+      <link>https://memo.mx/posts/proof-of-human-intent/</link>
+      <pubDate>Fri, 13 Nov 2026 16:57:16 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/proof-of-human-intent/</guid>
+      <description>How do we know a human actually authorized a specific action an AI agent is trying to execute?
+As AI agents gain autonomy, they will prepare contracts, transfer money, buy goods, modify infrastructure, deploy software, and communicate on behalf of individuals and organizations.
+An agent holding an API key or OAuth token only proves it has permission to operate on someone&amp;rsquo;s behalf. It does not prove that a person reviewed and approved a particular consequential decision.</description>
+    </item>
+    
+    <item>
+      <title>DataVault: Personal data infrastructure for AI agents</title>
+      <link>https://memo.mx/posts/datavault/</link>
+      <pubDate>Fri, 13 Nov 2026 16:51:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/datavault/</guid>
+      <description>(or get paid to access your data)
+As AI agents become more capable, doing useful personal work requires access to sensitive context: financial records, employment history, medical information, emails, and purchases.
+Today, that information is fragmented across multiple platforms. Giving an agent access often means trusting an individual AI provider with broad permissions.
+DataVault is an idea for an independent permission and data-access layer between individuals and AI agents. Users store their personal information in a local-first encrypted vault and grant agents temporary, narrowly scoped access for specific tasks.</description>
+    </item>
+    
+    <item>
+      <title>Verified software for the agentic era</title>
+      <link>https://memo.mx/posts/verified-software-for-the-agentic-era/</link>
+      <pubDate>Fri, 13 Nov 2026 16:48:20 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/verified-software-for-the-agentic-era/</guid>
+      <description>Is this library my agent is using safe? Does it leak information? Is it compromised?
+When AI makes writing code cheap, the number of libraries, MCP servers, skills and agent tools grows fast. Agents increasingly discover and run code written by other developers or other agents, and auditing every component from scratch does not scale.
+When software becomes abundant, independent evidence of software quality becomes the scarce resource.
+How verification works The idea is an independent service that evaluates libraries, MCP servers, skills and agent tools, then publishes machine-readable, cryptographically signed evidence about their security and functionality.</description>
+    </item>
+    
+    <item>
       <title>Building Autonoma</title>
       <link>https://memo.mx/posts/autonoma/</link>
       <pubDate>Fri, 13 Nov 2026 13:00:00 +0900</pubDate>
