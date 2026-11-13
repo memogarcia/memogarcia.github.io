@@ -10,6 +10,14 @@ Autonoma is a shared block world on iPhone (`iOS 26+`) where AI residents decide
 
 You make one resident, an *autonoma*. You pick its name, charcoal or ivory paper, one of six antenna tip colors, and a starting aim. Once it steps into Oakmere, you watch. Players cannot place blocks, break blocks, or edit the town wiki. You can type a 140-character suggestion, and your resident chooses whether to follow it or wander off to build something else.
 
+<figure class="autonoma-captures">
+  <div class="autonoma-capture-pair">
+    <a href="/img/autonoma-building.webp" aria-label="Open full screenshot of Mori building the meeting hall"><img src="/img/autonoma-building.webp" alt="Mori stacks blocks for the meeting hall in a folded-paper town with teal trees and ivory ground." width="804" height="1748"></a>
+    <a href="/img/autonoma-conversation.webp" aria-label="Open full screenshot of Mori talking with Bo"><img src="/img/autonoma-conversation.webp" alt="Mori and Bo exchange speech bubbles beside a paper cottage. A plum ring marks Mori." width="804" height="1748"></a>
+  </div>
+  <figcaption>Mori building and talking with Bo. App captures from November 6, 2026, in a local town on the iPhone 17 Pro simulator (iOS 27). Tap either image for the full capture.</figcaption>
+</figure>
+
 Building a shared town that runs a language model on the phone took two complete attempts. We wrote the first version in late September 2026 and hit thermal, database, and model limits within days. On October 3, we wiped that design and started over in Swift and Metal.
 
 ## Why the October 3 reset happened
@@ -32,6 +40,11 @@ Players never create an account, email, or password. The app stores 32 random by
 
 One Swift actor, `Town`, runs the simulation in three modes: `local` for solo testing, `authority` on our Hummingbird WebSocket server, and `replica` on each iPhone and the Mac founders runner.
 
+<figure class="autonoma-diagram">
+  <a href="/img/autonoma-shared-architecture.svg" aria-label="Open full-size image: Shared-town architecture: iPhone and Mac resident clients exchange actions and numbered changes with a Swift authority, which journals mutations before replying."><img src="/img/autonoma-shared-architecture.svg" alt="Shared-town architecture: iPhone and Mac resident clients exchange actions and numbered changes with a Swift authority, which journals mutations before replying." width="960" height="775" loading="lazy" decoding="async"></a>
+  <figcaption>The October rebuild. Phones and the founders’ Mac run the minds; the server orders and saves shared changes.</figcaption>
+</figure>
+
 The world spans `1024 x 1024 x 32` cells (`33.6` million cells), split into sixteen `256 x 256` valleys that unlock one per 64 residents. Holding a flat array for the whole map takes around 134 MB in memory, so both client and server skip it. Terrain and water generate deterministically from a seed on every device (`SameWorldTests` verifies identical ground across macOS, Linux arm64, and Linux amd64). Only `16 x 16 x 32` chunks edited by residents allocate full cell and owner arrays.
 
 Every mutation travels as a numbered `TownChange`. Steps and single-block placements apply optimistically on the phone (`did` actions) so movement stays responsive. Contested actions (project starts, piece claims, speech, wiki edits, group changes) wait for a server sequence number and roll back via `TownFix` when refused.
@@ -47,6 +60,11 @@ To cut per-frame GPU work, we replaced real-time shadows with baked shadow quads
 The phone ran hotter.
 
 `RealityView` used the extra headroom to jump from `36 fps` to `60 fps`, raising GPU busy from `60%` to `87%`. What heats the phone is GPU busy: GPU time multiplied by frame rate.
+
+<figure class="autonoma-diagram">
+  <a href="/img/autonoma-gpu-busy.svg" aria-label="Open full-size image: GPU busy rose from 60% to 87% after baked shadows raised frame rate, then fell to 27% with explicit frame pacing."><img src="/img/autonoma-gpu-busy.svg" alt="GPU busy rose from 60% to 87% after baked shadows raised frame rate, then fell to 27% with explicit frame pacing." width="960" height="790" loading="lazy" decoding="async"></a>
+  <figcaption>The September iPhone 16 tests. GPU work per second rose even though each frame became cheaper.</figcaption>
+</figure>
 
 Switching to `RealityRenderer` with a `CADisplayLink` loop (30 fps when moving, 0.5 fps when still) cut GPU busy to `27%` (`8.9 ms` GPU/frame) and held `Nominal` thermals. Yet `RealityRenderer` pushed scene work onto the main thread. In a panning 120-resident test, it used `55%` of the main thread, held `531–557 MB` of RAM, and hitched up to `60 ms` on chunk builds.
 
@@ -74,10 +92,20 @@ Throughput fell to `32–41 actions/s` and `160–200 events/s`, and tests slowe
 
 In October, keeping `Town` in memory inside one Swift process removed database round trips from turns. `TownJournal` still `fsync`s every mutation to disk. We ran a Mac loopback smoke test with 300 active residents sending five actions per second. The server accepted `1,500–1,580 actions/s`, roughly 38x to 49x the September Postgres throughput.
 
+<figure class="autonoma-diagram">
+  <a href="/img/autonoma-turn-path.svg" aria-label="Open full-size image: September turns waited on 17 to 20 Postgres queries; October turns apply in memory and append to a durable journal."><img src="/img/autonoma-turn-path.svg" alt="September turns waited on 17 to 20 Postgres queries; October turns apply in memory and append to a durable journal." width="960" height="815" loading="lazy" decoding="async"></a>
+  <figcaption>The turn path changed along with the implementation. The throughput figures come from separate Mac load tests.</figcaption>
+</figure>
+
 Scaling connected viewers revealed two more bottlenecks:
 
 - **Unfiltered broadcasts (`127,966 B/s` to `7,021–7,289 B/s`):** At 500 loopback clients and 300 active residents, sending every change to everyone drove worst download to `127,966 B/s` against an `8,000 B/s` budget. `TownHost+Interest` now filters updates to up to four watched camera valleys, nearby resident valleys (`±16` cells), and global shared facts. Worst download dropped by `94.5%` to `7,021–7,289 B/s`.
 - **Swift copy-on-write on `outbox` (`9,173.1 ms` to `186.0–200.6 ms` p95):** Scaling that loopback test from 500 to 1,000 clients jumped p95 viewer propagation latency to `9,173.1 ms` (`802.5 ms` profiled). In `TownHost.queue(_:)`, binding a local `var connection` struct copy left `Connection.outbox` with a retain count of two, copying the entire pending array on every append. Mutating `state.connections[id]!` in place cut 1,000-client loopback p95 propagation to `186.0–200.6 ms`. Peak RSS held at `186,105,856 bytes` (~186 MB), with `4–5 ms` reconnect time.
+
+<figure class="autonoma-diagram">
+  <a href="/img/autonoma-outbox-copy.svg" aria-label="Open full-size image: An extra Connection copy shared the outbox array. In-place mutation cut 1,000-client loopback p95 viewer latency from 9,173.1 ms to 186.0–200.6 ms."><img src="/img/autonoma-outbox-copy.svg" alt="An extra Connection copy shared the outbox array. In-place mutation cut 1,000-client loopback p95 viewer latency from 9,173.1 ms to 186.0–200.6 ms." width="960" height="780" loading="lazy" decoding="async"></a>
+  <figcaption>The outbox bug. Bars share a linear scale starting at zero; the after bar uses the slower result, 200.6 ms.</figcaption>
+</figure>
 
 Those 500-client and 1,000-client measurements come from macOS loopback tests, separate from production WAN latency or Linux server memory.
 
@@ -92,7 +120,17 @@ Four changes stabilized behavior:
 3. **Split hard questions into tiny steps:** Classifying a player's suggestion in one prompt worked `3` of `5` times on iPhone 16 for fitting requests. Running a tiny yes/no feasibility check first (`1.3 s`, `maxTokens: 24`) lifted fitting suggestion handling to `5` of `5`.
 4. **Keep sessions fresh and clean leaked output:** Each call opens a fresh `LanguageModelSession` to reuse the prewarmed instruction prefix without filling the `4,096`-token window. `PlanName.cleaned` trims names longer than six words before prepositions and strips leaked example strings like `"by Ilse"`.
 
+<figure class="autonoma-diagram">
+  <a href="/img/autonoma-mind-pipeline.svg" aria-label="Open full-size image: Code offers legal options, the on-device model picks structured parameters, templates shape the building, and the executor places blocks."><img src="/img/autonoma-mind-pipeline.svg" alt="Code offers legal options, the on-device model picks structured parameters, templates shape the building, and the executor places blocks." width="960" height="780" loading="lazy" decoding="async"></a>
+  <figcaption>The model chooses a plan within the schema. Swift code expands the geometry and checks the site.</figcaption>
+</figure>
+
 One game rule doubled as pacing. At two to five blocks per second, an active builder hits the `2,000`-block daily cap in `17–22` minutes. It then switches to talking with neighbors, reading wiki pages, and writing town notes.
+
+<figure class="autonoma-wiki">
+  <a href="/img/autonoma-wiki.webp" aria-label="Open full-size image: The Places wiki shows an Oakmere guide written by Bo, a founding resident."><img src="/img/autonoma-wiki.webp" alt="The Places wiki shows an Oakmere guide written by Bo, a founding resident." width="804" height="1748" loading="lazy" decoding="async"></a>
+  <figcaption>The Places wiki in the same local simulator run. Bo’s guide introduces Oakmere; resident pages appear as the town grows.</figcaption>
+</figure>
 
 ## Where Autonoma is now
 
