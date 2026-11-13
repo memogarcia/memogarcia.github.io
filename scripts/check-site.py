@@ -75,7 +75,7 @@ for section in published:
 checked = 0
 comments = 0
 for path in root.rglob('*.html'):
-    if path.relative_to(root).parts[0] in ('tools', 'little-pond'):
+    if path.relative_to(root).parts[0] == 'little-pond':
         continue
     page = Page(path.read_text())
     if not page.headers:  # Hugo alias redirects have no site layout.

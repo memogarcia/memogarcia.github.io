@@ -4,122 +4,76 @@ date: 2026-03-12T19:50:00+09:00
 draft: false
 ---
 
-> The severity of an incident is not determined by the technology that failed, but by the number of people impacted by it.
-
 A 3-person team can run an incident in a Slack thread. A 300-person organization cannot.
 
-That gap is where SRE gets interesting.
+At small scale, the person who gets paged probably wrote the code. They know what changed, who to ask, and how to roll back. In a larger organization, the on-call engineer often does not know which team owns the failing service. You spend more time finding the right owner than reading logs, and the same experienced engineers get pulled into outages they had nothing to do with.
 
-## What changes
+Once an org grows past a handful of teams, keeping systems reliable depends on clear ownership and decisions agreed on before anything breaks.
 
-At small scale, the person who gets paged probably wrote the code. At large scale, the person who gets paged might not know which team owns the failing component.
+## Incident coordination
 
-Three things break:
+Around 50 engineers, informal incident response stops holding up. Giving people explicit roles prevents everyone from stepping on each other:
 
-1. Finding _who_ to call takes longer than finding _what_ broke.
-2. You stop debugging systems and start synchronizing humans.
-3. Your best engineers get pulled into incidents they didn't cause.
+- **Incident Commander (IC):** Owns coordination and keeps the response moving. Does not touch terminals or debug.
+- **Technical Lead:** Knows the affected system and leads the investigation.
+- **Communications Lead:** Keeps stakeholders and customers updated so the other two can focus.
 
-## Incident roles
+Automate channel creation, paging, and status page updates so nobody burns the start of an outage on setup. During the call, the IC's main job is holding a steady cadence, including saying "I don't know yet, we will update in 15 minutes" and keeping that promise.
 
-When an org hits ~50 engineers, informal incident response stops working. I've seen this structure hold up:
+### Severity as a coordination signal
 
-- **Incident Commander (IC)**: Owns coordination. Does _not_ debug.
-- **Technical Lead**: Closest to the failing system. They debug.
-- **Communications Lead**: Keeps stakeholders updated so the other two can focus.
+Severity levels should tell you how many people need to drop their work and join.
 
-The IC's most useful skill is saying "I don't know yet, we'll update in 15 minutes" and meaning it.
-
-## Severity is a coordination signal
-
-Severity levels shouldn't measure how broken something is. They should tell you how many people to involve.
-
-| Severity | Meaning |
+| Severity | Coordination scope |
 |---|---|
-| Sev 1 | All hands. Exec awareness. Customer impact. |
-| Sev 2 | Cross-team coordination. |
-| Sev 3 | One team handles it. |
-| Sev 4 | Fix it when you get to it. |
+| Sev 1 | All hands, executive awareness, customer impact |
+| Sev 2 | Cross-team coordination |
+| Sev 3 | Single team |
+| Sev 4 | Normal backlog priority |
 
-If your severity levels don't map to coordination effort, rethink them.
+If your severity definitions do not map cleanly to escalation and staffing, people will argue about labels when they should be fixing the problem.
 
-## Priorities during an incident
+### Order of operations during an outage
 
-Most orgs optimize for speed of resolution. Optimize for clarity of decision-making instead.
+Restore service and align the room before digging into root causes:
 
-1. **Mitigate.** Rollback, feature-flag, redirect traffic. Get to stable. Don't debug yet.
-2. **Communicate.** One channel, one source of truth. Silence is worse than bad news.
-3. **Scope.** What's affected? What's not? This decides whether you escalate or contain.
-4. **Diagnose.** Now you debug.
+1. **Mitigate.** Roll back, flip a feature flag, or redirect traffic to stabilize the service.
+2. **Communicate.** Keep one channel as the source of truth. Silence creates extra pings and duplicate work.
+3. **Scope.** Confirm what is affected and what is still healthy. That decides whether you escalate or contain the incident.
+4. **Diagnose.** Investigate why it broke once users are unblocked.
 
-"Find the root cause" belongs in the post-incident review, not the war room.
+## Keeping the system healthy between incidents
 
-## On-call
+Incident processes fail when organizations skip the maintenance work around them.
 
-- Rotate weekly. Monthly rotations create dread.
-- Compensate it. If you don't pay for it, you don't value it.
-- Primary and secondary. The secondary exists so the primary can sleep.
-- Track interrupt load. If a team gets paged too often, that's a staffing or architecture problem.
+- **On-call:** Use weekly rotations, since monthly shifts create burnout and dread. Pair a primary with a secondary so the primary can sleep through non-urgent noise or have backup during a long outage. Pay people for on-call; treating interruptions as free guarantees resentment. Track interrupt load too, because frequent pages point to broken software or understaffing.
+- **Runbooks:** Keep runbooks short and test them in game days so you catch dead steps before a real outage.
+- **Post-incident reviews:** A review exists to change the system. Keep it blameless so people surface real mistakes, and look for the contributing factors that lined up; complex outages rarely have a single root cause. Every action item needs an owner and a deadline. If follow-ups keep getting deferred, the review process has turned into paperwork.
 
-## Post-incident reviews
+## SLOs and error budgets as shared rules
 
-The point is to change the system, not to produce a document.
+In a small team, everyone feels when things have gotten flaky and agrees to slow down feature work. In a large org, product teams and platform teams pull in opposite directions unless reliability targets are written down.
 
-- Blameless, not actionless.
-- Focus on contributing factors. Complex systems fail for multiple reasons at once. Picking one "root cause" feels tidy but it's usually incomplete.
-- Action items need owners and deadlines. Without a deadline it's a wish.
-- Track completion rates. Below 70% completion means the reviews aren't driving change.
+Set the SLO before choosing the architecture. "99.9% of login requests complete in under 300ms over a 30-day window" gives engineers concrete constraints to design around. "The system should be reliable" leaves every team guessing.
 
-## Runbooks
+Target availability dictates how much complexity you have to run:
 
-Write them. Keep them short. Test them.
-
-If a runbook hasn't been used in 6 months, it's either unnecessary or untested.
-
-## SLOs and error budgets
-
-Most teams set SLOs after building the system. Do it the other way around. Let the SLO constrain the architecture.
-
-"99.9% of login requests complete in under 300ms over a 30-day window." That's specific enough to design around. "The system should be reliable" is not an SLO, it's a wish.
-
-### SLOs shape infrastructure
-
-99.9% availability gives you ~43 minutes of downtime per month. Can you do maintenance windows? Only if they fit. Can you run single-region? Probably not.
-
-99.99% gives you ~4 minutes. Now you need active-active multi-region and zero-downtime deploys.
-
-| SLO | Monthly budget | What it demands |
+| SLO | Monthly downtime budget | What it demands |
 |---|---|---|
-| 99% | ~7 hours | Monitoring, manual response |
-| 99.9% | ~43 minutes | Automated alerts, fast rollbacks |
-| 99.99% | ~4 minutes | Multi-region, automated failover |
-| 99.999% | ~26 seconds | Active-active, no single points of failure |
+| 99% | ~7 hours | Monitoring and manual response |
+| 99.9% | ~43 minutes | Automated alerts and fast rollbacks |
+| 99.99% | ~4 minutes | Multi-region setup and automated failover |
+| 99.999% | ~26 seconds | Active-active across regions with no single points of failure |
 
-### Error budgets
+A 99.9% SLO leaves a 0.1% error budget to spend on releases and experiments. When that budget hits zero, feature releases pause and engineering shifts to reliability work.
 
-If your SLO is 99.9%, your error budget is 0.1%. That budget is meant to be spent.
+That policy only holds if leadership and product agree to it before an outage burns the budget. Trying to negotiate a release freeze mid-crisis fails.
 
-Budget remaining? Push riskier releases. Budget exhausted? Stop shipping features, focus on reliability. "We can't ship this feature because we burned our error budget on last week's outage" is a conversation that only works if you agreed on the policy _before_ the budget ran out.
+Four common ways teams break SLOs in practice:
 
-When the budget hits zero: feature releases pause, engineering shifts to reliability. This has to be pre-agreed. If it's a heroic call made during a crisis, it won't stick.
+- Setting 99.999% targets on services that do not need them, wasting months on unnecessary redundancy.
+- Applying one target to everything, even though a login path and a batch job have very different tolerances.
+- Defining targets nobody measures.
+- Leaving an exhausted error budget unenforced.
 
-### Common SLO mistakes
-
-- Setting a 99.999% target on a service that doesn't need it. You'll waste months of engineering time.
-- Not measuring. If you can't track it, the budget is fiction.
-- Same SLO for everything. A batch job and a login page have different reliability needs.
-- No consequences for burning the budget. A budget without enforcement is a suggestion.
-
-## Practical things
-
-1. Automate incident setup. Channel creation, paging, status page updates. Save human judgment for actual decisions.
-2. Run game days. Your incident process shouldn't be tested for the first time during a real outage.
-3. Measure time to recovery, not time between failures. You can't prevent everything. You can recover faster.
-4. If an SLO doesn't drive engineering priorities, get rid of it.
-5. On-call misery is a signal. If people dread the rotation, the system is telling you something.
-
-## The culture part
-
-I've seen teams with excellent monitoring and terrible incident response. I've seen teams with basic tooling that recover quickly because they communicate well and trust each other to act.
-
-The difference is organizational, not technical. Information flow, decision-making authority, mutual trust. Those are harder to fix than dashboards.
+Monitoring and paging tools are easy to buy. At scale, recovery speed comes down to clear ownership and giving on-call engineers authority to act without waiting for permission.

@@ -16,7 +16,6 @@ on:
       - 'hugo.yaml'
       - 'themes/**'
       - 'static/**'
-      - '!static/tools/**'  # Exclude tools directory
   workflow_dispatch:
 
 permissions:
