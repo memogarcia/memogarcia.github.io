@@ -48,7 +48,7 @@
 
 .preset-group {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   width: 100%;
 }
@@ -430,4 +430,19 @@
   .rules-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.conversion-note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.advanced-rules summary {
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.advanced-rules > .preset-btn {
+  margin-top: 8px;
 }

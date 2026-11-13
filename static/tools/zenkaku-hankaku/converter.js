@@ -391,7 +391,7 @@
   }
 
   const saved = loadPrefs();
-  const rules = { ...PRESETS.standard, ...(saved?.rules || {}) };
+  const rules = { ...PRESETS.allHalf, ...(saved?.rules || {}) };
   let inspectMode = Boolean(saved?.inspectMode);
 
   function matchingPreset() {

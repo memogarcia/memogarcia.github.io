@@ -35,89 +35,89 @@
     <section class="conv-header">
       <p class="conv-eyebrow">Japanese Text · 全角・半角変換</p>
       <h1>Zenkaku ⇄ Hankaku</h1>
-      <p class="conv-subtitle">Normalize full-width and half-width Japanese characters locally as you type.</p>
+      <p class="conv-subtitle">Paste text and choose a direction. The result updates as you type.</p>
     </section>
 
     <section class="controls-panel" aria-label="Conversion rules">
       <div class="presets-row">
-        <div class="preset-group" role="group" aria-label="Presets">
-          <button class="preset-btn" type="button" data-preset="standard" aria-pressed="true">
-            <span>Standard JP</span>
-            <small>標準 (半角英数 · 全角カナ)</small>
+        <div class="preset-group" role="group" aria-label="Conversion direction">
+          <button class="preset-btn" type="button" data-preset="allHalf" aria-pressed="true">
+            <span>To half-width</span>
+            <small>全角 → 半角 · Ａ１ガ → A1ｶﾞ</small>
           </button>
           <button class="preset-btn" type="button" data-preset="allFull" aria-pressed="false">
-            <span>All Full-width</span>
-            <small>すべて全角 (フォーム用)</small>
-          </button>
-          <button class="preset-btn" type="button" data-preset="allHalf" aria-pressed="false">
-            <span>All Half-width</span>
-            <small>すべて半角 (CSV・旧式)</small>
+            <span>To full-width</span>
+            <small>半角 → 全角 · A1ｶﾞ → Ａ１ガ</small>
           </button>
         </div>
       </div>
+      <p class="conversion-note">Letters, numbers, symbols, spaces, and katakana are converted. Hiragana and kanji stay unchanged.</p>
+      <details class="advanced-rules">
+        <summary>More options</summary>
+        <button class="preset-btn" type="button" data-preset="standard" aria-pressed="false">Japanese standard (half-width letters, full-width katakana)</button>
+        <div class="rules-grid">
+          <div class="rule-item">
+            <span class="rule-label">Letters <small>A-Z · Ａ-Ｚ</small></span>
+            <div class="seg" role="group" aria-label="Letters width" data-rule="letters">
+              <button type="button" data-val="full" aria-pressed="false">Full</button>
+              <button type="button" data-val="keep" aria-pressed="false">Keep</button>
+              <button type="button" data-val="half" aria-pressed="true">Half</button>
+            </div>
+          </div>
 
-      <div class="rules-grid">
-        <div class="rule-item">
-          <span class="rule-label">Letters <small>A-Z · Ａ-Ｚ</small></span>
-          <div class="seg" role="group" aria-label="Letters width" data-rule="letters">
-            <button type="button" data-val="full" aria-pressed="false">Full</button>
-            <button type="button" data-val="keep" aria-pressed="false">Keep</button>
-            <button type="button" data-val="half" aria-pressed="true">Half</button>
+          <div class="rule-item">
+            <span class="rule-label">Digits <small>0-9 · ０-９</small></span>
+            <div class="seg" role="group" aria-label="Digits width" data-rule="digits">
+              <button type="button" data-val="full" aria-pressed="false">Full</button>
+              <button type="button" data-val="keep" aria-pressed="false">Keep</button>
+              <button type="button" data-val="half" aria-pressed="true">Half</button>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <span class="rule-label">Symbols <small>@-/ · ＠－／</small></span>
+            <div class="seg" role="group" aria-label="Symbols width" data-rule="symbols">
+              <button type="button" data-val="full" aria-pressed="false">Full</button>
+              <button type="button" data-val="keep" aria-pressed="false">Keep</button>
+              <button type="button" data-val="half" aria-pressed="true">Half</button>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <span class="rule-label">Spaces <small>␣ · 　</small></span>
+            <div class="seg" role="group" aria-label="Spaces width" data-rule="spaces">
+              <button type="button" data-val="full" aria-pressed="false">Full</button>
+              <button type="button" data-val="keep" aria-pressed="false">Keep</button>
+              <button type="button" data-val="half" aria-pressed="true">Half</button>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <span class="rule-label">Katakana <small>ｶﾞ · ガ</small></span>
+            <div class="seg" role="group" aria-label="Katakana width" data-rule="katakana">
+              <button type="button" data-val="full" aria-pressed="true">Full</button>
+              <button type="button" data-val="keep" aria-pressed="false">Keep</button>
+              <button type="button" data-val="half" aria-pressed="false">Half</button>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <span class="rule-label">JP Punct <small>｡｢｣､･ · 。「」、・</small></span>
+            <div class="seg" role="group" aria-label="Japanese punctuation width" data-rule="jpPunct">
+              <button type="button" data-val="full" aria-pressed="true">Full</button>
+              <button type="button" data-val="keep" aria-pressed="false">Keep</button>
+              <button type="button" data-val="half" aria-pressed="false">Half</button>
+            </div>
           </div>
         </div>
 
-        <div class="rule-item">
-          <span class="rule-label">Digits <small>0-9 · ０-９</small></span>
-          <div class="seg" role="group" aria-label="Digits width" data-rule="digits">
-            <button type="button" data-val="full" aria-pressed="false">Full</button>
-            <button type="button" data-val="keep" aria-pressed="false">Keep</button>
-            <button type="button" data-val="half" aria-pressed="true">Half</button>
-          </div>
+        <div class="rules-extra">
+          <label class="variant-check">
+            <input id="normalize-variants" type="checkbox">
+            <span>Also normalize Japanese wave dash &amp; minus variants (<code>〜</code>, <code>−</code>, <code>‐</code>) when converting symbols</span>
+          </label>
         </div>
-
-        <div class="rule-item">
-          <span class="rule-label">Symbols <small>@-/ · ＠－／</small></span>
-          <div class="seg" role="group" aria-label="Symbols width" data-rule="symbols">
-            <button type="button" data-val="full" aria-pressed="false">Full</button>
-            <button type="button" data-val="keep" aria-pressed="false">Keep</button>
-            <button type="button" data-val="half" aria-pressed="true">Half</button>
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <span class="rule-label">Spaces <small>␣ · 　</small></span>
-          <div class="seg" role="group" aria-label="Spaces width" data-rule="spaces">
-            <button type="button" data-val="full" aria-pressed="false">Full</button>
-            <button type="button" data-val="keep" aria-pressed="false">Keep</button>
-            <button type="button" data-val="half" aria-pressed="true">Half</button>
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <span class="rule-label">Katakana <small>ｶﾞ · ガ</small></span>
-          <div class="seg" role="group" aria-label="Katakana width" data-rule="katakana">
-            <button type="button" data-val="full" aria-pressed="true">Full</button>
-            <button type="button" data-val="keep" aria-pressed="false">Keep</button>
-            <button type="button" data-val="half" aria-pressed="false">Half</button>
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <span class="rule-label">JP Punct <small>｡｢｣､･ · 。「」、・</small></span>
-          <div class="seg" role="group" aria-label="Japanese punctuation width" data-rule="jpPunct">
-            <button type="button" data-val="full" aria-pressed="true">Full</button>
-            <button type="button" data-val="keep" aria-pressed="false">Keep</button>
-            <button type="button" data-val="half" aria-pressed="false">Half</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="rules-extra">
-        <label class="variant-check">
-          <input id="normalize-variants" type="checkbox">
-          <span>Also normalize Japanese wave dash &amp; minus variants (<code>〜</code>, <code>−</code>, <code>‐</code>) when converting symbols</span>
-        </label>
-      </div>
+      </details>
     </section>
 
     <section class="panes" aria-label="Text conversion workspace">
@@ -146,7 +146,7 @@
           <label for="output-text">Output <span class="jp-tag">変換結果</span></label>
           <div class="pane-actions">
             <button id="inspect-btn" class="pane-btn" type="button" aria-pressed="false" title="Highlight full-width ASCII, full-width spaces, and half-width katakana">Inspect widths</button>
-            <button id="swap-btn" class="pane-btn" type="button" title="Move output back into input">⇄ Swap</button>
+            <button id="swap-btn" class="pane-btn" type="button" title="Move output back into input">Use output as input</button>
             <button id="copy-btn" class="pane-btn pane-btn-primary" type="button">Copy</button>
           </div>
         </div>
