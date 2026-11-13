@@ -10,7 +10,7 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 26 Sep 2026 00:50:00 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 13 Nov 2026 13:00:00 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>I built the app of my dreams</title>
       <link>https://memo.mx/posts/i-built-the-app-of-my-dreams/</link>
@@ -105,10 +105,8 @@ SQLCopy CREATE UNIQUE INDEX idx_users_email ON users (email); Most products trea
       <pubDate>Thu, 12 Mar 2026 19:50:00 +0900</pubDate>
       
       <guid>https://memo.mx/posts/sre-at-scale/</guid>
-      <description>The severity of an incident is not determined by the technology that failed, but by the number of people impacted by it.
-A 3-person team can run an incident in a Slack thread. A 300-person organization cannot.
-That gap is where SRE gets interesting.
-What changes At small scale, the person who gets paged probably wrote the code. At large scale, the person who gets paged might not know which team owns the failing component.</description>
+      <description>A 3-person team can run an incident in a Slack thread. A 300-person organization cannot.
+At small scale, the person who gets paged probably wrote the code. They know what changed, who to ask, and how to roll back. In a larger organization, the on-call engineer often does not know which team owns the failing service. You spend more time finding the right owner than reading logs, and the same experienced engineers get pulled into outages they had nothing to do with.</description>
     </item>
     
     <item>
