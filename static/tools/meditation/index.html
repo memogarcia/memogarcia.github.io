@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meditation · Memo Garcia</title>
+  <meta name="description" content="A quiet meditation timer with singing bowl bells, interval chimes, optional hidden clock, ambient soundscapes, and Zen mode.">
+  <link rel="canonical" href="https://memo.mx/tools/meditation/">
+  <link id="favicon" rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script src="/tools/theme.js"></script>
+  <link rel="stylesheet" href="/tools/shared.css">
+  <link rel="stylesheet" href="/tools/meditation/meditation.css">
+</head>
+<body data-state="idle" data-mode="timed">
+  <a class="skip" href="#main">Skip to meditation timer</a>
+
+  <header class="site-header">
+    <a class="wordmark" href="/">Memo Garcia<span class="wordmark-dot" aria-hidden="true">.</span></a>
+    <nav aria-label="Tools navigation">
+      <a href="/tools/">Tools</a>
+      <a href="/tools/pomodoro/">Pomodoro</a>
+      <a href="/tools/breathing/">Breathing</a>
+      <a href="/tools/meditation/" aria-current="page">Meditation</a>
+      <a href="/tools/fasting/">Fasting</a>
+      <a href="/tools/zenkaku-hankaku/">全角⇄半角</a>
+      <button class="theme-control" type="button" aria-label="Change theme" hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
+          <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
+          <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <button id="zen-exit" class="zen-exit" type="button" aria-label="Exit Zen mode (Z or Escape)" hidden>
+    Exit Zen <kbd>Esc</kbd>
+  </button>
+
+  <main id="main" class="med-main">
+    <h1 class="sr-only">Meditation Timer</h1>
+
+    <div class="med-topbar">
+      <div class="preset-tabs" role="group" aria-label="Meditation duration presets">
+        <button class="preset-chip" type="button" data-min="5" aria-pressed="false">5m</button>
+        <button class="preset-chip" type="button" data-min="10" aria-pressed="true">10m</button>
+        <button class="preset-chip" type="button" data-min="15" aria-pressed="false">15m</button>
+        <button class="preset-chip" type="button" data-min="20" aria-pressed="false">20m</button>
+        <button class="preset-chip" type="button" data-min="30" aria-pressed="false">30m</button>
+        <button class="preset-chip" type="button" data-min="45" aria-pressed="false">45m</button>
+        <button class="preset-chip" type="button" data-min="0" aria-pressed="false">Open</button>
+        <button id="custom-min-btn" class="preset-chip" type="button" data-min="custom" aria-pressed="false">Custom</button>
+      </div>
+    </div>
+
+    <div id="custom-min-wrap" class="custom-min-wrap" hidden>
+      <label for="custom-min-input">Minutes (1 to 180)</label>
+      <input id="custom-min-input" type="number" min="1" max="180" step="1" value="25">
+      <button id="custom-min-apply" class="btn-outline" type="button">Set</button>
+    </div>
+
+    <section class="dial-stage" aria-label="Meditation dial">
+      <div class="dial-wrap">
+        <svg class="dial-svg" viewBox="0 0 360 360" aria-hidden="true">
+          <circle class="dial-bezel-outer" cx="180" cy="180" r="170" />
+          <circle class="dial-track" cx="180" cy="180" r="158" />
+          <g id="dial-ticks" class="dial-ticks"></g>
+          <circle class="dial-bezel-inner" cx="180" cy="180" r="129" />
+          <circle id="dial-progress" class="dial-progress" cx="180" cy="180" r="158" transform="rotate(-90 180 180)" />
+          <g id="dial-hand-group" transform="rotate(0 180 180)">
+            <circle class="dial-hand-halo" cx="180" cy="22" r="9" />
+            <circle class="dial-hand" cx="180" cy="22" r="5" />
+          </g>
+        </svg>
+
+        <div class="dial-readout">
+          <p id="med-eyebrow" class="dial-eyebrow">Silent Sitting</p>
+          <p id="time-display" class="dial-time" aria-label="Meditation time">10:00</p>
+          <div id="hidden-clock-mark" class="hidden-clock-mark" hidden aria-label="Timer hidden while sitting">
+            <span class="still-dot"></span>
+          </div>
+          <p id="schedule-line" class="dial-schedule">Ends at 13:45</p>
+        </div>
+      </div>
+
+      <div class="setup-strip" aria-label="Quick sitting options">
+        <label class="inline-select">
+          <span>Prep</span>
+          <select id="quick-prep">
+            <option value="0">Off</option>
+            <option value="5">5s</option>
+            <option value="10">10s</option>
+            <option value="15">15s</option>
+          </select>
+        </label>
+        <label class="inline-select">
+          <span>Interval bell</span>
+          <select id="quick-interval">
+            <option value="off">Off</option>
+            <option value="5">Every 5m</option>
+            <option value="10">Every 10m</option>
+            <option value="half">Halfway</option>
+          </select>
+        </label>
+        <button id="hide-clock-btn" class="inline-toggle" type="button" aria-pressed="false" title="Hide time digits while sitting (H)">Hide clock</button>
+      </div>
+
+      <div class="intention-row">
+        <label class="sr-only" for="note-input">Sitting intention or note</label>
+        <input
+          id="note-input"
+          class="intention-input"
+          type="text"
+          maxlength="120"
+          autocomplete="off"
+          placeholder="Intention or post-sit note (optional)"
+        >
+      </div>
+
+      <div class="controls-primary">
+        <button id="toggle-btn" class="btn-primary" type="button">Begin Sit</button>
+      </div>
+
+      <div class="controls-secondary" aria-label="Secondary meditation controls">
+        <button id="finish-btn" class="btn-ghost" type="button" hidden>Finish &amp; log</button>
+        <button id="reset-btn" class="btn-ghost" type="button">Reset</button>
+        <button id="sound-quick-btn" class="btn-ghost" type="button" aria-pressed="true" title="Toggle bells and ambience (M)">Sound: On</button>
+        <button id="zen-btn" class="btn-ghost" type="button" title="Zen mode (Z)">Zen</button>
+        <button id="settings-btn" class="btn-ghost" type="button" title="Meditation settings (S)">Settings</button>
+      </div>
+
+      <p id="live-status" class="sr-only" aria-live="polite"></p>
+    </section>
+
+    <section class="med-meta" aria-label="Meditation stats">
+      <p id="stats-summary" class="today-summary">0 sits today · 0 day streak</p>
+    </section>
+
+    <details id="history-drawer" class="history-drawer">
+      <summary>
+        <span>Sitting log</span>
+        <span id="history-count" class="history-count">0</span>
+      </summary>
+      <div class="history-body">
+        <p id="history-empty" class="history-empty">Completed sits appear here. Stored locally in your browser.</p>
+        <ul id="history-list" class="history-list" hidden></ul>
+        <div class="history-actions">
+          <button id="clear-history-btn" class="btn-text" type="button" hidden>Clear sitting log</button>
+        </div>
+      </div>
+    </details>
+
+    <p class="shortcut-bar" aria-label="Keyboard shortcuts">
+      <span><kbd>Space</kbd> Start / Pause</span>
+      <span><kbd>R</kbd> Reset</span>
+      <span><kbd>H</kbd> Hide clock</span>
+      <span><kbd>Z</kbd> Zen</span>
+      <span><kbd>M</kbd> Sound</span>
+    </p>
+  </main>
+
+  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+    <form id="settings-form" method="dialog" class="settings-card">
+      <header class="settings-header">
+        <h2 id="settings-title">Meditation Settings</h2>
+        <button id="settings-close-btn" class="icon-close" type="button" aria-label="Close settings">×</button>
+      </header>
+
+      <div class="settings-body">
+        <fieldset class="settings-group">
+          <legend>Bells &amp; Soundscape</legend>
+          <div class="settings-row">
+            <label for="opt-bell">Bell tone</label>
+            <div class="settings-inline">
+              <select id="opt-bell">
+                <option value="bowl">Singing bowl</option>
+                <option value="temple">Temple bell</option>
+                <option value="tingsha">Tingsha</option>
+                <option value="chime">Soft chime</option>
+                <option value="off">Silent</option>
+              </select>
+              <button id="test-bell-btn" class="btn-outline" type="button">Test</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <label for="opt-end-bells">Closing bells</label>
+            <select id="opt-end-bells">
+              <option value="1">1 bell</option>
+              <option value="3">3 bells</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <label for="opt-volume">Volume</label>
+            <div class="settings-inline">
+              <input id="opt-volume" type="range" min="0" max="100" step="5">
+              <span id="opt-volume-label" class="mono-val">70%</span>
+            </div>
+          </div>
+          <div class="settings-row">
+            <label for="opt-ambient">Ambient soundscape</label>
+            <select id="opt-ambient">
+              <option value="off">Silent</option>
+              <option value="rain">Soft rain</option>
+              <option value="warm">Warm noise</option>
+              <option value="wind">Gentle wind</option>
+              <option value="stream">Quiet stream</option>
+            </select>
+          </div>
+          <label class="settings-check">
+            <input id="opt-start-bell" type="checkbox">
+            <span>Ring opening bell when sitting begins</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="settings-group">
+          <legend>Quiet Focus</legend>
+          <label class="settings-check">
+            <input id="opt-auto-zen" type="checkbox">
+            <span>Enter Zen mode automatically when starting</span>
+          </label>
+          <div class="settings-row">
+            <span>Desktop notifications</span>
+            <button id="opt-notify-btn" class="btn-outline" type="button">Off</button>
+          </div>
+        </fieldset>
+      </div>
+
+      <footer class="settings-footer">
+        <button id="settings-reset-btn" class="btn-text" type="button">Restore defaults</button>
+        <button class="btn-primary btn-sm" type="submit">Done</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <footer class="site-footer">
+    <span>Memo Garcia</span>
+    <div>
+      <a href="/tools/">All tools</a>
+      <a href="/">Blog</a>
+    </div>
+  </footer>
+
+  <script src="/tools/meditation/meditation.js"></script>
+</body>
+</html>

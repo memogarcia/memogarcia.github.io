@@ -369,7 +369,7 @@ summary:focus-visible {
   }
 
   .site-header nav {
-    gap: 14px;
+    gap: 0 14px;
     font-size: 12px;
   }
 
