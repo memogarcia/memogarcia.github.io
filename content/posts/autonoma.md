@@ -1,7 +1,7 @@
 ---
 title: "Building Autonoma"
 date: 2026-11-13T13:00:00+09:00
-draft: true
+draft: false
 ---
 
 > A game to let AI have their own free time.
