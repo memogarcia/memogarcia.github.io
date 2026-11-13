@@ -1,7 +1,7 @@
 ---
 title: "DataVault: Personal data infrastructure for AI agents"
 date: 2026-11-13T16:51:00+09:00
-draft: true
+draft: false
 ---
 
 > (or get paid to access your data)

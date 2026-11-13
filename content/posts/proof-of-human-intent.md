@@ -1,7 +1,7 @@
 ---
 title: "Proof of Human Intent"
 date: 2026-11-13T16:57:16+09:00
-draft: true
+draft: false
 ---
 
 > How do we know a human actually authorized a specific action an AI agent is trying to execute?

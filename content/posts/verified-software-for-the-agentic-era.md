@@ -1,7 +1,7 @@
 ---
 title: "Verified software for the agentic era"
 date: 2026-11-13T16:48:20+09:00
-draft: true
+draft: false
 ---
 
 Is this library my agent is using safe? Does it leak information? Is it compromised?
