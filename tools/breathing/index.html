@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breathing · Memo Garcia</title>
+  <meta name="description" content="Guided breathing pacer for Box Breathing, 4-7-8, Coherent Breathing, and Physiological Sigh with Web Audio cues and Zen mode.">
+  <link rel="canonical" href="https://memo.mx/tools/breathing/">
+  <link id="favicon" rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script src="/tools/theme.js"></script>
+  <link rel="stylesheet" href="/tools/shared.css">
+  <link rel="stylesheet" href="/tools/breathing/breathing.css">
+</head>
+<body data-pattern="box" data-state="idle" data-phase-kind="ready">
+  <a class="skip" href="#main">Skip to breathing pacer</a>
+
+  <header class="site-header">
+    <a class="wordmark" href="/">Memo Garcia<span class="wordmark-dot" aria-hidden="true">.</span></a>
+    <nav aria-label="Tools navigation">
+      <a href="/tools/">Tools</a>
+      <a href="/tools/pomodoro/">Pomodoro</a>
+      <a href="/tools/breathing/" aria-current="page">Breathing</a>
+      <a href="/tools/meditation/">Meditation</a>
+      <a href="/tools/fasting/">Fasting</a>
+      <a href="/tools/zenkaku-hankaku/">全角⇄半角</a>
+      <button class="theme-control" type="button" aria-label="Change theme" hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
+          <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
+          <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <button id="zen-exit" class="zen-exit" type="button" aria-label="Exit Zen mode (Z or Escape)" hidden>
+    Exit Zen <kbd>Esc</kbd>
+  </button>
+
+  <main id="main" class="breath-main">
+    <h1 class="sr-only">Breathing Exercises</h1>
+
+    <div class="breath-topbar">
+      <div class="pattern-tabs" role="tablist" aria-label="Breathing exercise">
+        <button role="tab" type="button" data-pattern="box" aria-selected="true">
+          <span>Box</span>
+          <small>4-4-4-4</small>
+        </button>
+        <button role="tab" type="button" data-pattern="478" aria-selected="false" tabindex="-1">
+          <span>4-7-8</span>
+          <small>4-7-8</small>
+        </button>
+        <button role="tab" type="button" data-pattern="coherent" aria-selected="false" tabindex="-1">
+          <span>Coherent</span>
+          <small>5-5</small>
+        </button>
+        <button role="tab" type="button" data-pattern="sigh" aria-selected="false" tabindex="-1">
+          <span>Physiological Sigh</span>
+          <small>2+1-6</small>
+        </button>
+      </div>
+    </div>
+
+    <div class="pattern-brief">
+      <p id="pattern-summary" class="pattern-summary">Equal-ratio breathing to steady focus and even out stress.</p>
+      <p id="pattern-tip" class="pattern-tip">Breathe through your nose. Keep both holds soft without locking your throat.</p>
+    </div>
+
+    <section class="dial-stage" aria-label="Breathing pacer">
+      <div class="dial-wrap">
+        <svg class="dial-svg" viewBox="0 0 360 360" aria-hidden="true">
+          <circle class="dial-bezel-outer" cx="180" cy="180" r="170" />
+          <circle class="dial-track" cx="180" cy="180" r="158" />
+          <circle class="dial-bezel-inner" cx="180" cy="180" r="134" />
+          <circle id="dial-progress" class="dial-progress" cx="180" cy="180" r="158" transform="rotate(-90 180 180)" />
+          <circle id="breath-halo" class="breath-halo" cx="180" cy="180" r="76" />
+          <circle id="breath-orb" class="breath-orb" cx="180" cy="180" r="64" />
+          <circle id="breath-core" class="breath-core" cx="180" cy="180" r="48" />
+        </svg>
+
+        <div class="dial-readout">
+          <p id="phase-eyebrow" class="dial-eyebrow">Box Breathing</p>
+          <p id="phase-action" class="dial-action">Ready</p>
+          <p id="phase-timer" class="dial-time" aria-label="Phase countdown">02:00</p>
+          <p id="session-line" class="dial-schedule">16s cycle · 4s in, 4s hold, 4s out, 4s hold</p>
+        </div>
+      </div>
+
+      <div id="phase-strip" class="phase-strip" aria-label="Breath cycle steps"></div>
+
+      <div class="duration-row" role="group" aria-label="Session duration">
+        <button class="dur-chip" type="button" data-dur="2" aria-pressed="true">2m</button>
+        <button class="dur-chip" type="button" data-dur="5" aria-pressed="false">5m</button>
+        <button class="dur-chip" type="button" data-dur="10" aria-pressed="false">10m</button>
+        <button class="dur-chip" type="button" data-dur="0" aria-pressed="false">Open</button>
+        <button id="custom-dur-btn" class="dur-chip" type="button" data-dur="custom" aria-pressed="false">Custom</button>
+      </div>
+
+      <div id="custom-dur-wrap" class="custom-dur-wrap" hidden>
+        <label for="custom-dur-input">Minutes</label>
+        <input id="custom-dur-input" type="number" min="1" max="60" step="1" value="3">
+        <button id="custom-dur-apply" class="btn-outline" type="button">Set</button>
+      </div>
+
+      <div class="controls-primary">
+        <button id="toggle-btn" class="btn-primary" type="button">Start Breathing</button>
+      </div>
+
+      <div class="controls-secondary" aria-label="Secondary breathing controls">
+        <button id="finish-btn" class="btn-ghost" type="button" hidden>Finish &amp; log</button>
+        <button id="reset-btn" class="btn-ghost" type="button">Reset</button>
+        <button id="sound-quick-btn" class="btn-ghost" type="button" aria-pressed="true" title="Toggle phase tones (M)">Sound: On</button>
+        <button id="zen-btn" class="btn-ghost" type="button" title="Zen mode (Z)">Zen</button>
+        <button id="settings-btn" class="btn-ghost" type="button" title="Settings (S)">Settings</button>
+      </div>
+
+      <p id="live-status" class="sr-only" aria-live="polite"></p>
+    </section>
+
+    <section class="breath-meta" aria-label="Daily breathing summary">
+      <p id="today-summary" class="today-summary">0 sessions today</p>
+    </section>
+
+    <details id="history-drawer" class="history-drawer">
+      <summary>
+        <span>Today's log</span>
+        <span id="history-count" class="history-count">0</span>
+      </summary>
+      <div class="history-body">
+        <p id="history-empty" class="history-empty">Completed breathing sessions appear here. Stored locally in your browser.</p>
+        <ul id="history-list" class="history-list" hidden></ul>
+        <div class="history-actions">
+          <button id="clear-history-btn" class="btn-text" type="button" hidden>Clear today's log</button>
+        </div>
+      </div>
+    </details>
+
+    <p class="shortcut-bar" aria-label="Keyboard shortcuts">
+      <span><kbd>Space</kbd> Start / Pause</span>
+      <span><kbd>R</kbd> Reset</span>
+      <span><kbd>1</kbd>–<kbd>4</kbd> Technique</span>
+      <span><kbd>Z</kbd> Zen</span>
+      <span><kbd>M</kbd> Sound</span>
+    </p>
+  </main>
+
+  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+    <form id="settings-form" method="dialog" class="settings-card">
+      <header class="settings-header">
+        <h2 id="settings-title">Breathing Settings</h2>
+        <button id="settings-close-btn" class="icon-close" type="button" aria-label="Close settings">×</button>
+      </header>
+
+      <div class="settings-body">
+        <fieldset class="settings-group">
+          <legend>Sound &amp; Cues</legend>
+          <div class="settings-row">
+            <label for="opt-cue">Phase cue tone</label>
+            <div class="settings-inline">
+              <select id="opt-cue">
+                <option value="tones">Soft tones</option>
+                <option value="bowl">Singing bowl</option>
+                <option value="wood">Woodblock</option>
+                <option value="off">Silent</option>
+              </select>
+              <button id="test-cue-btn" class="btn-outline" type="button">Test</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <label for="opt-volume">Volume</label>
+            <div class="settings-inline">
+              <input id="opt-volume" type="range" min="0" max="100" step="5">
+              <span id="opt-volume-label" class="mono-val">65%</span>
+            </div>
+          </div>
+          <div class="settings-row">
+            <label for="opt-ambient">Background ambience</label>
+            <select id="opt-ambient">
+              <option value="off">Off</option>
+              <option value="rain">Soft rain</option>
+              <option value="warm">Warm noise</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset class="settings-group">
+          <legend>Session Flow</legend>
+          <div class="settings-row">
+            <label for="opt-prep">Settle-in countdown</label>
+            <select id="opt-prep">
+              <option value="0">None (start immediately)</option>
+              <option value="3">3 seconds</option>
+              <option value="5">5 seconds</option>
+            </select>
+          </div>
+          <label class="settings-check">
+            <input id="opt-end-bell" type="checkbox">
+            <span>Play completion chime when timed session finishes</span>
+          </label>
+        </fieldset>
+      </div>
+
+      <footer class="settings-footer">
+        <button id="settings-reset-btn" class="btn-text" type="button">Restore defaults</button>
+        <button class="btn-primary btn-sm" type="submit">Done</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <footer class="site-footer">
+    <span>Memo Garcia</span>
+    <div>
+      <a href="/tools/">All tools</a>
+      <a href="/">Blog</a>
+    </div>
+  </footer>
+
+  <script src="/tools/breathing/breathing.js"></script>
+</body>
+</html>

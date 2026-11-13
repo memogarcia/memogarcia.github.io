@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fasting · Memo Garcia</title>
+  <meta name="description" content="Local-first fasting timer with preset windows, custom hour goals, editable start time, and hour-by-hour physiological milestones from 0h to 72h.">
+  <link rel="canonical" href="https://memo.mx/tools/fasting/">
+  <link id="favicon" rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script src="/tools/theme.js"></script>
+  <link rel="stylesheet" href="/tools/shared.css">
+  <link rel="stylesheet" href="/tools/fasting/fasting.css">
+</head>
+<body data-state="idle" data-phase="digestion">
+  <a class="skip" href="#main">Skip to fasting timer</a>
+
+  <header class="site-header">
+    <a class="wordmark" href="/">Memo Garcia<span class="wordmark-dot" aria-hidden="true">.</span></a>
+    <nav aria-label="Tools navigation">
+      <a href="/tools/">Tools</a>
+      <a href="/tools/pomodoro/">Pomodoro</a>
+      <a href="/tools/breathing/">Breathing</a>
+      <a href="/tools/meditation/">Meditation</a>
+      <a href="/tools/fasting/" aria-current="page">Fasting</a>
+      <a href="/tools/zenkaku-hankaku/">全角⇄半角</a>
+      <button class="theme-control" type="button" aria-label="Change theme" hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
+          <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
+          <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main" class="fast-main">
+    <h1 class="sr-only">Fasting Timer</h1>
+
+    <section class="goal-bar" aria-label="Fasting goal presets">
+      <div class="preset-tabs" role="group" aria-label="Fasting duration presets">
+        <button class="preset-chip" type="button" data-preset="12h" aria-pressed="false">12h <small>12:12</small></button>
+        <button class="preset-chip" type="button" data-preset="14h" aria-pressed="false">14h <small>14:10</small></button>
+        <button class="preset-chip" type="button" data-preset="16h" aria-pressed="true">16h <small>16:8</small></button>
+        <button class="preset-chip" type="button" data-preset="18h" aria-pressed="false">18h <small>18:6</small></button>
+        <button class="preset-chip" type="button" data-preset="20h" aria-pressed="false">20h <small>20:4</small></button>
+        <button class="preset-chip" type="button" data-preset="24h" aria-pressed="false">24h <small>OMAD</small></button>
+        <button class="preset-chip" type="button" data-preset="36h" aria-pressed="false">36h</button>
+        <button class="preset-chip" type="button" data-preset="48h" aria-pressed="false">48h</button>
+        <button class="preset-chip" type="button" data-preset="72h" aria-pressed="false">72h</button>
+        <button id="custom-goal-btn" class="preset-chip" type="button" data-preset="custom" aria-pressed="false">Custom</button>
+      </div>
+
+      <div id="custom-goal-panel" class="custom-goal-panel" hidden>
+        <label>
+          <span>Hours</span>
+          <input id="custom-hours" type="number" min="1" max="168" step="1" value="17">
+        </label>
+        <label>
+          <span>Minutes</span>
+          <input id="custom-minutes" type="number" min="0" max="59" step="5" value="0">
+        </label>
+        <button id="apply-custom-btn" class="btn-outline" type="button">Set goal</button>
+      </div>
+    </section>
+
+    <section class="dial-stage" aria-label="Fasting dial">
+      <div class="dial-wrap">
+        <svg class="dial-svg" viewBox="0 0 360 360" aria-hidden="true">
+          <circle class="dial-bezel-outer" cx="180" cy="180" r="170" />
+          <circle class="dial-track" cx="180" cy="180" r="158" />
+          <g id="dial-milestones" class="dial-milestones"></g>
+          <circle class="dial-bezel-inner" cx="180" cy="180" r="129" />
+          <circle id="dial-progress" class="dial-progress" cx="180" cy="180" r="158" transform="rotate(-90 180 180)" />
+          <g id="dial-hand-group" transform="rotate(0 180 180)">
+            <circle class="dial-hand-halo" cx="180" cy="22" r="9" />
+            <circle class="dial-hand" cx="180" cy="22" r="5" />
+          </g>
+        </svg>
+
+        <div class="dial-readout">
+          <p id="phase-eyebrow" class="dial-eyebrow">Goal · 16h (16:8)</p>
+          <p id="time-display" class="dial-time" aria-label="Fasting timer">16:00:00</p>
+          <p id="progress-line" class="dial-sub">Ready to start</p>
+          <p id="schedule-line" class="dial-schedule">Starts now · Goal at --:--</p>
+        </div>
+      </div>
+
+      <div class="display-switch" role="group" aria-label="Timer display mode">
+        <button id="mode-elapsed-btn" class="switch-pill" type="button" aria-pressed="true">Show elapsed</button>
+        <button id="mode-remaining-btn" class="switch-pill" type="button" aria-pressed="false">Show remaining</button>
+      </div>
+
+      <div id="start-time-bar" class="start-time-bar">
+        <span id="start-time-summary" class="start-time-summary">Start time: Now</span>
+        <div class="start-quick-btns">
+          <button id="shift-minus-1h" class="btn-chip" type="button" title="Move start 1 hour earlier">-1h</button>
+          <button id="shift-minus-2h" class="btn-chip" type="button" title="Move start 2 hours earlier">-2h</button>
+          <button id="edit-start-btn" class="btn-chip" type="button">Edit start</button>
+        </div>
+      </div>
+
+      <div id="edit-start-panel" class="edit-start-panel" hidden>
+        <label for="start-datetime">Started at</label>
+        <input id="start-datetime" type="datetime-local">
+        <div class="edit-start-actions">
+          <button id="save-start-btn" class="btn-outline" type="button">Apply</button>
+          <button id="reset-start-now-btn" class="btn-chip" type="button">Set to now</button>
+          <button id="cancel-start-btn" class="btn-chip" type="button">Cancel</button>
+        </div>
+      </div>
+
+      <div class="intention-row">
+        <label class="sr-only" for="fast-note-input">Fasting note</label>
+        <input
+          id="fast-note-input"
+          class="intention-input"
+          type="text"
+          maxlength="120"
+          autocomplete="off"
+          placeholder="Optional note (e.g. black coffee, water, electrolytes)"
+        >
+      </div>
+
+      <div class="controls-primary">
+        <button id="toggle-btn" class="btn-primary" type="button">Start Fast</button>
+      </div>
+
+      <div class="controls-secondary" aria-label="Secondary fasting actions">
+        <button id="discard-btn" class="btn-ghost" type="button" hidden>Discard</button>
+        <button id="sound-quick-btn" class="btn-ghost" type="button" aria-pressed="true" title="Toggle goal chime (M)">Chime: On</button>
+        <button id="notify-btn" class="btn-ghost" type="button" aria-pressed="false">Alerts: Off</button>
+      </div>
+
+      <p id="live-status" class="sr-only" aria-live="polite"></p>
+    </section>
+
+    <section id="spotlight-card" class="spotlight-card" aria-label="Current fasting hour">
+      <div class="spotlight-head">
+        <span id="spotlight-badge" class="hour-badge">Hour 0</span>
+        <span id="spotlight-phase" class="phase-tag">Digestion</span>
+        <span id="spotlight-status" class="spotlight-status">Preview</span>
+      </div>
+      <h2 id="spotlight-title" class="spotlight-title">Last meal enters digestion</h2>
+      <p id="spotlight-benefit" class="spotlight-benefit">Carbohydrates and proteins begin breaking down as nutrients move from stomach to small intestine.</p>
+      <div class="marker-row">
+        <span id="marker-fuel" class="marker-pill">Fuel: Dietary glucose</span>
+        <span id="marker-insulin" class="marker-pill">Insulin: Rising</span>
+        <span id="marker-shift" class="marker-pill">Shift: Nutrient uptake</span>
+      </div>
+      <div class="hour-progress-wrap" id="hour-progress-wrap" hidden>
+        <div class="hour-progress-track">
+          <div id="hour-progress-fill" class="hour-progress-fill"></div>
+        </div>
+        <span id="hour-progress-label" class="hour-progress-label">0m / 60m</span>
+      </div>
+      <p id="next-hour-preview" class="next-hour-preview"></p>
+    </section>
+
+    <section class="benefits-section" aria-label="Per-hour benefits of fasting">
+      <div class="benefits-header">
+        <div>
+          <h2>Per-hour benefits (0h to 72h)</h2>
+          <p class="benefits-sub">Select any hour on the map to inspect what shifts in your body, or browse hour by hour below.</p>
+        </div>
+        <div class="inspector-nav">
+          <button id="prev-hour-btn" class="btn-chip" type="button" aria-label="Previous hour">← Prev</button>
+          <button id="current-hour-btn" class="btn-chip" type="button">Current</button>
+          <button id="next-hour-btn" class="btn-chip" type="button" aria-label="Next hour">Next →</button>
+        </div>
+      </div>
+
+      <div class="legend-row" aria-label="Metabolic phase legend">
+        <span class="leg-item"><i class="leg-swatch ph-digestion"></i>0–3h Digestion</span>
+        <span class="leg-item"><i class="leg-swatch ph-glycogen"></i>4–11h Glycogen</span>
+        <span class="leg-item"><i class="leg-swatch ph-ketosis"></i>12–23h Ketosis</span>
+        <span class="leg-item"><i class="leg-swatch ph-autophagy"></i>24–47h Autophagy</span>
+        <span class="leg-item"><i class="leg-swatch ph-extended"></i>48–72h Deep</span>
+      </div>
+
+      <div id="hour-matrix" class="hour-matrix" role="listbox" aria-label="Hour selector from 0h to 72h"></div>
+
+      <article id="inspector-card" class="inspector-card" aria-live="polite">
+        <div class="inspector-top">
+          <span id="insp-badge" class="hour-badge">Hour 16</span>
+          <span id="insp-phase" class="phase-tag">Fat &amp; Ketone Shift</span>
+          <span id="insp-rel" class="insp-rel">Goal hour</span>
+        </div>
+        <h3 id="insp-title" class="insp-title"></h3>
+        <p id="insp-benefit" class="insp-benefit"></p>
+        <div class="marker-row">
+          <span id="insp-fuel" class="marker-pill"></span>
+          <span id="insp-insulin" class="marker-pill"></span>
+          <span id="insp-shift" class="marker-pill"></span>
+        </div>
+      </article>
+
+      <div class="filter-bar" role="group" aria-label="Filter hourly breakdown">
+        <button class="filter-chip" type="button" data-filter="all" aria-pressed="true">All (0–72h)</button>
+        <button class="filter-chip" type="button" data-filter="goal" aria-pressed="false">Up to goal</button>
+        <button class="filter-chip" type="button" data-filter="0-11" aria-pressed="false">0–11h</button>
+        <button class="filter-chip" type="button" data-filter="12-23" aria-pressed="false">12–23h</button>
+        <button class="filter-chip" type="button" data-filter="24-47" aria-pressed="false">24–47h</button>
+        <button class="filter-chip" type="button" data-filter="48-72" aria-pressed="false">48–72h</button>
+      </div>
+
+      <ol id="hourly-list" class="hourly-list"></ol>
+
+      <p class="fasting-footnote">Timing is approximate and varies with prior meals, liver glycogen stores, sleep, and activity. Drink water throughout, replace electrolytes on fasts over 24 hours, and check with a clinician before multi-day fasts.</p>
+    </section>
+
+    <section class="fast-meta" aria-label="Fasting summary">
+      <p id="stats-summary" class="today-summary">0 completed fasts</p>
+    </section>
+
+    <details id="history-drawer" class="history-drawer">
+      <summary>
+        <span>Fasting log</span>
+        <span id="history-count" class="history-count">0</span>
+      </summary>
+      <div class="history-body">
+        <p id="history-empty" class="history-empty">Completed fasts appear here. Stored locally in your browser.</p>
+        <ul id="history-list" class="history-list" hidden></ul>
+        <div class="history-actions">
+          <button id="clear-history-btn" class="btn-text" type="button" hidden>Clear fasting log</button>
+        </div>
+      </div>
+    </details>
+  </main>
+
+  <footer class="site-footer">
+    <span>Memo Garcia</span>
+    <div>
+      <a href="/tools/">All tools</a>
+      <a href="/">Blog</a>
+    </div>
+  </footer>
+
+  <script src="/tools/fasting/fasting.js"></script>
+</body>
+</html>
