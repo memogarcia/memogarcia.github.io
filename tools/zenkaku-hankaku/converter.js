@@ -577,9 +577,14 @@
   });
 
   els.swapBtn.addEventListener('click', () => {
-    if (!els.output.value) return;
     els.input.value = els.output.value;
+    for (const key of ['letters', 'digits', 'symbols', 'spaces', 'katakana', 'jpPunct']) {
+      if (rules[key] === 'full') rules[key] = 'half';
+      else if (rules[key] === 'half') rules[key] = 'full';
+    }
+    syncControlsUI();
     update();
+    savePrefs();
     els.input.focus();
   });
 

@@ -187,8 +187,32 @@
 
 .panes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.swap-btn {
+  display: grid;
+  place-items: center;
+  align-self: start;
+  margin-top: 4px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.swap-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.swap-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .pane {
@@ -414,6 +438,15 @@
 
   .panes {
     grid-template-columns: 1fr;
+  }
+
+  .swap-btn {
+    justify-self: center;
+    margin-top: 0;
+  }
+
+  .swap-btn svg {
+    transform: rotate(90deg);
   }
 
   .pane-textarea,

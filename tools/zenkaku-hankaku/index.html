@@ -141,12 +141,17 @@
         </div>
       </div>
 
+      <button id="swap-btn" class="swap-btn" type="button" aria-label="Swap input and output and reverse conversion" title="Swap input and output and reverse conversion">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 8h16m-4-4 4 4-4 4M20 16H4m4-4-4 4 4 4"/>
+        </svg>
+      </button>
+
       <div class="pane">
         <div class="pane-head">
           <label for="output-text">Output <span class="jp-tag">変換結果</span></label>
           <div class="pane-actions">
             <button id="inspect-btn" class="pane-btn" type="button" aria-pressed="false" title="Highlight full-width ASCII, full-width spaces, and half-width katakana">Inspect widths</button>
-            <button id="swap-btn" class="pane-btn" type="button" title="Move output back into input">Use output as input</button>
             <button id="copy-btn" class="pane-btn pane-btn-primary" type="button">Copy</button>
           </div>
         </div>
