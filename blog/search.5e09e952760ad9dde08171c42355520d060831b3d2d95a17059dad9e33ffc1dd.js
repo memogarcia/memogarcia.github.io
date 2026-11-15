@@ -34,3 +34,10 @@ async function search() {
   }
 }
 input.addEventListener('input', search);
+if (typeof window !== 'undefined' && typeof URLSearchParams === 'function' && window.location && window.location.search) {
+  const initial = new URLSearchParams(window.location.search).get('q');
+  if (initial) {
+    input.value = initial;
+    search();
+  }
+}

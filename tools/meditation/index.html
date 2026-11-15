@@ -3,9 +3,50 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meditation · Memo Garcia</title>
-  <meta name="description" content="A quiet meditation timer with singing bowl bells, interval chimes, optional hidden clock, ambient soundscapes, and Zen mode.">
+  <title>Meditation Timer · Singing Bowl Bells &amp; Silent Sitting</title>
+  <meta name="description" content="Distraction-free meditation timer with singing bowl, temple bell, and tingsha bells, interval chimes, optional hidden clock, ambient soundscapes, and Zen mode.">
   <link rel="canonical" href="https://memo.mx/tools/meditation/">
+  <meta property="og:site_name" content="Memo Garcia">
+  <meta property="og:title" content="Meditation Timer">
+  <meta property="og:description" content="Silent sitting timer with singing bowl bells, interval chimes, optional hidden clock, ambient soundscapes, and Zen mode.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://memo.mx/tools/meditation/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://memo.mx/img/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Meditation Timer">
+  <meta name="twitter:description" content="Silent sitting timer with singing bowl bells, interval chimes, optional hidden clock, and Zen mode.">
+  <meta name="twitter:image" content="https://memo.mx/img/og-default.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://memo.mx/tools/meditation/#app",
+        "name": "Meditation Timer",
+        "url": "https://memo.mx/tools/meditation/",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "description": "Distraction-free meditation timer with singing bowl, temple bell, and tingsha bells, interval chimes, optional hidden clock, ambient soundscapes, and Zen mode.",
+        "author": { "@type": "Person", "name": "Memo Garcia", "url": "https://memo.mx/about/" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://memo.mx/" },
+          { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://memo.mx/tools/" },
+          { "@type": "ListItem", "position": 3, "name": "Meditation", "item": "https://memo.mx/tools/meditation/" }
+        ]
+      }
+    ]
+  }
+  </script>
   <link id="favicon" rel="icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <script src="/tools/theme.js"></script>
@@ -39,7 +80,10 @@
   </button>
 
   <main id="main" class="med-main">
-    <h1 class="sr-only">Meditation Timer</h1>
+    <header class="tool-intro">
+      <h1>Meditation Timer</h1>
+      <p>Silent sitting timer with singing bowl bells, interval chimes, and optional hidden clock.</p>
+    </header>
 
     <div class="med-topbar">
       <div class="preset-tabs" role="group" aria-label="Meditation duration presets">
@@ -158,6 +202,19 @@
       <span><kbd>Z</kbd> Zen</span>
       <span><kbd>M</kbd> Sound</span>
     </p>
+
+    <section class="tool-guide" aria-label="Meditation timer guide">
+      <h2>Quiet sitting features</h2>
+      <p>Use timed presets (5m to 45m), a custom duration up to 180 minutes, or an open count-up sit. Intentions and completed sittings stay locally in your browser.</p>
+      <dl>
+        <dt>Synthesized bells &amp; intervals</dt>
+        <dd>Choose Singing bowl, Temple bell, Tingsha, Soft chime, or Silent, with 1 or 3 closing bells and optional 5-minute, 10-minute, or halfway interval chimes.</dd>
+        <dt>Ambient soundscapes &amp; settle-in prep</dt>
+        <dd>Pick Soft rain, Warm noise, Gentle wind, or Quiet stream synthesized via Web Audio, plus an optional 5s, 10s, or 15s prep countdown before the opening bell.</dd>
+        <dt>Hidden clock &amp; Zen mode</dt>
+        <dd>Press H to replace the countdown digits with a quiet still dot while sitting, and press Z to hide page chrome.</dd>
+      </dl>
+    </section>
   </main>
 
   <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
@@ -237,6 +294,8 @@
     <span>Memo Garcia</span>
     <div>
       <a href="/tools/">All tools</a>
+      <a href="/tools/breathing/">Breathing</a>
+      <a href="/tools/pomodoro/">Pomodoro</a>
       <a href="/">Blog</a>
     </div>
   </footer>
