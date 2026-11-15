@@ -2,8 +2,11 @@
   const STORAGE_KEY = 'memo-tools-breathing-v1';
   const RING_RADIUS = 158;
   const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-  const ORB_MIN_RADIUS = 56;
-  const ORB_MAX_RADIUS = 118;
+  const ORB_MIN_RADIUS = 94;
+  const ORB_MAX_RADIUS = 138;
+  const CORE_RADIUS = 92;
+  const MAX_RESTORE_OPEN_MS = 4 * 60 * 60 * 1000;
+  const MAX_RESTORE_OVERDUE_MS = 12 * 60 * 60 * 1000;
 
   const PATTERNS = {
     box: {
@@ -126,10 +129,6 @@
     const mins = Math.floor(totalSec / 60);
     const secs = totalSec % 60;
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  }
-
-  function formatPatternCadence(pattern) {
-    return pattern.phases.map((p) => `${p.seconds}s ${p.label.toLowerCase()}`).join(' · ');
   }
 
   if (typeof module !== 'undefined' && module.exports) {
@@ -405,6 +404,7 @@
     settingsBtn: document.getElementById('settings-btn'),
     liveStatus: document.getElementById('live-status'),
     todaySummary: document.getElementById('today-summary'),
+    historyDrawer: document.getElementById('history-drawer'),
     historyCount: document.getElementById('history-count'),
     historyEmpty: document.getElementById('history-empty'),
     historyList: document.getElementById('history-list'),
@@ -434,12 +434,19 @@
   const initialPattern = saved?.patternId && PATTERNS[saved.patternId] ? saved.patternId : 'box';
   const initialDurMin = Number.isInteger(saved?.durationMin) && saved.durationMin >= 0 ? saved.durationMin : 2;
   const initialCustomMin = Number.isInteger(saved?.customMin) && saved.customMin >= 1 ? saved.customMin : 3;
+  const initialIsCustomDur = typeof saved?.isCustomDur === 'boolean'
+    ? saved.isCustomDur
+    : ![2, 5, 10, 0].includes(initialDurMin);
+  const initialCueBeforeMute = typeof saved?.cueBeforeMute === 'string' && saved.cueBeforeMute !== 'off'
+    ? saved.cueBeforeMute
+    : (settings.cue !== 'off' ? settings.cue : 'tones');
 
   const state = {
     patternId: initialPattern,
     durationMin: initialDurMin, // 0 means Open
     customMin: initialCustomMin,
-    isCustomDur: ![2, 5, 10, 0].includes(initialDurMin),
+    isCustomDur: initialIsCustomDur,
+    customDurOpen: Boolean(saved?.customDurOpen),
     status: 'idle', // 'idle' | 'prep' | 'running' | 'paused' | 'complete'
     prepRemainingMs: 0,
     prepEndAt: null,
@@ -448,8 +455,12 @@
     startedClockTs: null,
     lastPhaseKey: '',
     zen: false,
-    cueBeforeMute: settings.cue !== 'off' ? settings.cue : 'tones',
+    cueBeforeMute: initialCueBeforeMute,
   };
+
+  if (els.historyDrawer) {
+    els.historyDrawer.open = Boolean(saved?.historyOpen);
+  }
 
   let rafId = null;
   let bgInterval = null;
@@ -470,13 +481,32 @@
   }
 
   function persist() {
+    const timer = state.status !== 'idle'
+      ? {
+          status: state.status,
+          patternId: state.patternId,
+          durationMin: state.durationMin,
+          elapsedMs: state.status === 'running' ? currentElapsedMs() : state.elapsedMs,
+          runAnchorTs: state.runAnchorTs,
+          prepRemainingMs: state.status === 'prep' ? currentPrepRemainingMs() : state.prepRemainingMs,
+          prepEndAt: state.prepEndAt,
+          startedClockTs: state.startedClockTs,
+          lastPhaseKey: state.lastPhaseKey,
+        }
+      : null;
+
     saveStore({
       date: todayKey(),
       patternId: state.patternId,
       durationMin: state.durationMin,
       customMin: state.customMin,
+      isCustomDur: state.isCustomDur,
+      customDurOpen: state.customDurOpen,
+      cueBeforeMute: state.cueBeforeMute,
+      historyOpen: Boolean(els.historyDrawer?.open),
       settings,
       sessions,
+      timer,
     });
   }
 
@@ -544,8 +574,8 @@
 
   function renderOrb(radius) {
     els.breathOrb.setAttribute('r', radius.toFixed(2));
-    els.breathHalo.setAttribute('r', (radius + 14).toFixed(2));
-    els.breathCore.setAttribute('r', Math.max(36, radius * 0.72).toFixed(2));
+    els.breathHalo.setAttribute('r', (radius + 12).toFixed(2));
+    els.breathCore.setAttribute('r', String(CORE_RADIUS));
   }
 
   function renderDial() {
@@ -555,12 +585,12 @@
 
     if (state.status === 'idle') {
       els.body.dataset.phaseKind = 'ready';
-      renderOrb(64);
+      renderOrb(98);
       els.progressRing.style.strokeDashoffset = `${RING_CIRCUMFERENCE}`;
       els.eyebrow.textContent = pattern.name;
       els.action.textContent = 'Ready';
       els.timer.textContent = state.durationMin > 0 ? formatMMSS(totalTarget) : 'Open';
-      els.sessionLine.textContent = `${cycleMs / 1000}s cycle · ${formatPatternCadence(pattern)}`;
+      els.sessionLine.textContent = `${cycleMs / 1000}s cycle · ${pattern.ratio}`;
       updatePhaseStrip(-1, 0);
       document.title = 'Breathing · Memo Garcia';
       updateFavicon(0, pattern.id, 'idle');
@@ -571,13 +601,13 @@
       els.body.dataset.phaseKind = 'prep';
       const prepRem = currentPrepRemainingMs();
       const prepSec = Math.max(1, Math.ceil(prepRem / 1000));
-      renderOrb(64);
+      renderOrb(98);
       const prepFrac = settings.prepSec > 0 ? 1 - prepRem / (settings.prepSec * 1000) : 1;
       els.progressRing.style.strokeDashoffset = `${(RING_CIRCUMFERENCE * (1 - prepFrac)).toFixed(2)}`;
       els.eyebrow.textContent = pattern.name;
       els.action.textContent = 'Settle in';
       els.timer.textContent = String(prepSec);
-      els.sessionLine.textContent = 'Relax your shoulders and jaw';
+      els.sessionLine.textContent = 'Relax shoulders & jaw';
       updatePhaseStrip(-1, 0);
       document.title = `Settle (${prepSec}) · Breathing`;
       updateFavicon(prepFrac, pattern.id, 'prep');
@@ -586,13 +616,13 @@
 
     if (state.status === 'complete') {
       els.body.dataset.phaseKind = 'complete';
-      renderOrb(78);
+      renderOrb(118);
       els.progressRing.style.strokeDashoffset = '0';
       els.eyebrow.textContent = pattern.name;
       els.action.textContent = 'Complete';
       els.timer.textContent = formatMMSS(state.elapsedMs);
       const cycles = Math.max(1, Math.round(state.elapsedMs / cycleMs));
-      els.sessionLine.textContent = `${cycles} ${cycles === 1 ? 'cycle' : 'cycles'} completed`;
+      els.sessionLine.textContent = `${cycles} ${cycles === 1 ? 'cycle' : 'cycles'} done`;
       updatePhaseStrip(-1, 0);
       document.title = `Done · ${pattern.shortName} · Memo Garcia`;
       updateFavicon(1, pattern.id, 'complete');
@@ -699,7 +729,7 @@
       chip.setAttribute('aria-pressed', String(pressed));
     });
 
-    els.customDurWrap.hidden = !state.isCustomDur || state.status === 'running' || state.status === 'prep';
+    els.customDurWrap.hidden = !state.customDurOpen || state.status === 'running' || state.status === 'prep';
     els.customDurInput.value = String(state.customMin);
 
     if (state.status === 'running' || state.status === 'prep') {
@@ -723,12 +753,12 @@
     renderDial();
   }
 
-  function recordSession(elapsedMs) {
+  function recordSession(elapsedMs, endedAt = Date.now()) {
     const seconds = Math.max(1, Math.round(elapsedMs / 1000));
     const pattern = PATTERNS[state.patternId];
     sessions.push({
       day: todayKey(),
-      time: formatClockTime(Date.now()),
+      time: formatClockTime(endedAt),
       patternId: pattern.id,
       patternName: `${pattern.name} (${pattern.ratio})`,
       seconds,
@@ -782,6 +812,7 @@
           audio.startAmbient(settings.ambient, settings.volume);
         }
         renderChrome();
+        persist();
       } else if (renderVisuals) {
         renderDial();
       }
@@ -845,6 +876,7 @@
         audio.playPhaseCue('prep', settings.cue, settings.volume);
         renderChrome();
         startLoop();
+        persist();
         announce(`Settle in for ${settings.prepSec} seconds.`);
         return;
       }
@@ -872,6 +904,7 @@
     }
     renderChrome();
     startLoop();
+    persist();
   }
 
   function pauseBreathing() {
@@ -887,6 +920,7 @@
     audio.stopAmbient();
     state.status = 'paused';
     renderChrome();
+    persist();
     announce('Breathing paused.');
   }
 
@@ -898,8 +932,10 @@
     state.prepEndAt = null;
     state.elapsedMs = 0;
     state.runAnchorTs = null;
+    state.startedClockTs = null;
     state.lastPhaseKey = '';
     renderChrome();
+    persist();
     announce('Breathing pacer reset.');
   }
 
@@ -913,6 +949,7 @@
     state.prepEndAt = null;
     state.elapsedMs = 0;
     state.runAnchorTs = null;
+    state.startedClockTs = null;
     state.lastPhaseKey = '';
     buildPhaseStrip();
     renderChrome();
@@ -923,6 +960,7 @@
   function setDuration(minutes, isCustom = false) {
     state.durationMin = minutes;
     state.isCustomDur = isCustom;
+    state.customDurOpen = false;
     if (isCustom) {
       state.customMin = minutes;
     }
@@ -930,8 +968,8 @@
       resetBreathing();
     } else {
       renderChrome();
+      persist();
     }
-    persist();
   }
 
   function toggleSound() {
@@ -996,13 +1034,17 @@
     chip.addEventListener('click', () => {
       const dur = chip.dataset.dur;
       if (dur === 'custom') {
+        const opening = !(state.isCustomDur && state.customDurOpen);
         state.isCustomDur = true;
-        state.durationMin = Math.max(1, Math.min(60, Number(els.customDurInput.value) || state.customMin));
+        state.customDurOpen = opening;
+        state.durationMin = Math.max(1, Math.min(60, Math.round(Number(els.customDurInput.value)) || state.customMin));
         state.customMin = state.durationMin;
         if (state.status !== 'idle') resetBreathing();
-        else renderChrome();
-        persist();
-        els.customDurInput.focus();
+        else {
+          renderChrome();
+          persist();
+        }
+        if (opening) els.customDurInput.focus();
       } else {
         setDuration(Number(dur), false);
       }
@@ -1019,6 +1061,11 @@
     if (e.key === 'Enter') {
       e.preventDefault();
       els.customDurApply.click();
+    } else if (e.key === 'Escape') {
+      state.customDurOpen = false;
+      els.customDurInput.blur();
+      renderChrome();
+      persist();
     }
   });
 
@@ -1120,12 +1167,138 @@
     }
   });
 
+  els.historyDrawer?.addEventListener('toggle', () => {
+    persist();
+  });
+
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && (state.status === 'running' || state.status === 'prep')) {
+    if (document.hidden) {
+      persist();
+    } else if (state.status === 'running' || state.status === 'prep') {
       advanceTick(true);
     }
   });
 
+  window.addEventListener('pagehide', persist);
+  window.addEventListener('beforeunload', persist);
+
+  function armAudioUnlockForRestoredTimer() {
+    const unlock = () => {
+      audio.ensureContext();
+      if (state.status === 'running' && settings.ambient !== 'off') {
+        audio.startAmbient(settings.ambient, settings.volume);
+      }
+    };
+    document.addEventListener('pointerdown', unlock, { once: true });
+    document.addEventListener('keydown', unlock, { once: true });
+  }
+
+  function restoreTimer() {
+    const t = saved?.timer;
+    if (!t || typeof t !== 'object') return;
+    if (t.patternId && PATTERNS[t.patternId]) {
+      state.patternId = t.patternId;
+    }
+    if (Number.isInteger(t.durationMin) && t.durationMin >= 0) {
+      state.durationMin = t.durationMin;
+    }
+    const goalMs = targetMs();
+    const now = Date.now();
+
+    if (t.status === 'complete') {
+      if (saved?.date === today && Number(t.elapsedMs) > 0) {
+        state.status = 'complete';
+        state.elapsedMs = Number(t.elapsedMs);
+      }
+      return;
+    }
+
+    if (t.status === 'paused') {
+      const remPrep = Math.max(0, Number(t.prepRemainingMs) || 0);
+      const elapsed = Math.max(0, Number(t.elapsedMs) || 0);
+      if (remPrep > 0 || elapsed > 0) {
+        state.status = 'paused';
+        state.prepRemainingMs = remPrep;
+        state.elapsedMs = goalMs > 0 ? Math.min(goalMs, elapsed) : elapsed;
+        state.startedClockTs = typeof t.startedClockTs === 'number' ? t.startedClockTs : null;
+        state.lastPhaseKey = typeof t.lastPhaseKey === 'string' ? t.lastPhaseKey : '';
+      }
+      return;
+    }
+
+    if (t.status === 'prep') {
+      const prepEndAt = typeof t.prepEndAt === 'number' ? t.prepEndAt : null;
+      if (prepEndAt !== null && prepEndAt > now) {
+        state.status = 'prep';
+        state.prepEndAt = prepEndAt;
+        state.prepRemainingMs = prepEndAt - now;
+        state.startedClockTs = typeof t.startedClockTs === 'number' ? t.startedClockTs : now;
+        armAudioUnlockForRestoredTimer();
+        startLoop();
+        return;
+      }
+      if (prepEndAt !== null) {
+        const overrun = Math.max(0, now - prepEndAt);
+        if (goalMs > 0 && overrun >= goalMs) {
+          if (overrun - goalMs < MAX_RESTORE_OVERDUE_MS) {
+            const finishedAt = prepEndAt + goalMs;
+            if (todayKey(new Date(finishedAt)) === today) {
+              recordSession(goalMs, finishedAt);
+            }
+            state.status = 'complete';
+            state.elapsedMs = goalMs;
+          }
+          persist();
+          return;
+        }
+        if (goalMs === 0 && overrun > MAX_RESTORE_OPEN_MS) {
+          persist();
+          return;
+        }
+        state.status = 'running';
+        state.runAnchorTs = prepEndAt;
+        state.elapsedMs = overrun;
+        state.startedClockTs = typeof t.startedClockTs === 'number' ? t.startedClockTs : prepEndAt;
+        const info = getPhaseAtElapsed(state.patternId, overrun);
+        state.lastPhaseKey = info ? `${info.cycleIndex}:${info.phaseIndex}` : '';
+        armAudioUnlockForRestoredTimer();
+        startLoop();
+        persist();
+      }
+      return;
+    }
+
+    if (t.status === 'running') {
+      const anchor = typeof t.runAnchorTs === 'number' ? t.runAnchorTs : null;
+      const elapsed = anchor !== null ? Math.max(0, now - anchor) : Math.max(0, Number(t.elapsedMs) || 0);
+      if (goalMs > 0 && elapsed >= goalMs) {
+        if (elapsed - goalMs < MAX_RESTORE_OVERDUE_MS) {
+          const finishedAt = (anchor ?? now - elapsed) + goalMs;
+          if (todayKey(new Date(finishedAt)) === today) {
+            recordSession(goalMs, finishedAt);
+          }
+          state.status = 'complete';
+          state.elapsedMs = goalMs;
+        }
+        persist();
+        return;
+      }
+      if (goalMs === 0 && elapsed > MAX_RESTORE_OPEN_MS) {
+        persist();
+        return;
+      }
+      state.status = 'running';
+      state.runAnchorTs = anchor ?? (now - elapsed);
+      state.elapsedMs = elapsed;
+      state.startedClockTs = typeof t.startedClockTs === 'number' ? t.startedClockTs : state.runAnchorTs;
+      const info = getPhaseAtElapsed(state.patternId, elapsed);
+      state.lastPhaseKey = info ? `${info.cycleIndex}:${info.phaseIndex}` : '';
+      armAudioUnlockForRestoredTimer();
+      startLoop();
+    }
+  }
+
+  restoreTimer();
   buildPhaseStrip();
   renderChrome();
 })(typeof window !== 'undefined' ? window : globalThis);

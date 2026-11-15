@@ -86,7 +86,7 @@ html, body {
 }
 
 body {
-  max-width: 960px;
+  max-width: 880px;
   margin: auto;
   padding: 0 40px 40px;
   position: relative;
@@ -164,7 +164,7 @@ summary:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 12px 24px;
-  min-height: 96px;
+  min-height: 112px;
 }
 
 .wordmark {
@@ -357,13 +357,13 @@ summary:focus-visible {
   text-decoration: underline;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 600px) {
   body {
     padding: 0 20px 28px;
   }
 
   .site-header {
-    min-height: 76px;
+    min-height: 96px;
     gap: 12px;
     padding-block: 12px;
   }

@@ -340,6 +340,7 @@
     settingsBtn: document.getElementById('settings-btn'),
     liveStatus: document.getElementById('live-status'),
     statsSummary: document.getElementById('stats-summary'),
+    historyDrawer: document.getElementById('history-drawer'),
     historyCount: document.getElementById('history-count'),
     historyEmpty: document.getElementById('history-empty'),
     historyList: document.getElementById('history-list'),
@@ -382,13 +383,23 @@
   const settings = { ...DEFAULT_SETTINGS, ...(saved?.settings || {}) };
   let sessions = Array.isArray(saved?.sessions) ? saved.sessions : [];
 
+  const MAX_RESTORE_OPEN_MS = 12 * 60 * 60 * 1000;
+  const MAX_RESTORE_OVERDUE_MS = 24 * 60 * 60 * 1000;
+
   const initialMin = Number.isInteger(saved?.durationMin) && saved.durationMin >= 0 ? saved.durationMin : 10;
   const initialCustomMin = Number.isInteger(saved?.customMin) && saved.customMin >= 1 ? saved.customMin : 25;
+  const initialIsCustom = typeof saved?.isCustom === 'boolean'
+    ? saved.isCustom
+    : !PRESET_MINUTES.includes(initialMin);
+  const initialBellBeforeMute = typeof saved?.bellBeforeMute === 'string' && saved.bellBeforeMute !== 'off'
+    ? saved.bellBeforeMute
+    : (settings.bell !== 'off' ? settings.bell : 'bowl');
 
   const state = {
     durationMin: initialMin, // 0 = Open
     customMin: initialCustomMin,
-    isCustom: !PRESET_MINUTES.includes(initialMin),
+    isCustom: initialIsCustom,
+    customOpen: Boolean(saved?.customOpen),
     status: 'idle', // 'idle' | 'prep' | 'running' | 'paused' | 'complete'
     prepRemainingMs: 0,
     prepEndAt: null,
@@ -398,8 +409,12 @@
     firedIntervals: new Set(),
     note: typeof saved?.note === 'string' ? saved.note : '',
     zen: false,
-    bellBeforeMute: settings.bell !== 'off' ? settings.bell : 'bowl',
+    bellBeforeMute: initialBellBeforeMute,
   };
+
+  if (els.historyDrawer) {
+    els.historyDrawer.open = Boolean(saved?.historyOpen);
+  }
 
   els.noteInput.value = state.note;
 
@@ -423,12 +438,30 @@
   }
 
   function persist() {
+    const timer = state.status !== 'idle'
+      ? {
+          status: state.status,
+          durationMin: state.durationMin,
+          elapsedMs: state.status === 'running' ? currentElapsedMs() : state.elapsedMs,
+          runAnchorTs: state.runAnchorTs,
+          prepRemainingMs: state.status === 'prep' ? currentPrepRemainingMs() : state.prepRemainingMs,
+          prepEndAt: state.prepEndAt,
+          startedAt: state.startedAt,
+          firedIntervals: [...state.firedIntervals],
+        }
+      : null;
+
     saveStore({
       durationMin: state.durationMin,
       customMin: state.customMin,
+      isCustom: state.isCustom,
+      customOpen: state.customOpen,
+      bellBeforeMute: state.bellBeforeMute,
+      historyOpen: Boolean(els.historyDrawer?.open),
       settings,
       note: state.note,
       sessions: sessions.slice(-100),
+      timer,
     });
   }
 
@@ -595,7 +628,7 @@
       }
     });
 
-    els.customMinWrap.hidden = !state.isCustom || state.status === 'running' || state.status === 'prep';
+    els.customMinWrap.hidden = !state.customOpen || state.status === 'running' || state.status === 'prep';
     els.customMinInput.value = String(state.customMin);
 
     els.quickPrep.value = String(settings.prepSec);
@@ -636,6 +669,18 @@
     }
   }
 
+  function recordSitSession(elapsedMs, endedAt = Date.now()) {
+    const minutes = Math.max(1, Math.round(elapsedMs / 60_000));
+    sessions.push({
+      day: todayKey(),
+      time: formatClockTime(endedAt),
+      minutes,
+      open: state.durationMin === 0,
+      note: state.note.trim(),
+    });
+    return minutes;
+  }
+
   function finishSit(playClosingBell = true) {
     stopLoop();
     audio.stopAmbient();
@@ -643,14 +688,7 @@
       audio.playBell(settings.bell, settings.volume, settings.endBells, false);
     }
 
-    const minutes = Math.max(1, Math.round(state.elapsedMs / 60_000));
-    sessions.push({
-      day: todayKey(),
-      time: formatClockTime(Date.now()),
-      minutes,
-      open: state.durationMin === 0,
-      note: state.note.trim(),
-    });
+    const minutes = recordSitSession(state.elapsedMs);
     sendNotification('Meditation complete', `${minutes} minute sit finished.`);
 
     state.status = 'complete';
@@ -690,6 +728,7 @@
           audio.startAmbient(settings.ambient, settings.volume);
         }
         renderChrome();
+        persist();
         announce('Opening bell. Sit started.');
       } else if (renderVisuals) {
         renderDial();
@@ -747,6 +786,7 @@
         state.prepEndAt = Date.now() + state.prepRemainingMs;
         renderChrome();
         startLoop();
+        persist();
         announce(`Settle in for ${settings.prepSec} seconds.`);
         return;
       }
@@ -761,6 +801,7 @@
       }
       renderChrome();
       startLoop();
+      persist();
       announce('Meditation started.');
       return;
     }
@@ -778,6 +819,7 @@
       }
       renderChrome();
       startLoop();
+      persist();
       announce('Meditation resumed.');
     }
   }
@@ -795,6 +837,7 @@
     audio.stopAmbient();
     state.status = 'paused';
     renderChrome();
+    persist();
     announce('Meditation paused.');
   }
 
@@ -806,18 +849,23 @@
     state.prepEndAt = null;
     state.elapsedMs = 0;
     state.runAnchorTs = null;
+    state.startedAt = null;
     state.firedIntervals.clear();
     renderChrome();
+    persist();
     announce('Meditation timer reset.');
   }
 
-  function setDuration(minutes, isCustom = false) {
+  function setDuration(minutes, isCustom = false, customOpen = false) {
     state.durationMin = minutes;
     state.isCustom = isCustom;
+    state.customOpen = customOpen;
     if (isCustom) state.customMin = minutes;
     if (state.status !== 'idle') resetSit();
-    else renderChrome();
-    persist();
+    else {
+      renderChrome();
+      persist();
+    }
   }
 
   function toggleSound() {
@@ -857,7 +905,10 @@
     }
     if (Notification.permission === 'denied') {
       els.optNotifyBtn.textContent = 'Blocked in browser';
-      settings.notify = false;
+      if (settings.notify) {
+        settings.notify = false;
+        persist();
+      }
       return;
     }
     els.optNotifyBtn.textContent = settings.notify && Notification.permission === 'granted' ? 'On' : 'Off';
@@ -885,11 +936,12 @@
     btn.addEventListener('click', () => {
       const val = btn.dataset.min;
       if (val === 'custom') {
+        const opening = !(state.isCustom && state.customOpen);
         const mins = clampCustomMinutes(els.customMinInput.value || state.customMin);
-        setDuration(mins, true);
-        els.customMinInput.focus();
+        setDuration(mins, true, opening);
+        if (opening) els.customMinInput.focus();
       } else {
-        setDuration(Number(val), false);
+        setDuration(Number(val), false, false);
       }
     });
   });
@@ -897,13 +949,18 @@
   els.customMinApply.addEventListener('click', () => {
     const mins = clampCustomMinutes(els.customMinInput.value);
     els.customMinInput.value = String(mins);
-    setDuration(mins, true);
+    setDuration(mins, true, false);
   });
 
   els.customMinInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       els.customMinApply.click();
+    } else if (e.key === 'Escape') {
+      state.customOpen = false;
+      els.customMinInput.blur();
+      renderChrome();
+      persist();
     }
   });
 
@@ -1045,8 +1102,14 @@
     }
   });
 
+  els.historyDrawer?.addEventListener('toggle', () => {
+    persist();
+  });
+
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && (state.status === 'running' || state.status === 'prep')) {
+    if (document.hidden) {
+      persist();
+    } else if (state.status === 'running' || state.status === 'prep') {
       advanceTick(true);
     }
   });
@@ -1055,10 +1118,133 @@
     if (state.status === 'idle') renderDial();
   }, 15_000);
 
+  window.addEventListener('pagehide', persist);
   window.addEventListener('beforeunload', () => {
     clearInterval(idleInterval);
     persist();
   });
 
+  function seedPassedIntervals(elapsed) {
+    if (state.durationMin === 0 || settings.intervalMode === 'off') return;
+    const marks = computeIntervalTimestampsMs(state.durationMin, settings.intervalMode);
+    for (const mark of marks) {
+      if (elapsed >= mark) state.firedIntervals.add(mark);
+    }
+  }
+
+  function armAudioUnlockForRestoredTimer() {
+    const unlock = () => {
+      audio.ensureContext();
+      if (state.status === 'running' && settings.ambient !== 'off') {
+        audio.startAmbient(settings.ambient, settings.volume);
+      }
+    };
+    document.addEventListener('pointerdown', unlock, { once: true });
+    document.addEventListener('keydown', unlock, { once: true });
+  }
+
+  function restoreTimer() {
+    const t = saved?.timer;
+    if (!t || typeof t !== 'object') return;
+    if (Number.isInteger(t.durationMin) && t.durationMin >= 0) {
+      state.durationMin = t.durationMin;
+    }
+    const goal = targetMs();
+    const now = Date.now();
+    const savedFired = Array.isArray(t.firedIntervals)
+      ? t.firedIntervals.filter((n) => typeof n === 'number')
+      : [];
+
+    if (t.status === 'complete') {
+      if (Number(t.elapsedMs) > 0 && (typeof t.startedAt !== 'number' || now - t.startedAt < MAX_RESTORE_OVERDUE_MS)) {
+        state.status = 'complete';
+        state.elapsedMs = Number(t.elapsedMs);
+        state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : null;
+      }
+      return;
+    }
+
+    if (t.status === 'paused') {
+      const remPrep = Math.max(0, Number(t.prepRemainingMs) || 0);
+      const elapsed = Math.max(0, Number(t.elapsedMs) || 0);
+      if (remPrep > 0 || elapsed > 0) {
+        state.status = 'paused';
+        state.prepRemainingMs = remPrep;
+        state.elapsedMs = goal > 0 ? Math.min(goal, elapsed) : elapsed;
+        state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : null;
+        state.firedIntervals = new Set(savedFired);
+        seedPassedIntervals(state.elapsedMs);
+      }
+      return;
+    }
+
+    if (t.status === 'prep') {
+      const prepEndAt = typeof t.prepEndAt === 'number' ? t.prepEndAt : null;
+      if (prepEndAt !== null && prepEndAt > now) {
+        state.status = 'prep';
+        state.prepEndAt = prepEndAt;
+        state.prepRemainingMs = prepEndAt - now;
+        state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : now;
+        armAudioUnlockForRestoredTimer();
+        startLoop();
+        return;
+      }
+      if (prepEndAt !== null) {
+        const overrun = Math.max(0, now - prepEndAt);
+        if (goal > 0 && overrun >= goal) {
+          if (overrun - goal < MAX_RESTORE_OVERDUE_MS) {
+            const finishedAt = prepEndAt + goal;
+            recordSitSession(goal, finishedAt);
+            state.status = 'complete';
+            state.elapsedMs = goal;
+          }
+          persist();
+          return;
+        }
+        if (goal === 0 && overrun > MAX_RESTORE_OPEN_MS) {
+          persist();
+          return;
+        }
+        state.status = 'running';
+        state.runAnchorTs = prepEndAt;
+        state.elapsedMs = overrun;
+        state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : prepEndAt;
+        seedPassedIntervals(overrun);
+        armAudioUnlockForRestoredTimer();
+        startLoop();
+        persist();
+      }
+      return;
+    }
+
+    if (t.status === 'running') {
+      const anchor = typeof t.runAnchorTs === 'number' ? t.runAnchorTs : null;
+      const elapsed = anchor !== null ? Math.max(0, now - anchor) : Math.max(0, Number(t.elapsedMs) || 0);
+      if (goal > 0 && elapsed >= goal) {
+        if (elapsed - goal < MAX_RESTORE_OVERDUE_MS) {
+          const finishedAt = (anchor ?? now - elapsed) + goal;
+          recordSitSession(goal, finishedAt);
+          state.status = 'complete';
+          state.elapsedMs = goal;
+        }
+        persist();
+        return;
+      }
+      if (goal === 0 && elapsed > MAX_RESTORE_OPEN_MS) {
+        persist();
+        return;
+      }
+      state.status = 'running';
+      state.runAnchorTs = anchor ?? (now - elapsed);
+      state.elapsedMs = elapsed;
+      state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : state.runAnchorTs;
+      state.firedIntervals = new Set(savedFired);
+      seedPassedIntervals(elapsed);
+      armAudioUnlockForRestoredTimer();
+      startLoop();
+    }
+  }
+
+  restoreTimer();
   renderChrome();
 })(typeof window !== 'undefined' ? window : globalThis);
