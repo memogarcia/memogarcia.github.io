@@ -1,5 +1,6 @@
 ((globalScope) => {
   const STORAGE_KEY = 'memo-tools-fasting-v1';
+  const BASE_TITLE = (typeof document !== 'undefined' && document.title) ? document.title : 'Fasting · Memo Garcia';
   const RING_RADIUS = 158;
   const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
@@ -700,7 +701,7 @@
         ? `Start time: ${formatShortDateTime(state.plannedStartTime)}`
         : 'Start time: Now';
 
-      document.title = 'Fasting · Memo Garcia';
+      document.title = BASE_TITLE;
       renderSpotlight({ currentHour: 0, minutesIntoHour: 0, goalReached: false });
       updateFavicon(previewProgress, 'digestion', false);
       return;

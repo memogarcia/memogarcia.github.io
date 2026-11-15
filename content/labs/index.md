@@ -1,7 +1,7 @@
 ---
 title: "Labs"
 draft: false
-description: "Hands-on training guides."
+description: "Hands-on multi-region Kubernetes, GitOps with Argo CD, Istio service mesh, AWS IAM identity, CI/CD, progressive delivery, chaos testing, and load testing training guides."
 ---
 
 1. [Multi Region Cloud Training Lab Overview](/posts/multi-region-learning/)

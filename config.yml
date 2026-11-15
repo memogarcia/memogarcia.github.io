@@ -13,6 +13,7 @@ enableGitInfo: true
 enableInlineShortcodes: true
 enableRobotsTXT: true
 buildDrafts: false
+disableKinds: ["taxonomy", "term"]
 buildFuture: false
 buildExpired: false
 enableEmoji: true
@@ -46,6 +47,7 @@ minify:
 languages:
   en:
     languageName: "English"
+    languageCode: "en-US"
     weight: 1
     menu:
       main:
@@ -90,19 +92,21 @@ related:
 
 params:
   env: production
-  description: "Memo's personal blog"
+  description: "Engineering notes on distributed systems, software craft, AI tooling, and quiet local-first web utilities by Memo Garcia."
   author: "Memo Garcia"
-  keywords: ["software engineer", "devops", "cloud", "kubernetes", "python"]
+  keywords: ["software engineering", "distributed systems", "cloud infrastructure", "AI coding tools", "developer tools"]
   
   # SEO & Open Graph
-  images: ["apple-touch-icon.png"]
-  ogImage: "/apple-touch-icon.png"
+  images: ["/img/og-default.png"]
+  ogImage: "/img/og-default.png"
   locale: en_US
   
   # Schema.org
   schema:
     publisherType: Person
     siteType: Blog
+    sameAs:
+      - "https://mastodon.social/@__warlord__"
     
   # Security Headers (for Netlify/Vercel deployment)
   headers:

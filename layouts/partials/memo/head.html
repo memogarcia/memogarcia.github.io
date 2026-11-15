@@ -1,18 +1,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ if not .IsHome }}{{ .Title }} · {{ end }}{{ site.Title }}</title>
-{{ $description := site.Params.description }}
-{{ if .IsPage }}{{ $description = .Summary | plainify | truncate 180 }}{{ end }}
-{{ with .Description }}{{ $description = . }}{{ end }}
+{{- $title := site.Title -}}
+{{- if not .IsHome -}}
+  {{- if gt (len .Title) 55 -}}
+    {{- $title = .Title -}}
+  {{- else -}}
+    {{- $title = printf "%s · %s" .Title site.Title -}}
+  {{- end -}}
+{{- end }}
+<title>{{ $title }}</title>
+{{- $description := site.Params.description -}}
+{{- if eq .Layout "search" -}}
+  {{- $description = "Search all essays, notes, short stories, and lab guides on memo.mx." -}}
+{{- else if eq .Layout "archives" -}}
+  {{- $description = "Complete chronological archive of posts and short stories on memo.mx." -}}
+{{- else if eq .Kind "404" -}}
+  {{- $description = "Page not found on memo.mx. Browse recent posts, short stories, labs, or search the site." -}}
+{{- else if .IsPage -}}
+  {{- $sum := .Summary | replaceRE `(?is)<figure[^>]*class="[^"]*code-block[^"]*"[^>]*>.*?</figure>` " " | replaceRE `(?is)<figcaption[^>]*>.*?</figcaption>` " " | replaceRE `(?is)<pre[^>]*>.*?</pre>` " " | replaceRE `(?is)<(iframe|script|style)[^>]*>.*?</(iframe|script|style)>` " " | plainify | htmlUnescape | replaceRE `\s+` " " | replaceRE `^\s+|\s+$` "" -}}
+  {{- if not $sum -}}
+    {{- $sum = .Content | replaceRE `(?is)<figure[^>]*>.*?</figure>` " " | replaceRE `(?is)<(pre|figcaption|iframe|script|style)[^>]*>.*?</(pre|figcaption|iframe|script|style)>` " " | plainify | htmlUnescape | replaceRE `\s+` " " | replaceRE `^\s+|\s+$` "" -}}
+  {{- end -}}
+  {{- if $sum -}}
+    {{- $description = $sum | truncate 160 -}}
+  {{- else -}}
+    {{- $description = printf "%s, by %s on %s." .Title site.Params.author site.Title -}}
+  {{- end -}}
+{{- else if eq .Kind "section" -}}
+  {{- $sec := .Content | plainify | htmlUnescape | replaceRE `\s+` " " | replaceRE `^\s+|\s+$` "" -}}
+  {{- if $sec -}}
+    {{- $description = $sec | truncate 160 -}}
+  {{- else -}}
+    {{- $description = printf "%s by %s on %s." .Title site.Params.author site.Title -}}
+  {{- end -}}
+{{- end -}}
+{{- with .Description }}{{ $description = . }}{{ end }}
 <meta name="description" content="{{ $description }}">
-{{ if or (not hugo.IsProduction) .Draft .Params.robotsNoIndex }}<meta name="robots" content="noindex, nofollow">{{ end }}
-<link rel="canonical" href="{{ .Params.canonicalURL | default .Permalink }}">
+{{- $canonical := .Params.canonicalURL | default .Permalink -}}
+{{- if or (not hugo.IsProduction) .Draft .Params.robotsNoIndex (eq .Layout "search") (eq .Kind "404") }}
+<meta name="robots" content="noindex, nofollow">
+{{- end }}
+<link rel="canonical" href="{{ $canonical }}">
 {{ if partial "memo/comments-enabled.html" . }}
 <meta name="giscus:backlink" content="{{ .Permalink }}">
 {{ end }}
 <link rel="icon" href="{{ "favicon.ico" | relURL }}">
 <link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}">
-{{ range .AlternativeOutputFormats }}<link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink }}">{{ end }}
+<link rel="preload" href="{{ "fonts/source-serif-4/roman.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+{{ with .OutputFormats.Get "RSS" }}<link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink }}" title="{{ site.Title }}">{{ end }}
 {{ $theme := resources.Get "blog/theme.js" | fingerprint }}
 <script src="{{ $theme.RelPermalink }}"></script>
 {{ $style := resources.Get "blog/style.css" | fingerprint }}
@@ -31,13 +66,95 @@
   {{ $search := resources.Get "blog/search.js" | fingerprint }}
   <script src="{{ $search.RelPermalink }}" defer></script>
 {{ end }}
-{{ template "_internal/opengraph.html" . }}
-{{ template "_internal/twitter_cards.html" . }}
-{{ $schema := dict "@context" "https://schema.org" "@type" "WebSite" "name" site.Title "url" site.BaseURL }}
-{{ if and .IsPage (eq .Section "posts") }}
-  {{ $schema = dict "@context" "https://schema.org" "@type" "BlogPosting" "headline" .Title "url" .Permalink "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00") "author" (dict "@type" "Person" "name" site.Params.author) }}
-{{ end }}
-<script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+{{- $ogImagePath := site.Params.ogImage | default "/img/og-default.png" -}}
+{{- $matchedImg := "" -}}
+{{- if .IsPage -}}
+  {{- range (findRE `(?i)src="(/img/[^"]+\.(png|jpe?g|webp))"` .Content) -}}
+    {{- if not $matchedImg -}}
+      {{- $p := replaceRE `(?i)^src="([^"]+)"$` "$1" . -}}
+      {{- $trimmed := strings.TrimPrefix "/" $p -}}
+      {{- if or (fileExists (printf "static/%s" $trimmed)) (fileExists (printf "content/%s" $trimmed)) -}}
+        {{- $matchedImg = $p -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with .Params.images -}}
+  {{- if gt (len .) 0 }}{{ $ogImagePath = index . 0 }}{{ end -}}
+{{- else -}}
+  {{- with $matchedImg }}{{ $ogImagePath = . }}{{ end -}}
+{{- end -}}
+{{- $ogTrimmed := strings.TrimPrefix "/" $ogImagePath -}}
+{{- $ogImage := $ogTrimmed | absURL -}}
+{{- $ogDiskPath := "" -}}
+{{- if fileExists (printf "static/%s" $ogTrimmed) -}}
+  {{- $ogDiskPath = printf "static/%s" $ogTrimmed -}}
+{{- else if fileExists (printf "content/%s" $ogTrimmed) -}}
+  {{- $ogDiskPath = printf "content/%s" $ogTrimmed -}}
+{{- end -}}
+{{- $ogTitle := site.Title -}}
+{{- if not .IsHome }}{{ $ogTitle = .Title }}{{ end -}}
+{{- $ogType := "website" -}}
+{{- if and .IsPage (or (eq .Section "posts") (eq .Section "stories")) }}{{ $ogType = "article" }}{{ end }}
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ $ogTitle }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:type" content="{{ $ogType }}">
+<meta property="og:url" content="{{ $canonical }}">
+<meta property="og:locale" content="{{ site.Params.locale | default "en_US" }}">
+<meta property="og:image" content="{{ $ogImage }}">
+{{- if and $ogDiskPath (not (strings.HasSuffix (lower $ogDiskPath) ".svg")) }}
+  {{- with (imageConfig $ogDiskPath) }}
+<meta property="og:image:width" content="{{ .Width }}">
+<meta property="og:image:height" content="{{ .Height }}">
+  {{- end }}
+{{- end }}
+{{- if eq $ogType "article" }}
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+  {{- with site.Params.author }}
+<meta property="article:author" content="{{ . }}">
+  {{- end }}
+{{- end }}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $ogTitle }}">
+<meta name="twitter:description" content="{{ $description }}">
+<meta name="twitter:image" content="{{ $ogImage }}">
+{{- $authorName := site.Params.author | default site.Title -}}
+{{- $personID := printf "%s#person" site.BaseURL -}}
+{{- $websiteID := printf "%s#website" site.BaseURL -}}
+{{- $person := dict "@type" "Person" "@id" $personID "name" $authorName "url" ("about/" | absURL) -}}
+{{- with site.Params.schema.sameAs -}}
+  {{- $person = merge $person (dict "sameAs" .) -}}
+{{- end -}}
+{{- $searchAction := dict "@type" "SearchAction" "target" (dict "@type" "EntryPoint" "urlTemplate" (printf "%s?q={search_term_string}" ("search/" | absURL))) "query-input" "required name=search_term_string" -}}
+{{- $website := dict "@type" "WebSite" "@id" $websiteID "name" site.Title "url" site.BaseURL "description" site.Params.description "inLanguage" "en-US" "publisher" (dict "@id" $personID) "potentialAction" $searchAction -}}
+{{- $graph := slice $person $website -}}
+{{- if and .IsPage (or (eq .Section "posts") (eq .Section "stories")) -}}
+  {{- $postSchema := dict "@type" "BlogPosting" "@id" (printf "%s#article" .Permalink) "headline" .Title "description" $description "url" .Permalink "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink) "isPartOf" (dict "@id" $websiteID) "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00") "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00") "inLanguage" "en-US" "wordCount" .WordCount "image" $ogImage "author" (dict "@id" $personID) "publisher" (dict "@id" $personID) -}}
+  {{- $graph = $graph | append $postSchema -}}
+{{- else if eq .RelPermalink "/about/" -}}
+  {{- $profileSchema := dict "@type" "ProfilePage" "@id" (printf "%s#profile" .Permalink) "url" .Permalink "name" .Title "description" $description "inLanguage" "en-US" "isPartOf" (dict "@id" $websiteID) "mainEntity" (dict "@id" $personID) -}}
+  {{- $graph = $graph | append $profileSchema -}}
+{{- else if eq .RelPermalink "/labs/" -}}
+  {{- $collectionSchema := dict "@type" "CollectionPage" "@id" (printf "%s#collection" .Permalink) "url" .Permalink "name" .Title "description" $description "inLanguage" "en-US" "isPartOf" (dict "@id" $websiteID) "author" (dict "@id" $personID) -}}
+  {{- $graph = $graph | append $collectionSchema -}}
+{{- end -}}
+{{- if and (not .IsHome) (ne .Kind "404") (ne .Layout "search") -}}
+  {{- $items := slice (dict "@type" "ListItem" "position" 1 "name" "Home" "item" site.BaseURL) -}}
+  {{- $pos := 2 -}}
+  {{- if .IsPage -}}
+    {{- with .CurrentSection -}}
+      {{- if ne .RelPermalink "/" -}}
+        {{- $items = $items | append (dict "@type" "ListItem" "position" $pos "name" .Title "item" .Permalink) -}}
+        {{- $pos = 3 -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $items = $items | append (dict "@type" "ListItem" "position" $pos "name" .Title "item" .Permalink) -}}
+  {{- $graph = $graph | append (dict "@type" "BreadcrumbList" "itemListElement" $items) -}}
+{{- end }}
+<script type="application/ld+json">{{ (dict "@context" "https://schema.org" "@graph" $graph) | jsonify | safeJS }}</script>
 {{ if and hugo.IsProduction (not site.Config.Privacy.GoogleAnalytics.Disable) }}
 {{ with site.Config.Services.GoogleAnalytics.ID }}
 <script>

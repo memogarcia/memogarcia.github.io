@@ -3,9 +3,50 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pomodoro · Memo Garcia</title>
-  <meta name="description" content="A quiet, tactile watch-dial Pomodoro timer with Web Audio chimes, session log, and Zen mode.">
+  <title>Pomodoro Focus Timer · Watch-Dial Work &amp; Break Timer</title>
+  <meta name="description" content="Free local-first Pomodoro focus timer with customizable 25/5/15-minute intervals, singing bowl chimes, soft rain ambience, keyboard shortcuts, and Zen mode.">
   <link rel="canonical" href="https://memo.mx/tools/pomodoro/">
+  <meta property="og:site_name" content="Memo Garcia">
+  <meta property="og:title" content="Pomodoro Focus Timer">
+  <meta property="og:description" content="Local-first 25/5/15 watch-dial Pomodoro timer with Web Audio chimes, focus noise, daily session log, and Zen mode.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://memo.mx/tools/pomodoro/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://memo.mx/img/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pomodoro Focus Timer">
+  <meta name="twitter:description" content="Local-first 25/5/15 watch-dial Pomodoro timer with Web Audio chimes, focus noise, and Zen mode.">
+  <meta name="twitter:image" content="https://memo.mx/img/og-default.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://memo.mx/tools/pomodoro/#app",
+        "name": "Pomodoro Focus Timer",
+        "url": "https://memo.mx/tools/pomodoro/",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "description": "Watch-dial Pomodoro focus timer with customizable work and break intervals, Web Audio chimes, ambient sound, daily session log, and Zen mode.",
+        "author": { "@type": "Person", "name": "Memo Garcia", "url": "https://memo.mx/about/" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://memo.mx/" },
+          { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://memo.mx/tools/" },
+          { "@type": "ListItem", "position": 3, "name": "Pomodoro", "item": "https://memo.mx/tools/pomodoro/" }
+        ]
+      }
+    ]
+  }
+  </script>
   <link id="favicon" rel="icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <script src="/tools/theme.js"></script>
@@ -39,7 +80,10 @@
   </button>
 
   <main id="main" class="pomo-main">
-    <h1 class="sr-only">Pomodoro Focus Timer</h1>
+    <header class="tool-intro">
+      <h1>Pomodoro Focus Timer</h1>
+      <p>Local-first 25/5/15 work and break dial with Web Audio chimes and Zen mode.</p>
+    </header>
 
     <div class="pomo-topbar">
       <div class="phase-tabs" role="tablist" aria-label="Timer phase">
@@ -125,6 +169,19 @@
       <span><kbd>Z</kbd> Zen</span>
       <span><kbd>M</kbd> Sound</span>
     </p>
+
+    <section class="tool-guide" aria-label="About this Pomodoro timer">
+      <h2>How this Pomodoro timer works</h2>
+      <p>Run structured focus sprints followed by short and long breaks without accounts, ads, or network tracking. All settings and your daily session log remain in browser storage.</p>
+      <dl>
+        <dt>Custom work &amp; break cycles</dt>
+        <dd>Adjust Focus (1–120 min), Short Break (1–60 min), Long Break (1–90 min), and cycle count (1–12 rounds) from the Settings dialog.</dd>
+        <dt>Synthesized bells &amp; focus ambience</dt>
+        <dd>Choose Singing bowl, Soft chime, Woodblock, or Silent completion cues, with optional subtle mechanical tick, Soft rain, or Warm noise generated locally via Web Audio.</dd>
+        <dt>Auto-advance &amp; Zen mode</dt>
+        <dd>Optionally auto-start breaks or the next focus block, enable desktop notifications, and press Z to hide navigation for full-focus sessions.</dd>
+      </dl>
+    </section>
   </main>
 
   <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
@@ -220,6 +277,8 @@
     <span>Memo Garcia</span>
     <div>
       <a href="/tools/">All tools</a>
+      <a href="/tools/breathing/">Breathing</a>
+      <a href="/tools/meditation/">Meditation</a>
       <a href="/">Blog</a>
     </div>
   </footer>

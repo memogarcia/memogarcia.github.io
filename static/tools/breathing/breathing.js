@@ -1,5 +1,6 @@
 ((globalScope) => {
   const STORAGE_KEY = 'memo-tools-breathing-v1';
+  const BASE_TITLE = (typeof document !== 'undefined' && document.title) ? document.title : 'Breathing · Memo Garcia';
   const RING_RADIUS = 158;
   const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
   const ORB_MIN_RADIUS = 94;
@@ -592,7 +593,7 @@
       els.timer.textContent = state.durationMin > 0 ? formatMMSS(totalTarget) : 'Open';
       els.sessionLine.textContent = `${cycleMs / 1000}s cycle · ${pattern.ratio}`;
       updatePhaseStrip(-1, 0);
-      document.title = 'Breathing · Memo Garcia';
+      document.title = BASE_TITLE;
       updateFavicon(0, pattern.id, 'idle');
       return;
     }

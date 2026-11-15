@@ -1,5 +1,6 @@
 (() => {
   const STORAGE_KEY = 'memo-tools-pomodoro-v1';
+  const BASE_TITLE = (typeof document !== 'undefined' && document.title) ? document.title : 'Pomodoro · Memo Garcia';
   const RING_RADIUS = 158;
   const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
@@ -490,7 +491,7 @@
     } else if (state.status === 'complete') {
       document.title = `Done · ${PHASE_LABEL[state.phase]} · Memo Garcia`;
     } else {
-      document.title = 'Pomodoro · Memo Garcia';
+      document.title = BASE_TITLE;
     }
 
     updateFavicon(progress, state.phase, state.status);

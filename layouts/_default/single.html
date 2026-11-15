@@ -1,15 +1,20 @@
 {{ define "main" }}
 {{ $isPost := eq .Section "posts" }}
 {{ $isStory := eq .Section "stories" }}
-{{ $isLabIndex := eq .File.Path "labs/index.md" }}
-{{ $isLab := and $isPost (hasPrefix .File.BaseFileName "multi-region-") }}
+{{ $isLabIndex := false }}
+{{ $isLab := false }}
+{{ with .File }}
+  {{ $isLabIndex = eq .Path "labs/index.md" }}
+  {{ $isLab = and $isPost (hasPrefix .BaseFileName "multi-region-") }}
+{{ end }}
 {{ $back := printf "%s#writing" site.Home.RelPermalink }}
-{{ if $isLab }}{{ $back = "labs/" | relURL }}{{ end }}
-{{ if $isStory }}{{ $back = "stories/" | relURL }}{{ end }}
+{{ $backLabel := "← All posts" }}
+{{ if $isLab }}{{ $back = "labs/" | relURL }}{{ $backLabel = "← All labs" }}{{ end }}
+{{ if $isStory }}{{ $back = "stories/" | relURL }}{{ $backLabel = "← Short stories" }}{{ end }}
 <main id="main" class="article-main">
   {{ if or $isPost $isStory }}
   <div class="article-top">
-    <a class="back-link" href="{{ $back }}">← Back</a>
+    <a class="back-link" href="{{ $back }}">{{ $backLabel }}</a>
   </div>
   {{ end }}
   <article>
@@ -30,19 +35,25 @@
     {{ partial "memo/comments.html" . }}
   {{ end }}
   {{ if or $isPost $isStory }}
-  <div class="article-end">
+  <nav class="article-end" aria-label="Post navigation">
     {{ if $isLab }}
       {{ $current := .RelPermalink }}
       {{ $labs := sort (where site.RegularPages "File.BaseFileName" "like" "^multi-region-(learning|series-)") "File.BaseFileName" }}
       {{ range $i, $lab := $labs }}
-        {{ if and (eq $lab.RelPermalink $current) (lt (add $i 1) (len $labs)) }}
-          {{ with index $labs (add $i 1) }}<a class="next-link" href="{{ .RelPermalink }}">Next lab →</a>{{ end }}
+        {{ if eq $lab.RelPermalink $current }}
+          {{ if gt $i 0 }}
+            {{ with index $labs (sub $i 1) }}<a class="prev-link" href="{{ .RelPermalink }}">← {{ .Title }}</a>{{ end }}
+          {{ end }}
+          {{ if lt (add $i 1) (len $labs) }}
+            {{ with index $labs (add $i 1) }}<a class="next-link" href="{{ .RelPermalink }}">{{ .Title }} →</a>{{ end }}
+          {{ end }}
         {{ end }}
       {{ end }}
     {{ else }}
-      {{ with .PrevInSection }}<a class="next-link" href="{{ .RelPermalink }}">Next story →</a>{{ end }}
+      {{ with .NextInSection }}<a class="prev-link" href="{{ .RelPermalink }}">← {{ .Title }}</a>{{ end }}
+      {{ with .PrevInSection }}<a class="next-link" href="{{ .RelPermalink }}">{{ .Title }} →</a>{{ end }}
     {{ end }}
-  </div>
+  </nav>
   {{ end }}
 </main>
 {{ end }}

@@ -32,5 +32,28 @@ const { runInNewContext } = require('node:vm');
   assert.equal(results.children.length, 0);
   assert.equal(status.textContent, '0 results');
   assert.equal(requests, 2);
-  console.log('Search matching, safe titles, empty states, and failure/retry checks passed.');
+
+  // Verify ?q= query parameter pre-fills and searches on load
+  const qInput = { value: '', dataset: { index: '/index.json' }, addEventListener() {} };
+  const qStatus = {};
+  const qResults = { children: [], replaceChildren() { this.children = []; }, append(node) { this.children.push(node); } };
+  runInNewContext(readFileSync(`${__dirname}/../assets/blog/search.js`, 'utf8'), {
+    URL,
+    URLSearchParams,
+    window: { location: { search: '?q=focus' } },
+    document: {
+      querySelector: id => ({ '#search-input': qInput, '#search-status': qStatus, '#search-results': qResults })[id],
+      createElement: () => ({ children: [], append(node) { this.children.push(node); } }),
+    },
+    fetch: async () => ({
+      ok: true,
+      json: async () => [{ title: 'Focus', content: 'Just say no.', permalink: 'https://memo.mx/posts/focus/' }],
+    }),
+  });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(qInput.value, 'focus');
+  assert.equal(qStatus.textContent, '1 result');
+  assert.equal(qResults.children[0].children[0].href, '/posts/focus/');
+
+  console.log('Search matching, safe titles, empty states, query param init, and failure/retry checks passed.');
 })();

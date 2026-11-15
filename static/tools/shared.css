@@ -404,3 +404,74 @@ summary:focus-visible {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Tool intro & bottom reference guide */
+.tool-intro {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto 8px;
+  text-align: center;
+}
+
+.tool-intro h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.tool-intro p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.tool-guide {
+  width: 100%;
+  max-width: 680px;
+  margin: 44px auto 0;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.tool-guide h2 {
+  margin: 0 0 12px;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.tool-guide h3 {
+  margin: 22px 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tool-guide p,
+.tool-guide dd {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.tool-guide dl {
+  margin: 14px 0 0;
+}
+
+.tool-guide dt {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 14px;
+}
+
+body[data-zen="true"] .tool-intro,
+body[data-zen="true"] .tool-guide {
+  display: none;
+}

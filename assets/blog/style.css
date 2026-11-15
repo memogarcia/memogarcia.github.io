@@ -202,8 +202,9 @@ nav a:hover { text-decoration: underline; }
 .labs-intro { max-width: 560px; margin-bottom: 40px; color: var(--muted); font-size: 16px; line-height: 1.7; }
 .lab-list a { grid-template-columns: 1fr 12px; }
 .lab-list small { display: block; margin-top: 12px; color: var(--muted); font: 13px/1.6 var(--sans); }
-.article-end { margin-top: 56px; padding-block: 8px; display: flex; justify-content: flex-end; gap: 24px; }
-.article-end a { display: inline-flex; min-height: 36px; align-items: center; font: 13px var(--mono); color: var(--muted); text-decoration: none; transition: color 0.15s ease; }
+.article-end { margin-top: 56px; padding-block: 8px; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 16px 24px; }
+.article-end a { display: inline-flex; min-height: 36px; align-items: center; max-width: 100%; font: 13px/1.5 var(--mono); color: var(--muted); text-decoration: none; transition: color 0.15s ease; }
+.article-end .next-link { margin-left: auto; text-align: right; }
 .article-end a:hover { color: var(--accent); text-decoration: none; }
 .post-comments { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line); }
 .post-comments noscript { color: var(--muted); font-size: 13px; }

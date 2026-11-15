@@ -1,0 +1,11 @@
+{{- $src := .Destination -}}
+{{- $trimmed := strings.TrimPrefix "/" $src -}}
+{{- $diskPath := "" -}}
+{{- if and (hasPrefix $src "/") (not (hasPrefix $src "//")) -}}
+  {{- if fileExists (printf "static/%s" $trimmed) -}}
+    {{- $diskPath = printf "static/%s" $trimmed -}}
+  {{- else if fileExists (printf "content/%s" $trimmed) -}}
+    {{- $diskPath = printf "content/%s" $trimmed -}}
+  {{- end -}}
+{{- end -}}
+<img loading="lazy" decoding="async" src="{{ $src | safeURL }}" alt="{{ .Text }}"{{- with .Title }} title="{{ . }}"{{ end }}{{- if and $diskPath (not (strings.HasSuffix (lower $diskPath) ".svg")) -}}{{- with (imageConfig $diskPath) }} width="{{ .Width }}" height="{{ .Height }}"{{ end -}}{{- end }} />

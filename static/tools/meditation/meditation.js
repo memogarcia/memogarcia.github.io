@@ -1,5 +1,6 @@
 ((globalScope) => {
   const STORAGE_KEY = 'memo-tools-meditation-v1';
+  const BASE_TITLE = (typeof document !== 'undefined' && document.title) ? document.title : 'Meditation · Memo Garcia';
   const RING_RADIUS = 158;
   const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
   const PRESET_MINUTES = [5, 10, 15, 20, 30, 45, 0];
@@ -540,7 +541,7 @@
       els.scheduleLine.textContent = state.durationMin > 0
         ? `Ends at ${formatClockTime(Date.now() + goal)}`
         : 'Count-up timer with no fixed end';
-      document.title = 'Meditation · Memo Garcia';
+      document.title = BASE_TITLE;
     } else if (state.status === 'complete') {
       els.eyebrow.textContent = 'Complete';
       els.timeDisplay.textContent = formatMMSS(elapsed);
