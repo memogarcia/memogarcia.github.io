@@ -292,6 +292,7 @@
     startDatetime: document.getElementById('start-datetime'),
     saveStartBtn: document.getElementById('save-start-btn'),
     resetStartNowBtn: document.getElementById('reset-start-now-btn'),
+    resetNowQuickBtn: document.getElementById('reset-now-quick-btn'),
     cancelStartBtn: document.getElementById('cancel-start-btn'),
     noteInput: document.getElementById('fast-note-input'),
     toggleBtn: document.getElementById('toggle-btn'),
@@ -327,6 +328,7 @@
     filterChips: [...document.querySelectorAll('.filter-chip[data-filter]')],
     hourlyList: document.getElementById('hourly-list'),
     statsSummary: document.getElementById('stats-summary'),
+    historyDrawer: document.getElementById('history-drawer'),
     historyCount: document.getElementById('history-count'),
     historyEmpty: document.getElementById('history-empty'),
     historyList: document.getElementById('history-list'),
@@ -346,6 +348,12 @@
     ? clampTotalGoalMinutes(saved.goalMinutes)
     : PRESETS['16h'].minutes;
 
+  const VALID_FILTERS = new Set(['all', 'goal', '0-11', '12-23', '24-47', '48-72']);
+  const initialFilter = VALID_FILTERS.has(saved?.filter) ? saved.filter : 'all';
+  const initialInspectedHour = Number.isInteger(saved?.inspectedHour)
+    ? Math.max(0, Math.min(72, saved.inspectedHour))
+    : null;
+
   const state = {
     isFasting: Boolean(saved?.isFasting && typeof saved?.startTime === 'number'),
     startTime: typeof saved?.startTime === 'number' ? saved.startTime : null,
@@ -359,10 +367,15 @@
     notifyOn: Boolean(saved?.notifyOn),
     goalNotified: Boolean(saved?.goalNotified),
     editingStart: false,
-    customOpen: initialPresetId === 'custom',
-    inspectedHour: 16,
-    filter: 'all',
+    customOpen: Boolean(saved?.customOpen),
+    inspectedHour: initialInspectedHour ?? 16,
+    hasSavedInspectedHour: initialInspectedHour !== null,
+    filter: initialFilter,
   };
+
+  if (els.historyDrawer) {
+    els.historyDrawer.open = Boolean(saved?.historyOpen);
+  }
 
   els.noteInput.value = state.note;
 
@@ -385,6 +398,10 @@
       chimeOn: state.chimeOn,
       notifyOn: state.notifyOn,
       goalNotified: state.goalNotified,
+      filter: state.filter,
+      inspectedHour: state.inspectedHour,
+      customOpen: state.customOpen,
+      historyOpen: Boolean(els.historyDrawer?.open),
       history: history.slice(-100),
     });
   }
@@ -406,8 +423,11 @@
       const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       dot.setAttribute('cx', cx);
       dot.setAttribute('cy', cy);
-      dot.setAttribute('r', h === Math.round(goalHours) ? '4.5' : '3.2');
+      dot.setAttribute('r', Math.abs(h - goalHours) < 0.01 ? '4.5' : '3.2');
       dot.dataset.hour = String(h);
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = `${h}h milestone`;
+      dot.appendChild(title);
       els.milestonesGroup.appendChild(dot);
       milestoneDots.push({ hour: h, el: dot });
     }
@@ -430,7 +450,8 @@
       btn.addEventListener('click', () => {
         state.inspectedHour = h;
         renderInspector();
-        highlightHourlyList();
+        highlightHourlyList(true);
+        persist();
       });
       els.hourMatrix.appendChild(btn);
       hourMatrixCells.push(btn);
@@ -508,7 +529,8 @@
       const selectThis = () => {
         state.inspectedHour = item.hour;
         renderInspector();
-        highlightHourlyList();
+        highlightHourlyList(false);
+        persist();
       };
       li.addEventListener('click', selectThis);
       li.addEventListener('keydown', (e) => {
@@ -522,11 +544,24 @@
     });
   }
 
-  function highlightHourlyList() {
+  function highlightHourlyList(scrollInside = false) {
     const items = els.hourlyList.querySelectorAll('.hourly-item');
+    let selectedEl = null;
     items.forEach((el) => {
-      el.classList.toggle('is-selected', Number(el.dataset.hour) === state.inspectedHour);
+      const match = Number(el.dataset.hour) === state.inspectedHour;
+      el.classList.toggle('is-selected', match);
+      if (match) selectedEl = el;
     });
+    if (scrollInside && selectedEl && typeof selectedEl.getBoundingClientRect === 'function') {
+      const container = els.hourlyList;
+      const cRect = container.getBoundingClientRect();
+      const sRect = selectedEl.getBoundingClientRect();
+      if (sRect.top < cRect.top) {
+        container.scrollTop += sRect.top - cRect.top - 8;
+      } else if (sRect.bottom > cRect.bottom) {
+        container.scrollTop += sRect.bottom - cRect.bottom + 8;
+      }
+    }
   }
 
   function updateHourMatrixStates(currentHour, isFasting) {
@@ -629,33 +664,50 @@
     const goalText = formatGoalLabel(state.goalMinutes);
 
     if (!state.isFasting || state.startTime === null) {
-      const startPreview = state.plannedStartTime && state.plannedStartTime <= now ? state.plannedStartTime : now;
+      const hasBackdate = Boolean(state.plannedStartTime && state.plannedStartTime < now);
+      const startPreview = hasBackdate ? state.plannedStartTime : now;
       const goalAt = startPreview + state.goalMinutes * 60_000;
-      const prog = state.plannedStartTime && state.plannedStartTime < now
+      const prog = hasBackdate
         ? computeFastProgress(state.plannedStartTime, state.goalMinutes, now)
         : null;
 
-      els.progressRing.style.strokeDashoffset = `${RING_CIRCUMFERENCE}`;
-      els.handGroup.setAttribute('transform', 'rotate(0 180 180)');
-      milestoneDots.forEach(({ el }) => el.classList.remove('reached'));
+      if (els.resetNowQuickBtn) {
+        els.resetNowQuickBtn.hidden = !hasBackdate;
+      }
+
+      const previewProgress = prog ? prog.ringProgress : 0;
+      els.progressRing.style.strokeDashoffset = `${(RING_CIRCUMFERENCE * (1 - previewProgress)).toFixed(2)}`;
+      els.handGroup.setAttribute('transform', `rotate(${(previewProgress * 360).toFixed(2)} 180 180)`);
+      milestoneDots.forEach(({ hour, el }) => {
+        el.classList.toggle('reached', Boolean(prog && prog.elapsedMs >= hour * 3_600_000));
+      });
 
       const presetMeta = state.presetId !== 'custom' && PRESETS[state.presetId].label !== goalText
         ? ` (${PRESETS[state.presetId].label})`
         : '';
       els.eyebrow.textContent = `Goal · ${goalText}${presetMeta}`;
-      els.timeDisplay.textContent = formatHMS(state.goalMinutes * 60_000);
-      els.progressLine.textContent = prog
-        ? `Backdated start: ${formatHMS(prog.elapsedMs)} already elapsed`
-        : 'Ready to start';
+      if (prog) {
+        els.timeDisplay.textContent = state.displayMode === 'remaining'
+          ? (prog.goalReached ? `+${formatHMS(prog.pastGoalMs)}` : formatHMS(prog.remainingMs))
+          : formatHMS(prog.elapsedMs);
+        els.progressLine.textContent = `Start set earlier · ${formatHMS(prog.elapsedMs)} elapsed`;
+      } else {
+        els.timeDisplay.textContent = formatHMS(state.goalMinutes * 60_000);
+        els.progressLine.textContent = 'Ready to start';
+      }
       els.scheduleLine.textContent = `Goal reached at ${formatShortDateTime(goalAt)}`;
-      els.startTimeSummary.textContent = state.plannedStartTime && state.plannedStartTime < now
+      els.startTimeSummary.textContent = hasBackdate
         ? `Start time: ${formatShortDateTime(state.plannedStartTime)}`
         : 'Start time: Now';
 
       document.title = 'Fasting · Memo Garcia';
       renderSpotlight({ currentHour: 0, minutesIntoHour: 0, goalReached: false });
-      updateFavicon(0, 'digestion', false);
+      updateFavicon(previewProgress, 'digestion', false);
       return;
+    }
+
+    if (els.resetNowQuickBtn) {
+      els.resetNowQuickBtn.hidden = true;
     }
 
     const prog = computeFastProgress(state.startTime, state.goalMinutes, now);
@@ -788,7 +840,11 @@
       els.notifyBtn.disabled = true;
     } else if (Notification.permission === 'denied') {
       els.notifyBtn.textContent = 'Alerts: Blocked';
-      state.notifyOn = false;
+      els.notifyBtn.setAttribute('aria-pressed', 'false');
+      if (state.notifyOn) {
+        state.notifyOn = false;
+        persist();
+      }
     } else {
       const active = state.notifyOn && Notification.permission === 'granted';
       els.notifyBtn.textContent = active ? 'Alerts: On' : 'Alerts: Off';
@@ -815,8 +871,9 @@
 
   function selectPreset(id) {
     if (id === 'custom') {
+      const nextOpen = state.presetId === 'custom' ? !state.customOpen : true;
       state.presetId = 'custom';
-      state.customOpen = true;
+      state.customOpen = nextOpen;
       state.goalMinutes = state.customMinutes;
       state.goalNotified = state.isFasting && state.startTime !== null
         ? computeFastProgress(state.startTime, state.goalMinutes).goalReached
@@ -824,7 +881,7 @@
       state.inspectedHour = Math.min(72, Math.round(state.goalMinutes / 60));
       renderChrome();
       persist();
-      els.customHours.focus();
+      if (nextOpen) els.customHours.focus();
       announce(`Custom goal selected: ${formatGoalLabel(state.goalMinutes)}.`);
       return;
     }
@@ -848,7 +905,7 @@
     state.presetId = 'custom';
     state.customMinutes = mins;
     state.goalMinutes = mins;
-    state.customOpen = true;
+    state.customOpen = false;
     state.goalNotified = state.isFasting && state.startTime !== null
       ? computeFastProgress(state.startTime, state.goalMinutes).goalReached
       : false;
@@ -986,6 +1043,15 @@
     announce('Start time reset to now.');
   });
 
+  els.resetNowQuickBtn?.addEventListener('click', () => {
+    if (state.isFasting) return;
+    state.plannedStartTime = null;
+    state.editingStart = false;
+    renderChrome();
+    persist();
+    announce('Start time reset to now.');
+  });
+
   els.cancelStartBtn.addEventListener('click', () => {
     state.editingStart = false;
     renderChrome();
@@ -1039,7 +1105,8 @@
     if (state.inspectedHour > 0) {
       state.inspectedHour -= 1;
       renderInspector();
-      highlightHourlyList();
+      highlightHourlyList(true);
+      persist();
     }
   });
 
@@ -1047,7 +1114,8 @@
     if (state.inspectedHour < 72) {
       state.inspectedHour += 1;
       renderInspector();
-      highlightHourlyList();
+      highlightHourlyList(true);
+      persist();
     }
   });
 
@@ -1058,7 +1126,8 @@
       state.inspectedHour = Math.min(72, Math.round(state.goalMinutes / 60));
     }
     renderInspector();
-    highlightHourlyList();
+    highlightHourlyList(true);
+    persist();
   });
 
   els.filterChips.forEach((chip) => {
@@ -1066,8 +1135,13 @@
       state.filter = chip.dataset.filter;
       els.filterChips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
       buildHourlyList();
-      highlightHourlyList();
+      highlightHourlyList(false);
+      persist();
     });
+  });
+
+  els.historyDrawer?.addEventListener('toggle', () => {
+    persist();
   });
 
   els.clearHistoryBtn.addEventListener('click', () => {
@@ -1077,17 +1151,42 @@
     announce('Cleared fasting log.');
   });
 
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) renderDialAndSpotlight();
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    let changed = false;
+    if (state.customOpen) {
+      state.customOpen = false;
+      changed = true;
+    }
+    if (state.editingStart) {
+      state.editingStart = false;
+      changed = true;
+    }
+    if (changed) {
+      renderChrome();
+      persist();
+    }
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) persist();
+    else renderDialAndSpotlight();
+  });
+
+  window.addEventListener('pagehide', persist);
+  window.addEventListener('beforeunload', persist);
+
   buildHourMatrix();
-  if (state.isFasting && state.startTime !== null) {
-    const initialProg = computeFastProgress(state.startTime, state.goalMinutes);
-    state.inspectedHour = Math.min(72, initialProg.currentHour);
-    lastRenderedHour = initialProg.currentHour;
-  } else {
-    state.inspectedHour = Math.min(72, Math.round(state.goalMinutes / 60));
+  if (!state.hasSavedInspectedHour) {
+    if (state.isFasting && state.startTime !== null) {
+      const initialProg = computeFastProgress(state.startTime, state.goalMinutes);
+      state.inspectedHour = Math.min(72, initialProg.currentHour);
+      lastRenderedHour = initialProg.currentHour;
+    } else {
+      state.inspectedHour = Math.min(72, Math.round(state.goalMinutes / 60));
+    }
+  } else if (state.isFasting && state.startTime !== null) {
+    lastRenderedHour = computeFastProgress(state.startTime, state.goalMinutes).currentHour;
   }
   renderChrome();
   startTicker();

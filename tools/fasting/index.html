@@ -86,17 +86,20 @@
         </div>
       </div>
 
-      <div class="display-switch" role="group" aria-label="Timer display mode">
-        <button id="mode-elapsed-btn" class="switch-pill" type="button" aria-pressed="true">Show elapsed</button>
-        <button id="mode-remaining-btn" class="switch-pill" type="button" aria-pressed="false">Show remaining</button>
-      </div>
+      <div class="fast-toolbar">
+        <div class="display-switch" role="group" aria-label="Timer display mode">
+          <button id="mode-elapsed-btn" class="switch-pill" type="button" aria-pressed="true">Elapsed</button>
+          <button id="mode-remaining-btn" class="switch-pill" type="button" aria-pressed="false">Remaining</button>
+        </div>
 
-      <div id="start-time-bar" class="start-time-bar">
-        <span id="start-time-summary" class="start-time-summary">Start time: Now</span>
-        <div class="start-quick-btns">
-          <button id="shift-minus-1h" class="btn-chip" type="button" title="Move start 1 hour earlier">-1h</button>
-          <button id="shift-minus-2h" class="btn-chip" type="button" title="Move start 2 hours earlier">-2h</button>
-          <button id="edit-start-btn" class="btn-chip" type="button">Edit start</button>
+        <div id="start-time-bar" class="start-time-bar">
+          <span id="start-time-summary" class="start-time-summary">Start time: Now</span>
+          <div class="start-quick-btns">
+            <button id="shift-minus-1h" class="btn-chip" type="button" title="Move start 1 hour earlier">-1h</button>
+            <button id="shift-minus-2h" class="btn-chip" type="button" title="Move start 2 hours earlier">-2h</button>
+            <button id="edit-start-btn" class="btn-chip" type="button">Edit start</button>
+            <button id="reset-now-quick-btn" class="btn-chip" type="button" hidden>Now</button>
+          </div>
         </div>
       </div>
 

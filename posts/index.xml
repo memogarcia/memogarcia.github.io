@@ -10,7 +10,18 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 13 Nov 2026 16:57:16 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 15 Nov 2026 13:32:00 +0900</lastBuildDate><atom:link href="https://memo.mx/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Simulating the world to validate agent outputs</title>
+      <link>https://memo.mx/posts/simulating-the-world-to-validate-agent-outputs/</link>
+      <pubDate>Sun, 15 Nov 2026 13:32:00 +0900</pubDate>
+      
+      <guid>https://memo.mx/posts/simulating-the-world-to-validate-agent-outputs/</guid>
+      <description>How do we test what an AI agent produced before it touches real systems or real users?
+Static checks, unit tests, and prompt evals verify syntax and isolated assertions. They miss hallucinations and alignment failures that only surface when an agent&amp;rsquo;s output meets stateful systems and unpredictable users.
+Verified software for the agentic era checks whether third-party tools and libraries are safe before an agent adopts them. Proof of Human Intent verifies that a person explicitly approved a consequential action.</description>
+    </item>
+    
     <item>
       <title>Proof of Human Intent</title>
       <link>https://memo.mx/posts/proof-of-human-intent/</link>

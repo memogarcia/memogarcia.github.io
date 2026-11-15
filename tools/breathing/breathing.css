@@ -160,22 +160,25 @@ body[data-pattern="sigh"] {
 .pattern-brief {
   text-align: center;
   max-width: 52ch;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .pattern-summary {
   margin: 0;
   color: var(--ink);
-  font: 400 16px/1.45 var(--serif);
+  font: 400 15px/1.45 var(--serif);
 }
 
-.pattern-tip {
-  margin: 4px 0 0;
+.pattern-tip-card {
+  margin: 18px 0 0;
+  max-width: 52ch;
+  text-align: center;
   color: var(--muted);
-  font: 400 13px/1.5 var(--sans);
+  font: 400 13px/1.55 var(--sans);
 }
 
-body[data-zen="true"] .pattern-brief {
+body[data-zen="true"] .pattern-brief,
+body[data-zen="true"] .pattern-tip-card {
   display: none;
 }
 
@@ -188,7 +191,7 @@ body[data-zen="true"] .pattern-brief {
 
 .dial-wrap {
   position: relative;
-  width: min(352px, 84vw);
+  width: min(344px, 84vw);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
@@ -249,10 +252,10 @@ body[data-state="running"] .dial-progress {
 
 .breath-core {
   fill: var(--paper);
-  fill-opacity: 0.72;
+  fill-opacity: 0.9;
   stroke: var(--line-strong);
   stroke-width: 1;
-  transition: stroke 0.35s ease;
+  transition: stroke 0.35s ease, fill 0.35s ease;
 }
 
 body[data-state="running"] .breath-halo {
@@ -268,43 +271,43 @@ body[data-state="running"] .breath-halo {
   justify-content: center;
   text-align: center;
   pointer-events: none;
-  padding: 36px;
+  padding: 46px;
 }
 
 .dial-eyebrow {
-  margin: 0 0 4px;
+  margin: 0 0 3px;
   color: var(--phase);
-  font: 500 11px/1.2 var(--mono);
-  letter-spacing: 0.12em;
+  font: 500 clamp(9px, 2.4vw, 10.5px)/1.2 var(--mono);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   transition: color 0.3s ease;
 }
 
 .dial-action {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   color: var(--ink);
-  font: 450 20px/1.15 var(--serif);
+  font: 450 clamp(17px, 4.6vw, 20px)/1.15 var(--serif);
   letter-spacing: -0.01em;
 }
 
 .dial-time {
   margin: 0;
   color: var(--ink);
-  font: 300 clamp(44px, 11vw, 60px)/1 var(--sans);
+  font: 300 clamp(34px, 9.5vw, 46px)/1 var(--sans);
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 
 .dial-schedule {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   color: var(--muted);
-  font: 400 11px/1.4 var(--mono);
+  font: 400 clamp(9.5px, 2.4vw, 11px)/1.35 var(--mono);
   font-variant-numeric: tabular-nums;
-  max-width: 28ch;
+  max-width: 24ch;
 }
 
 .phase-strip {
-  margin-top: 18px;
+  margin-top: 16px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -328,6 +331,11 @@ body[data-state="running"] .breath-halo {
   transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
+.phase-pill > span:not(.phase-pill-fill) {
+  position: relative;
+  z-index: 1;
+}
+
 .phase-pill.active {
   border-color: var(--phase);
   color: var(--ink);
@@ -337,14 +345,15 @@ body[data-state="running"] .breath-halo {
 .phase-pill-fill {
   position: absolute;
   left: 0;
+  top: 0;
   bottom: 0;
-  height: 2px;
+  z-index: 0;
   width: 0%;
-  background: var(--phase);
+  background: var(--phase-soft);
 }
 
 .duration-row {
-  margin-top: 18px;
+  margin-top: 14px;
   display: inline-flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -404,7 +413,7 @@ body[data-state="running"] .breath-halo {
 }
 
 .controls-primary {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .btn-primary {
@@ -822,6 +831,16 @@ body[data-zen="true"] #zen-btn {
 
   .pattern-tabs button {
     padding: 8px 10px;
+  }
+
+  .history-list li {
+    grid-template-columns: 1fr auto;
+    gap: 2px 10px;
+  }
+
+  .history-note {
+    grid-column: 1 / -1;
+    white-space: normal;
   }
 
   .shortcut-bar {

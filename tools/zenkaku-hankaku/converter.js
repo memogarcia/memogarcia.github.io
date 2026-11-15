@@ -357,6 +357,7 @@
   const els = {
     presetButtons: [...document.querySelectorAll('.preset-btn')],
     segGroups: [...document.querySelectorAll('.seg[data-rule]')],
+    advancedDetails: document.querySelector('.advanced-rules'),
     normalizeVariants: document.getElementById('normalize-variants'),
     input: document.getElementById('input-text'),
     output: document.getElementById('output-text'),
@@ -374,6 +375,8 @@
     copyBtn: document.getElementById('copy-btn'),
   };
 
+  const MAX_SAVED_INPUT_CHARS = 200_000;
+
   function loadPrefs() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -385,14 +388,32 @@
   }
 
   function savePrefs() {
+    const advancedOpen = Boolean(els.advancedDetails?.open);
+    const rawInput = els.input.value;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ rules, inspectMode }));
-    } catch {}
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        rules,
+        inspectMode,
+        advancedOpen,
+        inputText: rawInput.length <= MAX_SAVED_INPUT_CHARS ? rawInput : '',
+      }));
+    } catch {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ rules, inspectMode, advancedOpen }));
+      } catch {}
+    }
   }
 
   const saved = loadPrefs();
   const rules = { ...PRESETS.allHalf, ...(saved?.rules || {}) };
   let inspectMode = Boolean(saved?.inspectMode);
+
+  if (typeof saved?.inputText === 'string') {
+    els.input.value = saved.inputText;
+  }
+  if (els.advancedDetails && typeof saved?.advancedOpen === 'boolean') {
+    els.advancedDetails.open = saved.advancedOpen;
+  }
 
   function matchingPreset() {
     const keys = ['letters', 'digits', 'symbols', 'spaces', 'katakana', 'jpPunct'];
@@ -537,17 +558,22 @@
     savePrefs();
   });
 
-  els.input.addEventListener('input', update);
+  els.input.addEventListener('input', () => {
+    update();
+    savePrefs();
+  });
 
   els.sampleBtn.addEventListener('click', () => {
     els.input.value = SAMPLE_TEXT;
     update();
+    savePrefs();
     els.input.focus();
   });
 
   els.clearBtn.addEventListener('click', () => {
     els.input.value = '';
     update();
+    savePrefs();
     els.input.focus();
   });
 
@@ -561,11 +587,16 @@
       const text = await navigator.clipboard.readText();
       els.input.value = text;
       update();
+      savePrefs();
     } catch {
       els.diagnosticSummary.textContent = 'Clipboard read was blocked by your browser. Press Cmd/Ctrl+V inside the Input box.';
       els.input.focus();
     }
   });
+
+  els.advancedDetails?.addEventListener('toggle', savePrefs);
+  window.addEventListener('pagehide', savePrefs);
+  window.addEventListener('beforeunload', savePrefs);
 
   els.inspectBtn.addEventListener('click', () => {
     inspectMode = !inspectMode;

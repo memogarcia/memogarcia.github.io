@@ -269,6 +269,7 @@
     liveStatus: document.getElementById('live-status'),
     cycleDots: document.getElementById('cycle-dots'),
     todaySummary: document.getElementById('today-summary'),
+    historyDrawer: document.getElementById('history-drawer'),
     historyCount: document.getElementById('history-count'),
     historyEmpty: document.getElementById('history-empty'),
     historyList: document.getElementById('history-list'),
@@ -332,19 +333,25 @@
   }
 
   let state = {
-    phase: saved?.phase || 'focus',
+    phase: ['focus', 'short', 'long'].includes(saved?.phase) ? saved.phase : 'focus',
     status: 'idle', // 'idle' | 'running' | 'paused' | 'complete'
-    totalMs: phaseDurationMs(saved?.phase || 'focus'),
-    remainingMs: phaseDurationMs(saved?.phase || 'focus'),
+    totalMs: phaseDurationMs(['focus', 'short', 'long'].includes(saved?.phase) ? saved.phase : 'focus'),
+    remainingMs: phaseDurationMs(['focus', 'short', 'long'].includes(saved?.phase) ? saved.phase : 'focus'),
     endAt: null,
     cycleCount: saved?.date === today && Number.isInteger(saved?.cycleCount) ? saved.cycleCount : 0,
     intention: typeof saved?.intention === 'string' ? saved.intention : '',
     zen: false,
-    soundBeforeMute: settings.chime !== 'off' ? settings.chime : 'bell',
+    soundBeforeMute: typeof saved?.soundBeforeMute === 'string' && saved.soundBeforeMute !== 'off'
+      ? saved.soundBeforeMute
+      : (settings.chime !== 'off' ? settings.chime : 'bell'),
   };
 
-  // Restore running/paused timer cleanly if page was refreshed mid-session
-  if (saved?.timer && saved.date === today) {
+  if (els.historyDrawer) {
+    els.historyDrawer.open = Boolean(saved?.historyOpen);
+  }
+
+  // Restore running/paused timer cleanly even across midnight refresh
+  if (saved?.timer) {
     const t = saved.timer;
     if (['focus', 'short', 'long'].includes(t.phase)) {
       state.phase = t.phase;
@@ -382,6 +389,8 @@
       phase: state.phase,
       cycleCount: state.cycleCount,
       intention: state.intention,
+      soundBeforeMute: state.soundBeforeMute,
+      historyOpen: Boolean(els.historyDrawer?.open),
       sessions,
       timer: {
         phase: state.phase,
@@ -796,7 +805,10 @@
     }
     if (Notification.permission === 'denied') {
       els.optNotifyBtn.textContent = 'Blocked in browser';
-      settings.notify = false;
+      if (settings.notify) {
+        settings.notify = false;
+        persist();
+      }
       return;
     }
     els.optNotifyBtn.textContent = settings.notify && Notification.permission === 'granted' ? 'On' : 'Off';
@@ -973,9 +985,15 @@
     }
   });
 
+  els.historyDrawer?.addEventListener('toggle', () => {
+    persist();
+  });
+
   // Catch up cleanly when tab returns from background sleep
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && state.status === 'running') {
+    if (document.hidden) {
+      persist();
+    } else if (state.status === 'running') {
       if (getRemainingMs() <= 0) {
         handlePhaseComplete();
       } else {
@@ -989,6 +1007,7 @@
     if (state.status === 'idle') renderDial();
   }, 15_000);
 
+  window.addEventListener('pagehide', persist);
   window.addEventListener('beforeunload', () => {
     clearInterval(idleClockInterval);
     persist();
@@ -997,6 +1016,14 @@
   // Initial render
   renderChrome();
   if (state.status === 'running') {
+    const unlock = () => {
+      sound.ensureContext();
+      if (state.status === 'running' && settings.ambient !== 'off' && state.phase === 'focus') {
+        sound.startAmbient(settings.ambient, settings.volume);
+      }
+    };
+    document.addEventListener('pointerdown', unlock, { once: true });
+    document.addEventListener('keydown', unlock, { once: true });
     startLoop();
   }
 })();
