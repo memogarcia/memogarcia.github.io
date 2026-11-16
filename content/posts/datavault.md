@@ -1,81 +1,65 @@
 ---
-title: "We need a data vault to grant on-demand access to our data"
+title: "We really need a data vault to grant on-demand access to our data"
 date: 2026-11-13T16:51:00+09:00
 draft: false
 ---
 
 > (or get paid to access your data)
 
-As AI agents become more capable, doing useful personal work requires access to sensitive context: financial records, employment history, medical information, emails, and purchases.
+Every time I buy something online or sign up for a service, I hand over personal information: my home address, phone number, email, or payment details. Once I hit submit, that data sits in someone else's database indefinitely.
 
-Today, that information is fragmented across multiple platforms. Recent hacks leave us vulnerable to data being stolen from the services where we store it. Giving an agent access often means trusting an individual AI provider with broad permissions.
+Recent hacks keep showing what that opens us up to. Any company keeping a copy of my records is a target for malicious access. When a database gets breached, or someone inside pulls records they shouldn't, information I shared years ago gets stolen. Giving AI agents broad, permanent permissions to my accounts creates the same problem in a new place.
 
-Why not give access to our data momentarily for a specific reason, like AWS tokens? In AWS, STS issues short-lived credentials scoped to exact permissions for a limited time window. When the token expires, the access is gone.
+My info should be in their systems for as long as necessary, not more than that.
 
-DataVault is an idea for an independent permission and data-access layer built on that model. Users keep their personal information in a local-first encrypted vault and issue temporary, narrowly scoped tokens to services or AI agents for specific tasks.
+AWS already works this way for infrastructure. Instead of handing out permanent keys, STS issues short-lived tokens scoped to specific actions for a limited window. When that window expires, the access is gone.
 
-When intelligence becomes abundant, trusted access to personal context becomes increasingly valuable.
+Why not treat personal data the same way? Keep it in an encrypted vault we control, and grant access on demand for a specific reason.
 
-## How it works
+## Example: giving my address for shopping
 
-1. **Private data storage.** Users maintain an encrypted personal data vault, stored locally or in user-controlled infrastructure.
-2. **Agent requests.** An AI agent requests access to specific information needed to complete a task.
-3. **Granular authorization.** The user approves exactly which information can be accessed, for what purpose, and for how long.
-4. **Controlled execution.** The agent receives restricted access or task-specific results without necessarily obtaining the underlying raw data.
-5. **Audit trail.** Users can inspect which agents accessed which information and when.
-6. **Revocation.** Users can revoke future access at any time, though previously disclosed information cannot necessarily be retrieved.
+Suppose I buy something online and the store needs my address to ship it.
 
-## Example: finding car insurance
+Today, I type my home address into their checkout form and it stays in their database for years, even if I never buy from them again. If that store gets hacked two years later, my address is in the leaked records.
 
-Suppose a user asks an AI agent to find better car insurance.
+Why does a company still have my home address two years after delivering a box? They needed it to ship the order, not to hold on to it permanently.
 
-Instead of sharing their entire financial profile, the user authorizes access only to:
+With a data vault, we could handle checkout differently:
 
-- Vehicle registration details
-- Relevant driving history
-- Approximate location
-- A limited 24-hour access window
+1. The store requests my shipping address for one order, for a window covering fulfillment and delivery.
+2. I review the request and approve it.
+3. The vault issues a temporary token scoped only to my shipping address.
+4. Their system reads the address to ship the package.
+5. Once the delivery window ends, the token expires and access stops.
 
-The agent uses those permitted fields to compare insurance offers without holding unrestricted access to the user's personal records.
+They only have access to my address while delivering the package, not for years afterward.
 
-## Potential business model
+## What we could do
 
-### Phase 1: Consumer product
+We do not have to keep leaving permanent copies of our personal data everywhere. With a personal data vault, we could:
 
-Start with a privacy-focused subscription, roughly $5 to $15/month. It covers encrypted personal data storage, scoped permissions for AI agents, access logs, revocation controls, and integrations with popular agent platforms.
+1. **Keep one encrypted vault.** Store your personal records locally on your device or in infrastructure you own.
+2. **Make access requests explicit.** Anything asking for data, whether an online store or an AI agent, has to declare which fields it needs, why it needs them, and for how long.
+3. **Issue short-lived, revocable tokens.** Grant a temporary token scoped to that specific job. If something looks wrong, revoke it right away.
+4. **Log every access.** Keep an audit trail of every request and every read, so unexpected access stands out.
+5. **Share answers, or get paid for queries.** Sometimes a service does not need your raw records at all, only a yes/no check or a computed result. If companies want to run approved queries over data you choose to share, they can pay for that scoped access.
 
-### Phase 2: Developer infrastructure
+## What makes this hard
 
-Offer an API and SDK so AI application developers can request user-authorized data access. Potential revenue comes from developer subscriptions, API usage, or managed secure execution.
+Expiring tokens cut down standing exposure, though they do not solve everything on their own:
 
-### Phase 3: Consented data marketplace
+- **A service can still copy data while the token is live.** If a store reads my address at checkout and saves a copy in its own database anyway, expiring the token later will not delete that copy. Keeping data out of third-party tables long term also depends on honest retention practices or intermediary delivery flows where the merchant never sees the raw address.
+- **Companies treat customer data as an asset.** Most businesses want permanent user profiles for marketing and analytics. Getting merchants to accept temporary access is harder than building the token layer.
+- **One vault raises the stakes if it gets compromised.** Putting sensitive records in one place means local encryption, key storage, and access controls have to be solid from the start.
+- **Big platforms may build closed versions.** Apple, Google, or major AI providers could keep similar permission controls locked inside their own ecosystems.
 
-This is where getting paid for your data comes in. Users could optionally permit approved computations over selected personal data. Companies would pay for aggregated insights or permitted queries rather than unrestricted access to raw datasets. Users receive compensation, while DataVault takes a transaction fee.
+## Where we could start
 
-Phase 3 has the steepest requirements: strong privacy safeguards, explicit consent, and a viable market for the resulting information.
+We do not need every store or platform on board to try this. A practical first version stays local-first:
 
-## Competitive advantage
+1. Encrypted storage on your device for personal data like addresses, documents, and health or financial records.
+2. A request format for AI agents and apps to ask for specific fields with a purpose and a time limit.
+3. Short-lived access tokens with instant revocation.
+4. An audit log showing every request and every access.
 
-If an independent vault gains traction, its edge comes from neutrality and trust. An established privacy reputation matters when asking users to consolidate sensitive records, and a standalone layer can support cross-platform integrations that individual model providers have little reason to prioritize.
-
-Over time, shared permission and secure-access infrastructure can reinforce a growing network of users and compatible AI agents, with potential network effects if approved data queries become valuable.
-
-## Major risks
-
-- **Platform integration.** Apple, Google, and AI providers could integrate similar features directly.
-- **Willingness to pay.** Users may resist paying for data management.
-- **Security failures.** Any serious breach would severely damage trust.
-- **Downstream misuse.** Preventing misuse after data has already been disclosed is difficult.
-- **Marketplace uncertainty.** Data marketplace economics and regulatory compliance remain uncertain.
-
-## Where to start
-
-An initial MVP stays local-first and focuses on five components:
-
-1. Encrypted storage for documents and structured personal data
-2. An SDK for agents to request individual permissions
-3. Time-limited access tokens
-4. Audit logs
-5. Revocation of future access
-
-That leaves the critical validation question open: will users adopt an independent permissions layer instead of relying on the permissions provided by individual AI platforms?
+AI agents are an easy place to test this first, because we already connect them through tools and APIs. If the pattern works there, the same idea applies to any company asking for our data.
