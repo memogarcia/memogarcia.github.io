@@ -1,5 +1,5 @@
 ---
-title: "DataVault: Personal data infrastructure for AI agents"
+title: "We need a data vault to grant on-demand access to our data"
 date: 2026-11-13T16:51:00+09:00
 draft: false
 ---
@@ -8,13 +8,13 @@ draft: false
 
 As AI agents become more capable, doing useful personal work requires access to sensitive context: financial records, employment history, medical information, emails, and purchases.
 
-Today, that information is fragmented across multiple platforms. Giving an agent access often means trusting an individual AI provider with broad permissions.
+Today, that information is fragmented across multiple platforms. Recent hacks leave us vulnerable to data being stolen from the services where we store it. Giving an agent access often means trusting an individual AI provider with broad permissions.
 
-DataVault is an idea for an independent permission and data-access layer between individuals and AI agents. Users store their personal information in a local-first encrypted vault and grant agents temporary, narrowly scoped access for specific tasks.
+Why not give access to our data momentarily for a specific reason, like AWS tokens? In AWS, STS issues short-lived credentials scoped to exact permissions for a limited time window. When the token expires, the access is gone.
+
+DataVault is an idea for an independent permission and data-access layer built on that model. Users keep their personal information in a local-first encrypted vault and issue temporary, narrowly scoped tokens to services or AI agents for specific tasks.
 
 When intelligence becomes abundant, trusted access to personal context becomes increasingly valuable.
-
-[Better Me](/posts/i-built-the-app-of-my-dreams/) is already one data vault implementation. It keeps papers, medicines, and Apple Health readings encrypted on my iPhone, with no account, no cloud sync, and no external AI. When I prepare a report, I choose the dates and sections the doctor sees. DataVault extends that local-first model beyond health records, replacing manual report sharing with scoped, time-limited permissions for AI agents.
 
 ## How it works
 
