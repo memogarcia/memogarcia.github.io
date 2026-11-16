@@ -34,14 +34,14 @@ An agent holding an API key or OAuth token only proves it has permission to oper
     </item>
     
     <item>
-      <title>We need a data vault to grant on-demand access to our data</title>
+      <title>We really need a data vault to grant on-demand access to our data</title>
       <link>https://memo.mx/posts/datavault/</link>
       <pubDate>Fri, 13 Nov 2026 16:51:00 +0900</pubDate>
       
       <guid>https://memo.mx/posts/datavault/</guid>
       <description>(or get paid to access your data)
-As AI agents become more capable, doing useful personal work requires access to sensitive context: financial records, employment history, medical information, emails, and purchases.
-Today, that information is fragmented across multiple platforms. Recent hacks leave us vulnerable to data being stolen from the services where we store it. Giving an agent access often means trusting an individual AI provider with broad permissions.</description>
+Every time I buy something online or sign up for a service, I hand over personal information: my home address, phone number, email, or payment details. Once I hit submit, that data sits in someone else&amp;rsquo;s database indefinitely.
+Recent hacks keep showing what that opens us up to. Any company keeping a copy of my records is a target for malicious access. When a database gets breached, or someone inside pulls records they shouldn&amp;rsquo;t, information I shared years ago gets stolen.</description>
     </item>
     
     <item>
