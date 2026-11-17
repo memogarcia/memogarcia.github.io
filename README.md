@@ -75,10 +75,9 @@ query strings and fragments from the page URL, and reduces the referrer to its
 origin. It adds no tool interaction events and reads no tool storage or inputs.
 Google Signals and advertising personalization are disabled.
 
-Before production verification, check the stream's Enhanced Measurement settings
-in Google Analytics. Disable automatic form, click, download and history-based
-collection to keep collection scoped to page visits. Enhanced Measurement was verified as enabled on 2026-11-17. Changing this
-shared stream also affects the blog and is awaiting approval. The loader follows the blog's existing analytics policy;
+Enhanced Measurement was verified as enabled on 2026-11-17. Memo chose to
+keep its automatic interaction reports alongside page views. This setting is
+shared by the blog and tools; do not disable it without approval. The loader follows the blog's existing analytics policy;
 there is no consent interface. Google Analytics can use analytics cookies.
 See [Google's page-view configuration](https://developers.google.com/analytics/devguides/collection/ga4/views).
 After deployment, confirm one page view per navigation in the browser network
