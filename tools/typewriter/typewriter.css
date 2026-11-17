@@ -124,6 +124,7 @@ body {
   height: var(--stage-h, 100%);
   overflow: hidden;
   cursor: text;
+  touch-action: none;
   font: var(--fs) / var(--lh) var(--type);
   user-select: none;
   -webkit-user-select: none;
@@ -788,4 +789,14 @@ body {
   .head-pos {
     transition: none !important;
   }
+}
+
+/* Reading back through the sheet: the carriage waits where you left it. */
+.head-pos,
+.beam-pos {
+  transition-property: transform, opacity;
+}
+
+.reading .head-pos {
+  opacity: 0.45;
 }

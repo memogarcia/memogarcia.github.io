@@ -1,20 +1,34 @@
+// Fasting. One glass, one waterline, one lamp.
+//
+// The glass holds the whole fast: full when it starts, empty at the goal, so
+// the waterline sits at the hour you are in. The lines etched on the front are
+// the hours, and the dashed ones are where the body changes fuel.
+
 ((globalScope) => {
   const STORAGE_KEY = 'memo-tools-fasting-v1';
   const BASE_TITLE = (typeof document !== 'undefined' && document.title) ? document.title : 'Fasting · Memo Garcia';
-  const RING_RADIUS = 158;
-  const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+  const HOUR_MS = 3_600_000;
 
   const PRESETS = {
-    '12h': { id: '12h', label: '12:12', minutes: 12 * 60 },
-    '14h': { id: '14h', label: '14:10', minutes: 14 * 60 },
-    '16h': { id: '16h', label: '16:8', minutes: 16 * 60 },
-    '18h': { id: '18h', label: '18:6', minutes: 18 * 60 },
-    '20h': { id: '20h', label: '20:4', minutes: 20 * 60 },
-    '24h': { id: '24h', label: 'OMAD', minutes: 24 * 60 },
-    '36h': { id: '36h', label: '36h', minutes: 36 * 60 },
-    '48h': { id: '48h', label: '48h', minutes: 48 * 60 },
-    '72h': { id: '72h', label: '72h', minutes: 72 * 60 },
+    '12h': { id: '12h', label: '12:12', minutes: 12 * 60, note: '12:12. Eat inside a 12 hour window.' },
+    '14h': { id: '14h', label: '14:10', minutes: 14 * 60, note: '14:10. Eat inside a 10 hour window.' },
+    '16h': { id: '16h', label: '16:8', minutes: 16 * 60, note: '16:8. Eat inside an 8 hour window.' },
+    '18h': { id: '18h', label: '18:6', minutes: 18 * 60, note: '18:6. Eat inside a 6 hour window.' },
+    '20h': { id: '20h', label: '20:4', minutes: 20 * 60, note: '20:4. Eat inside a 4 hour window.' },
+    '24h': { id: '24h', label: 'OMAD', minutes: 24 * 60, note: 'OMAD. One meal a day, dinner to dinner.' },
+    '36h': { id: '36h', label: '36h', minutes: 36 * 60, note: 'Dinner, a whole day without food, then breakfast.' },
+    '48h': { id: '48h', label: '48h', minutes: 48 * 60, note: 'Two days. Water and electrolytes matter from here.' },
+    '72h': { id: '72h', label: '72h', minutes: 72 * 60, note: 'Three days. Check with a clinician before you start.' },
   };
+
+  // Where the body changes fuel. Each one is a dashed line on the glass.
+  const PHASES = [
+    { id: 'digestion', from: 0, name: 'digestion' },
+    { id: 'glycogen', from: 4, name: 'glycogen' },
+    { id: 'ketosis', from: 12, name: 'ketosis' },
+    { id: 'autophagy', from: 24, name: 'autophagy' },
+    { id: 'extended', from: 48, name: 'deep fast' },
+  ];
 
   const MILESTONE_HOURS = [4, 12, 16, 18, 24, 36, 48, 72];
 
@@ -115,6 +129,12 @@
     };
   }
 
+  function phaseAt(hour) {
+    let found = PHASES[0];
+    for (const p of PHASES) if (hour >= p.from) found = p;
+    return found;
+  }
+
   function clampTotalGoalMinutes(totalMinutes) {
     const n = Math.round(Number(totalMinutes));
     if (!Number.isFinite(n)) return 16 * 60;
@@ -141,13 +161,21 @@
     return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   }
 
+  function formatDurationShort(ms) {
+    const totalMin = Math.max(0, Math.round(ms / 60_000));
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    if (h === 0) return `${m}m`;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  }
+
   function computeFastProgress(startTimeMs, goalMinutes, nowMs = Date.now()) {
     const goalMs = Math.max(60 * 60_000, goalMinutes * 60_000);
     const elapsedMs = Math.max(0, nowMs - startTimeMs);
     const remainingMs = goalMs - elapsedMs;
     const pct = (elapsedMs / goalMs) * 100;
-    const currentHour = Math.floor(elapsedMs / 3_600_000);
-    const minutesIntoHour = Math.floor((elapsedMs % 3_600_000) / 60_000);
+    const currentHour = Math.floor(elapsedMs / HOUR_MS);
+    const minutesIntoHour = Math.floor((elapsedMs % HOUR_MS) / 60_000);
     return {
       elapsedMs,
       goalMs,
@@ -159,6 +187,12 @@
       currentHour,
       minutesIntoHour,
     };
+  }
+
+  // How much water is left: 1 is a full glass, 0 is the goal.
+  function waterLevel(elapsedMs, goalMs) {
+    if (!(goalMs > 0)) return 0;
+    return Math.max(0, Math.min(1, 1 - elapsedMs / goalMs));
   }
 
   function computeFastingStats(history) {
@@ -182,22 +216,303 @@
     };
   }
 
+  // ── Glass geometry, in the SVG's own units ───────────────
+  // A tumbler, a little wider at the lip, seen from slightly above. The eye is
+  // above the glass, so circles lower down open up a little more.
+
+  const G = {
+    cx: 100,
+    rim: 14,
+    bottom: 426,
+    full: 46,
+    floor: 392,
+    wall: 3.6,
+    horizon: 426 - 0.24 * 440,
+  };
+
+  function outerHalf(y) {
+    return 96 - 12 * (y - G.rim) / (G.bottom - G.rim);
+  }
+
+  function innerHalf(y) {
+    return outerHalf(y) - G.wall;
+  }
+
+  function tilt(y) {
+    return 0.105 + 0.05 * (y - G.rim) / (G.bottom - G.rim);
+  }
+
+  // Hour 0 is the full mark, the goal is the floor.
+  function hourToY(hour, goalHours) {
+    const f = Math.max(0, Math.min(1, hour / goalHours));
+    return G.full + f * (G.floor - G.full);
+  }
+
+  function levelToY(level) {
+    return G.floor - Math.max(0, Math.min(1, level)) * (G.floor - G.full);
+  }
+
+  // Which hours get a tick and which get a number, so a 12 hour glass and a
+  // three day glass both read at a glance.
+  function markPlan(goalHours) {
+    const tick = goalHours <= 24 ? 1 : goalHours <= 48 ? 2 : goalHours <= 80 ? 3 : goalHours <= 120 ? 4 : 6;
+    const label = [2, 4, 6, 8, 12, 24].find((s) => s % tick === 0 && goalHours / s <= 8) || 24;
+    return { tick, label };
+  }
+
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
       PRESETS,
+      PHASES,
       HOUR_BENEFITS,
       MILESTONE_HOURS,
       getHourBenefit,
+      phaseAt,
       clampTotalGoalMinutes,
       clampGoalMinutes,
       formatGoalLabel,
       formatHMS,
+      formatDurationShort,
       computeFastProgress,
       computeFastingStats,
+      waterLevel,
+      hourToY,
+      markPlan,
     };
   }
 
   if (typeof document === 'undefined') return;
+
+  // ── Sound ───────────────────────────────────────────────
+  // Everything is synthesized. A glass rings higher the emptier it is, so the
+  // same tap sounds different at hour 2 and at the goal.
+
+  class Sound {
+    constructor() {
+      this.ctx = null;
+      this.master = null;
+      this.on = true;
+      this.buffers = new Map();
+    }
+
+    ensure() {
+      if (this.ctx) {
+        if (this.ctx.state !== 'running') {
+          try {
+            const p = this.ctx.resume();
+            if (p && p.catch) p.catch(() => {});
+          } catch { /* Stays suspended until the next gesture. */ }
+        }
+        return this.ctx;
+      }
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return null;
+      try {
+        const ctx = new AudioCtx();
+        const master = ctx.createGain();
+        master.gain.value = this.on ? 0.8 : 0;
+        if (ctx.createDynamicsCompressor) {
+          const comp = ctx.createDynamicsCompressor();
+          comp.threshold.value = -16;
+          comp.knee.value = 16;
+          comp.ratio.value = 3;
+          master.connect(comp);
+          comp.connect(ctx.destination);
+        } else {
+          master.connect(ctx.destination);
+        }
+        this.ctx = ctx;
+        this.master = master;
+      } catch {
+        return null;
+      }
+      return this.ctx;
+    }
+
+    setOn(on) {
+      this.on = Boolean(on);
+      if (this.master) this.master.gain.value = this.on ? 0.8 : 0;
+    }
+
+    noise(seconds) {
+      const ctx = this.ctx;
+      const key = seconds;
+      if (this.buffers.has(key)) return this.buffers.get(key);
+      const length = Math.floor(ctx.sampleRate * seconds);
+      const buf = ctx.createBuffer(1, length, ctx.sampleRate);
+      const ch = buf.getChannelData(0);
+      let b0 = 0;
+      let b1 = 0;
+      let b2 = 0;
+      for (let i = 0; i < length; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99765 * b0 + white * 0.099046;
+        b1 = 0.963 * b1 + white * 0.2965164;
+        b2 = 0.57 * b2 + white * 1.0526913;
+        ch[i] = (b0 + b1 + b2 + white * 0.1848) * 0.2;
+      }
+      this.buffers.set(key, buf);
+      return buf;
+    }
+
+    // A fingernail on the glass. `level` is the water in it, 0 to 1.
+    clink(level, delaySec = 0, count = 1, soft = false) {
+      if (!this.on) return;
+      const ctx = this.ensure();
+      if (!ctx || ctx.state !== 'running') return;
+      try {
+        const f = 1480 * (1 - 0.34 * Math.pow(Math.max(0, Math.min(1, level)), 1.4));
+        const partials = [[1, 1, 2.4], [1.0035, 0.45, 2.1], [2.74, 0.24, 0.9], [5.2, 0.08, 0.35]];
+        for (let n = 0; n < count; n++) {
+          const t = ctx.currentTime + 0.02 + delaySec + n * 0.38;
+          const vel = (soft ? 0.45 : 1) * (n === 0 ? 1 : 0.8);
+          for (const [ratio, amp, decay] of partials) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = f * ratio;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.12 * amp * vel, t + 0.003);
+            gain.gain.setTargetAtTime(0, t + 0.003, decay / 6.9);
+            osc.connect(gain);
+            gain.connect(this.master);
+            osc.start(t);
+            osc.stop(t + decay * 1.2 + 0.1);
+          }
+          const tap = ctx.createBufferSource();
+          tap.buffer = this.noise(1);
+          const bp = ctx.createBiquadFilter();
+          bp.type = 'bandpass';
+          bp.frequency.value = 4200;
+          bp.Q.value = 1.4;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.06 * vel, t);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 0.025);
+          tap.connect(bp);
+          bp.connect(g);
+          g.connect(this.master);
+          tap.start(t, Math.random() * 0.5);
+          tap.stop(t + 0.04);
+        }
+      } catch { /* No sound is fine. */ }
+    }
+
+    // Water into a glass. The air above the water gets shorter as it fills,
+    // so its note climbs. From and to are levels, 0 to 1.
+    pour(seconds, from, to) {
+      if (!this.on) return;
+      const ctx = this.ensure();
+      if (!ctx) return;
+      try {
+        const t = ctx.currentTime + 0.02;
+        const end = t + seconds;
+        const note = (lvl) => 380 / Math.max(0.12, 1.05 - lvl * 0.92);
+
+        const src = ctx.createBufferSource();
+        src.buffer = this.noise(2);
+        src.loop = true;
+        const body = ctx.createBiquadFilter();
+        body.type = 'bandpass';
+        body.Q.value = 7;
+        body.frequency.setValueAtTime(note(from), t);
+        body.frequency.linearRampToValueAtTime(note(to), end);
+        const air = ctx.createBiquadFilter();
+        air.type = 'highpass';
+        air.frequency.value = 900;
+        const gBody = ctx.createGain();
+        const gAir = ctx.createGain();
+        gBody.gain.setValueAtTime(0, t);
+        gBody.gain.linearRampToValueAtTime(0.9, t + 0.08);
+        gBody.gain.setValueAtTime(0.9, end - 0.2);
+        gBody.gain.linearRampToValueAtTime(0, end + 0.05);
+        gAir.gain.setValueAtTime(0, t);
+        gAir.gain.linearRampToValueAtTime(0.06, t + 0.05);
+        gAir.gain.linearRampToValueAtTime(0.025, end - 0.2);
+        gAir.gain.linearRampToValueAtTime(0, end + 0.1);
+        src.connect(body);
+        body.connect(gBody);
+        gBody.connect(this.master);
+        src.connect(air);
+        air.connect(gAir);
+        gAir.connect(this.master);
+        src.start(t);
+        src.stop(end + 0.2);
+
+        // Bubbles: short bright blips that rise with the note.
+        const count = Math.round(seconds * 9);
+        for (let i = 0; i < count; i++) {
+          const at = t + 0.1 + Math.random() * (seconds - 0.15);
+          const lvl = from + (to - from) * ((at - t) / seconds);
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          const f0 = note(lvl) * (1.4 + Math.random() * 1.2);
+          osc.frequency.setValueAtTime(f0, at);
+          osc.frequency.exponentialRampToValueAtTime(f0 * 1.5, at + 0.03);
+          g.gain.setValueAtTime(0, at);
+          g.gain.linearRampToValueAtTime(0.025 + Math.random() * 0.03, at + 0.004);
+          g.gain.exponentialRampToValueAtTime(0.0001, at + 0.04);
+          osc.connect(g);
+          g.connect(this.master);
+          osc.start(at);
+          osc.stop(at + 0.05);
+        }
+      } catch { /* No sound is fine. */ }
+    }
+  }
+
+  // ── Page ────────────────────────────────────────────────
+
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const body = document.body;
+  const root = document.documentElement;
+  const $ = (id) => document.getElementById(id);
+  const all = (cls) => Array.from(new Set(document.querySelectorAll(`.${cls}`)));
+
+  const els = {
+    stage: $('stage'),
+    glass: $('glass'),
+    phase: $('phase'),
+    time: $('time'),
+    status: $('status'),
+    nowTag: $('now-tag'),
+    card: $('card'),
+    cardPrev: $('card-prev'),
+    cardNext: $('card-next'),
+    cardHour: $('card-hour'),
+    cardWhen: $('card-when'),
+    cardPhase: $('card-phase'),
+    cardTitle: $('card-title'),
+    cardText: $('card-text'),
+    cardMeta: $('card-meta'),
+    cardNow: $('card-now'),
+    toggleBtn: $('toggle-btn'),
+    discardBtn: $('discard-btn'),
+    goalBtn: $('goal-btn'),
+    startBtn: $('start-btn'),
+    soundBtn: $('sound-btn'),
+    logBtn: $('log-btn'),
+    goalNote: $('goal-note'),
+    customRow: $('custom-row'),
+    customHours: $('custom-hours'),
+    customMinutes: $('custom-minutes'),
+    customApply: $('custom-apply'),
+    notify: $('notify'),
+    startInput: $('start-input'),
+    earlier1: $('earlier-1h'),
+    earlier2: $('earlier-2h'),
+    startNow: $('start-now'),
+    stats: $('stats'),
+    noteInput: $('note-input'),
+    logEmpty: $('log-empty'),
+    logList: $('log-list'),
+    logActions: $('log-actions'),
+    logCopy: $('log-copy'),
+    logClear: $('log-clear'),
+    live: $('live'),
+    favicon: $('favicon'),
+    panels: { goal: $('panel-goal'), start: $('panel-start'), log: $('panel-log') },
+  };
+  const goalButtons = all('pick-goal');
 
   function loadStore() {
     try {
@@ -211,180 +526,45 @@
   function saveStore(data) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch {
-      /* Continue in memory when storage is blocked. */
-    }
+    } catch { /* Continue in memory when storage is blocked. */ }
   }
-
-  function formatShortDateTime(ts) {
-    const d = new Date(ts);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const mon = months[d.getMonth()];
-    const day = d.getDate();
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mm = String(d.getMinutes()).padStart(2, '0');
-    return `${mon} ${day}, ${hh}:${mm}`;
-  }
-
-  function toLocalDateTimeInputValue(ts) {
-    const d = new Date(ts);
-    const offset = d.getTimezoneOffset() * 60_000;
-    return new Date(d.getTime() - offset).toISOString().slice(0, 16);
-  }
-
-  function formatDurationShort(ms) {
-    const totalMin = Math.max(0, Math.round(ms / 60_000));
-    const h = Math.floor(totalMin / 60);
-    const m = totalMin % 60;
-    if (h === 0) return `${m}m`;
-    return m > 0 ? `${h}h ${m}m` : `${h}h`;
-  }
-
-  function playGoalChime() {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    try {
-      const ctx = new AudioCtx();
-      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-      const now = ctx.currentTime + 0.02;
-      [
-        { freq: 432, amp: 0.22, dur: 3.0 },
-        { freq: 433.5, amp: 0.14, dur: 2.8 },
-        { freq: 864, amp: 0.07, dur: 1.9 },
-      ].forEach(({ freq, amp, dur }) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now);
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.linearRampToValueAtTime(amp, now + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + dur + 0.05);
-      });
-    } catch {}
-  }
-
-  const els = {
-    body: document.body,
-    favicon: document.getElementById('favicon'),
-    presetChips: [...document.querySelectorAll('.preset-chip[data-preset]')],
-    customGoalBtn: document.getElementById('custom-goal-btn'),
-    customGoalPanel: document.getElementById('custom-goal-panel'),
-    customHours: document.getElementById('custom-hours'),
-    customMinutes: document.getElementById('custom-minutes'),
-    applyCustomBtn: document.getElementById('apply-custom-btn'),
-    milestonesGroup: document.getElementById('dial-milestones'),
-    progressRing: document.getElementById('dial-progress'),
-    handGroup: document.getElementById('dial-hand-group'),
-    eyebrow: document.getElementById('phase-eyebrow'),
-    timeDisplay: document.getElementById('time-display'),
-    progressLine: document.getElementById('progress-line'),
-    scheduleLine: document.getElementById('schedule-line'),
-    modeElapsedBtn: document.getElementById('mode-elapsed-btn'),
-    modeRemainingBtn: document.getElementById('mode-remaining-btn'),
-    startTimeSummary: document.getElementById('start-time-summary'),
-    shiftMinus1h: document.getElementById('shift-minus-1h'),
-    shiftMinus2h: document.getElementById('shift-minus-2h'),
-    editStartBtn: document.getElementById('edit-start-btn'),
-    editStartPanel: document.getElementById('edit-start-panel'),
-    startDatetime: document.getElementById('start-datetime'),
-    saveStartBtn: document.getElementById('save-start-btn'),
-    resetStartNowBtn: document.getElementById('reset-start-now-btn'),
-    resetNowQuickBtn: document.getElementById('reset-now-quick-btn'),
-    cancelStartBtn: document.getElementById('cancel-start-btn'),
-    noteInput: document.getElementById('fast-note-input'),
-    toggleBtn: document.getElementById('toggle-btn'),
-    discardBtn: document.getElementById('discard-btn'),
-    soundQuickBtn: document.getElementById('sound-quick-btn'),
-    notifyBtn: document.getElementById('notify-btn'),
-    liveStatus: document.getElementById('live-status'),
-    spotlightCard: document.getElementById('spotlight-card'),
-    spotlightBadge: document.getElementById('spotlight-badge'),
-    spotlightPhase: document.getElementById('spotlight-phase'),
-    spotlightStatus: document.getElementById('spotlight-status'),
-    spotlightTitle: document.getElementById('spotlight-title'),
-    spotlightBenefit: document.getElementById('spotlight-benefit'),
-    markerFuel: document.getElementById('marker-fuel'),
-    markerInsulin: document.getElementById('marker-insulin'),
-    markerShift: document.getElementById('marker-shift'),
-    hourProgressWrap: document.getElementById('hour-progress-wrap'),
-    hourProgressFill: document.getElementById('hour-progress-fill'),
-    hourProgressLabel: document.getElementById('hour-progress-label'),
-    nextHourPreview: document.getElementById('next-hour-preview'),
-    prevHourBtn: document.getElementById('prev-hour-btn'),
-    currentHourBtn: document.getElementById('current-hour-btn'),
-    nextHourBtn: document.getElementById('next-hour-btn'),
-    hourMatrix: document.getElementById('hour-matrix'),
-    inspBadge: document.getElementById('insp-badge'),
-    inspPhase: document.getElementById('insp-phase'),
-    inspRel: document.getElementById('insp-rel'),
-    inspTitle: document.getElementById('insp-title'),
-    inspBenefit: document.getElementById('insp-benefit'),
-    inspFuel: document.getElementById('insp-fuel'),
-    inspInsulin: document.getElementById('insp-insulin'),
-    inspShift: document.getElementById('insp-shift'),
-    filterChips: [...document.querySelectorAll('.filter-chip[data-filter]')],
-    hourlyList: document.getElementById('hourly-list'),
-    statsSummary: document.getElementById('stats-summary'),
-    historyDrawer: document.getElementById('history-drawer'),
-    historyCount: document.getElementById('history-count'),
-    historyEmpty: document.getElementById('history-empty'),
-    historyList: document.getElementById('history-list'),
-    clearHistoryBtn: document.getElementById('clear-history-btn'),
-  };
-
-  els.progressRing.style.strokeDasharray = `${RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`;
-  els.progressRing.style.strokeDashoffset = `${RING_CIRCUMFERENCE}`;
 
   const saved = loadStore();
   let history = Array.isArray(saved?.history) ? saved.history : [];
-
-  const initialPresetId = saved?.presetId && (saved.presetId === 'custom' || PRESETS[saved.presetId])
-    ? saved.presetId
-    : '16h';
-  const initialGoalMin = Number.isFinite(Number(saved?.goalMinutes))
-    ? clampTotalGoalMinutes(saved.goalMinutes)
-    : PRESETS['16h'].minutes;
-
-  const VALID_FILTERS = new Set(['all', 'goal', '0-11', '12-23', '24-47', '48-72']);
-  const initialFilter = VALID_FILTERS.has(saved?.filter) ? saved.filter : 'all';
-  const initialInspectedHour = Number.isInteger(saved?.inspectedHour)
-    ? Math.max(0, Math.min(72, saved.inspectedHour))
-    : null;
+  const presetId = saved?.presetId && (saved.presetId === 'custom' || PRESETS[saved.presetId]) ? saved.presetId : '16h';
+  const savedGoal = Number.isFinite(Number(saved?.goalMinutes)) ? clampTotalGoalMinutes(saved.goalMinutes) : PRESETS['16h'].minutes;
 
   const state = {
     isFasting: Boolean(saved?.isFasting && typeof saved?.startTime === 'number'),
     startTime: typeof saved?.startTime === 'number' ? saved.startTime : null,
     plannedStartTime: typeof saved?.plannedStartTime === 'number' ? saved.plannedStartTime : null,
-    presetId: initialPresetId,
-    goalMinutes: initialPresetId === 'custom' ? initialGoalMin : PRESETS[initialPresetId].minutes,
+    presetId,
+    goalMinutes: presetId === 'custom' ? savedGoal : PRESETS[presetId].minutes,
     customMinutes: Number.isFinite(Number(saved?.customMinutes)) ? clampTotalGoalMinutes(saved.customMinutes) : 17 * 60,
     displayMode: saved?.displayMode === 'remaining' ? 'remaining' : 'elapsed',
     note: typeof saved?.note === 'string' ? saved.note : '',
-    chimeOn: saved?.chimeOn !== false,
+    sound: saved?.chimeOn !== false,
     notifyOn: Boolean(saved?.notifyOn),
     goalNotified: Boolean(saved?.goalNotified),
-    editingStart: false,
-    customOpen: Boolean(saved?.customOpen),
-    inspectedHour: initialInspectedHour ?? 16,
-    hasSavedInspectedHour: initialInspectedHour !== null,
-    filter: initialFilter,
+    // null follows the hour you are in
+    pinnedHour: saved?.pinned === true && Number.isInteger(saved?.inspectedHour) ? Math.max(0, Math.min(168, saved.inspectedHour)) : null,
+    previewHour: null,
+    customOpen: false,
   };
+  if (!state.isFasting) state.startTime = null;
 
-  if (els.historyDrawer) {
-    els.historyDrawer.open = Boolean(saved?.historyOpen);
-  }
+  const sound = new Sound();
+  sound.setOn(state.sound);
 
-  els.noteInput.value = state.note;
-
-  let tickTimer = null;
-  let lastRenderedHour = -1;
-  let lastFaviconBucket = '';
-  const hourMatrixCells = [];
-  let milestoneDots = [];
+  let openPanel = null;
+  let quietTimer = 0;
+  let anim = null;
+  let lastHour = -1;
+  let lastPhase = null;
+  let lastFavicon = '';
+  let marked = { now: null, goal: null };
+  let renderedGoal = null;
+  const reduceMotion = Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   function persist() {
     saveStore({
@@ -396,799 +576,991 @@
       customMinutes: state.customMinutes,
       displayMode: state.displayMode,
       note: state.note,
-      chimeOn: state.chimeOn,
+      chimeOn: state.sound,
       notifyOn: state.notifyOn,
       goalNotified: state.goalNotified,
-      filter: state.filter,
-      inspectedHour: state.inspectedHour,
-      customOpen: state.customOpen,
-      historyOpen: Boolean(els.historyDrawer?.open),
-      history: history.slice(-100),
+      inspectedHour: state.pinnedHour,
+      pinned: state.pinnedHour !== null,
+      history: history.slice(-200),
     });
   }
 
   function announce(text) {
-    els.liveStatus.textContent = text;
+    els.live.textContent = text;
   }
 
-  function buildDialMilestones() {
-    els.milestonesGroup.replaceChildren();
-    milestoneDots = [];
-    const goalHours = state.goalMinutes / 60;
-    for (const h of MILESTONE_HOURS) {
-      if (h > goalHours) continue;
-      const frac = h / goalHours;
-      const angle = frac * 2 * Math.PI - Math.PI / 2;
-      const cx = (180 + RING_RADIUS * Math.cos(angle)).toFixed(2);
-      const cy = (180 + RING_RADIUS * Math.sin(angle)).toFixed(2);
-      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      dot.setAttribute('cx', cx);
-      dot.setAttribute('cy', cy);
-      dot.setAttribute('r', Math.abs(h - goalHours) < 0.01 ? '4.5' : '3.2');
-      dot.dataset.hour = String(h);
-      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-      title.textContent = `${h}h milestone`;
-      dot.appendChild(title);
-      els.milestonesGroup.appendChild(dot);
-      milestoneDots.push({ hour: h, el: dot });
-    }
+  function setVar(name, value) {
+    root.style.setProperty(name, value);
   }
 
-  function buildHourMatrix() {
-    els.hourMatrix.replaceChildren();
-    hourMatrixCells.length = 0;
-    for (let h = 0; h < HOUR_BENEFITS.length; h++) {
-      const item = HOUR_BENEFITS[h];
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'hour-cell';
-      btn.dataset.hour = String(h);
-      btn.dataset.phase = item.phase;
-      btn.setAttribute('role', 'option');
-      btn.setAttribute('aria-selected', 'false');
-      btn.textContent = `${h}h`;
-      btn.title = `Hour ${h}: ${item.title}`;
-      btn.addEventListener('click', () => {
-        state.inspectedHour = h;
-        renderInspector();
-        highlightHourlyList(true);
-        persist();
-      });
-      els.hourMatrix.appendChild(btn);
-      hourMatrixCells.push(btn);
-    }
+  function goalHours() {
+    return state.goalMinutes / 60;
   }
 
-  function filteredHours() {
-    const goalHour = Math.min(72, Math.ceil(state.goalMinutes / 60));
-    return HOUR_BENEFITS.filter((item) => {
-      if (state.filter === 'all') return true;
-      if (state.filter === 'goal') return item.hour <= goalHour;
-      if (state.filter === '0-11') return item.hour >= 0 && item.hour <= 11;
-      if (state.filter === '12-23') return item.hour >= 12 && item.hour <= 23;
-      if (state.filter === '24-47') return item.hour >= 24 && item.hour <= 47;
-      if (state.filter === '48-72') return item.hour >= 48 && item.hour <= 72;
-      return true;
-    });
+  function progress(now = Date.now()) {
+    return state.isFasting && state.startTime !== null ? computeFastProgress(state.startTime, state.goalMinutes, now) : null;
   }
 
-  function buildHourlyList() {
-    els.hourlyList.replaceChildren();
-    const list = filteredHours();
-    const goalHour = Math.round(state.goalMinutes / 60);
-    const nowMs = Date.now();
-    const activeStart = state.isFasting ? state.startTime : null;
-    const currentElapsedH = activeStart !== null ? Math.floor(Math.max(0, nowMs - activeStart) / 3_600_000) : -1;
-
-    list.forEach((item) => {
-      const li = document.createElement('li');
-      li.className = 'hourly-item';
-      li.dataset.hour = String(item.hour);
-      li.tabIndex = 0;
-
-      const isPassed = activeStart !== null && item.hour < currentElapsedH;
-      const isCurrent = activeStart !== null && item.hour === currentElapsedH;
-      if (isPassed) li.classList.add('is-passed');
-      if (isCurrent) li.classList.add('is-current');
-      if (item.hour === state.inspectedHour) li.classList.add('is-selected');
-
-      const hourCol = document.createElement('div');
-      hourCol.className = 'hourly-item-hour';
-      const hourText = document.createElement('span');
-      hourText.textContent = `${item.hour}h`;
-      const stateText = document.createElement('span');
-      stateText.className = 'hourly-item-state';
-      if (isCurrent) stateText.textContent = 'Now';
-      else if (isPassed) stateText.textContent = 'Passed';
-      else if (item.hour === goalHour) stateText.textContent = 'Goal';
-      else if (activeStart !== null) stateText.textContent = formatShortDateTime(activeStart + item.hour * 3_600_000);
-      else stateText.textContent = item.hour === goalHour ? 'Goal' : '';
-      hourCol.append(hourText, stateText);
-
-      const contentCol = document.createElement('div');
-      const top = document.createElement('div');
-      top.className = 'hourly-item-top';
-      const title = document.createElement('h3');
-      title.className = 'hourly-item-title';
-      title.textContent = item.title;
-      const phase = document.createElement('span');
-      phase.className = 'hourly-item-phase';
-      phase.textContent = item.phaseLabel;
-      top.append(title, phase);
-
-      const desc = document.createElement('p');
-      desc.className = 'hourly-item-desc';
-      desc.textContent = item.benefit;
-
-      const tags = document.createElement('p');
-      tags.className = 'hourly-item-tags';
-      tags.textContent = `Fuel: ${item.fuel} · Insulin: ${item.insulin} · ${item.shift}`;
-
-      contentCol.append(top, desc, tags);
-      li.append(hourCol, contentCol);
-
-      const selectThis = () => {
-        state.inspectedHour = item.hour;
-        renderInspector();
-        highlightHourlyList(false);
-        persist();
-      };
-      li.addEventListener('click', selectThis);
-      li.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          selectThis();
-        }
-      });
-
-      els.hourlyList.appendChild(li);
-    });
+  function pad2(n) {
+    return String(n).padStart(2, '0');
   }
 
-  function highlightHourlyList(scrollInside = false) {
-    const items = els.hourlyList.querySelectorAll('.hourly-item');
-    let selectedEl = null;
-    items.forEach((el) => {
-      const match = Number(el.dataset.hour) === state.inspectedHour;
-      el.classList.toggle('is-selected', match);
-      if (match) selectedEl = el;
-    });
-    if (scrollInside && selectedEl && typeof selectedEl.getBoundingClientRect === 'function') {
-      const container = els.hourlyList;
-      const cRect = container.getBoundingClientRect();
-      const sRect = selectedEl.getBoundingClientRect();
-      if (sRect.top < cRect.top) {
-        container.scrollTop += sRect.top - cRect.top - 8;
-      } else if (sRect.bottom > cRect.bottom) {
-        container.scrollTop += sRect.bottom - cRect.bottom + 8;
-      }
-    }
-  }
-
-  function updateHourMatrixStates(currentHour, isFasting) {
-    const goalHour = Math.round(state.goalMinutes / 60);
-    hourMatrixCells.forEach((cell) => {
-      const h = Number(cell.dataset.hour);
-      cell.classList.toggle('passed', isFasting && h < currentHour);
-      cell.classList.toggle('current', isFasting && h === currentHour);
-      cell.classList.toggle('goal', h === goalHour);
-      cell.setAttribute('aria-selected', String(h === state.inspectedHour));
-    });
-  }
-
-  function renderInspector() {
-    const h = Math.max(0, Math.min(72, state.inspectedHour));
-    const item = getHourBenefit(h);
-    const goalHour = Math.round(state.goalMinutes / 60);
-
-    els.inspBadge.textContent = `Hour ${item.hour}`;
-    els.inspPhase.textContent = item.phaseLabel;
-    els.inspTitle.textContent = item.title;
-    els.inspBenefit.textContent = item.benefit;
-    els.inspFuel.textContent = `Fuel: ${item.fuel}`;
-    els.inspInsulin.textContent = `Insulin: ${item.insulin}`;
-    els.inspShift.textContent = `Shift: ${item.shift}`;
-
-    if (state.isFasting && state.startTime !== null) {
-      const prog = computeFastProgress(state.startTime, state.goalMinutes);
-      if (h < prog.currentHour) {
-        els.inspRel.textContent = 'Completed in this fast';
-      } else if (h === prog.currentHour) {
-        els.inspRel.textContent = 'Active hour now';
-      } else {
-        const at = formatShortDateTime(state.startTime + h * 3_600_000);
-        els.inspRel.textContent = h === goalHour ? `Goal hour · ${at}` : `Reached at ${at}`;
-      }
-    } else {
-      els.inspRel.textContent = h === goalHour ? 'Selected goal hour' : `Hour ${h} of 72`;
-    }
-
-    els.prevHourBtn.disabled = h <= 0;
-    els.nextHourBtn.disabled = h >= 72;
-    updateHourMatrixStates(
-      state.isFasting && state.startTime !== null ? computeFastProgress(state.startTime, state.goalMinutes).currentHour : -1,
-      state.isFasting,
-    );
-  }
-
-  function renderSpotlight(progress) {
-    const activeHour = state.isFasting ? progress.currentHour : 0;
-    const item = getHourBenefit(activeHour);
-    const nextItem = getHourBenefit(activeHour + 1);
-
-    els.body.dataset.phase = item.phase;
-    els.spotlightBadge.textContent = `Hour ${activeHour}`;
-    els.spotlightPhase.textContent = item.phaseLabel;
-    els.spotlightTitle.textContent = item.title;
-    els.spotlightBenefit.textContent = item.benefit;
-    els.markerFuel.textContent = `Fuel: ${item.fuel}`;
-    els.markerInsulin.textContent = `Insulin: ${item.insulin}`;
-    els.markerShift.textContent = `Shift: ${item.shift}`;
-
-    if (state.isFasting) {
-      els.spotlightStatus.textContent = progress.goalReached ? 'Goal reached' : 'Active now';
-      els.hourProgressWrap.hidden = false;
-      const pctInHour = (progress.minutesIntoHour / 60) * 100;
-      els.hourProgressFill.style.width = `${pctInHour.toFixed(1)}%`;
-      const minsLeft = 60 - progress.minutesIntoHour;
-      els.hourProgressLabel.textContent = `${progress.minutesIntoHour}m / 60m (${minsLeft}m to ${activeHour + 1}h)`;
-      els.nextHourPreview.textContent = `Next (Hour ${activeHour + 1}): ${nextItem.title}`;
-    } else {
-      els.spotlightStatus.textContent = 'Hour 0 preview';
-      els.hourProgressWrap.hidden = true;
-      els.nextHourPreview.textContent = `Next (Hour 1): ${nextItem.title}`;
-    }
-  }
-
-  function updateFavicon(ringProgress, phase, isFasting) {
-    const bucket = `${phase}:${isFasting}:${Math.round(ringProgress * 20)}`;
-    if (bucket === lastFaviconBucket) return;
-    lastFaviconBucket = bucket;
-
-    const palette = {
-      digestion: '#8a6434',
-      glycogen: '#9c4a2d',
-      ketosis: '#364a32',
-      autophagy: '#2e4c66',
-      extended: '#59446b',
+  function clockLabel(ts, now = Date.now()) {
+    const d = new Date(ts);
+    const hm = `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    const day = (x) => {
+      const t = new Date(x);
+      return new Date(t.getFullYear(), t.getMonth(), t.getDate()).getTime();
     };
-    const stroke = palette[phase] || '#364a32';
-    const r = 12;
-    const c = 2 * Math.PI * r;
-    const offset = isFasting ? c * (1 - Math.max(0, Math.min(1, ringProgress))) : c;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#faf7f2"/><circle cx="16" cy="16" r="12" fill="none" stroke="#e2ddd2" stroke-width="3"/><circle cx="16" cy="16" r="12" fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}" transform="rotate(-90 16 16)"/><circle cx="16" cy="16" r="3" fill="${stroke}"/></svg>`;
-    els.favicon.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    const diff = Math.round((day(ts) - day(now)) / 86_400_000);
+    if (diff === 0) return hm;
+    if (diff === 1) return `tomorrow ${hm}`;
+    if (diff === -1) return `yesterday ${hm}`;
+    return `${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]} ${hm}`;
   }
 
-  function renderDialAndSpotlight() {
-    const now = Date.now();
-    const goalText = formatGoalLabel(state.goalMinutes);
+  function dateLabel(ts) {
+    const d = new Date(ts);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  }
 
-    if (!state.isFasting || state.startTime === null) {
-      const hasBackdate = Boolean(state.plannedStartTime && state.plannedStartTime < now);
-      const startPreview = hasBackdate ? state.plannedStartTime : now;
-      const goalAt = startPreview + state.goalMinutes * 60_000;
-      const prog = hasBackdate
-        ? computeFastProgress(state.plannedStartTime, state.goalMinutes, now)
-        : null;
+  function toLocalInput(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  }
 
-      if (els.resetNowQuickBtn) {
-        els.resetNowQuickBtn.hidden = !hasBackdate;
+  // ── Drawing the glass ───────────────────────────────────
+
+  function svg(tag, attrs = {}, parent = null) {
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+
+  const f1 = (n) => Math.round(n * 10) / 10;
+
+  // The near half of a level circle at height y and half width a.
+  function frontArc(y, a) {
+    const r = a * tilt(y);
+    return `M${f1(G.cx - a)} ${f1(y)} A${f1(a)} ${f1(r)} 0 0 0 ${f1(G.cx + a)} ${f1(y)}`;
+  }
+
+  function backArc(y, a) {
+    const r = a * tilt(y);
+    return `M${f1(G.cx - a)} ${f1(y)} A${f1(a)} ${f1(r)} 0 0 1 ${f1(G.cx + a)} ${f1(y)}`;
+  }
+
+  // A point on that near half, x from the centre.
+  function onFront(y, a, dx) {
+    const r = a * tilt(y);
+    const u = Math.max(-1, Math.min(1, dx / a));
+    return y + r * Math.sqrt(1 - u * u);
+  }
+
+  function waterPath(yw) {
+    const a = innerHalf(yw);
+    const ra = a * tilt(yw);
+    const b = innerHalf(G.floor);
+    const rb = b * tilt(G.floor);
+    return `M${f1(G.cx - a)} ${f1(yw)} L${f1(G.cx - b)} ${G.floor} A${f1(b)} ${f1(rb)} 0 0 0 ${f1(G.cx + b)} ${G.floor} L${f1(G.cx + a)} ${f1(yw)} A${f1(a)} ${f1(ra)} 0 0 1 ${f1(G.cx - a)} ${f1(yw)}Z`;
+  }
+
+  const parts = {};
+
+  function buildGlass() {
+    const g = els.glass;
+    g.replaceChildren();
+    const defs = svg('defs', {}, g);
+
+    const lin = (id, x2, y2, stops) => {
+      const lg = svg('linearGradient', { id, x1: 0, y1: 0, x2, y2 }, defs);
+      for (const [offset, cls, extra] of stops) svg('stop', { offset, class: cls, ...(extra || {}) }, lg);
+      return lg;
+    };
+    // Across the water: dark where you look through more of it, at the sides.
+    lin('w-x', 1, 0, [[0, 's-w-edge'], [0.14, 's-w-mid'], [0.5, 's-w-mid', { 'stop-opacity': 0.4 }], [0.84, 's-w-mid'], [1, 's-w-edge']]);
+    lin('w-y', 0, 1, [[0, 's-w-deep', { 'stop-opacity': 0 }], [1, 's-w-deep']]);
+    lin('w-surf', 0, 1, [[0, 's-surf-lo'], [0.55, 's-surf-hi'], [1, 's-surf-lo']]);
+    lin('spec-v', 0, 1, [[0, 's-spec-lo'], [0.12, 's-spec-hi'], [0.62, 's-spec-hi', { 'stop-opacity': 0.5 }], [1, 's-spec-lo']]);
+    lin('stream', 1, 0, [[0, 's-spec-lo'], [0.35, 's-spec-hi', { 'stop-opacity': 0.55 }], [0.6, 's-spec-hi', { 'stop-opacity': 0.25 }], [1, 's-spec-lo']]);
+
+    const blur = svg('filter', { id: 'soft', x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs);
+    svg('feGaussianBlur', { stdDeviation: 2.2 }, blur);
+    const blurBig = svg('filter', { id: 'softer', x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs);
+    svg('feGaussianBlur', { stdDeviation: 5 }, blurBig);
+
+    const clip = svg('clipPath', { id: 'w-clip' }, defs);
+    parts.clipPath = svg('path', { d: waterPath(G.floor) }, clip);
+
+    const oT = outerHalf(G.rim);
+    const oB = outerHalf(G.bottom);
+    const iT = innerHalf(G.rim);
+    const iF = innerHalf(G.floor);
+
+    // Where it touches the stone.
+    svg('ellipse', { cx: G.cx, cy: G.bottom + 3, rx: oB + 4, ry: oB * tilt(G.bottom) + 3, fill: 'rgba(0,0,0,0.28)', filter: 'url(#soft)' }, g);
+
+    // The body of the glass, faintly there even when it is empty.
+    svg('path', {
+      class: 'g-tint',
+      d: `M${f1(G.cx - oT)} ${G.rim} L${f1(G.cx - oB)} ${G.bottom} A${f1(oB)} ${f1(oB * tilt(G.bottom))} 0 0 0 ${f1(G.cx + oB)} ${G.bottom} L${f1(G.cx + oT)} ${G.rim}Z`,
+    }, g);
+    svg('path', { class: 'g-edge-soft', d: backArc(G.floor, iF) }, g);
+
+    // The water, and the room seen through it. The table's edge drops a
+    // little behind the water, which is most of what makes it read as water.
+    const water = svg('g', { class: 'water-group' }, g);
+    const inside = svg('g', { 'clip-path': 'url(#w-clip)' }, water);
+    svg('rect', { class: 'w-wall', x: 0, y: 0, width: 200, height: 440, opacity: 0.4 }, inside);
+    svg('rect', { class: 'w-table', x: 0, y: f1(G.horizon + 13), width: 200, height: 200 }, inside);
+    svg('rect', { x: 0, y: f1(G.horizon + 13), width: 200, height: 2, fill: 'rgba(255,255,255,0.2)' }, inside);
+    svg('rect', { class: 'w-tint', x: 0, y: 0, width: 200, height: 440 }, inside);
+    svg('rect', { class: 'w-deep', x: 0, y: G.full, width: 200, height: G.floor - G.full + 30 }, inside);
+    // The lamp, bent through the water, lands on the far side.
+    svg('rect', { x: G.cx + 30, y: 0, width: 20, height: 440, fill: 'url(#spec-v)', opacity: 0.6, filter: 'url(#soft)' }, inside);
+
+    parts.surface = svg('ellipse', { class: 'w-surface', cx: G.cx, cy: G.floor, rx: 0, ry: 0 }, water);
+    parts.meniscusLo = svg('path', { class: 'w-meniscus-lo', d: '' }, water);
+    parts.meniscus = svg('path', { class: 'w-meniscus', d: '' }, water);
+
+    // A falling stream while it pours.
+    parts.stream = svg('rect', { x: G.cx - 3.2, y: -900, width: 6.4, height: 0, rx: 3, fill: 'url(#stream)', opacity: 0 }, g);
+
+    // What is left once the water is gone.
+    const drops = svg('g', { class: 'drops' }, g);
+    for (const [x, y, r] of [[-38, 382, 2.2], [-20, 386, 1.4], [12, 384, 1.8], [30, 380, 1.2], [44, 385, 2.4], [-52, 377, 1.1]]) {
+      svg('ellipse', { cx: G.cx + x, cy: y, rx: r * 1.4, ry: r * 0.6 }, drops);
+    }
+
+    // The thick base, which gathers the light.
+    svg('path', {
+      class: 'g-base',
+      d: `M${f1(G.cx - innerHalf(G.floor) - G.wall)} ${G.floor} L${f1(G.cx - oB)} ${G.bottom} A${f1(oB)} ${f1(oB * tilt(G.bottom))} 0 0 0 ${f1(G.cx + oB)} ${G.bottom} L${f1(G.cx + outerHalf(G.floor))} ${G.floor} A${f1(outerHalf(G.floor))} ${f1(outerHalf(G.floor) * tilt(G.floor))} 0 0 1 ${f1(G.cx - outerHalf(G.floor))} ${G.floor}Z`,
+    }, g);
+    svg('ellipse', { cx: G.cx + 10, cy: G.bottom - 6, rx: 30, ry: 5, class: 'g-spec', opacity: 0.45, filter: 'url(#soft)' }, g);
+    svg('path', { class: 'g-edge-soft', d: frontArc(G.floor, iF) }, g);
+    svg('path', { class: 'g-edge', d: frontArc(G.bottom, oB) }, g);
+
+    // Marks go on the front face.
+    parts.marks = svg('g', { class: 'marks' }, g);
+
+    // Walls: dark where you look through the glass edge-on.
+    svg('path', { class: 'g-edge', d: `M${f1(G.cx - oT)} ${G.rim} L${f1(G.cx - oB)} ${G.bottom}` }, g);
+    svg('path', { class: 'g-edge', d: `M${f1(G.cx + oT)} ${G.rim} L${f1(G.cx + oB)} ${G.bottom}` }, g);
+    svg('path', { class: 'g-edge-soft', d: `M${f1(G.cx - iT)} ${G.rim + 2} L${f1(G.cx - iF)} ${G.floor}` }, g);
+    svg('path', { class: 'g-edge-soft', d: `M${f1(G.cx + iT)} ${G.rim + 2} L${f1(G.cx + iF)} ${G.floor}` }, g);
+
+    // The lamp on the near side, a long soft streak and a hard line beside it.
+    svg('path', {
+      d: `M${f1(G.cx - oT + 9)} ${G.rim + 20} L${f1(G.cx - oT + 17)} ${G.rim + 20} L${f1(G.cx - oB + 16)} ${G.floor - 10} L${f1(G.cx - oB + 9)} ${G.floor - 10}Z`,
+      fill: 'url(#spec-v)',
+      opacity: 0.8,
+      filter: 'url(#soft)',
+    }, g);
+    svg('path', {
+      d: `M${f1(G.cx - oT + 4.2)} ${G.rim + 10} L${f1(G.cx - oB + 4.2)} ${G.bottom - 14}`,
+      stroke: 'url(#spec-v)',
+      'stroke-width': 1.3,
+      fill: 'none',
+    }, g);
+    svg('path', {
+      d: `M${f1(G.cx + oT - 7)} ${G.rim + 30} L${f1(G.cx + oB - 6.5)} ${G.floor - 30}`,
+      stroke: 'url(#spec-v)',
+      'stroke-width': 2,
+      fill: 'none',
+      opacity: 0.45,
+    }, g);
+
+    // The lip.
+    svg('ellipse', { class: 'g-edge-soft', cx: G.cx, cy: G.rim + 1, rx: iT, ry: iT * tilt(G.rim) }, g);
+    svg('ellipse', { class: 'g-rim', cx: G.cx, cy: G.rim, rx: oT, ry: oT * tilt(G.rim) }, g);
+    svg('path', { class: 'g-rim-front', d: frontArc(G.rim + 1.6, oT - 0.6) }, g);
+
+    parts.probe = svg('path', { class: 'probe', d: '' }, g);
+  }
+
+  function etchText(parent, x, y, text, extra = {}) {
+    svg('text', { class: `etch-s ${extra.cls || ''}`, x: f1(x + 0.5), y: f1(y + 0.7), 'text-anchor': extra.anchor || 'start' }, parent).textContent = text;
+    svg('text', { class: `etch ${extra.cls || ''}`, x: f1(x), y: f1(y), 'text-anchor': extra.anchor || 'start' }, parent).textContent = text;
+  }
+
+  function etchTick(parent, y, len) {
+    const a = outerHalf(y);
+    const x0 = G.cx - a + 6;
+    const pts = [];
+    for (let i = 0; i <= 4; i++) {
+      const x = x0 + (len * i) / 4;
+      pts.push(`${f1(x)} ${f1(onFront(y, a, x - G.cx))}`);
+    }
+    const d = `M${pts.join(' L')}`;
+    svg('path', { class: 'etch-line-s', d, transform: 'translate(0.4 0.7)' }, parent);
+    svg('path', { class: 'etch-line', d }, parent);
+    return x0 + len;
+  }
+
+  function buildMarks() {
+    const m = parts.marks;
+    if (!m) return;
+    m.replaceChildren();
+    const hrs = goalHours();
+    const plan = markPlan(hrs);
+    const goalY = hourToY(hrs, hrs);
+    const labelAt = (h, y, text, cls) => {
+      const a = outerHalf(y);
+      const x = G.cx - a + 6 + 17;
+      etchText(m, x, onFront(y, a, x + 6 - G.cx) + 3.6, text, { cls });
+    };
+
+    for (let h = 0; h < hrs; h += plan.tick) {
+      const y = hourToY(h, hrs);
+      const labelled = h % plan.label === 0 && goalY - y > 24;
+      etchTick(m, y, labelled ? 13 : 7);
+      if (labelled) labelAt(h, y, String(h));
+    }
+    etchTick(m, goalY, 13);
+    labelAt(hrs, goalY - 1, formatGoalLabel(state.goalMinutes), 'etch-goal');
+
+    // Phase lines and their names, on the far right of the face.
+    for (let i = 0; i < PHASES.length; i++) {
+      const p = PHASES[i];
+      if (p.from >= hrs) break;
+      const y = hourToY(p.from, hrs);
+      const next = i + 1 < PHASES.length ? Math.min(PHASES[i + 1].from, hrs) : hrs;
+      const band = hourToY(next, hrs) - y;
+      if (p.from > 0) svg('path', { class: 'etch-phase', d: frontArc(y, innerHalf(y) - 1) }, m);
+      if (band >= 13) {
+        const a = outerHalf(y);
+        const x = G.cx + a - 9;
+        etchText(m, x, onFront(y, a, x - 22 - G.cx) + 11, p.name, { anchor: 'end', cls: 'etch-name' });
       }
+    }
 
-      const previewProgress = prog ? prog.ringProgress : 0;
-      els.progressRing.style.strokeDashoffset = `${(RING_CIRCUMFERENCE * (1 - previewProgress)).toFixed(2)}`;
-      els.handGroup.setAttribute('transform', `rotate(${(previewProgress * 360).toFixed(2)} 180 180)`);
-      milestoneDots.forEach(({ hour, el }) => {
-        el.classList.toggle('reached', Boolean(prog && prog.elapsedMs >= hour * 3_600_000));
-      });
+    els.glass.setAttribute('aria-valuemax', String(Math.max(72, Math.ceil(hrs))));
+  }
 
-      const presetMeta = state.presetId !== 'custom' && PRESETS[state.presetId].label !== goalText
-        ? ` (${PRESETS[state.presetId].label})`
-        : '';
-      els.eyebrow.textContent = `Goal · ${goalText}${presetMeta}`;
-      if (prog) {
-        els.timeDisplay.textContent = state.displayMode === 'remaining'
-          ? (prog.goalReached ? `+${formatHMS(prog.pastGoalMs)}` : formatHMS(prog.remainingMs))
-          : formatHMS(prog.elapsedMs);
-        els.progressLine.textContent = `Start set earlier · ${formatHMS(prog.elapsedMs)} elapsed`;
+  function drawWater(level) {
+    const yw = levelToY(level);
+    const a = innerHalf(yw);
+    parts.clipPath.setAttribute('d', waterPath(yw));
+    const wet = level > 0.002;
+    parts.surface.setAttribute('cy', f1(yw));
+    parts.surface.setAttribute('rx', wet ? f1(a) : 0);
+    parts.surface.setAttribute('ry', wet ? f1(a * tilt(yw)) : 0);
+    parts.meniscus.setAttribute('d', wet ? frontArc(yw, a) : '');
+    parts.meniscusLo.setAttribute('d', wet ? frontArc(yw + 1.8, a) : '');
+    setVar('--level', level.toFixed(4));
+    setVar('--wy', ((G.bottom - yw) / 440).toFixed(4));
+    return yw;
+  }
+
+  function drawStream(topY, bottomY, alpha) {
+    parts.stream.setAttribute('y', f1(topY));
+    parts.stream.setAttribute('height', f1(Math.max(0, bottomY - topY)));
+    parts.stream.setAttribute('opacity', alpha.toFixed(2));
+  }
+
+  // ── Lamp by the clock ───────────────────────────────────
+  // A fast runs through the night. The lamp is warm at night and nearer
+  // daylight in the middle of the day.
+
+  function lampColor(date = new Date()) {
+    const h = date.getHours() + date.getMinutes() / 60;
+    const ramp = (a, b, x) => Math.max(0, Math.min(1, (x - a) / (b - a)));
+    const day = ramp(6, 8.5, h) * (1 - ramp(17.5, 20.5, h));
+    const night = [255, 206, 148];
+    const noon = [248, 244, 232];
+    return night.map((c, i) => Math.round(c + (noon[i] - c) * day)).join(', ');
+  }
+
+  function renderLamp() {
+    setVar('--glow-rgb', lampColor());
+  }
+
+  // ── Card ────────────────────────────────────────────────
+
+  function defaultHour(prog) {
+    return prog ? prog.currentHour : Math.round(goalHours());
+  }
+
+  function shownHour(prog) {
+    if (state.previewHour !== null) return state.previewHour;
+    if (state.pinnedHour !== null) return state.pinnedHour;
+    return defaultHour(prog);
+  }
+
+  function maxHour() {
+    return Math.max(72, Math.ceil(goalHours()));
+  }
+
+  function renderCard(prog, now = Date.now()) {
+    const h = shownHour(prog);
+    const info = getHourBenefit(h);
+    const hrs = goalHours();
+    els.cardHour.textContent = `Hour ${h}`;
+    els.cardPhase.textContent = info.phaseLabel;
+    els.cardTitle.textContent = info.title;
+    els.cardText.textContent = info.benefit;
+    els.cardMeta.textContent = `Fuel: ${info.fuel} · Insulin: ${info.insulin} · ${info.shift}`;
+
+    let when = '';
+    if (prog) {
+      if (h === prog.currentHour) when = 'now';
+      else if (h < prog.currentHour) when = `${formatDurationShort(now - (state.startTime + h * HOUR_MS))} ago`;
+      else when = `in ${formatDurationShort(state.startTime + h * HOUR_MS - now)}`;
+    } else if (h === Math.round(hrs)) {
+      when = 'at the goal';
+    } else if (h > hrs) {
+      when = 'past the goal';
+    }
+    els.cardWhen.textContent = when;
+
+    const pinned = state.pinnedHour !== null && state.pinnedHour !== defaultHour(prog);
+    els.cardNow.hidden = !pinned;
+    els.cardNow.textContent = prog ? 'Back to now' : 'Back to the goal';
+    els.cardPrev.disabled = h <= 0;
+    els.cardNext.disabled = h >= maxHour();
+
+    // On a wide screen the card hangs at the hour it is about.
+    const y = hourToY(Math.min(h, hrs), hrs);
+    setVar('--iy', ((G.bottom - y) / 440).toFixed(4));
+    const reading = state.previewHour !== null || pinned;
+    body.classList.toggle('inspecting', reading && h <= hrs);
+    if (parts.probe) parts.probe.setAttribute('d', h <= hrs ? frontArc(y, innerHalf(y)) : '');
+
+    els.glass.setAttribute('aria-valuenow', String(h));
+    els.glass.setAttribute('aria-valuetext', `Hour ${h}. ${info.title}`);
+  }
+
+  function markNotes(prog) {
+    const now = prog ? Math.min(72, prog.currentHour) : null;
+    const goal = Number.isInteger(goalHours()) && goalHours() <= 72 ? goalHours() : null;
+    if (marked.now !== now) {
+      if (marked.now !== null) $(`h-${marked.now}`).classList.remove('is-now');
+      if (now !== null) $(`h-${now}`).classList.add('is-now');
+      marked.now = now;
+    }
+    if (marked.goal !== goal) {
+      if (marked.goal !== null) $(`h-${marked.goal}`).classList.remove('is-goal');
+      if (goal !== null) $(`h-${goal}`).classList.add('is-goal');
+      marked.goal = goal;
+    }
+  }
+
+  // ── Readout ─────────────────────────────────────────────
+
+  function renderFavicon(level, running) {
+    const key = `${running}:${Math.round(level * 20)}`;
+    if (key === lastFavicon) return;
+    lastFavicon = key;
+    const top = 6 + 21 * (1 - level);
+    const water = running && level > 0
+      ? `<path d="M9.3 ${f1(top)}h13.4l-${f1(1.6 * (1 - (top - 6) / 21) + 0.1)} ${f1(27 - top)}H10.9z" fill="#5b93a3"/>`
+      : '';
+    const svgText = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">${water}<path d="M7.5 4h17l-2.4 25H9.9z" fill="none" stroke="#283234" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
+    els.favicon.href = `data:image/svg+xml,${encodeURIComponent(svgText)}`;
+  }
+
+  function render(now = Date.now()) {
+    const prog = progress(now);
+    const hrs = goalHours();
+    const goalLabel = formatGoalLabel(state.goalMinutes);
+    const presetLabel = state.presetId !== 'custom' ? PRESETS[state.presetId].label : null;
+
+    body.dataset.state = prog ? 'running' : 'idle';
+
+    if (prog) {
+      const level = waterLevel(prog.elapsedMs, prog.goalMs);
+      const phase = phaseAt(prog.currentHour);
+      body.dataset.phase = phase.id;
+      body.classList.toggle('dry', prog.goalReached);
+      if (!anim) drawWater(level);
+
+      els.phase.textContent = prog.goalReached ? 'empty · goal reached' : `${phase.name} · hour ${prog.currentHour}`;
+      const goalAt = state.startTime + prog.goalMs;
+      if (state.displayMode === 'remaining') {
+        els.time.textContent = prog.goalReached ? `+${formatHMS(prog.pastGoalMs)}` : formatHMS(prog.remainingMs);
       } else {
-        els.timeDisplay.textContent = formatHMS(state.goalMinutes * 60_000);
-        els.progressLine.textContent = 'Ready to start';
+        els.time.textContent = formatHMS(prog.elapsedMs);
       }
-      els.scheduleLine.textContent = `Goal reached at ${formatShortDateTime(goalAt)}`;
-      els.startTimeSummary.textContent = hasBackdate
-        ? `Start time: ${formatShortDateTime(state.plannedStartTime)}`
-        : 'Start time: Now';
+      if (prog.goalReached) {
+        els.status.textContent = `goal reached ${clockLabel(goalAt, now)}\n${formatDurationShort(prog.pastGoalMs)} over`;
+      } else if (state.displayMode === 'remaining') {
+        els.status.textContent = `left\nempty at ${clockLabel(goalAt, now)}`;
+      } else {
+        els.status.textContent = `of ${goalLabel}\nempty at ${clockLabel(goalAt, now)}`;
+      }
+      els.nowTag.textContent = 'now';
 
+      document.title = prog.goalReached
+        ? `+${formatDurationShort(prog.pastGoalMs)} · Fasting`
+        : `${Math.floor(prog.elapsedMs / HOUR_MS)}h ${pad2(Math.floor((prog.elapsedMs % HOUR_MS) / 60_000))}m · Fasting`;
+      renderFavicon(level, true);
+
+      // A tap on the glass when the body changes fuel, two at the goal.
+      if (lastPhase !== null && phase.id !== lastPhase && !prog.goalReached) sound.clink(level, 0, 1, true);
+      lastPhase = phase.id;
+      if (prog.goalReached && !state.goalNotified) {
+        state.goalNotified = true;
+        persist();
+        if (lastHour !== -1) sound.clink(0, 0, 2);
+        notifyGoal();
+        announce(`Goal of ${goalLabel} reached.`);
+      }
+      if (prog.currentHour !== lastHour) {
+        lastHour = prog.currentHour;
+        markNotes(prog);
+      }
+    } else {
+      body.classList.remove('dry');
+      body.dataset.phase = 'digestion';
+      if (!anim) drawWater(0);
+      const planned = state.plannedStartTime && state.plannedStartTime < now ? state.plannedStartTime : null;
+      const goalAt = (planned || now) + state.goalMinutes * 60_000;
+      els.phase.textContent = presetLabel && presetLabel !== goalLabel ? `${goalLabel} · ${presetLabel}` : goalLabel;
+      els.time.textContent = formatHMS(state.goalMinutes * 60_000);
+      els.status.textContent = planned
+        ? `started ${clockLabel(planned, now)}\nempty at ${clockLabel(goalAt, now)}`
+        : `pour to start\nempty at ${clockLabel(goalAt, now)}`;
       document.title = BASE_TITLE;
-      renderSpotlight({ currentHour: 0, minutesIntoHour: 0, goalReached: false });
-      updateFavicon(previewProgress, 'digestion', false);
-      return;
+      renderFavicon(0, false);
+      lastHour = -1;
+      lastPhase = null;
+      markNotes(null);
     }
 
-    if (els.resetNowQuickBtn) {
-      els.resetNowQuickBtn.hidden = true;
-    }
-
-    const prog = computeFastProgress(state.startTime, state.goalMinutes, now);
-    const currentItem = getHourBenefit(prog.currentHour);
-
-    // Check goal reached chime/alert once
-    if (prog.goalReached && !state.goalNotified) {
-      state.goalNotified = true;
-      if (state.chimeOn) playGoalChime();
-      if (state.notifyOn && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-        try {
-          new Notification('Fasting goal reached', { body: `You reached your ${goalText} goal.` });
-        } catch {}
-      }
-      persist();
-    }
-
-    const offset = RING_CIRCUMFERENCE * (1 - prog.ringProgress);
-    els.progressRing.style.strokeDashoffset = `${offset.toFixed(2)}`;
-    els.handGroup.setAttribute('transform', `rotate(${(prog.ringProgress * 360).toFixed(2)} 180 180)`);
-    milestoneDots.forEach(({ hour, el }) => {
-      el.classList.toggle('reached', prog.elapsedMs >= hour * 3_600_000);
-    });
-
-    els.eyebrow.textContent = `${currentItem.phaseLabel} · Hour ${prog.currentHour}`;
-
-    if (state.displayMode === 'remaining') {
-      els.timeDisplay.textContent = prog.goalReached
-        ? `+${formatHMS(prog.pastGoalMs)}`
-        : formatHMS(prog.remainingMs);
-      els.progressLine.textContent = `${formatHMS(prog.elapsedMs)} elapsed · ${Math.round(prog.pct)}% of ${goalText}`;
+    // The start button says when.
+    if (prog) {
+      els.startBtn.textContent = `Started ${clockLabel(state.startTime, now)}`;
+    } else if (state.plannedStartTime && state.plannedStartTime < now) {
+      els.startBtn.textContent = `Started ${formatDurationShort(now - state.plannedStartTime)} ago`;
     } else {
-      els.timeDisplay.textContent = formatHMS(prog.elapsedMs);
-      els.progressLine.textContent = prog.goalReached
-        ? `Goal reached (+${formatHMS(prog.pastGoalMs)}) · ${Math.round(prog.pct)}%`
-        : `${formatHMS(prog.remainingMs)} left · ${Math.round(prog.pct)}% of ${goalText}`;
+      els.startBtn.textContent = 'Starts now';
     }
 
-    const goalAt = state.startTime + prog.goalMs;
-    els.scheduleLine.textContent = prog.goalReached
-      ? `Reached ${goalText} at ${formatShortDateTime(goalAt)}`
-      : `Goal at ${formatShortDateTime(goalAt)}`;
-    els.startTimeSummary.textContent = `Started: ${formatShortDateTime(state.startTime)}`;
-
-    document.title = `${formatHMS(prog.elapsedMs)} · Fasting · Memo Garcia`;
-
-    renderSpotlight(prog);
-    updateFavicon(prog.ringProgress, currentItem.phase, true);
-
-    if (prog.currentHour !== lastRenderedHour) {
-      lastRenderedHour = prog.currentHour;
-      updateHourMatrixStates(prog.currentHour, true);
-      buildHourlyList();
-      renderInspector();
-    }
-  }
-
-  function renderHistory() {
-    const stats = computeFastingStats(history);
-    if (stats.count === 0) {
-      els.statsSummary.textContent = '0 completed fasts';
-    } else {
-      els.statsSummary.textContent = `${stats.count} ${stats.count === 1 ? 'fast' : 'fasts'} · longest ${formatDurationShort(stats.longestMs)} · avg ${formatDurationShort(stats.avgMs)} · ${stats.goalsMet} goal met`;
-    }
-
-    els.historyCount.textContent = String(history.length);
-    els.historyEmpty.hidden = history.length > 0;
-    els.historyList.hidden = history.length === 0;
-    els.clearHistoryBtn.hidden = history.length === 0;
-
-    if (history.length > 0) {
-      els.historyList.replaceChildren();
-      [...history].reverse().forEach((item) => {
-        const li = document.createElement('li');
-        const timeSpan = document.createElement('span');
-        timeSpan.className = 'history-time';
-        timeSpan.textContent = `${formatShortDateTime(item.startedAt)} to ${formatShortDateTime(item.endedAt)}`;
-
-        const noteSpan = document.createElement('span');
-        noteSpan.className = item.note ? 'history-note' : 'history-note empty-note';
-        noteSpan.textContent = item.note || (item.goalReached ? `Goal reached (${formatGoalLabel(item.goalMinutes)})` : `Ended early (goal ${formatGoalLabel(item.goalMinutes)})`);
-
-        const durSpan = document.createElement('span');
-        durSpan.className = 'history-dur';
-        durSpan.textContent = formatDurationShort(item.elapsedMs);
-
-        li.append(timeSpan, noteSpan, durSpan);
-        els.historyList.appendChild(li);
-      });
+    renderCard(prog, now);
+    if (hrs !== renderedGoal) {
+      renderedGoal = hrs;
+      buildMarks();
     }
   }
 
   function renderChrome() {
-    els.body.dataset.state = state.isFasting ? 'running' : 'idle';
+    const running = state.isFasting;
+    if (!els.toggleBtn.classList.contains('armed')) els.toggleBtn.textContent = running ? 'End fast' : 'Pour';
+    els.discardBtn.hidden = !running;
+    els.goalBtn.textContent = `Goal ${formatGoalLabel(state.goalMinutes)}`;
+    els.soundBtn.textContent = state.sound ? 'Sound on' : 'Sound off';
+    els.soundBtn.setAttribute('aria-pressed', String(state.sound));
 
-    els.presetChips.forEach((chip) => {
-      const id = chip.dataset.preset;
-      if (id === 'custom') {
-        chip.setAttribute('aria-pressed', String(state.presetId === 'custom'));
-        chip.textContent = state.presetId === 'custom'
-          ? `Custom (${formatGoalLabel(state.goalMinutes)})`
-          : 'Custom';
-      } else {
-        chip.setAttribute('aria-pressed', String(state.presetId === id));
-      }
-    });
+    goalButtons.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.preset === state.presetId)));
+    els.goalNote.textContent = state.presetId === 'custom'
+      ? `${formatGoalLabel(state.goalMinutes)}. Set your own.`
+      : PRESETS[state.presetId].note;
+    els.customRow.hidden = !state.customOpen;
+    els.customHours.value = String(Math.floor(state.customMinutes / 60));
+    els.customMinutes.value = String(state.customMinutes % 60);
 
-    els.customGoalPanel.hidden = !state.customOpen;
-    els.customHours.value = String(Math.floor(state.goalMinutes / 60));
-    els.customMinutes.value = String(state.goalMinutes % 60);
+    const canNotify = typeof Notification !== 'undefined';
+    els.notify.disabled = !canNotify || Notification.permission === 'denied';
+    els.notify.checked = canNotify && state.notifyOn && Notification.permission === 'granted';
 
-    els.modeElapsedBtn.setAttribute('aria-pressed', String(state.displayMode === 'elapsed'));
-    els.modeRemainingBtn.setAttribute('aria-pressed', String(state.displayMode === 'remaining'));
+    const ref = running ? state.startTime : (state.plannedStartTime || Date.now());
+    els.startInput.value = toLocalInput(ref);
+    els.startInput.max = toLocalInput(Date.now());
+    els.startNow.hidden = running || !state.plannedStartTime;
 
-    els.editStartPanel.hidden = !state.editingStart;
-    if (state.editingStart) {
-      const refTs = state.isFasting ? state.startTime : (state.plannedStartTime || Date.now());
-      els.startDatetime.value = toLocalDateTimeInputValue(refTs);
-      els.startDatetime.max = toLocalDateTimeInputValue(Date.now());
-    }
-
-    els.toggleBtn.textContent = state.isFasting ? 'End Fast' : 'Start Fast';
-    els.discardBtn.hidden = !state.isFasting;
-
-    els.soundQuickBtn.textContent = state.chimeOn ? 'Chime: On' : 'Chime: Off';
-    els.soundQuickBtn.setAttribute('aria-pressed', String(state.chimeOn));
-
-    if (typeof Notification === 'undefined') {
-      els.notifyBtn.textContent = 'Alerts: Off';
-      els.notifyBtn.disabled = true;
-    } else if (Notification.permission === 'denied') {
-      els.notifyBtn.textContent = 'Alerts: Blocked';
-      els.notifyBtn.setAttribute('aria-pressed', 'false');
-      if (state.notifyOn) {
-        state.notifyOn = false;
-        persist();
-      }
-    } else {
-      const active = state.notifyOn && Notification.permission === 'granted';
-      els.notifyBtn.textContent = active ? 'Alerts: On' : 'Alerts: Off';
-      els.notifyBtn.setAttribute('aria-pressed', String(active));
-    }
-
-    els.filterChips.forEach((chip) => {
-      chip.setAttribute('aria-pressed', String(chip.dataset.filter === state.filter));
-    });
-
-    buildDialMilestones();
-    renderDialAndSpotlight();
-    buildHourlyList();
-    renderInspector();
-    renderHistory();
+    renderLog();
+    render();
+    wake();
   }
 
-  function startTicker() {
-    if (tickTimer !== null) clearInterval(tickTimer);
-    tickTimer = setInterval(() => {
-      renderDialAndSpotlight();
-    }, 1000);
+  function renderLog() {
+    const stats = computeFastingStats(history);
+    els.stats.textContent = stats.count === 0
+      ? 'No fasts yet.'
+      : `${stats.count} ${stats.count === 1 ? 'fast' : 'fasts'} · longest ${formatDurationShort(stats.longestMs)} · average ${formatDurationShort(stats.avgMs)} · ${stats.goalsMet} reached the goal`;
+    els.noteInput.value = state.note;
+    els.logEmpty.hidden = history.length > 0;
+    els.logList.hidden = history.length === 0;
+    els.logActions.hidden = history.length === 0;
+    if (history.length === 0 || openPanel !== 'log') return;
+    els.logList.replaceChildren();
+    [...history].reverse().slice(0, 60).forEach((item) => {
+      const li = document.createElement('li');
+      const when = document.createElement('span');
+      when.className = 'log-when';
+      when.textContent = dateLabel(item.startedAt);
+      const note = document.createElement('span');
+      note.className = 'log-note';
+      note.textContent = item.note || (item.goalReached ? `${formatGoalLabel(item.goalMinutes)} goal` : `ended before ${formatGoalLabel(item.goalMinutes)}`);
+      const dur = document.createElement('span');
+      dur.className = item.goalReached ? 'log-dur met' : 'log-dur';
+      dur.textContent = formatDurationShort(item.elapsedMs);
+      li.append(when, note, dur);
+      els.logList.appendChild(li);
+    });
   }
 
-  function selectPreset(id) {
-    if (id === 'custom') {
-      const nextOpen = state.presetId === 'custom' ? !state.customOpen : true;
-      state.presetId = 'custom';
-      state.customOpen = nextOpen;
-      state.goalMinutes = state.customMinutes;
-      state.goalNotified = state.isFasting && state.startTime !== null
-        ? computeFastProgress(state.startTime, state.goalMinutes).goalReached
-        : false;
-      state.inspectedHour = Math.min(72, Math.round(state.goalMinutes / 60));
-      renderChrome();
-      persist();
-      if (nextOpen) els.customHours.focus();
-      announce(`Custom goal selected: ${formatGoalLabel(state.goalMinutes)}.`);
+  function showPanel(name) {
+    openPanel = name;
+    for (const [key, panel] of Object.entries(els.panels)) panel.hidden = key !== name;
+    els.goalBtn.setAttribute('aria-expanded', String(name === 'goal'));
+    els.startBtn.setAttribute('aria-expanded', String(name === 'start'));
+    els.logBtn.setAttribute('aria-expanded', String(name === 'log'));
+    if (name === 'log') renderLog();
+    if (name === 'start') {
+      const ref = state.isFasting ? state.startTime : (state.plannedStartTime || Date.now());
+      els.startInput.value = toLocalInput(ref);
+      els.startInput.max = toLocalInput(Date.now());
+    }
+    wake();
+  }
+
+  // The chrome leaves while the glass drains and comes back when you move.
+  function wake() {
+    body.classList.remove('quiet');
+    clearTimeout(quietTimer);
+    if (!state.isFasting || openPanel) return;
+    quietTimer = setTimeout(() => {
+      if (state.isFasting && !openPanel) body.classList.add('quiet');
+    }, 6000);
+  }
+
+  // ── Motion ──────────────────────────────────────────────
+
+  function animateLevel(from, to, seconds, withStream, done) {
+    if (anim) cancelAnimationFrame(anim.raf);
+    if (reduceMotion || seconds <= 0) {
+      anim = null;
+      drawWater(to);
+      drawStream(-900, -900, 0);
+      done();
       return;
     }
-
-    const preset = PRESETS[id];
-    if (!preset) return;
-    state.presetId = id;
-    state.customOpen = false;
-    state.goalMinutes = preset.minutes;
-    state.goalNotified = state.isFasting && state.startTime !== null
-      ? computeFastProgress(state.startTime, state.goalMinutes).goalReached
-      : false;
-    state.inspectedHour = Math.min(72, Math.round(preset.minutes / 60));
-    renderChrome();
-    persist();
-    announce(`Goal set to ${formatGoalLabel(preset.minutes)}.`);
+    const t0 = Date.now();
+    const ms = seconds * 1000;
+    anim = { raf: 0 };
+    const ease = (x) => 1 - Math.pow(1 - x, 2.2);
+    const step = () => {
+      const x = Math.min(1, (Date.now() - t0) / ms);
+      const lvl = from + (to - from) * ease(x);
+      const yw = drawWater(lvl);
+      if (withStream) {
+        // The stream lands on the water, and its tail falls in at the end.
+        const tail = x < 0.84 ? -900 : -900 + (yw + 900) * Math.pow((x - 0.84) / 0.16, 1.6);
+        drawStream(tail, yw + 2, x < 0.04 ? x / 0.04 : 1);
+      }
+      if (x < 1) {
+        anim.raf = requestAnimationFrame(step);
+        return;
+      }
+      anim = null;
+      drawStream(-900, -900, 0);
+      done();
+    };
+    anim.raf = requestAnimationFrame(step);
   }
 
-  function applyCustomGoal() {
+  // ── Actions ─────────────────────────────────────────────
+
+  function startFast() {
+    const now = Date.now();
+    const start = state.plannedStartTime && state.plannedStartTime <= now ? state.plannedStartTime : now;
+    state.isFasting = true;
+    state.startTime = start;
+    state.plannedStartTime = null;
+    state.pinnedHour = null;
+    state.previewHour = null;
+    const prog = computeFastProgress(start, state.goalMinutes, now);
+    state.goalNotified = prog.goalReached;
+    lastHour = prog.currentHour;
+    lastPhase = phaseAt(prog.currentHour).id;
+    const target = waterLevel(prog.elapsedMs, prog.goalMs);
+    const seconds = 0.9 + 1.7 * target;
+    sound.ensure();
+    if (target > 0) sound.pour(seconds, 0, target);
+    body.classList.add('pouring');
+    animateLevel(0, target, target > 0 ? seconds : 0, true, () => body.classList.remove('pouring'));
+    showPanel(null);
+    renderChrome();
+    persist();
+    announce(`Fast started ${clockLabel(start, now)}. Goal ${formatGoalLabel(state.goalMinutes)}.`);
+  }
+
+  function stopFast(log) {
+    const now = Date.now();
+    const prog = progress(now);
+    if (!prog) return;
+    // Under a minute is a slip of the finger, not a fast.
+    if (log && prog.elapsedMs >= 60_000) {
+      history.push({
+        startedAt: state.startTime,
+        endedAt: now,
+        elapsedMs: prog.elapsedMs,
+        goalMinutes: state.goalMinutes,
+        goalReached: prog.goalReached,
+        note: state.note.trim(),
+      });
+      state.note = '';
+    }
+    const from = waterLevel(prog.elapsedMs, prog.goalMs);
+    state.isFasting = false;
+    state.startTime = null;
+    state.plannedStartTime = null;
+    state.goalNotified = false;
+    state.pinnedHour = null;
+    if (from > 0) {
+      body.classList.add('draining');
+      animateLevel(from, 0, 0.7 + from, false, () => body.classList.remove('draining'));
+    }
+    sound.clink(from, 0, 1, true);
+    renderChrome();
+    persist();
+    announce(log && prog.elapsedMs >= 60_000 ? `Fast ended after ${formatDurationShort(prog.elapsedMs)} and logged.` : 'Fast discarded.');
+  }
+
+  function setGoal(id) {
+    if (id === 'custom') {
+      state.customOpen = !(state.presetId === 'custom' && state.customOpen);
+      state.presetId = 'custom';
+      state.goalMinutes = state.customMinutes;
+    } else {
+      const preset = PRESETS[id];
+      if (!preset) return;
+      state.presetId = id;
+      state.customOpen = false;
+      state.goalMinutes = preset.minutes;
+    }
+    goalChanged();
+    if (state.customOpen) els.customHours.focus();
+  }
+
+  function applyCustom() {
     const mins = clampGoalMinutes(els.customHours.value, els.customMinutes.value);
     state.presetId = 'custom';
     state.customMinutes = mins;
     state.goalMinutes = mins;
     state.customOpen = false;
-    state.goalNotified = state.isFasting && state.startTime !== null
-      ? computeFastProgress(state.startTime, state.goalMinutes).goalReached
-      : false;
-    state.inspectedHour = Math.min(72, Math.round(mins / 60));
-    renderChrome();
-    persist();
-    announce(`Custom goal updated to ${formatGoalLabel(mins)}.`);
+    goalChanged();
   }
 
-  function shiftStartByHours(deltaHours) {
+  function goalChanged() {
+    const prog = progress();
+    state.goalNotified = prog ? prog.goalReached : false;
+    state.pinnedHour = null;
+    renderChrome();
+    persist();
+    announce(`Goal set to ${formatGoalLabel(state.goalMinutes)}.`);
+  }
+
+  function setStart(ts) {
     const now = Date.now();
-    const base = state.isFasting ? state.startTime : (state.plannedStartTime || now);
-    const next = Math.min(now, base + deltaHours * 3_600_000);
+    const next = Math.min(now, ts);
     if (state.isFasting) {
+      const before = waterLevel(now - state.startTime, state.goalMinutes * 60_000);
       state.startTime = next;
-      state.goalNotified = computeFastProgress(state.startTime, state.goalMinutes).goalReached;
-      lastRenderedHour = -1;
-    } else {
-      state.plannedStartTime = next;
-    }
-    renderChrome();
-    persist();
-    announce(`Start time moved to ${formatShortDateTime(next)}.`);
-  }
-
-  function toggleFast() {
-    const now = Date.now();
-    if (!state.isFasting) {
-      const start = state.plannedStartTime && state.plannedStartTime <= now ? state.plannedStartTime : now;
-      state.isFasting = true;
-      state.startTime = start;
-      state.plannedStartTime = null;
-      state.editingStart = false;
-      const prog = computeFastProgress(start, state.goalMinutes, now);
+      const prog = computeFastProgress(next, state.goalMinutes, now);
       state.goalNotified = prog.goalReached;
-      state.inspectedHour = Math.min(72, prog.currentHour);
-      lastRenderedHour = prog.currentHour;
-      renderChrome();
-      persist();
-      announce(`Fast started at ${formatShortDateTime(start)}.`);
-      return;
+      lastHour = -1;
+      lastPhase = phaseAt(prog.currentHour).id;
+      const after = waterLevel(prog.elapsedMs, prog.goalMs);
+      animateLevel(before, after, Math.min(1.4, Math.abs(after - before) * 3), false, () => {});
+    } else {
+      state.plannedStartTime = next >= now - 30_000 ? null : next;
     }
-
-    const elapsedMs = Math.max(0, now - state.startTime);
-    const goalMs = state.goalMinutes * 60_000;
-    history.push({
-      startedAt: state.startTime,
-      endedAt: now,
-      elapsedMs,
-      goalMinutes: state.goalMinutes,
-      goalReached: elapsedMs >= goalMs,
-      note: state.note.trim(),
-    });
-    state.isFasting = false;
-    state.startTime = null;
-    state.plannedStartTime = null;
-    state.editingStart = false;
-    state.goalNotified = false;
-    state.note = '';
-    els.noteInput.value = '';
-    lastRenderedHour = -1;
     renderChrome();
     persist();
-    announce(`Fast ended after ${formatDurationShort(elapsedMs)} and logged.`);
+    announce(`Start set to ${clockLabel(next, now)}.`);
   }
 
-  // --- Event Listeners ---
-  els.presetChips.forEach((chip) => {
-    chip.addEventListener('click', () => selectPreset(chip.dataset.preset));
-  });
+  function shiftStart(hours) {
+    const base = state.isFasting ? state.startTime : (state.plannedStartTime || Date.now());
+    setStart(base - hours * HOUR_MS);
+  }
 
-  els.applyCustomBtn.addEventListener('click', applyCustomGoal);
-  [els.customHours, els.customMinutes].forEach((input) => {
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        applyCustomGoal();
+  function pin(hour) {
+    const h = Math.max(0, Math.min(maxHour(), Math.round(hour)));
+    state.pinnedHour = h === defaultHour(progress()) ? null : h;
+    render();
+    persist();
+  }
+
+  function stepHour(delta) {
+    pin(shownHour(progress()) + delta);
+  }
+
+  async function notifyGoal() {
+    if (!state.notifyOn || typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+    try {
+      // eslint-disable-next-line no-new
+      new Notification('The glass is empty', { body: `You reached your ${formatGoalLabel(state.goalMinutes)} goal.`, tag: 'fasting-goal' });
+    } catch { /* Some browsers only notify from a service worker. */ }
+  }
+
+  // Ending and discarding both ask twice.
+  function armable(btn, armedText, hint, action, idleText) {
+    let timer = 0;
+    const disarm = () => {
+      clearTimeout(timer);
+      btn.classList.remove('armed');
+      btn.textContent = idleText();
+    };
+    btn.addEventListener('click', () => {
+      if (!btn.classList.contains('armed')) {
+        btn.classList.add('armed');
+        btn.textContent = armedText;
+        announce(hint);
+        timer = setTimeout(disarm, 3500);
+        return;
       }
+      disarm();
+      action();
     });
-  });
+    return disarm;
+  }
 
-  els.modeElapsedBtn.addEventListener('click', () => {
-    state.displayMode = 'elapsed';
-    renderChrome();
-    persist();
-  });
+  // ── Events ──────────────────────────────────────────────
 
-  els.modeRemainingBtn.addEventListener('click', () => {
-    state.displayMode = 'remaining';
-    renderChrome();
-    persist();
-  });
-
-  els.shiftMinus1h.addEventListener('click', () => shiftStartByHours(-1));
-  els.shiftMinus2h.addEventListener('click', () => shiftStartByHours(-2));
-
-  els.editStartBtn.addEventListener('click', () => {
-    state.editingStart = !state.editingStart;
-    renderChrome();
-    if (state.editingStart) els.startDatetime.focus();
-  });
-
-  els.saveStartBtn.addEventListener('click', () => {
-    const parsed = new Date(els.startDatetime.value);
-    if (Number.isNaN(parsed.getTime())) {
-      announce('Enter a valid start date and time.');
+  let toggleArmed = false;
+  let toggleTimer = 0;
+  els.toggleBtn.addEventListener('click', () => {
+    if (!state.isFasting) {
+      startFast();
       return;
     }
-    const clamped = Math.min(Date.now(), parsed.getTime());
-    if (state.isFasting) {
-      state.startTime = clamped;
-      state.goalNotified = computeFastProgress(clamped, state.goalMinutes).goalReached;
-      lastRenderedHour = -1;
-    } else {
-      state.plannedStartTime = clamped;
+    if (!toggleArmed) {
+      toggleArmed = true;
+      els.toggleBtn.classList.add('armed');
+      els.toggleBtn.textContent = 'End now?';
+      announce('Press again to end and log the fast.');
+      toggleTimer = setTimeout(() => {
+        toggleArmed = false;
+        els.toggleBtn.classList.remove('armed');
+        renderChrome();
+      }, 3500);
+      return;
     }
-    state.editingStart = false;
-    renderChrome();
-    persist();
-    announce(`Start time set to ${formatShortDateTime(clamped)}.`);
+    clearTimeout(toggleTimer);
+    toggleArmed = false;
+    els.toggleBtn.classList.remove('armed');
+    stopFast(true);
   });
 
-  els.resetStartNowBtn.addEventListener('click', () => {
-    const now = Date.now();
-    if (state.isFasting) {
-      state.startTime = now;
-      state.goalNotified = false;
-      lastRenderedHour = -1;
-    } else {
-      state.plannedStartTime = null;
-    }
-    state.editingStart = false;
-    renderChrome();
+  armable(els.discardBtn, 'Discard?', 'Press again to throw this fast away without logging it.', () => stopFast(false), () => 'Discard');
+  armable(els.logClear, 'Clear every fast?', 'Press again to clear the log.', () => {
+    history = [];
+    renderLog();
     persist();
-    announce('Start time reset to now.');
+    announce('Log cleared.');
+  }, () => 'Clear');
+
+  els.logCopy.addEventListener('click', () => {
+    const lines = [...history].reverse().map((item) => `${dateLabel(item.startedAt)}\t${formatDurationShort(item.elapsedMs)}\t${item.goalReached ? 'goal' : 'early'} (${formatGoalLabel(item.goalMinutes)})${item.note ? `\t${item.note}` : ''}`);
+    const text = lines.join('\n');
+    const done = () => {
+      els.logCopy.textContent = 'Copied';
+      setTimeout(() => { els.logCopy.textContent = 'Copy'; }, 1600);
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => {});
+    } catch { /* Clipboard is not available here. */ }
   });
 
-  els.resetNowQuickBtn?.addEventListener('click', () => {
-    if (state.isFasting) return;
+  goalButtons.forEach((btn) => btn.addEventListener('click', () => setGoal(btn.dataset.preset)));
+  els.customApply.addEventListener('click', applyCustom);
+  [els.customHours, els.customMinutes].forEach((input) => input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      applyCustom();
+    }
+  }));
+
+  els.notify.addEventListener('change', async () => {
+    if (typeof Notification === 'undefined') return;
+    if (els.notify.checked && Notification.permission === 'default') {
+      try {
+        state.notifyOn = (await Notification.requestPermission()) === 'granted';
+      } catch {
+        state.notifyOn = false;
+      }
+    } else {
+      state.notifyOn = els.notify.checked && Notification.permission === 'granted';
+    }
+    renderChrome();
+    persist();
+  });
+
+  els.startInput.addEventListener('change', () => {
+    const t = new Date(els.startInput.value).getTime();
+    if (Number.isNaN(t)) return;
+    setStart(t);
+  });
+  els.earlier1.addEventListener('click', () => shiftStart(1));
+  els.earlier2.addEventListener('click', () => shiftStart(2));
+  els.startNow.addEventListener('click', () => {
     state.plannedStartTime = null;
-    state.editingStart = false;
     renderChrome();
     persist();
-    announce('Start time reset to now.');
+    announce('Starts now.');
   });
 
-  els.cancelStartBtn.addEventListener('click', () => {
-    state.editingStart = false;
-    renderChrome();
-  });
+  els.soundBtn.addEventListener('click', toggleSound);
+  els.goalBtn.addEventListener('click', () => showPanel(openPanel === 'goal' ? null : 'goal'));
+  els.startBtn.addEventListener('click', () => showPanel(openPanel === 'start' ? null : 'start'));
+  els.logBtn.addEventListener('click', () => showPanel(openPanel === 'log' ? null : 'log'));
 
   els.noteInput.addEventListener('input', () => {
     state.note = els.noteInput.value;
     persist();
   });
 
-  els.toggleBtn.addEventListener('click', toggleFast);
+  els.time.addEventListener('click', toggleDisplay);
+  els.cardPrev.addEventListener('click', () => stepHour(-1));
+  els.cardNext.addEventListener('click', () => stepHour(1));
+  els.cardNow.addEventListener('click', () => {
+    state.pinnedHour = null;
+    render();
+    persist();
+  });
 
-  els.discardBtn.addEventListener('click', () => {
-    if (!state.isFasting) return;
-    if (!window.confirm('Discard the current active fast without logging it?')) return;
-    state.isFasting = false;
-    state.startTime = null;
-    state.plannedStartTime = null;
-    state.editingStart = false;
-    state.goalNotified = false;
-    lastRenderedHour = -1;
+  function toggleSound() {
+    state.sound = !state.sound;
+    sound.setOn(state.sound);
     renderChrome();
     persist();
-    announce('Active fast discarded.');
-  });
+    announce(state.sound ? 'Sound on.' : 'Sound off.');
+  }
 
-  els.soundQuickBtn.addEventListener('click', () => {
-    state.chimeOn = !state.chimeOn;
-    renderChrome();
+  function toggleDisplay() {
+    state.displayMode = state.displayMode === 'elapsed' ? 'remaining' : 'elapsed';
+    render();
     persist();
-    announce(state.chimeOn ? 'Goal chime enabled.' : 'Goal chime muted.');
-  });
+  }
 
-  els.notifyBtn.addEventListener('click', async () => {
-    if (typeof Notification === 'undefined') return;
-    if (Notification.permission === 'default') {
-      try {
-        const res = await Notification.requestPermission();
-        state.notifyOn = res === 'granted';
-      } catch {
-        state.notifyOn = false;
-      }
-    } else if (Notification.permission === 'granted') {
-      state.notifyOn = !state.notifyOn;
+  // Read the glass with a finger or a pointer: hover to look, press to keep.
+  function hourAtPointer(e) {
+    const rect = els.glass.getBoundingClientRect();
+    if (!rect || !rect.height) return null;
+    const y = ((e.clientY - rect.top) / rect.height) * 440;
+    const f = (y - G.full) / (G.floor - G.full);
+    return Math.max(0, Math.min(Math.floor(goalHours()), Math.floor(f * goalHours())));
+  }
+
+  let dragging = false;
+  els.glass.addEventListener('pointerdown', (e) => {
+    const h = hourAtPointer(e);
+    if (h === null) return;
+    dragging = true;
+    try { els.glass.setPointerCapture(e.pointerId); } catch { /* Fine without capture. */ }
+    state.previewHour = null;
+    pin(h);
+  });
+  els.glass.addEventListener('pointermove', (e) => {
+    const h = hourAtPointer(e);
+    if (h === null) return;
+    if (dragging) {
+      if (h !== shownHour(progress())) pin(h);
+      return;
     }
-    renderChrome();
-    persist();
-  });
-
-  els.prevHourBtn.addEventListener('click', () => {
-    if (state.inspectedHour > 0) {
-      state.inspectedHour -= 1;
-      renderInspector();
-      highlightHourlyList(true);
-      persist();
-    }
-  });
-
-  els.nextHourBtn.addEventListener('click', () => {
-    if (state.inspectedHour < 72) {
-      state.inspectedHour += 1;
-      renderInspector();
-      highlightHourlyList(true);
-      persist();
+    if (e.pointerType === 'mouse' && h !== state.previewHour) {
+      state.previewHour = h;
+      render();
     }
   });
-
-  els.currentHourBtn.addEventListener('click', () => {
-    if (state.isFasting && state.startTime !== null) {
-      state.inspectedHour = Math.min(72, computeFastProgress(state.startTime, state.goalMinutes).currentHour);
-    } else {
-      state.inspectedHour = Math.min(72, Math.round(state.goalMinutes / 60));
-    }
-    renderInspector();
-    highlightHourlyList(true);
-    persist();
+  const endDrag = () => {
+    dragging = false;
+  };
+  els.glass.addEventListener('pointerup', endDrag);
+  els.glass.addEventListener('pointercancel', endDrag);
+  els.glass.addEventListener('pointerleave', () => {
+    if (state.previewHour === null) return;
+    state.previewHour = null;
+    render();
+  });
+  els.glass.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') stepHour(-1);
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') stepHour(1);
+    else if (e.key === 'Home') pin(0);
+    else if (e.key === 'End') pin(goalHours());
+    else return;
+    e.preventDefault();
+    e.stopPropagation();
   });
 
-  els.filterChips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      state.filter = chip.dataset.filter;
-      els.filterChips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
-      buildHourlyList();
-      highlightHourlyList(false);
-      persist();
-    });
+  document.addEventListener('pointerdown', (e) => {
+    if (!openPanel) return;
+    const t = e.target;
+    const inChrome = t && t.closest && t.closest('.chrome');
+    if (!inChrome) showPanel(null);
   });
 
-  els.historyDrawer?.addEventListener('toggle', () => {
-    persist();
-  });
-
-  els.clearHistoryBtn.addEventListener('click', () => {
-    history = [];
-    renderChrome();
-    persist();
-    announce('Cleared fasting log.');
-  });
+  document.addEventListener('pointermove', wake);
+  document.addEventListener('focusin', wake);
 
   document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    let changed = false;
-    if (state.customOpen) {
-      state.customOpen = false;
-      changed = true;
+    wake();
+    if (e.key === 'Escape') {
+      if (openPanel) showPanel(null);
+      else if (state.pinnedHour !== null) {
+        state.pinnedHour = null;
+        render();
+        persist();
+      }
+      return;
     }
-    if (state.editingStart) {
-      state.editingStart = false;
-      changed = true;
-    }
-    if (changed) {
-      renderChrome();
-      persist();
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = e.target && e.target.tagName;
+    if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'A') return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (!state.isFasting) startFast();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      stepHour(-1);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      stepHour(1);
+    } else if (e.key === 't' || e.key === 'T') {
+      toggleDisplay();
+    } else if (e.key === 'm' || e.key === 'M') {
+      toggleSound();
     }
   });
 
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) persist();
-    else renderDialAndSpotlight();
-  });
-
-  window.addEventListener('pagehide', persist);
-  window.addEventListener('beforeunload', persist);
-
-  buildHourMatrix();
-  if (!state.hasSavedInspectedHour) {
-    if (state.isFasting && state.startTime !== null) {
-      const initialProg = computeFastProgress(state.startTime, state.goalMinutes);
-      state.inspectedHour = Math.min(72, initialProg.currentHour);
-      lastRenderedHour = initialProg.currentHour;
-    } else {
-      state.inspectedHour = Math.min(72, Math.round(state.goalMinutes / 60));
+    else {
+      renderLamp();
+      render();
     }
-  } else if (state.isFasting && state.startTime !== null) {
-    lastRenderedHour = computeFastProgress(state.startTime, state.goalMinutes).currentHour;
+  });
+  window.addEventListener('pagehide', persist);
+
+  // Sound can only start after a gesture. A fast that was already running
+  // when the page opened gets its context on the first touch.
+  const unlock = () => {
+    document.removeEventListener('pointerdown', unlock);
+    document.removeEventListener('keydown', unlock);
+    sound.ensure();
+  };
+  document.addEventListener('pointerdown', unlock);
+  document.addEventListener('keydown', unlock);
+
+  // ── Start ───────────────────────────────────────────────
+
+  buildGlass();
+  renderLamp();
+  {
+    const prog = progress();
+    if (prog) {
+      lastHour = prog.currentHour;
+      lastPhase = phaseAt(prog.currentHour).id;
+      if (prog.goalReached) state.goalNotified = true;
+    }
   }
   renderChrome();
-  startTicker();
+  setInterval(render, 1000);
+  setInterval(renderLamp, 60_000);
 })(typeof window !== 'undefined' ? window : globalThis);
