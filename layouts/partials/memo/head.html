@@ -171,3 +171,7 @@
 </script>
 {{ end }}
 {{ end }}
+
+{{ if and hugo.IsProduction .IsPage (eq .Section "posts") }}
+<script defer src="/js/page-telemetry.js" data-page="{{ .RelPermalink }}" data-section="posts"></script>
+{{ end }}

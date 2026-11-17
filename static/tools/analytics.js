@@ -9,27 +9,6 @@
   if (window.memoToolsAnalyticsLoaded) return;
   window.memoToolsAnalyticsLoaded = true;
 
-  // A dedicated write-only public key. No cookies, tool inputs or identifiers.
-  const telemetryKey = 'tel_pub_73d038b5f46d81325026b48fb92e9a96a14898afc44bf1e493e07a98c2a6ec78';
-  const telemetryEndpoint = 'https://telemetry.magneticenterprises.com/v1/events';
-  const routes = ['/tools/', '/tools/pomodoro/', '/tools/breathing/',
-    '/tools/meditation/', '/tools/fasting/', '/tools/zenkaku-hankaku/', '/tools/typewriter/'];
-  if (!routes.includes(location.pathname)) return;
-  const telemetryBody = JSON.stringify({
-    schemaVersion: 1,
-    platform: 'web',
-    key: telemetryKey,
-    events: [{ name: 'page_viewed', properties: { path: location.pathname } }],
-  });
-  // Keep either provider's failure from stopping the other or the tool itself.
-  try {
-    if (!(navigator.sendBeacon && navigator.sendBeacon(telemetryEndpoint, telemetryBody))) {
-      fetch(telemetryEndpoint, {
-        method: 'POST', body: telemetryBody, keepalive: true, credentials: 'omit',
-      }).catch(() => {});
-    }
-  } catch {}
-
   // Never include query strings, fragments, or tool input in our page-view data.
   let referrer = '';
   try { referrer = new URL(document.referrer).origin; } catch {}

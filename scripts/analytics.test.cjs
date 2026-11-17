@@ -38,16 +38,6 @@ assert.equal(options.page_referrer, 'https://example.com');
 assert.equal(options.allow_google_signals, false);
 assert.equal(options.allow_ad_personalization_signals, false);
 assert.ok(!JSON.stringify(result).includes('private'));
-assert.equal(result.events.length, 1);
-assert.equal(result.events[0].url, 'https://telemetry.magneticenterprises.com/v1/events');
-assert.match(result.events[0].body.key, /^tel_pub_[a-f0-9]{64}$/);
-assert.deepEqual(result.events[0].body.events, [{ name: 'page_viewed', properties: { path: '/tools/typewriter/' } }]);
-const fallback = run({ navigator: { sendBeacon: () => false } });
-assert.equal(fallback.requests.length, 1);
-assert.equal(fallback.requests[0].credentials, 'omit');
-assert.equal(fallback.requests[0].keepalive, true);
-assert.equal(run({ navigator: { sendBeacon: () => { throw new Error('blocked'); } } }).scripts.length, 1);
-assert.equal(run({ navigator: {}, fetch: () => Promise.reject(new Error('offline')) }).scripts.length, 1);
 for (const navigator of [{ doNotTrack: '1' }, { doNotTrack: 'yes' }, { msDoNotTrack: '1' }, { globalPrivacyControl: true }, { webdriver: true }]) {
   const blocked = run({ navigator });
   assert.equal(blocked.scripts.length, 0);

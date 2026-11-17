@@ -58,6 +58,7 @@ node scripts/comments.test.cjs
 node scripts/code.test.cjs
 node scripts/search.test.cjs
 node scripts/analytics.test.cjs
+node scripts/page-telemetry.test.cjs
 python3 scripts/check-site.py public
 ```
 
@@ -85,18 +86,31 @@ panel and GA Realtime. Local tests do not prove GA receipt.
 
 ### Magnetic telemetry
 
-The shared tools loader also sends `page_viewed` to
-`https://telemetry.magneticenterprises.com/v1/events`, with only an allowlisted
-public tools path. It uses the dedicated `memo-tools` public credential and
-accepts requests only from `https://memo.mx`. Magnetic's registry stores the key
-hash; its vault stores the encrypted credential. The browser key is intentionally
-public and grants no read or administrative access.
+`static/js/page-telemetry.js` sends anonymous page sessions for tools and
+published blog posts. Hugo includes it only on production post pages; static
+tools load it directly. Both use the dedicated `memo-tools` app and public key.
+The key grants no read or administrative access. Google's loader remains separate,
+so each page sends one Google page view.
 
-The direct events integration avoids the generic page script's UTM collection.
-It sends no referrer, query parameters, user identifiers, tool inputs or stored
-history. It uses `sendBeacon`, falling back to a credential-free keepalive fetch.
-It does not retry, so failed requests cannot duplicate visits. Collection uses
-no cookies or local storage and respects the same privacy guards as GA.
+One session is one page opening. Its random ID lives only in memory; reloads,
+navigation and back/forward-cache restoration start another session. It sends
+`page_viewed` once and cumulative `page_session` snapshots every 30 visible
+seconds, on visibility/focus loss and on page exit. Snapshots carry only the
+canonical page path, section, open seconds, active seconds and an exit flag.
+No cookies, browser storage, input values, key values, notes, referrers or URL
+parameters are read or sent by this collector. Do Not Track, Global Privacy
+Control and automated browsers stop collection.
+
+Active time requires a visible and focused page, within 60 seconds of input or
+scrolling. It estimates engagement rather than attention. Time open includes
+background time. Browser termination can lose the last snapshot, so durations
+are observed lower bounds. No retries are made. The collector uses sendBeacon
+with a credential-free fetch fallback; it never interrupts the page on failure.
+
+Platform Admin's **Tools usage** view at `http://127.0.0.1:3400/#tools-usage`
+shows URL counts, averages and recent sessions, with separate Tools and Blog
+posts filters. It takes each session's maximum cumulative timing, never sums
+heartbeats. Raw data expires after 30 days; earlier page views have no timing.
 
 Owning sources in `../magnetic`: `products/telemetry/apps/api/apps.toml`,
 `products/telemetry/apps/api/src/events.rs` and

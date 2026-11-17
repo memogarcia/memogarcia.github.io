@@ -85,6 +85,8 @@ for path in root.rglob('*.html'):
         continue
     assert page.h1 == 1, f'Expected one page title: {path}'
     assert page.canonical, f'Missing canonical URL: {path}'
+    if path in comment_pages and path.relative_to(root).parts[0] == 'posts':
+        assert page.assets.count('/js/page-telemetry.js') == 1, f'Missing or duplicate post session collector: {path}'
     assert page.pre == page.blocks, f'Unstyled code blocks: {path}'
     assert bool(page.comments) == (giscus_enabled and path in comment_pages), f'Incorrect comments availability: {path}'
     if page.comments:

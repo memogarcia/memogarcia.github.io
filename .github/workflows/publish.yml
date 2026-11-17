@@ -32,6 +32,7 @@ jobs:
           node scripts/code.test.cjs
           node scripts/search.test.cjs
           node scripts/analytics.test.cjs
+          node scripts/page-telemetry.test.cjs
 
       - name: Upload built site for review
         uses: actions/upload-artifact@v4
