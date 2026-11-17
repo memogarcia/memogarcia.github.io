@@ -623,9 +623,11 @@
   // After a session the whole strip is laid out across the screen.
   function fitView() {
     const dur = Math.max(1, state.elapsedMs / 1000 - (inkStart() || 0));
-    const pps = Math.min(view.pps0, (view.w - 2 * view.margin) / dur);
+    // Leave room for the pen body, which hangs past the end of the line.
+    const room = view.w - 2 * view.margin - 28;
+    const pps = Math.min(view.pps0, room / dur);
     const strip = dur * pps;
-    return { pps, penX: (view.w - strip) / 2 + strip };
+    return { pps, penX: (view.w - 28 - strip) / 2 + strip };
   }
 
   function homeView() {

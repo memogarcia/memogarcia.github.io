@@ -738,6 +738,15 @@ body:not([data-state="idle"]) .hint {
   .chrome button {
     padding: 0 8px;
   }
+
+  .patterns button {
+    gap: 5px;
+    padding: 0 6px;
+  }
+
+  .patterns svg {
+    width: 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
