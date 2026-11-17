@@ -57,7 +57,48 @@ node scripts/theme.test.cjs
 node scripts/comments.test.cjs
 node scripts/code.test.cjs
 node scripts/search.test.cjs
+node scripts/analytics.test.cjs
 python3 scripts/check-site.py public
 ```
 
 The last check requires a generated site. Builds write only to `public/`; workflows deploy that folder. The ignored `preview/` folder contains the earlier design snapshots and is not published. Legacy images in `content/img/` are mounted at `/img/` alongside new images in `static/img/`.
+
+## Tools analytics
+
+The seven static tools pages bypass Hugo's head partial. Each loads
+`static/tools/analytics.js`, using the same Google Analytics stream as the blog:
+`G-ZRB1GGCC9B`. Its test checks that the IDs stay aligned.
+
+The loader runs only on `https://memo.mx`. It skips automated browsers, Do Not
+Track and Global Privacy Control. It initializes one default page view, strips
+query strings and fragments from the page URL, and reduces the referrer to its
+origin. It adds no tool interaction events and reads no tool storage or inputs.
+Google Signals and advertising personalization are disabled.
+
+Before production verification, check the stream's Enhanced Measurement settings
+in Google Analytics. Disable automatic form, click, download and history-based
+collection to keep collection scoped to page visits. Enhanced Measurement was verified as enabled on 2026-11-17. Changing this
+shared stream also affects the blog and is awaiting approval. The loader follows the blog's existing analytics policy;
+there is no consent interface. Google Analytics can use analytics cookies.
+See [Google's page-view configuration](https://developers.google.com/analytics/devguides/collection/ga4/views).
+After deployment, confirm one page view per navigation in the browser network
+panel and GA Realtime. Local tests do not prove GA receipt.
+
+### Magnetic telemetry
+
+The shared tools loader also sends `page_viewed` to
+`https://telemetry.magneticenterprises.com/v1/events`, with only an allowlisted
+public tools path. It uses the dedicated `memo-tools` public credential and
+accepts requests only from `https://memo.mx`. Magnetic's registry stores the key
+hash; its vault stores the encrypted credential. The browser key is intentionally
+public and grants no read or administrative access.
+
+The direct events integration avoids the generic page script's UTM collection.
+It sends no referrer, query parameters, user identifiers, tool inputs or stored
+history. It uses `sendBeacon`, falling back to a credential-free keepalive fetch.
+It does not retry, so failed requests cannot duplicate visits. Collection uses
+no cookies or local storage and respects the same privacy guards as GA.
+
+Owning sources in `../magnetic`: `products/telemetry/apps/api/apps.toml`,
+`products/telemetry/apps/api/src/events.rs` and
+`products/telemetry/scripts/client-keys.mjs`.
