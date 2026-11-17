@@ -1074,6 +1074,8 @@
   }
 
   function startBurning() {
+    window.memoToolTelemetry?.cancel();
+    window.memoToolTelemetry?.begin();
     state.status = 'running';
     state.prepEndAt = null;
     state.prepRemainingMs = 0;
@@ -1117,6 +1119,7 @@
       resetSit('Sit ended. Under a minute, so nothing was logged.');
       return;
     }
+    window.memoToolTelemetry?.finish();
     state.lastMinutes = recordSit(state.elapsedMs, endedAt);
     state.status = 'complete';
     renderChrome();

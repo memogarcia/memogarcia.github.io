@@ -683,6 +683,8 @@
     if (state.status === 'complete') enter(nextPhase(true));
     const now = from == null ? Date.now() : from;
     if (state.status === 'idle') {
+      window.memoToolTelemetry?.cancel();
+      if (state.phase === 'focus') window.memoToolTelemetry?.begin();
       state.startedAt = now;
       state.totalMs = state.remainingMs;
     }
@@ -738,6 +740,7 @@
     snd.ambient('off');
 
     if (done === 'focus') {
+      window.memoToolTelemetry?.finish();
       rollover();
       state.cycleCount += 1;
       sessions.push({

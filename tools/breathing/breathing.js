@@ -1091,6 +1091,7 @@
   }
 
   function completeSession(playBell = true) {
+    window.memoToolTelemetry?.finish();
     stopBackground();
     audio.stopAmbient();
     if (playBell && settings.endBell) {
@@ -1179,6 +1180,8 @@
     audio.ensureContext();
     openPanel(null);
     if (state.status === 'idle' || state.status === 'complete') {
+      window.memoToolTelemetry?.cancel();
+      window.memoToolTelemetry?.begin();
       state.elapsedMs = 0;
       state.lastPhaseKey = '';
       state.startedClockTs = Date.now();

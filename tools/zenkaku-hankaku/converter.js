@@ -750,6 +750,7 @@
     outputText = '';
     for (const seg of segs) outputText += seg.out;
     els.output.value = outputText;
+    if (reason !== 'init' && inputText && outputText) window.memoToolTelemetry?.converted();
 
     renderSheet(segs, reason);
 
