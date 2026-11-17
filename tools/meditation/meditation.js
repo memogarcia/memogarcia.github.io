@@ -1,59 +1,55 @@
 ((globalScope) => {
   const STORAGE_KEY = 'memo-tools-meditation-v1';
-  const BASE_TITLE = (typeof document !== 'undefined' && document.title) ? document.title : 'Meditation · Memo Garcia';
-  const RING_RADIUS = 158;
-  const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-  const PRESET_MINUTES = [5, 10, 15, 20, 30, 45, 0];
+  const MAX_MIN = 120;
+  const OPEN_STICK_MIN = 30;
+  const LOOKAHEAD_MS = 180_000;
+  const MIN_LOG_MS = 60_000;
+  const MAX_SESSIONS = 2000;
+  const MAX_RESTORE_OPEN_MS = 12 * 60 * 60 * 1000;
+  const MAX_RESTORE_OVERDUE_MS = 24 * 60 * 60 * 1000;
+
+  const BELL_KINDS = ['bowl', 'temple', 'tingsha', 'off'];
+  const ROOM_KINDS = ['off', 'rain', 'wind', 'stream'];
+  const INCENSE_KINDS = ['sandalwood', 'aloeswood', 'hinoki', 'plum'];
+  const INTERVAL_MODES = ['off', '5', '10', 'half'];
 
   const DEFAULT_SETTINGS = {
     bell: 'bowl',
     volume: 70,
     ambient: 'off',
     prepSec: 0,
-    intervalMode: 'off', // 'off' | '5' | '10' | 'half'
+    intervalMode: 'off',
     startBell: true,
     endBells: 3,
-    hideClock: false,
-    autoZen: false,
-    notify: false,
+    incense: 'sandalwood',
+    sound: true,
   };
 
-  function clampCustomMinutes(val) {
+  function clampMinutes(val) {
     const n = Math.round(Number(val));
     if (!Number.isFinite(n)) return 10;
-    return Math.max(1, Math.min(180, n));
+    return Math.max(1, Math.min(MAX_MIN, n));
   }
 
-  function formatMMSS(ms) {
-    const totalSec = Math.max(0, Math.floor(ms / 1000));
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  // Share of the longest stick. Not linear, so a 5 minute stick is still a stick.
+  function stickFraction(min) {
+    const m = min > 0 ? Math.min(MAX_MIN, min) : OPEN_STICK_MIN;
+    return 0.25 + 0.75 * Math.sqrt(m / MAX_MIN);
   }
 
-  function formatCountdownMMSS(ms) {
-    const totalSec = Math.max(0, Math.ceil(ms / 1000));
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  function formatMinutes(min) {
+    if (min < 60) return `${min} min`;
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return m ? `${h} h ${m} min` : `${h} h`;
   }
 
-  function computeIntervalTimestampsMs(durationMin, intervalMode) {
-    if (intervalMode === 'off') return [];
-    const totalMs = durationMin > 0 ? durationMin * 60_000 : 0;
-    if (intervalMode === 'half') {
-      return totalMs >= 120_000 ? [Math.floor(totalMs / 2)] : [];
-    }
-    const stepMin = Number(intervalMode);
-    if (!Number.isFinite(stepMin) || stepMin <= 0) return [];
-    const stepMs = stepMin * 60_000;
-    const marks = [];
-    if (totalMs > 0) {
-      for (let t = stepMs; t < totalMs; t += stepMs) {
-        marks.push(t);
-      }
-    }
-    return marks;
+  function dayKey(ts) {
+    const d = new Date(ts);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 
   function computeStreakDays(sessions, referenceDate = new Date()) {
@@ -62,14 +58,9 @@
     const keyForOffset = (offset) => {
       const d = new Date(referenceDate);
       d.setDate(d.getDate() - offset);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
+      return dayKey(d.getTime());
     };
-
     let offset = days.has(keyForOffset(0)) ? 0 : 1;
-    if (!days.has(keyForOffset(offset))) return 0;
     let streak = 0;
     while (days.has(keyForOffset(offset))) {
       streak += 1;
@@ -78,37 +69,74 @@
     return streak;
   }
 
+  // Every bell a sit owes between two points of elapsed time: (fromMs, toMs].
+  // An open sit has no closing bell. It rings once each time a stick burns out.
+  function bellEvents({ durationMin, intervalMode, endBells }, fromMs, toMs) {
+    const out = [];
+    const total = durationMin > 0 ? durationMin * 60_000 : 0;
+    const stickMs = OPEN_STICK_MIN * 60_000;
+    const stepMs = intervalMode === '5' || intervalMode === '10' ? Number(intervalMode) * 60_000 : 0;
+    const from = Math.max(0, fromMs);
+
+    if (stepMs > 0) {
+      const limit = total > 0 ? Math.min(toMs, total - 1) : toMs;
+      for (let t = (Math.floor(from / stepMs) + 1) * stepMs; t <= limit; t += stepMs) {
+        if (total === 0 && t % stickMs === 0) continue;
+        out.push({ id: `int:${t}`, atMs: t, count: 1, soft: true });
+      }
+    }
+
+    if (total > 0) {
+      const half = Math.floor(total / 2);
+      if (intervalMode === 'half' && total >= 120_000 && half > from && half <= toMs) {
+        out.push({ id: 'half', atMs: half, count: 1, soft: true });
+      }
+      if (total > from && total <= toMs) {
+        out.push({ id: 'close', atMs: total, count: endBells === 1 ? 1 : 3, soft: false });
+      }
+    } else {
+      for (let t = (Math.floor(from / stickMs) + 1) * stickMs; t <= toMs; t += stickMs) {
+        out.push({ id: `stick:${t}`, atMs: t, count: 1, soft: false });
+      }
+    }
+
+    return out.sort((a, b) => a.atMs - b.atMs);
+  }
+
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-      PRESET_MINUTES,
-      clampCustomMinutes,
-      formatMMSS,
-      formatCountdownMMSS,
-      computeIntervalTimestampsMs,
-      computeStreakDays,
-    };
+    module.exports = { clampMinutes, stickFraction, formatMinutes, computeStreakDays, bellEvents };
   }
 
   if (typeof document === 'undefined') return;
 
-  function todayKey(date = new Date()) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+  const BASE_TITLE = document.title || 'Meditation Timer';
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const TILT = (1.4 * Math.PI) / 180;
+  const root = document.documentElement;
+  const body = document.body;
+  const $ = (id) => document.getElementById(id);
+  const all = (cls) => [...document.querySelectorAll(`.${cls}`)];
+  const clock = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+  const media = (q) => (typeof window.matchMedia === 'function' ? window.matchMedia(q) : { matches: false });
+  const reducedMotion = media('(prefers-reduced-motion: reduce)');
+
+  function setVar(el, name, value) {
+    if (!el || !el.style) return;
+    if (el.style.setProperty) el.style.setProperty(name, value);
+    else el.style[name] = value;
   }
 
-  function formatClockTime(ts) {
+  function formatClock(ts) {
     const d = new Date(ts);
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   }
 
-  function formatTotalDuration(totalMin) {
-    if (totalMin < 60) return `${totalMin}m`;
-    const h = Math.floor(totalMin / 60);
-    const m = totalMin % 60;
-    return m ? `${h}h ${m}m` : `${h}h`;
+  function smooth(a, b, x) {
+    const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
+    return t * t * (3 - 2 * t);
   }
+
+  // ── Storage ─────────────────────────────────────────────
 
   function loadStore() {
     try {
@@ -127,314 +155,585 @@
     }
   }
 
-  class MeditationAudio {
+  // ── Sound ───────────────────────────────────────────────
+
+  // Each partial is [frequency ratio, level, seconds to fall 60 dB]. The close
+  // pairs beat against each other, which is the slow wobble a real bowl has.
+  const BELLS = {
+    bowl: {
+      f: 262, level: 0.3, attack: 0.008, gap: 3.4,
+      tap: { f: 1900, q: 1.2, level: 0.1, dur: 0.05 },
+      partials: [[1, 1, 10], [1.004, 0.55, 9], [2.71, 0.42, 6], [2.722, 0.2, 5.5], [5.15, 0.16, 3], [8.1, 0.06, 1.6]],
+    },
+    temple: {
+      f: 131, level: 0.34, attack: 0.012, gap: 4.2,
+      tap: { f: 700, q: 0.8, level: 0.16, dur: 0.09 },
+      partials: [[1, 1, 12], [1.006, 0.5, 11], [2, 0.5, 8], [2.41, 0.3, 6], [3, 0.26, 5], [4.1, 0.14, 3.2], [5.4, 0.08, 2]],
+    },
+    tingsha: {
+      f: 2540, level: 0.12, attack: 0.003, gap: 2.6,
+      tap: { f: 6000, q: 1, level: 0.05, dur: 0.02 },
+      partials: [[1, 1, 6], [1.0045, 0.9, 5.6], [2.32, 0.3, 3], [2.33, 0.22, 2.8], [3.9, 0.1, 1.4]],
+    },
+  };
+
+  // Each layer is [filter, Hz, Q, level, wobble Hz, wobble depth in Hz, loop seconds, gust depth].
+  // Two loops of different lengths, so the room does not repeat every few seconds.
+  const ROOMS = {
+    rain: { level: 0.34, layers: [['bandpass', 2600, 0.45, 0.9, 0.13, 600, 7, 0], ['lowpass', 420, 0.5, 0.5, 0.07, 110, 11, 0]] },
+    wind: { level: 0.42, layers: [['bandpass', 380, 1.5, 1, 0.06, 210, 11, 0.45], ['bandpass', 860, 2.4, 0.3, 0.11, 380, 7, 0.2]] },
+    stream: { level: 0.3, layers: [['bandpass', 1500, 0.9, 0.8, 0.31, 520, 7, 0], ['bandpass', 640, 0.8, 0.7, 0.19, 230, 11, 0]] },
+  };
+
+  class Sound {
     constructor() {
       this.ctx = null;
-      this.ambientNodes = null;
-      this.ambientBuffer = null;
+      this.master = null;
+      this.on = true;
+      this.volume = 0.7;
+      this.buffers = new Map();
+      this.room = null;
     }
 
-    ensureContext() {
+    level() {
+      return this.on ? Math.pow(this.volume, 1.6) : 0;
+    }
+
+    now() {
+      return this.ctx ? this.ctx.currentTime : 0;
+    }
+
+    ensure() {
       if (this.ctx) {
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume().catch(() => {});
+        if (this.ctx.state !== 'running') {
+          try {
+            const p = this.ctx.resume();
+            if (p && p.catch) p.catch(() => {});
+          } catch { /* Stays suspended until the next gesture. */ }
         }
         return this.ctx;
       }
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return null;
-      this.ctx = new AudioCtx();
+      try {
+        const ctx = new AudioCtx();
+        const master = ctx.createGain();
+        master.gain.value = this.level();
+        if (ctx.createDynamicsCompressor) {
+          // Three closing bells overlap. This keeps the sum from clipping.
+          const comp = ctx.createDynamicsCompressor();
+          comp.threshold.value = -14;
+          comp.knee.value = 18;
+          comp.ratio.value = 3;
+          comp.attack.value = 0.01;
+          comp.release.value = 0.4;
+          master.connect(comp);
+          comp.connect(ctx.destination);
+        } else {
+          master.connect(ctx.destination);
+        }
+        this.ctx = ctx;
+        this.master = master;
+      } catch {
+        return null;
+      }
       return this.ctx;
     }
 
-    playBell(kind, volumePct, count = 1, soft = false) {
-      if (kind === 'off' || volumePct <= 0) return;
-      const ctx = this.ensureContext();
-      if (!ctx) return;
-      const baseLevel = Math.max(0.01, Math.min(1, volumePct / 100)) * (soft ? 0.55 : 1);
-      const spacing = kind === 'tingsha' ? 1.5 : 1.7;
-
-      for (let i = 0; i < count; i++) {
-        const start = ctx.currentTime + 0.02 + i * spacing;
-        const level = baseLevel * (i === 0 ? 1 : 0.82);
-        if (kind === 'bowl') {
-          this.#singingBowl(ctx, start, 432, level * 0.34, 4.0);
-        } else if (kind === 'temple') {
-          this.#templeBell(ctx, start, 216, level * 0.38, 4.8);
-        } else if (kind === 'tingsha') {
-          this.#tingsha(ctx, start, level * 0.22);
-        } else if (kind === 'chime') {
-          this.#softChime(ctx, start, 528, level * 0.26);
-        }
-      }
-    }
-
-    startAmbient(mode, volumePct) {
-      this.stopAmbient();
-      if (mode === 'off' || volumePct <= 0) return;
-      const ctx = this.ensureContext();
-      if (!ctx) return;
-
-      if (!this.ambientBuffer) {
-        const seconds = 4;
-        const length = ctx.sampleRate * seconds;
-        const buf = ctx.createBuffer(1, length, ctx.sampleRate);
-        const ch = buf.getChannelData(0);
-        let lastOut = 0;
-        for (let i = 0; i < length; i++) {
-          const white = Math.random() * 2 - 1;
-          lastOut = (lastOut + 0.028 * white) / 1.028;
-          ch[i] = lastOut * 3.1;
-        }
-        const fade = Math.min(2000, Math.floor(length * 0.05));
-        for (let i = 0; i < fade; i++) {
-          const w = i / fade;
-          ch[i] = ch[i] * w + ch[length - fade + i] * (1 - w);
-        }
-        this.ambientBuffer = buf;
-      }
-
-      const src = ctx.createBufferSource();
-      src.buffer = this.ambientBuffer;
-      src.loop = true;
-
-      const filter = ctx.createBiquadFilter();
-      const lfo = ctx.createOscillator();
-      const lfoGain = ctx.createGain();
-
-      if (mode === 'rain') {
-        filter.type = 'bandpass';
-        filter.frequency.value = 960;
-        filter.Q.value = 0.55;
-        lfo.frequency.value = 0.14;
-        lfoGain.gain.value = 230;
-      } else if (mode === 'wind') {
-        filter.type = 'bandpass';
-        filter.frequency.value = 340;
-        filter.Q.value = 1.4;
-        lfo.frequency.value = 0.08;
-        lfoGain.gain.value = 180;
-      } else if (mode === 'stream') {
-        filter.type = 'bandpass';
-        filter.frequency.value = 1350;
-        filter.Q.value = 0.8;
-        lfo.frequency.value = 0.22;
-        lfoGain.gain.value = 360;
-      } else {
-        filter.type = 'lowpass';
-        filter.frequency.value = 410;
-        filter.Q.value = 0.7;
-        lfo.frequency.value = 0.11;
-        lfoGain.gain.value = 65;
-      }
-
-      lfo.connect(lfoGain);
-      lfoGain.connect(filter.frequency);
-
-      const master = ctx.createGain();
-      const targetGain = (volumePct / 100) * (mode === 'warm' ? 0.22 : 0.16);
-      master.gain.setValueAtTime(0.0001, ctx.currentTime);
-      master.gain.exponentialRampToValueAtTime(Math.max(0.002, targetGain), ctx.currentTime + 0.9);
-
-      src.connect(filter);
-      filter.connect(master);
-      master.connect(ctx.destination);
-      src.start();
-      lfo.start();
-      this.ambientNodes = { src, lfo, master, ctx };
-    }
-
-    stopAmbient() {
-      if (!this.ambientNodes) return;
-      const { src, lfo, master, ctx } = this.ambientNodes;
-      this.ambientNodes = null;
+    setLevel(on, volumePct) {
+      this.on = Boolean(on);
+      this.volume = Math.max(0, Math.min(1, Number(volumePct) / 100));
+      if (!this.master) return;
       try {
-        const now = ctx.currentTime;
-        master.gain.cancelScheduledValues(now);
-        master.gain.setValueAtTime(Math.max(0.0001, master.gain.value), now);
-        master.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
-        setTimeout(() => {
-          try { src.stop(); } catch {}
-          try { lfo.stop(); } catch {}
-        }, 310);
-      } catch {}
+        const t = this.ctx.currentTime;
+        this.master.gain.cancelScheduledValues(t);
+        this.master.gain.setTargetAtTime(this.level(), t, 0.04);
+      } catch {
+        this.master.gain.value = this.level();
+      }
     }
 
-    #singingBowl(ctx, start, freq, level, dur) {
-      const partials = [
-        { ratio: 1, amp: 1, d: dur },
-        { ratio: 1.0035, amp: 0.62, d: dur * 0.92 },
-        { ratio: 2.756, amp: 0.26, d: dur * 0.6 },
-      ];
-      this.#playPartials(ctx, start, freq, level, partials);
+    // Schedules on the audio clock, so a throttled tab still rings on time.
+    // Returns a handle, or null when nothing could be scheduled.
+    bell(kind, delaySec, count = 1, soft = false) {
+      const def = BELLS[kind];
+      if (!def) return null;
+      const ctx = this.ensure();
+      if (!ctx) return null;
+      // A stopped clock would ring late by however long it stays stopped.
+      if (delaySec > 1 && ctx.state !== 'running') return null;
+      try {
+        const startAt = ctx.currentTime + Math.max(0.03, delaySec);
+        const bus = ctx.createGain();
+        bus.gain.value = soft ? 0.5 : 1;
+        bus.connect(this.master);
+        const sources = [];
+        for (let i = 0; i < count; i++) {
+          this.#strike(ctx, bus, sources, def, startAt + i * def.gap, i === 0 ? 1 : 0.85);
+        }
+        return {
+          startAt,
+          cancel() {
+            sources.forEach((s) => { try { s.stop(); } catch { /* Already stopped. */ } });
+            try { bus.disconnect(); } catch { /* Already gone. */ }
+          },
+        };
+      } catch {
+        return null;
+      }
     }
 
-    #templeBell(ctx, start, freq, level, dur) {
-      const partials = [
-        { ratio: 1, amp: 1, d: dur },
-        { ratio: 1.5, amp: 0.45, d: dur * 0.8 },
-        { ratio: 2.0, amp: 0.35, d: dur * 0.68 },
-        { ratio: 3.01, amp: 0.18, d: dur * 0.45 },
-      ];
-      this.#playPartials(ctx, start, freq, level, partials);
-    }
-
-    #tingsha(ctx, start, level) {
-      const partials = [
-        { ratio: 1, amp: 0.9, d: 2.8 },
-        { ratio: 1.008, amp: 0.85, d: 2.7 },
-        { ratio: 2.31, amp: 0.3, d: 1.6 },
-      ];
-      this.#playPartials(ctx, start, 1568, level, partials);
-    }
-
-    #softChime(ctx, start, freq, level) {
-      const partials = [
-        { ratio: 1, amp: 1, d: 2.4 },
-        { ratio: 2, amp: 0.28, d: 1.6 },
-      ];
-      this.#playPartials(ctx, start, freq, level, partials);
-    }
-
-    #playPartials(ctx, start, freq, level, partials) {
-      partials.forEach(({ ratio, amp, d }) => {
+    #strike(ctx, bus, sources, def, t, vel) {
+      for (const [ratio, amp, decay] of def.partials) {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq * ratio, start);
-        gain.gain.setValueAtTime(0.0001, start);
-        gain.gain.linearRampToValueAtTime(level * amp, start + 0.016);
-        gain.gain.exponentialRampToValueAtTime(0.0001, start + d);
+        osc.frequency.value = def.f * ratio;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(def.level * amp * vel, t + def.attack);
+        gain.gain.setTargetAtTime(0, t + def.attack, decay / 6.9);
         osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(start);
-        osc.stop(start + d + 0.05);
-      });
+        gain.connect(bus);
+        osc.start(t);
+        osc.stop(t + decay * 1.15 + 0.1);
+        sources.push(osc);
+      }
+      // The mallet: a short knock before the metal takes over.
+      const tap = ctx.createBufferSource();
+      tap.buffer = this.#noise(ctx, 'white', 1);
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = def.tap.f;
+      filter.Q.value = def.tap.q;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(def.tap.level * vel, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + def.tap.dur);
+      tap.connect(filter);
+      filter.connect(gain);
+      gain.connect(bus);
+      tap.start(t);
+      tap.stop(t + def.tap.dur + 0.02);
+      sources.push(tap);
+    }
+
+    #noise(ctx, kind, seconds) {
+      const key = `${kind}:${seconds}`;
+      if (this.buffers.has(key)) return this.buffers.get(key);
+      const length = Math.floor(ctx.sampleRate * seconds);
+      const buf = ctx.createBuffer(1, length, ctx.sampleRate);
+      const ch = buf.getChannelData(0);
+      let b0 = 0;
+      let b1 = 0;
+      let b2 = 0;
+      for (let i = 0; i < length; i++) {
+        const white = Math.random() * 2 - 1;
+        if (kind === 'white') {
+          ch[i] = white;
+        } else {
+          b0 = 0.99765 * b0 + white * 0.099046;
+          b1 = 0.963 * b1 + white * 0.2965164;
+          b2 = 0.57 * b2 + white * 1.0526913;
+          ch[i] = (b0 + b1 + b2 + white * 0.1848) * 0.2;
+        }
+      }
+      // Blend the head into the tail so the loop has no seam.
+      const fade = Math.min(4000, Math.floor(length * 0.05));
+      for (let i = 0; i < fade; i++) {
+        const w = i / fade;
+        ch[i] = ch[i] * w + ch[length - fade + i] * (1 - w);
+      }
+      this.buffers.set(key, buf);
+      return buf;
+    }
+
+    startRoom(mode) {
+      this.stopRoom();
+      const def = ROOMS[mode];
+      if (!def) return;
+      const ctx = this.ensure();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const out = ctx.createGain();
+        out.gain.setValueAtTime(0.0001, now);
+        out.gain.exponentialRampToValueAtTime(def.level, now + 2.5);
+        out.connect(this.master);
+        const sources = [];
+        for (const [type, freq, q, level, lfoHz, lfoDepth, seconds, gust] of def.layers) {
+          const src = ctx.createBufferSource();
+          src.buffer = this.#noise(ctx, 'pink', seconds);
+          src.loop = true;
+          const filter = ctx.createBiquadFilter();
+          filter.type = type;
+          filter.frequency.value = freq;
+          filter.Q.value = q;
+          const gain = ctx.createGain();
+          gain.gain.value = level;
+          const lfo = ctx.createOscillator();
+          const lfoGain = ctx.createGain();
+          lfo.frequency.value = lfoHz;
+          lfoGain.gain.value = lfoDepth;
+          lfo.connect(lfoGain);
+          lfoGain.connect(filter.frequency);
+          if (gust > 0) {
+            const swell = ctx.createOscillator();
+            const swellGain = ctx.createGain();
+            swell.frequency.value = lfoHz * 0.61;
+            swellGain.gain.value = level * gust;
+            swell.connect(swellGain);
+            swellGain.connect(gain.gain);
+            swell.start();
+            sources.push(swell);
+          }
+          src.connect(filter);
+          filter.connect(gain);
+          gain.connect(out);
+          src.start();
+          lfo.start();
+          sources.push(src, lfo);
+        }
+        this.room = { out, sources, ctx };
+      } catch {
+        this.room = null;
+      }
+    }
+
+    stopRoom() {
+      if (!this.room) return;
+      const { out, sources, ctx } = this.room;
+      this.room = null;
+      try {
+        const now = ctx.currentTime;
+        out.gain.cancelScheduledValues(now);
+        out.gain.setTargetAtTime(0, now, 0.25);
+        setTimeout(() => {
+          sources.forEach((s) => { try { s.stop(); } catch { /* Already stopped. */ } });
+          try { out.disconnect(); } catch { /* Already gone. */ }
+        }, 1400);
+      } catch { /* Nothing to fade. */ }
     }
   }
 
-  const els = {
-    body: document.body,
-    favicon: document.getElementById('favicon'),
-    presetBtns: [...document.querySelectorAll('.preset-chip[data-min]')],
-    customMinBtn: document.getElementById('custom-min-btn'),
-    customMinWrap: document.getElementById('custom-min-wrap'),
-    customMinInput: document.getElementById('custom-min-input'),
-    customMinApply: document.getElementById('custom-min-apply'),
-    ticksGroup: document.getElementById('dial-ticks'),
-    progressRing: document.getElementById('dial-progress'),
-    handGroup: document.getElementById('dial-hand-group'),
-    eyebrow: document.getElementById('med-eyebrow'),
-    timeDisplay: document.getElementById('time-display'),
-    hiddenClockMark: document.getElementById('hidden-clock-mark'),
-    scheduleLine: document.getElementById('schedule-line'),
-    quickPrep: document.getElementById('quick-prep'),
-    quickInterval: document.getElementById('quick-interval'),
-    hideClockBtn: document.getElementById('hide-clock-btn'),
-    noteInput: document.getElementById('note-input'),
-    toggleBtn: document.getElementById('toggle-btn'),
-    finishBtn: document.getElementById('finish-btn'),
-    resetBtn: document.getElementById('reset-btn'),
-    soundQuickBtn: document.getElementById('sound-quick-btn'),
-    zenBtn: document.getElementById('zen-btn'),
-    zenExit: document.getElementById('zen-exit'),
-    settingsBtn: document.getElementById('settings-btn'),
-    liveStatus: document.getElementById('live-status'),
-    statsSummary: document.getElementById('stats-summary'),
-    historyDrawer: document.getElementById('history-drawer'),
-    historyCount: document.getElementById('history-count'),
-    historyEmpty: document.getElementById('history-empty'),
-    historyList: document.getElementById('history-list'),
-    clearHistoryBtn: document.getElementById('clear-history-btn'),
-    dialog: document.getElementById('settings-dialog'),
-    settingsForm: document.getElementById('settings-form'),
-    settingsCloseBtn: document.getElementById('settings-close-btn'),
-    settingsResetBtn: document.getElementById('settings-reset-btn'),
-    optBell: document.getElementById('opt-bell'),
-    optEndBells: document.getElementById('opt-end-bells'),
-    optVolume: document.getElementById('opt-volume'),
-    optVolumeLabel: document.getElementById('opt-volume-label'),
-    optAmbient: document.getElementById('opt-ambient'),
-    optStartBell: document.getElementById('opt-start-bell'),
-    optAutoZen: document.getElementById('opt-auto-zen'),
-    optNotifyBtn: document.getElementById('opt-notify-btn'),
-    testBellBtn: document.getElementById('test-bell-btn'),
-  };
+  // ── Smoke ───────────────────────────────────────────────
 
-  // 12 quiet dial ticks
-  const tickLines = [];
-  for (let i = 0; i < 12; i++) {
-    const angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
-    const rOuter = 150;
-    const rInner = 139;
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', (180 + rInner * Math.cos(angle)).toFixed(2));
-    line.setAttribute('y1', (180 + rInner * Math.sin(angle)).toFixed(2));
-    line.setAttribute('x2', (180 + rOuter * Math.cos(angle)).toFixed(2));
-    line.setAttribute('y2', (180 + rOuter * Math.sin(angle)).toFixed(2));
-    els.ticksGroup.appendChild(line);
-    tickLines.push(line);
+  // A thread of points leaves the ember and is carried by a slow, divergence-free
+  // flow. Near the ember the flow is switched off, so the thread rises straight,
+  // then it wavers and folds the way incense smoke does in still air.
+  function createSmoke(canvas) {
+    const g = canvas && canvas.getContext ? canvas.getContext('2d') : null;
+    const CAP = 460;
+    const LIFE = 13;
+    const TAU = Math.PI * 2;
+    const DRIFT = 30;
+
+    // [wavelength x, wavelength y, rad/s, speed px/s]
+    const modes = [[310, 420, 0.21, 15], [-190, 260, 0.34, 12], [120, 150, 0.52, 8], [-75, 95, 0.8, 5], [520, 700, 0.12, 18]]
+      .map(([lx, ly, w, speed], i) => {
+        const kx = TAU / lx;
+        const ky = TAU / ly;
+        const k = Math.hypot(kx, ky);
+        return { kx, ky, w, u: (speed * ky) / k, v: (-speed * kx) / k, ph: i * 1.7 + 0.3 };
+      });
+
+    // Incense smoke is a thin sheet seen edge on. Its two edges read as bright
+    // threads, with a fainter veil between them.
+    const ribbons = [-1, 0, 1].map((side) => ({
+      side,
+      x: new Float32Array(CAP),
+      y: new Float32Array(CAP),
+      age: new Float32Array(CAP),
+      d: new Float32Array(CAP),
+      start: 0,
+      n: 0,
+    }));
+
+    const ptr = { x: -9999, y: -9999, vx: 0, vy: 0 };
+    let w = 0;
+    let h = 0;
+    let scale = 1;
+    let ox = 0;
+    let oy = 0;
+    let emit = 0;
+    let target = 0;
+    let t = Math.random() * 100;
+    let raf = 0;
+    let last = 0;
+    let rgb = '255, 255, 255';
+    let density = 1;
+
+    function step(dt) {
+      t += dt;
+      emit += (target - emit) * Math.min(1, dt * 1.6);
+      if (target === 0 && emit < 0.02) emit = 0;
+      const draft = Math.sin(t * 0.13) * 5 + Math.sin(t * 0.071 + 1.3) * 4;
+      ptr.vx *= 0.86;
+      ptr.vy *= 0.86;
+
+      for (const r of ribbons) {
+        while (r.n && r.age[r.start] + dt > LIFE) {
+          r.start = (r.start + 1) % CAP;
+          r.n -= 1;
+        }
+        for (let j = 0; j < r.n; j++) {
+          const i = (r.start + j) % CAP;
+          r.age[i] += dt;
+          const x = r.x[i];
+          const y = r.y[i];
+          const height = oy - y;
+          const loose = smooth(25, 230, height);
+          let u = 0;
+          let v = 0;
+          for (const m of modes) {
+            const c = Math.cos(m.kx * x + m.ky * (y + DRIFT * t) + m.w * t + m.ph);
+            u += m.u * c;
+            v += m.v * c;
+          }
+          const rise = 26 + 26 * smooth(0, 90, height) - 16 * smooth(220, 640, height);
+          let dx = (u * loose + draft * smooth(0, 300, height) + r.side * 2.4 * smooth(10, 200, height)) * dt;
+          let dy = (-rise + v * loose * 0.7) * dt;
+          const px = x - ptr.x;
+          const py = y - ptr.y;
+          const d2 = px * px + py * py;
+          if (d2 < 8100) {
+            const f = 1 - Math.sqrt(d2) / 90;
+            dx += ptr.vx * f * f * 0.5 * dt;
+            dy += ptr.vy * f * f * 0.5 * dt;
+          }
+          r.x[i] = x + dx;
+          r.y[i] = y + dy;
+        }
+        if (emit > 0) {
+          if (r.n === CAP) {
+            r.start = (r.start + 1) % CAP;
+            r.n -= 1;
+          }
+          const i = (r.start + r.n) % CAP;
+          r.x[i] = ox + r.side * 0.6;
+          r.y[i] = oy;
+          r.age[i] = 0;
+          r.d[i] = emit;
+          r.n += 1;
+        }
+      }
+    }
+
+    function draw() {
+      if (!g) return;
+      g.setTransform(scale, 0, 0, scale, 0, 0);
+      g.clearRect(0, 0, w, h);
+      g.lineCap = 'round';
+      g.strokeStyle = `rgb(${rgb})`;
+      for (const r of ribbons) {
+        for (let j = 1; j < r.n; j++) {
+          const i0 = (r.start + j - 1) % CAP;
+          const i1 = (r.start + j) % CAP;
+          const dx = r.x[i1] - r.x[i0];
+          const dy = r.y[i1] - r.y[i0];
+          const len = Math.hypot(dx, dy);
+          if (len > 40) continue;
+          const age = r.age[i1];
+          const life = age / LIFE;
+          const width = r.side ? 1.1 + 9 * Math.pow(life, 1.2) : 1.6 + 46 * Math.pow(life, 1.25);
+          const body = r.side
+            ? 0.5 * Math.pow(1 - life, 1.3) / (1 + width / 5)
+            : 0.36 * Math.pow(1 - life, 1.6) / (1 + width / 10);
+          // Wide strokes overlap many times along the thread, so each one carries less.
+          const tone = r.d[i1] * density * body * Math.min(1, age / 0.25);
+          // A stretched segment is cut into short pieces, or its round caps would bead.
+          const pieces = Math.min(8, Math.max(1, Math.ceil(len / (width * 0.35))));
+          const alpha = tone * Math.min(1, Math.max(len / pieces, 0.5) / width) * 1.6;
+          if (alpha < 0.003) continue;
+          g.globalAlpha = Math.min(1, alpha);
+          g.lineWidth = width;
+          for (let k = 0; k < pieces; k++) {
+            g.beginPath();
+            g.moveTo(r.x[i0] + (dx * k) / pieces, r.y[i0] + (dy * k) / pieces);
+            g.lineTo(r.x[i0] + (dx * (k + 1)) / pieces, r.y[i0] + (dy * (k + 1)) / pieces);
+            g.stroke();
+          }
+        }
+      }
+      g.globalAlpha = 1;
+    }
+
+    function alive() {
+      return target > 0 || emit > 0 || ribbons.some((r) => r.n > 0);
+    }
+
+    function frame() {
+      raf = 0;
+      const now = clock();
+      if (now - last >= 30) {
+        // A throttled tab gets few frames. Take several small steps so the smoke keeps real time.
+        const span = Math.min(0.6, (now - last) / 1000);
+        const steps = Math.ceil(span / 0.034);
+        last = now;
+        for (let i = 0; i < steps; i++) step(span / steps);
+        draw();
+      }
+      if (alive()) raf = requestAnimationFrame(frame);
+    }
+
+    function kick() {
+      if (!g || raf || reducedMotion.matches) return;
+      last = clock();
+      raf = requestAnimationFrame(frame);
+    }
+
+    function prewarm(seconds) {
+      for (let i = 0; i < seconds * 30; i++) step(1 / 30);
+      draw();
+    }
+
+    return {
+      resize(cssW, cssH) {
+        w = cssW;
+        h = cssH;
+        if (!g) return;
+        scale = (window.devicePixelRatio || 1) >= 2 ? 1 : 0.75;
+        canvas.width = Math.max(1, Math.round(cssW * scale));
+        canvas.height = Math.max(1, Math.round(cssH * scale));
+        draw();
+      },
+      setOrigin(x, y) {
+        if (reducedMotion.matches && (x !== ox || y !== oy)) {
+          for (const r of ribbons) {
+            for (let j = 0; j < r.n; j++) {
+              const i = (r.start + j) % CAP;
+              r.x[i] += x - ox;
+              r.y[i] += y - oy;
+            }
+          }
+          ox = x;
+          oy = y;
+          draw();
+          return;
+        }
+        ox = x;
+        oy = y;
+      },
+      setColor(nextRgb, nextDensity) {
+        rgb = nextRgb;
+        density = nextDensity;
+      },
+      setEmit(on, warm = false) {
+        target = on ? 1 : 0;
+        if (reducedMotion.matches) {
+          // No motion: a still plume while the stick burns, and nothing after.
+          ribbons.forEach((r) => { r.n = 0; });
+          emit = target;
+          if (on) prewarm(11);
+          else draw();
+          return;
+        }
+        if (on && warm) {
+          emit = 1;
+          prewarm(11);
+        }
+        kick();
+      },
+      pointer(x, y, vx, vy) {
+        ptr.x = x;
+        ptr.y = y;
+        ptr.vx = vx;
+        ptr.vy = vy;
+      },
+      kick,
+    };
   }
 
-  els.progressRing.style.strokeDasharray = `${RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`;
-  els.progressRing.style.strokeDashoffset = `${RING_CIRCUMFERENCE}`;
+  // ── Elements and state ──────────────────────────────────
 
-  const audio = new MeditationAudio();
+  const els = {
+    stage: $('stage'),
+    stick: $('stick'),
+    flecks: $('flecks'),
+    smoke: $('smoke'),
+    light: $('light'),
+    status: $('status'),
+    toggleBtn: $('toggle-btn'),
+    endBtn: $('end-btn'),
+    soundBtn: $('sound-btn'),
+    incenseBtn: $('incense-btn'),
+    bellBtn: $('bell-btn'),
+    logBtn: $('log-btn'),
+    panels: { incense: $('panel-incense'), bell: $('panel-bell'), log: $('panel-log') },
+    len: $('len'),
+    lenOut: $('len-out'),
+    volume: $('volume'),
+    volumeOut: $('volume-out'),
+    stats: $('stats'),
+    noteRow: $('note-row'),
+    noteInput: $('note-input'),
+    logEmpty: $('log-empty'),
+    logList: $('log-list'),
+    clearBtn: $('clear-btn'),
+    live: $('live'),
+  };
+
+  const sound = new Sound();
+  const smoke = createSmoke(els.smoke);
   const saved = loadStore();
-  const settings = { ...DEFAULT_SETTINGS, ...(saved?.settings || {}) };
-  let sessions = Array.isArray(saved?.sessions) ? saved.sessions : [];
 
-  const MAX_RESTORE_OPEN_MS = 12 * 60 * 60 * 1000;
-  const MAX_RESTORE_OVERDUE_MS = 24 * 60 * 60 * 1000;
+  function readSettings(raw) {
+    const s = { ...DEFAULT_SETTINGS, ...(raw && typeof raw === 'object' ? raw : {}) };
+    // Older versions muted by setting the bell to "off" and remembering the real one.
+    if (raw && raw.sound === undefined && raw.bell === 'off' && BELL_KINDS.includes(saved?.bellBeforeMute)) {
+      s.bell = saved.bellBeforeMute;
+      s.sound = false;
+    }
+    if (!BELL_KINDS.includes(s.bell)) s.bell = 'bowl';
+    if (!ROOM_KINDS.includes(s.ambient)) s.ambient = 'off';
+    if (!INCENSE_KINDS.includes(s.incense)) s.incense = 'sandalwood';
+    if (!INTERVAL_MODES.includes(String(s.intervalMode))) s.intervalMode = 'off';
+    s.intervalMode = String(s.intervalMode);
+    s.prepSec = [0, 5, 10, 15].includes(Number(s.prepSec)) ? Number(s.prepSec) : 0;
+    s.endBells = Number(s.endBells) === 1 ? 1 : 3;
+    s.volume = Math.max(0, Math.min(100, Number(s.volume) || 0));
+    s.startBell = Boolean(s.startBell);
+    s.sound = Boolean(s.sound);
+    return s;
+  }
 
-  const initialMin = Number.isInteger(saved?.durationMin) && saved.durationMin >= 0 ? saved.durationMin : 10;
-  const initialCustomMin = Number.isInteger(saved?.customMin) && saved.customMin >= 1 ? saved.customMin : 25;
-  const initialIsCustom = typeof saved?.isCustom === 'boolean'
-    ? saved.isCustom
-    : !PRESET_MINUTES.includes(initialMin);
-  const initialBellBeforeMute = typeof saved?.bellBeforeMute === 'string' && saved.bellBeforeMute !== 'off'
-    ? saved.bellBeforeMute
-    : (settings.bell !== 'off' ? settings.bell : 'bowl');
+  const settings = readSettings(saved?.settings);
+  let sessions = Array.isArray(saved?.sessions)
+    ? saved.sessions.filter((s) => s && typeof s.day === 'string' && Number.isFinite(s.minutes))
+    : [];
 
   const state = {
-    durationMin: initialMin, // 0 = Open
-    customMin: initialCustomMin,
-    isCustom: initialIsCustom,
-    customOpen: Boolean(saved?.customOpen),
+    durationMin: Number.isInteger(saved?.durationMin) && saved.durationMin >= 0 ? Math.min(MAX_MIN, saved.durationMin) : 10, // 0 = open
     status: 'idle', // 'idle' | 'prep' | 'running' | 'paused' | 'complete'
     prepRemainingMs: 0,
     prepEndAt: null,
     elapsedMs: 0,
     runAnchorTs: null,
     startedAt: null,
-    firedIntervals: new Set(),
-    note: typeof saved?.note === 'string' ? saved.note : '',
-    zen: false,
-    bellBeforeMute: initialBellBeforeMute,
+    bellCursorMs: 0,
+    lastMinutes: 0,
   };
 
-  if (els.historyDrawer) {
-    els.historyDrawer.open = Boolean(saved?.historyOpen);
-  }
+  const geo = { ashY: 500, maxLen: 300, canvasW: 800, stickIndex: -1, ashFrom: null, ashLimit: 12 };
+  const scheduled = new Map();
+  let lastSliderMin = state.durationMin > 0 ? state.durationMin : 10;
+  let openPanel = null;
+  let tickTimer = null;
+  let quietTimer = 0;
+  let lightingTimer = 0;
+  let wakeLock = null;
 
-  els.noteInput.value = state.note;
+  sound.setLevel(settings.sound, settings.volume);
 
-  let rafId = null;
-  let bgInterval = null;
-  let idleInterval = null;
-  let lastFaviconBucket = '';
+  const isSitting = () => state.status === 'prep' || state.status === 'running';
+  const goalMs = () => (state.durationMin > 0 ? state.durationMin * 60_000 : 0);
+  const stickMs = () => (state.durationMin > 0 ? goalMs() : OPEN_STICK_MIN * 60_000);
 
   function currentPrepRemainingMs() {
-    if (state.status === 'prep' && state.prepEndAt !== null) {
-      return Math.max(0, state.prepEndAt - Date.now());
-    }
+    if (state.status === 'prep' && state.prepEndAt !== null) return Math.max(0, state.prepEndAt - Date.now());
     return Math.max(0, state.prepRemainingMs);
   }
 
   function currentElapsedMs() {
-    if (state.status === 'running' && state.runAnchorTs !== null) {
-      return Math.max(0, Date.now() - state.runAnchorTs);
-    }
+    if (state.status === 'running' && state.runAnchorTs !== null) return Math.max(0, Date.now() - state.runAnchorTs);
     return Math.max(0, state.elapsedMs);
   }
 
@@ -443,390 +742,459 @@
       ? {
           status: state.status,
           durationMin: state.durationMin,
-          elapsedMs: state.status === 'running' ? currentElapsedMs() : state.elapsedMs,
+          elapsedMs: currentElapsedMs(),
           runAnchorTs: state.runAnchorTs,
-          prepRemainingMs: state.status === 'prep' ? currentPrepRemainingMs() : state.prepRemainingMs,
+          prepRemainingMs: currentPrepRemainingMs(),
           prepEndAt: state.prepEndAt,
           startedAt: state.startedAt,
-          firedIntervals: [...state.firedIntervals],
+          bellCursorMs: state.bellCursorMs,
         }
       : null;
-
-    saveStore({
-      durationMin: state.durationMin,
-      customMin: state.customMin,
-      isCustom: state.isCustom,
-      customOpen: state.customOpen,
-      bellBeforeMute: state.bellBeforeMute,
-      historyOpen: Boolean(els.historyDrawer?.open),
-      settings,
-      note: state.note,
-      sessions: sessions.slice(-100),
-      timer,
-    });
+    saveStore({ durationMin: state.durationMin, settings, sessions: sessions.slice(-MAX_SESSIONS), timer });
   }
 
   function announce(text) {
-    els.liveStatus.textContent = text;
+    els.live.textContent = text;
   }
 
-  function targetMs() {
-    return state.durationMin > 0 ? state.durationMin * 60_000 : 0;
+  // ── Bells on the audio clock ────────────────────────────
+
+  function cancelScheduled() {
+    scheduled.forEach((h) => h.cancel());
+    scheduled.clear();
   }
 
-  function sendNotification(title, body) {
-    if (!settings.notify || typeof Notification === 'undefined') return;
-    if (Notification.permission === 'granted') {
-      try {
-        new Notification(title, { body });
-      } catch {}
-    }
-  }
-
-  function updateFavicon(progress, status) {
-    const bucket = `${status}:${Math.round(progress * 20)}`;
-    if (bucket === lastFaviconBucket) return;
-    lastFaviconBucket = bucket;
-
-    const stroke = status === 'prep' ? '#8a6434' : '#364a32';
-    const r = 12;
-    const c = 2 * Math.PI * r;
-    const offset = status === 'idle' ? c : c * (1 - Math.max(0, Math.min(1, progress)));
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#faf7f2"/><circle cx="16" cy="16" r="12" fill="none" stroke="#e2ddd2" stroke-width="3"/><circle cx="16" cy="16" r="12" fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}" transform="rotate(-90 16 16)"/><circle cx="16" cy="16" r="3" fill="${stroke}"/></svg>`;
-    els.favicon.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
-  }
-
-  function renderDial() {
-    const goal = targetMs();
-    const isHiddenWhileRunning = settings.hideClock && (state.status === 'running' || state.status === 'paused');
-
-    els.timeDisplay.hidden = isHiddenWhileRunning;
-    els.hiddenClockMark.hidden = !isHiddenWhileRunning;
-
-    const elapsed = currentElapsedMs();
-    const prepRem = currentPrepRemainingMs();
-    let progress = 0;
-    if (state.status === 'prep') {
-      const totalPrep = Math.max(1000, settings.prepSec * 1000);
-      progress = 1 - prepRem / totalPrep;
-    } else if (state.status === 'complete') {
-      progress = 1;
-    } else if (state.status === 'running' || state.status === 'paused') {
-      if (goal > 0) {
-        progress = Math.min(1, elapsed / goal);
-      } else {
-        // Open mode sweeps once every 5 minutes calmly
-        progress = (elapsed % 300_000) / 300_000;
+  function cancelFuture() {
+    const now = sound.now();
+    for (const [id, h] of scheduled) {
+      if (h.startAt > now + 0.1) {
+        h.cancel();
+        scheduled.delete(id);
       }
     }
-
-    const offset = RING_CIRCUMFERENCE * (1 - progress);
-    els.progressRing.style.strokeDashoffset = `${offset.toFixed(2)}`;
-    els.handGroup.setAttribute('transform', `rotate(${(progress * 360).toFixed(2)} 180 180)`);
-
-    const passedTicks = Math.floor(progress * 12);
-    for (let i = 0; i < 12; i++) {
-      tickLines[i].classList.toggle('passed', state.status !== 'idle' && state.status !== 'prep' && i <= passedTicks);
-    }
-
-    if (state.status === 'prep') {
-      const sec = Math.max(1, Math.ceil(prepRem / 1000));
-      els.eyebrow.textContent = 'Settle in';
-      els.timeDisplay.textContent = `00:${String(sec).padStart(2, '0')}`;
-      els.scheduleLine.textContent = 'Take your seat before the opening bell';
-      document.title = `Settle (${sec}s) · Meditation`;
-    } else if (state.status === 'idle') {
-      els.eyebrow.textContent = state.durationMin === 0 ? 'Open Sitting' : 'Silent Sitting';
-      els.timeDisplay.textContent = state.durationMin === 0 ? 'Open' : formatMMSS(goal);
-      els.scheduleLine.textContent = state.durationMin > 0
-        ? `Ends at ${formatClockTime(Date.now() + goal)}`
-        : 'Count-up timer with no fixed end';
-      document.title = BASE_TITLE;
-    } else if (state.status === 'complete') {
-      els.eyebrow.textContent = 'Complete';
-      els.timeDisplay.textContent = formatMMSS(elapsed);
-      els.scheduleLine.textContent = 'Sit logged locally';
-      document.title = 'Done · Meditation · Memo Garcia';
-    } else {
-      const prefix = state.status === 'paused' ? 'Paused · ' : '';
-      els.eyebrow.textContent = `${prefix}Sitting`;
-      if (goal > 0) {
-        const rem = Math.max(0, goal - elapsed);
-        els.timeDisplay.textContent = formatCountdownMMSS(rem);
-        els.scheduleLine.textContent = isHiddenWhileRunning
-          ? 'Clock hidden while sitting'
-          : state.status === 'paused'
-            ? 'Paused'
-            : `Ends at ${formatClockTime(Date.now() + rem)}`;
-        document.title = isHiddenWhileRunning
-          ? 'Sitting · Meditation'
-          : `${formatCountdownMMSS(rem)} · Meditation`;
-      } else {
-        els.timeDisplay.textContent = formatMMSS(elapsed);
-        els.scheduleLine.textContent = isHiddenWhileRunning
-          ? 'Clock hidden while sitting'
-          : state.status === 'paused'
-            ? 'Paused'
-            : 'Open sitting';
-        document.title = isHiddenWhileRunning
-          ? 'Sitting · Meditation'
-          : `${formatMMSS(elapsed)} · Meditation`;
-      }
-    }
-
-    updateFavicon(progress, state.status);
   }
 
-  function renderHistory() {
-    const today = todayKey();
-    const todaysSits = sessions.filter((s) => s.day === today);
-    const todayMin = todaysSits.reduce((sum, s) => sum + s.minutes, 0);
-    const streak = computeStreakDays(sessions);
-    const sitWord = todaysSits.length === 1 ? 'sit' : 'sits';
-    const dayWord = streak === 1 ? 'day' : 'days';
-    els.statsSummary.textContent = `${todaysSits.length} ${sitWord} today (${formatTotalDuration(todayMin)}) · ${streak} ${dayWord} streak`;
+  // A bell is due. If the audio clock already rang it, leave it. If the clock
+  // was stopped (a locked phone), ring now when it still makes sense to.
+  function settleBell(id, play, count, soft) {
+    const h = scheduled.get(id);
+    scheduled.delete(id);
+    if (h && sound.now() >= h.startAt - 0.08) return;
+    if (h) h.cancel();
+    if (play) sound.bell(settings.bell, 0, count, soft);
+  }
 
-    els.historyCount.textContent = String(sessions.length);
-    els.historyEmpty.hidden = sessions.length > 0;
-    els.historyList.hidden = sessions.length === 0;
-    els.clearHistoryBtn.hidden = sessions.length === 0;
+  function serviceBells(elapsed) {
+    const cfg = { durationMin: state.durationMin, intervalMode: settings.intervalMode, endBells: settings.endBells };
+    for (const e of bellEvents(cfg, state.bellCursorMs, elapsed + LOOKAHEAD_MS)) {
+      if (e.atMs <= elapsed) {
+        settleBell(e.id, e.id === 'close' || elapsed - e.atMs < 5000, e.count, e.soft);
+      } else if (!scheduled.has(e.id)) {
+        const h = sound.bell(settings.bell, (e.atMs - elapsed) / 1000, e.count, e.soft);
+        if (h) scheduled.set(e.id, h);
+      }
+    }
+    state.bellCursorMs = elapsed;
+  }
 
-    if (sessions.length > 0) {
-      els.historyList.replaceChildren();
-      [...sessions].reverse().forEach((item) => {
-        const li = document.createElement('li');
-        const timeSpan = document.createElement('span');
-        timeSpan.className = 'history-time';
-        timeSpan.textContent = `${item.day.slice(5)} ${item.time}`;
+  // ── Screen wake lock ────────────────────────────────────
 
-        const noteSpan = document.createElement('span');
-        noteSpan.className = item.note ? 'history-note' : 'history-note empty-note';
-        noteSpan.textContent = item.note || (item.open ? 'Open sit' : 'Silent sit');
-
-        const durSpan = document.createElement('span');
-        durSpan.className = 'history-dur';
-        durSpan.textContent = `${item.minutes}m`;
-
-        li.append(timeSpan, noteSpan, durSpan);
-        els.historyList.appendChild(li);
+  async function holdAwake() {
+    if (typeof navigator === 'undefined' || !navigator.wakeLock || wakeLock || document.hidden) return;
+    try {
+      const lock = await navigator.wakeLock.request('screen');
+      wakeLock = lock;
+      lock.addEventListener('release', () => {
+        if (wakeLock === lock) wakeLock = null;
       });
-    }
+      if (!isSitting()) releaseAwake();
+    } catch { /* The sit still runs. The screen may sleep. */ }
   }
+
+  function releaseAwake() {
+    if (!wakeLock) return;
+    const lock = wakeLock;
+    wakeLock = null;
+    try {
+      const p = lock.release();
+      if (p && p.catch) p.catch(() => {});
+    } catch { /* Already released. */ }
+  }
+
+  // ── Scene ───────────────────────────────────────────────
+
+  function readSmokeStyle() {
+    if (typeof getComputedStyle !== 'function') return;
+    const cs = getComputedStyle(root);
+    smoke.setColor(cs.getPropertyValue('--smoke-rgb').trim() || '255, 255, 255', parseFloat(cs.getPropertyValue('--smoke-k')) || 1);
+  }
+
+  function layout() {
+    const W = window.innerWidth || 1024;
+    const H = window.innerHeight || 768;
+    geo.ashY = Math.round(H * (W < 700 ? 0.64 : 0.69));
+    geo.maxLen = Math.max(110, Math.min(H * 0.54, geo.ashY - 64, 540));
+    geo.canvasW = Math.min(W, 1100);
+    setVar(root, '--ash-y', `${geo.ashY}px`);
+    setVar(els.smoke, 'left', `${-geo.canvasW / 2}px`);
+    setVar(els.smoke, 'top', `${-geo.ashY}px`);
+    setVar(els.smoke, 'width', `${geo.canvasW}px`);
+    setVar(els.smoke, 'height', `${geo.ashY}px`);
+    smoke.resize(geo.canvasW, geo.ashY);
+    renderBurn();
+  }
+
+  function addFleck(sceneX) {
+    if (!els.flecks || !document.createElementNS) return;
+    const bowlScale = 260 / Math.min(250, (window.innerWidth || 1024) * 0.6);
+    const fleck = document.createElementNS(SVG_NS, 'ellipse');
+    const cx = 130 + sceneX * bowlScale + (Math.random() - 0.5) * 26;
+    const cy = 23 + (Math.random() - 0.4) * 6;
+    fleck.setAttribute('class', 'fleck');
+    fleck.setAttribute('cx', cx.toFixed(1));
+    fleck.setAttribute('cy', cy.toFixed(1));
+    fleck.setAttribute('rx', (2 + Math.random() * 3).toFixed(1));
+    fleck.setAttribute('ry', (0.7 + Math.random() * 0.7).toFixed(1));
+    fleck.setAttribute('transform', `rotate(${(Math.random() * 40 - 20).toFixed(0)} ${cx.toFixed(1)} ${cy.toFixed(1)})`);
+    els.flecks.appendChild(fleck);
+    if (els.flecks.childElementCount > 60 && els.flecks.firstElementChild) els.flecks.firstElementChild.remove();
+  }
+
+  function dropAsh(ashLen, rem) {
+    const landX = Math.sin(TILT) * rem;
+    const piece = document.createElement('i');
+    if (!piece.animate || reducedMotion.matches || document.hidden) {
+      addFleck(landX);
+      return;
+    }
+    piece.className = 'ash-fall';
+    setVar(piece, 'top', `${-(rem + ashLen)}px`);
+    setVar(piece, 'height', `${ashLen}px`);
+    els.stick.appendChild(piece);
+    const side = Math.random() < 0.5 ? -1 : 1;
+    const fall = piece.animate(
+      [
+        { transform: 'translate(0, 0) rotate(-2.5deg)', opacity: 1 },
+        { transform: `translate(${side * (3 + Math.random() * 5)}px, ${rem}px) rotate(${side * 70}deg)`, opacity: 1, offset: 0.92 },
+        { transform: `translate(${side * 9}px, ${rem + 2}px) rotate(${side * 88}deg)`, opacity: 0 },
+      ],
+      { duration: 320 + Math.sqrt(rem) * 34, easing: 'cubic-bezier(0.55, 0, 0.9, 0.55)' },
+    );
+    fall.onfinish = () => {
+      piece.remove();
+      addFleck(landX + side * 6);
+    };
+  }
+
+  function flare() {
+    body.classList.add('lighting');
+    clearTimeout(lightingTimer);
+    lightingTimer = setTimeout(() => body.classList.remove('lighting'), 1100);
+  }
+
+  function renderBurn() {
+    const len = geo.maxLen * stickFraction(state.durationMin);
+    const burning = state.status === 'running' || state.status === 'paused' || state.status === 'complete';
+    const elapsed = burning ? currentElapsedMs() : 0;
+    const span = stickMs();
+    const timed = state.durationMin > 0;
+    const stickIndex = timed ? 0 : Math.floor(elapsed / span);
+    const p = timed ? Math.min(1, elapsed / span) : (elapsed % span) / span;
+    const burnt = len * p;
+    const rem = len - burnt;
+
+    if (stickIndex !== geo.stickIndex) {
+      // An open sit lights a new stick when the last one burns out.
+      if (geo.stickIndex >= 0 && stickIndex > geo.stickIndex && state.status === 'running') flare();
+      geo.stickIndex = stickIndex;
+      geo.ashFrom = null;
+    }
+    if (geo.ashFrom === null || burnt < geo.ashFrom) geo.ashFrom = Math.max(0, burnt - Math.random() * 8);
+
+    let ash = burning ? burnt - geo.ashFrom : 0;
+    const spent = state.status === 'complete' && rem < 0.5;
+    if (ash > 0.5 && (ash >= geo.ashLimit || spent)) {
+      dropAsh(ash, rem);
+      geo.ashFrom = burnt;
+      geo.ashLimit = 9 + Math.random() * 9;
+      ash = 0;
+    }
+
+    const ex = Math.sin(TILT) * rem;
+    const ey = -Math.cos(TILT) * rem;
+    setVar(root, '--len', `${len.toFixed(1)}px`);
+    setVar(root, '--rem', `${rem.toFixed(2)}px`);
+    setVar(root, '--ash', `${ash.toFixed(2)}px`);
+    setVar(root, '--ex', `${ex.toFixed(2)}px`);
+    setVar(root, '--ey', `${ey.toFixed(2)}px`);
+    smoke.setOrigin(geo.canvasW / 2 + ex, geo.ashY + ey - 2);
+  }
+
+  // ── Chrome ──────────────────────────────────────────────
+
+  function statusText() {
+    const goal = goalMs();
+    const elapsed = currentElapsedMs();
+    if (state.status === 'idle') {
+      return goal > 0
+        ? `${formatMinutes(state.durationMin)} · ends ${formatClock(Date.now() + goal + settings.prepSec * 1000)}`
+        : 'Open sit';
+    }
+    if (state.status === 'prep') return 'Settle in';
+    if (state.status === 'running') {
+      return goal > 0
+        ? `Ends ${formatClock(state.runAnchorTs + goal)}`
+        : `Open · ${formatMinutes(Math.floor(elapsed / 60_000))}`;
+    }
+    if (state.status === 'paused') {
+      if (state.prepRemainingMs > 0) return 'Paused';
+      return goal > 0
+        ? `Paused · ${formatMinutes(Math.ceil((goal - elapsed) / 60_000))} left`
+        : `Paused · ${formatMinutes(Math.floor(elapsed / 60_000))}`;
+    }
+    return `Sat ${formatMinutes(state.lastMinutes)}`;
+  }
+
+  function renderStatus() {
+    const text = statusText();
+    if (els.status.textContent !== text) els.status.textContent = text;
+  }
+
+  function renderLog() {
+    const today = dayKey(Date.now());
+    const todays = sessions.filter((s) => s.day === today);
+    const todayMin = todays.reduce((sum, s) => sum + s.minutes, 0);
+    const streak = computeStreakDays(sessions);
+    els.stats.textContent = `${todays.length} ${todays.length === 1 ? 'sit' : 'sits'} today (${formatMinutes(todayMin)}) · ${streak} day streak`;
+
+    const has = sessions.length > 0;
+    els.logEmpty.hidden = has;
+    els.logList.hidden = !has;
+    els.clearBtn.hidden = !has;
+    els.noteRow.hidden = !has;
+    els.logBtn.textContent = has ? `Log (${sessions.length})` : 'Log';
+    if (!has) return;
+
+    const last = sessions[sessions.length - 1];
+    if (els.noteInput.value !== (last.note || '')) els.noteInput.value = last.note || '';
+
+    els.logList.replaceChildren();
+    sessions.slice(-80).reverse().forEach((item) => {
+      const li = document.createElement('li');
+      const when = document.createElement('span');
+      when.className = 'log-when';
+      when.textContent = `${item.day.slice(5)} ${item.time || ''}`;
+      const note = document.createElement('span');
+      note.className = 'log-note';
+      note.textContent = item.note || (item.open ? 'Open sit' : '');
+      const min = document.createElement('span');
+      min.className = 'log-min';
+      min.textContent = formatMinutes(item.minutes);
+      li.append(when, note, min);
+      els.logList.appendChild(li);
+    });
+  }
+
+  const segs = {};
 
   function renderChrome() {
-    els.body.dataset.state = state.status;
-    els.body.dataset.mode = state.durationMin === 0 ? 'open' : 'timed';
-    els.body.dataset.zen = state.zen ? 'true' : 'false';
-    els.zenExit.hidden = !state.zen;
+    body.dataset.state = state.status;
+    body.dataset.incense = settings.incense;
 
-    els.presetBtns.forEach((btn) => {
-      const val = btn.dataset.min;
-      if (val === 'custom') {
-        btn.setAttribute('aria-pressed', String(state.isCustom));
-        btn.textContent = state.isCustom ? `Custom (${state.customMin}m)` : 'Custom';
-      } else {
-        btn.setAttribute('aria-pressed', String(!state.isCustom && Number(val) === state.durationMin));
-      }
-    });
+    const busy = state.status === 'prep' || state.status === 'running' || state.status === 'paused';
+    els.toggleBtn.textContent = isSitting() ? 'Pause'
+      : state.status === 'paused' ? 'Resume'
+        : state.status === 'complete' ? 'New stick'
+          : 'Light';
+    els.endBtn.hidden = !busy;
+    els.incenseBtn.hidden = busy;
+    if (busy && openPanel === 'incense') showPanel(null);
+    els.light.setAttribute('aria-label', state.status === 'complete' ? 'Set a new stick' : 'Light the incense');
 
-    els.customMinWrap.hidden = !state.customOpen || state.status === 'running' || state.status === 'prep';
-    els.customMinInput.value = String(state.customMin);
+    els.soundBtn.textContent = settings.sound ? 'Sound on' : 'Sound off';
+    els.soundBtn.setAttribute('aria-pressed', String(settings.sound));
 
-    els.quickPrep.value = String(settings.prepSec);
-    els.quickInterval.value = settings.intervalMode;
-    els.quickInterval.disabled = state.durationMin === 0;
-    els.hideClockBtn.setAttribute('aria-pressed', String(settings.hideClock));
-    els.hideClockBtn.textContent = settings.hideClock ? 'Clock: Hidden' : 'Hide clock';
+    if (state.durationMin > 0) lastSliderMin = state.durationMin;
+    els.len.value = String(lastSliderMin);
+    els.lenOut.textContent = state.durationMin > 0 ? formatMinutes(state.durationMin) : 'Open';
+    els.volume.value = String(settings.volume);
+    els.volumeOut.textContent = `${settings.volume}%`;
 
-    if (state.status === 'running' || state.status === 'prep') {
-      els.toggleBtn.textContent = 'Pause';
-    } else if (state.status === 'paused') {
-      els.toggleBtn.textContent = 'Resume';
-    } else if (state.status === 'complete') {
-      els.toggleBtn.textContent = 'Sit Again';
-    } else {
-      els.toggleBtn.textContent = 'Begin Sit';
-    }
+    segs.min(state.durationMin);
+    segs.incense(settings.incense);
+    segs.prep(settings.prepSec);
+    segs.bell(settings.bell);
+    segs.start(settings.startBell ? 1 : 0);
+    segs.end(settings.endBells);
+    segs.interval(settings.intervalMode);
+    segs.ambient(settings.ambient);
 
-    const canFinish = (state.status === 'running' || state.status === 'paused') && currentElapsedMs() >= 10_000;
-    els.finishBtn.hidden = !canFinish;
+    document.title = isSitting() ? 'Sitting · Meditation'
+      : state.status === 'paused' ? 'Paused · Meditation'
+        : state.status === 'complete' ? 'Done · Meditation'
+          : BASE_TITLE;
 
-    const soundOn = settings.bell !== 'off';
-    els.soundQuickBtn.textContent = soundOn ? 'Sound: On' : 'Sound: Off';
-    els.soundQuickBtn.setAttribute('aria-pressed', String(soundOn));
-
-    renderHistory();
-    renderDial();
+    renderStatus();
+    renderBurn();
+    wake();
   }
 
-  function stopLoop() {
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
-    if (bgInterval !== null) {
-      clearInterval(bgInterval);
-      bgInterval = null;
+  function showPanel(name) {
+    openPanel = name;
+    for (const [key, panel] of Object.entries(els.panels)) panel.hidden = key !== name;
+    els.incenseBtn.setAttribute('aria-expanded', String(name === 'incense'));
+    els.bellBtn.setAttribute('aria-expanded', String(name === 'bell'));
+    els.logBtn.setAttribute('aria-expanded', String(name === 'log'));
+    if (name === 'log') renderLog();
+    wake();
+  }
+
+  // The chrome leaves while you sit and comes back when you move.
+  function wake() {
+    body.classList.remove('quiet');
+    clearTimeout(quietTimer);
+    if (!isSitting() || openPanel) return;
+    quietTimer = setTimeout(() => {
+      if (isSitting() && !openPanel) body.classList.add('quiet');
+    }, 4000);
+  }
+
+  // ── Sit ─────────────────────────────────────────────────
+
+  function stopTicking() {
+    if (tickTimer !== null) {
+      clearInterval(tickTimer);
+      tickTimer = null;
     }
   }
 
-  function recordSitSession(elapsedMs, endedAt = Date.now()) {
+  function startTicking() {
+    stopTicking();
+    tickTimer = setInterval(tick, 500);
+  }
+
+  function startBurning() {
+    state.status = 'running';
+    state.prepEndAt = null;
+    state.prepRemainingMs = 0;
+    state.elapsedMs = 0;
+    state.bellCursorMs = 0;
+    state.runAnchorTs = Date.now();
+    geo.stickIndex = -1;
+    geo.ashFrom = 0;
+    settleBell('open', settings.startBell, 1, false);
+    if (settings.ambient !== 'off') sound.startRoom(settings.ambient);
+    smoke.setEmit(true);
+    serviceBells(0);
+    renderChrome();
+    persist();
+    announce('The stick is lit. Sit started.');
+  }
+
+  function recordSit(elapsedMs, endedAt) {
     const minutes = Math.max(1, Math.round(elapsedMs / 60_000));
     sessions.push({
-      day: todayKey(),
-      time: formatClockTime(endedAt),
+      day: dayKey(endedAt),
+      time: formatClock(endedAt),
       minutes,
       open: state.durationMin === 0,
-      note: state.note.trim(),
+      note: '',
     });
     return minutes;
   }
 
-  function finishSit(playClosingBell = true) {
-    stopLoop();
-    audio.stopAmbient();
-    if (playClosingBell) {
-      audio.playBell(settings.bell, settings.volume, settings.endBells, false);
-    }
-
-    const minutes = recordSitSession(state.elapsedMs);
-    sendNotification('Meditation complete', `${minutes} minute sit finished.`);
-
-    state.status = 'complete';
+  function finishSit(endedAt = Date.now()) {
+    stopTicking();
+    cancelScheduled();
+    sound.stopRoom();
+    smoke.setEmit(false);
+    releaseAwake();
     state.runAnchorTs = null;
     state.prepEndAt = null;
+    state.prepRemainingMs = 0;
+
+    if (state.elapsedMs < MIN_LOG_MS) {
+      resetSit('Sit ended. Under a minute, so nothing was logged.');
+      return;
+    }
+    state.lastMinutes = recordSit(state.elapsedMs, endedAt);
+    state.status = 'complete';
     renderChrome();
+    renderLog();
     persist();
-    announce(`Meditation complete. ${minutes} minutes logged.`);
+    announce(`Sit complete. ${formatMinutes(state.lastMinutes)} logged.`);
   }
 
-  function checkIntervalBells(prevElapsed, nextElapsed) {
-    if (state.durationMin === 0 || settings.intervalMode === 'off') return;
-    const marks = computeIntervalTimestampsMs(state.durationMin, settings.intervalMode);
-    for (const mark of marks) {
-      if (!state.firedIntervals.has(mark) && prevElapsed < mark && nextElapsed >= mark) {
-        state.firedIntervals.add(mark);
-        audio.playBell(settings.bell, settings.volume, 1, true);
-      }
-    }
-  }
-
-  function advanceTick(renderVisuals = true) {
+  function tick() {
+    readSmokeStyle();
     if (state.status === 'prep') {
-      const rem = currentPrepRemainingMs();
-      state.prepRemainingMs = rem;
-      if (rem <= 0) {
-        state.status = 'running';
-        state.prepEndAt = null;
-        state.prepRemainingMs = 0;
-        state.elapsedMs = 0;
-        state.runAnchorTs = Date.now();
-        state.firedIntervals.clear();
-        if (settings.startBell) {
-          audio.playBell(settings.bell, settings.volume, 1, false);
-        }
-        if (settings.ambient !== 'off') {
-          audio.startAmbient(settings.ambient, settings.volume);
-        }
-        renderChrome();
-        persist();
-        announce('Opening bell. Sit started.');
-      } else if (renderVisuals) {
-        renderDial();
-      }
-      return true;
+      if (currentPrepRemainingMs() <= 0) startBurning();
+      return;
     }
-
-    if (state.status !== 'running') return false;
-
-    const prevElapsed = state.elapsedMs;
-    const nextElapsed = currentElapsedMs();
-    state.elapsedMs = nextElapsed;
-    const goal = targetMs();
-
-    if (goal > 0 && nextElapsed >= goal) {
+    if (state.status !== 'running') return;
+    const elapsed = currentElapsedMs();
+    const goal = goalMs();
+    if (goal > 0 && elapsed >= goal) {
       state.elapsedMs = goal;
-      finishSit(true);
-      return false;
+      serviceBells(goal);
+      finishSit(state.runAnchorTs + goal);
+      return;
     }
-
-    checkIntervalBells(prevElapsed, nextElapsed);
-
-    const canFinish = nextElapsed >= 10_000;
-    if (els.finishBtn.hidden === canFinish) {
-      els.finishBtn.hidden = !canFinish;
-    }
-
-    if (renderVisuals) renderDial();
-    return true;
-  }
-
-  function startLoop() {
-    stopLoop();
-    const step = () => {
-      if (!advanceTick(true)) return;
-      rafId = requestAnimationFrame(step);
-    };
-    rafId = requestAnimationFrame(step);
-    bgInterval = setInterval(() => {
-      if (document.hidden) advanceTick(false);
-    }, 350);
+    state.elapsedMs = elapsed;
+    serviceBells(elapsed);
+    renderBurn();
+    renderStatus();
   }
 
   function beginSit() {
-    audio.ensureContext();
-    if (state.status === 'idle' || state.status === 'complete') {
-      state.elapsedMs = 0;
-      state.firedIntervals.clear();
+    sound.ensure();
+    readSmokeStyle();
+    if (state.status === 'idle') {
       state.startedAt = Date.now();
-      if (settings.autoZen) state.zen = true;
-
+      holdAwake();
+      startTicking();
       if (settings.prepSec > 0) {
         state.status = 'prep';
         state.prepRemainingMs = settings.prepSec * 1000;
         state.prepEndAt = Date.now() + state.prepRemainingMs;
+        if (settings.startBell) {
+          const h = sound.bell(settings.bell, settings.prepSec, 1, false);
+          if (h) scheduled.set('open', h);
+        }
         renderChrome();
-        startLoop();
         persist();
         announce(`Settle in for ${settings.prepSec} seconds.`);
         return;
       }
-
-      state.status = 'running';
-      state.runAnchorTs = Date.now();
-      if (settings.startBell) {
-        audio.playBell(settings.bell, settings.volume, 1, false);
-      }
-      if (settings.ambient !== 'off') {
-        audio.startAmbient(settings.ambient, settings.volume);
-      }
-      renderChrome();
-      startLoop();
-      persist();
-      announce('Meditation started.');
+      flare();
+      startBurning();
       return;
     }
-
     if (state.status === 'paused') {
+      holdAwake();
+      startTicking();
       if (state.prepRemainingMs > 0) {
         state.status = 'prep';
         state.prepEndAt = Date.now() + state.prepRemainingMs;
+        if (settings.startBell) {
+          const h = sound.bell(settings.bell, state.prepRemainingMs / 1000, 1, false);
+          if (h) scheduled.set('open', h);
+        }
       } else {
         state.status = 'running';
         state.runAnchorTs = Date.now() - state.elapsedMs;
-      }
-      if (state.status === 'running' && settings.ambient !== 'off') {
-        audio.startAmbient(settings.ambient, settings.volume);
+        if (settings.ambient !== 'off') sound.startRoom(settings.ambient);
+        smoke.setEmit(true);
+        serviceBells(state.elapsedMs);
       }
       renderChrome();
-      startLoop();
       persist();
-      announce('Meditation resumed.');
+      announce('Sit resumed.');
     }
   }
 
   function pauseSit() {
-    if (state.status !== 'running' && state.status !== 'prep') return;
+    if (!isSitting()) return;
     if (state.status === 'prep') {
       state.prepRemainingMs = currentPrepRemainingMs();
       state.prepEndAt = null;
@@ -834,333 +1202,283 @@
       state.elapsedMs = currentElapsedMs();
       state.runAnchorTs = null;
     }
-    stopLoop();
-    audio.stopAmbient();
+    stopTicking();
+    cancelScheduled();
+    sound.stopRoom();
+    smoke.setEmit(false);
+    releaseAwake();
     state.status = 'paused';
     renderChrome();
     persist();
-    announce('Meditation paused.');
+    announce('Sit paused.');
   }
 
-  function resetSit() {
-    stopLoop();
-    audio.stopAmbient();
+  function resetSit(message = 'A new stick is set.') {
+    stopTicking();
+    cancelScheduled();
+    sound.stopRoom();
+    smoke.setEmit(false);
+    releaseAwake();
     state.status = 'idle';
     state.prepRemainingMs = 0;
     state.prepEndAt = null;
     state.elapsedMs = 0;
     state.runAnchorTs = null;
     state.startedAt = null;
-    state.firedIntervals.clear();
+    state.bellCursorMs = 0;
+    geo.stickIndex = -1;
+    geo.ashFrom = null;
     renderChrome();
     persist();
-    announce('Meditation timer reset.');
+    announce(message);
   }
 
-  function setDuration(minutes, isCustom = false, customOpen = false) {
-    state.durationMin = minutes;
-    state.isCustom = isCustom;
-    state.customOpen = customOpen;
-    if (isCustom) state.customMin = minutes;
-    if (state.status !== 'idle') resetSit();
-    else {
-      renderChrome();
-      persist();
+  function endSit() {
+    if (state.status === 'running') state.elapsedMs = currentElapsedMs();
+    if (state.status === 'prep' || (state.status === 'paused' && state.prepRemainingMs > 0)) {
+      resetSit('Sit ended before it started.');
+      return;
     }
+    finishSit();
   }
+
+  function primaryAction() {
+    if (isSitting()) pauseSit();
+    else if (state.status === 'complete') resetSit();
+    else beginSit();
+  }
+
+  function setDuration(minutes) {
+    if (state.status !== 'idle' && state.status !== 'complete') return;
+    state.durationMin = minutes;
+    if (state.status === 'complete') {
+      resetSit();
+      return;
+    }
+    geo.stickIndex = -1;
+    renderChrome();
+    persist();
+  }
+
+  // Bells changed mid-sit: drop what was scheduled and let the next tick redo it.
+  function rescheduleBells() {
+    cancelFuture();
+    if (state.status === 'running') serviceBells(currentElapsedMs());
+  }
+
+  function resync() {
+    if (!isSitting()) return;
+    tick();
+    if (state.status !== 'running') return;
+    cancelFuture();
+    serviceBells(currentElapsedMs());
+  }
+
+  // ── Events ──────────────────────────────────────────────
+
+  function bindSeg(cls, key, onPick) {
+    const buttons = all(cls);
+    buttons.forEach((btn) => btn.addEventListener('click', () => onPick(btn.dataset[key])));
+    return (value) => buttons.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset[key] === String(value))));
+  }
+
+  function changeSetting(key, value) {
+    settings[key] = value;
+    renderChrome();
+    persist();
+  }
+
+  segs.min = bindSeg('pick-min', 'min', (v) => setDuration(Number(v)));
+  segs.incense = bindSeg('pick-incense', 'incense', (v) => changeSetting('incense', v));
+  segs.prep = bindSeg('pick-prep', 'prep', (v) => changeSetting('prepSec', Number(v)));
+  segs.bell = bindSeg('pick-bell', 'bell', (v) => {
+    changeSetting('bell', v);
+    rescheduleBells();
+    sound.bell(v, 0, 1, false);
+  });
+  segs.start = bindSeg('pick-start', 'start', (v) => changeSetting('startBell', v === '1'));
+  segs.end = bindSeg('pick-end', 'end', (v) => {
+    changeSetting('endBells', Number(v) === 1 ? 1 : 3);
+    rescheduleBells();
+  });
+  segs.interval = bindSeg('pick-interval', 'interval', (v) => {
+    changeSetting('intervalMode', v);
+    rescheduleBells();
+  });
+  segs.ambient = bindSeg('pick-ambient', 'ambient', (v) => {
+    changeSetting('ambient', v);
+    if (state.status !== 'running') return;
+    if (v === 'off') sound.stopRoom();
+    else sound.startRoom(v);
+  });
+
+  els.len.addEventListener('input', () => setDuration(clampMinutes(els.len.value)));
+
+  els.volume.addEventListener('input', () => {
+    settings.volume = Math.max(0, Math.min(100, Number(els.volume.value) || 0));
+    els.volumeOut.textContent = `${settings.volume}%`;
+    sound.setLevel(settings.sound, settings.volume);
+    persist();
+  });
 
   function toggleSound() {
-    if (settings.bell === 'off') {
-      settings.bell = state.bellBeforeMute || 'bowl';
-    } else {
-      state.bellBeforeMute = settings.bell;
-      settings.bell = 'off';
-    }
+    settings.sound = !settings.sound;
+    sound.setLevel(settings.sound, settings.volume);
     renderChrome();
     persist();
-    announce(settings.bell === 'off' ? 'Sound muted.' : 'Sound enabled.');
+    announce(settings.sound ? 'Sound on.' : 'Sound off.');
   }
 
-  function toggleZen(force) {
-    state.zen = typeof force === 'boolean' ? force : !state.zen;
-    renderChrome();
-    announce(state.zen ? 'Zen mode enabled.' : 'Zen mode exited.');
-  }
-
-  function syncSettingsUI() {
-    els.optBell.value = settings.bell;
-    els.optEndBells.value = String(settings.endBells);
-    els.optVolume.value = settings.volume;
-    els.optVolumeLabel.textContent = `${settings.volume}%`;
-    els.optAmbient.value = settings.ambient;
-    els.optStartBell.checked = settings.startBell;
-    els.optAutoZen.checked = settings.autoZen;
-    updateNotifyUI();
-  }
-
-  function updateNotifyUI() {
-    if (typeof Notification === 'undefined') {
-      els.optNotifyBtn.textContent = 'Unsupported';
-      els.optNotifyBtn.disabled = true;
-      return;
-    }
-    if (Notification.permission === 'denied') {
-      els.optNotifyBtn.textContent = 'Blocked in browser';
-      if (settings.notify) {
-        settings.notify = false;
-        persist();
-      }
-      return;
-    }
-    els.optNotifyBtn.textContent = settings.notify && Notification.permission === 'granted' ? 'On' : 'Off';
-  }
-
-  function applySettingsFromUI() {
-    settings.bell = els.optBell.value;
-    if (settings.bell !== 'off') state.bellBeforeMute = settings.bell;
-    settings.endBells = Number(els.optEndBells.value) === 1 ? 1 : 3;
-    settings.volume = Math.max(0, Math.min(100, Number(els.optVolume.value)));
-    settings.ambient = els.optAmbient.value;
-    settings.startBell = els.optStartBell.checked;
-    settings.autoZen = els.optAutoZen.checked;
-
-    if (state.status === 'running') {
-      if (settings.ambient === 'off') audio.stopAmbient();
-      else audio.startAmbient(settings.ambient, settings.volume);
-    }
-    renderChrome();
-    persist();
-  }
-
-  // --- Event Listeners ---
-  els.presetBtns.forEach((btn) => {
+  // Ending a sit and clearing the log both ask twice.
+  function armable(btn, idleText, armedText, hint, action) {
+    let timer = 0;
+    const disarm = () => {
+      clearTimeout(timer);
+      btn.classList.remove('armed');
+      btn.textContent = idleText;
+    };
     btn.addEventListener('click', () => {
-      const val = btn.dataset.min;
-      if (val === 'custom') {
-        const opening = !(state.isCustom && state.customOpen);
-        const mins = clampCustomMinutes(els.customMinInput.value || state.customMin);
-        setDuration(mins, true, opening);
-        if (opening) els.customMinInput.focus();
-      } else {
-        setDuration(Number(val), false, false);
+      if (!btn.classList.contains('armed')) {
+        btn.classList.add('armed');
+        btn.textContent = armedText;
+        announce(hint);
+        timer = setTimeout(disarm, 3500);
+        return;
       }
+      disarm();
+      action();
     });
-  });
+  }
 
-  els.customMinApply.addEventListener('click', () => {
-    const mins = clampCustomMinutes(els.customMinInput.value);
-    els.customMinInput.value = String(mins);
-    setDuration(mins, true, false);
+  els.toggleBtn.addEventListener('click', primaryAction);
+  els.light.addEventListener('click', () => {
+    if (state.status === 'idle' || state.status === 'complete') primaryAction();
+    // Hand focus back to the page, so Space pauses instead of pressing the stick again.
+    els.light.blur();
   });
-
-  els.customMinInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      els.customMinApply.click();
-    } else if (e.key === 'Escape') {
-      state.customOpen = false;
-      els.customMinInput.blur();
-      renderChrome();
-      persist();
-    }
-  });
-
-  els.quickPrep.addEventListener('change', () => {
-    settings.prepSec = Number(els.quickPrep.value) || 0;
+  armable(els.endBtn, 'End sit', 'End now?', 'Press again to end the sit.', endSit);
+  armable(els.clearBtn, 'Clear log', 'Clear every sit?', 'Press again to clear the log.', () => {
+    sessions = [];
+    renderLog();
     persist();
+    announce('Log cleared.');
   });
-
-  els.quickInterval.addEventListener('change', () => {
-    settings.intervalMode = els.quickInterval.value;
-    persist();
-  });
-
-  els.hideClockBtn.addEventListener('click', () => {
-    settings.hideClock = !settings.hideClock;
-    renderChrome();
-    persist();
-    announce(settings.hideClock ? 'Clock hidden while sitting.' : 'Clock visible.');
-  });
+  els.soundBtn.addEventListener('click', toggleSound);
+  els.incenseBtn.addEventListener('click', () => showPanel(openPanel === 'incense' ? null : 'incense'));
+  els.bellBtn.addEventListener('click', () => showPanel(openPanel === 'bell' ? null : 'bell'));
+  els.logBtn.addEventListener('click', () => showPanel(openPanel === 'log' ? null : 'log'));
 
   els.noteInput.addEventListener('input', () => {
-    state.note = els.noteInput.value;
+    const last = sessions[sessions.length - 1];
+    if (!last) return;
+    last.note = els.noteInput.value.trim();
+    const first = els.logList.querySelector('.log-note');
+    if (first) first.textContent = last.note || (last.open ? 'Open sit' : '');
     persist();
   });
 
-  els.noteInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      els.noteInput.blur();
+  els.stage.addEventListener('pointerdown', () => {
+    if (openPanel) showPanel(null);
+  });
+
+  let lastPointer = null;
+  document.addEventListener('pointermove', (e) => {
+    wake();
+    const now = clock();
+    const x = e.clientX - ((window.innerWidth || 0) - geo.canvasW) / 2;
+    const y = e.clientY;
+    if (lastPointer && now - lastPointer.t < 120 && now > lastPointer.t) {
+      const dt = (now - lastPointer.t) / 1000;
+      const clamp = (v) => Math.max(-700, Math.min(700, v));
+      smoke.pointer(x, y, clamp((x - lastPointer.x) / dt), clamp((y - lastPointer.y) / dt));
     }
+    lastPointer = { x, y, t: now };
   });
-
-  els.toggleBtn.addEventListener('click', () => {
-    if (state.status === 'running' || state.status === 'prep') pauseSit();
-    else beginSit();
-  });
-
-  els.finishBtn.addEventListener('click', () => {
-    const elapsed = currentElapsedMs();
-    if (elapsed >= 10_000) {
-      state.elapsedMs = elapsed;
-      finishSit(false);
-    }
-  });
-
-  els.resetBtn.addEventListener('click', resetSit);
-  els.soundQuickBtn.addEventListener('click', toggleSound);
-  els.zenBtn.addEventListener('click', () => toggleZen(true));
-  els.zenExit.addEventListener('click', () => toggleZen(false));
-
-  els.settingsBtn.addEventListener('click', () => {
-    syncSettingsUI();
-    els.dialog.showModal();
-  });
-
-  els.settingsCloseBtn.addEventListener('click', () => els.dialog.close());
-  els.dialog.addEventListener('click', (e) => {
-    if (e.target === els.dialog) els.dialog.close();
-  });
-
-  els.optVolume.addEventListener('input', () => {
-    els.optVolumeLabel.textContent = `${els.optVolume.value}%`;
-  });
-
-  els.testBellBtn.addEventListener('click', () => {
-    const choice = els.optBell.value === 'off' ? 'bowl' : els.optBell.value;
-    audio.playBell(choice, Number(els.optVolume.value), 1, false);
-  });
-
-  els.optNotifyBtn.addEventListener('click', async () => {
-    if (typeof Notification === 'undefined') return;
-    if (Notification.permission === 'default') {
-      try {
-        const res = await Notification.requestPermission();
-        settings.notify = res === 'granted';
-      } catch {
-        settings.notify = false;
-      }
-    } else if (Notification.permission === 'granted') {
-      settings.notify = !settings.notify;
-    }
-    updateNotifyUI();
-    persist();
-  });
-
-  els.settingsForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    applySettingsFromUI();
-    els.dialog.close();
-  });
-
-  els.settingsResetBtn.addEventListener('click', () => {
-    Object.assign(settings, DEFAULT_SETTINGS);
-    syncSettingsUI();
-    renderChrome();
-    persist();
-  });
-
-  els.clearHistoryBtn.addEventListener('click', () => {
-    sessions = [];
-    renderChrome();
-    persist();
-    announce('Cleared sitting log.');
-  });
+  document.addEventListener('pointerdown', wake);
+  document.addEventListener('focusin', wake);
 
   document.addEventListener('keydown', (e) => {
-    if (els.dialog.open) return;
-    const target = e.target;
-    const isTyping = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable);
-    if (isTyping) {
-      if (e.key === 'Escape') target.blur();
+    wake();
+    if (e.key === 'Escape') {
+      if (openPanel) showPanel(null);
       return;
     }
     if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-    const k = e.key.toLowerCase();
+    const tag = e.target && e.target.tagName;
+    // Space and letters belong to whatever control has focus.
+    if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'A' || tag === 'SUMMARY') return;
     if (e.code === 'Space') {
       e.preventDefault();
-      if (state.status === 'running' || state.status === 'prep') pauseSit();
-      else beginSit();
-    } else if (k === 'r') {
-      e.preventDefault();
-      resetSit();
-    } else if (k === 'h') {
-      e.preventDefault();
-      els.hideClockBtn.click();
-    } else if (k === 'z') {
-      e.preventDefault();
-      toggleZen();
-    } else if (k === 'm') {
-      e.preventDefault();
+      primaryAction();
+    } else if (e.key === 'm' || e.key === 'M') {
       toggleSound();
-    } else if (k === 's') {
-      e.preventDefault();
-      syncSettingsUI();
-      els.dialog.showModal();
-    } else if (e.key === 'Escape' && state.zen) {
-      toggleZen(false);
     }
-  });
-
-  els.historyDrawer?.addEventListener('toggle', () => {
-    persist();
   });
 
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       persist();
-    } else if (state.status === 'running' || state.status === 'prep') {
-      advanceTick(true);
+      return;
+    }
+    if (isSitting()) {
+      holdAwake();
+      sound.ensure();
+      resync();
+      smoke.kick();
     }
   });
 
-  idleInterval = setInterval(() => {
-    if (state.status === 'idle') renderDial();
-  }, 15_000);
-
+  window.addEventListener('resize', layout);
   window.addEventListener('pagehide', persist);
-  window.addEventListener('beforeunload', () => {
-    clearInterval(idleInterval);
-    persist();
-  });
+  window.addEventListener('beforeunload', persist);
 
-  function seedPassedIntervals(elapsed) {
-    if (state.durationMin === 0 || settings.intervalMode === 'off') return;
-    const marks = computeIntervalTimestampsMs(state.durationMin, settings.intervalMode);
-    for (const mark of marks) {
-      if (elapsed >= mark) state.firedIntervals.add(mark);
-    }
+  const themeBtn = document.querySelector('.theme-control');
+  if (themeBtn) themeBtn.addEventListener('click', () => setTimeout(readSmokeStyle, 0));
+
+  setInterval(() => {
+    if (state.status === 'idle') renderStatus();
+  }, 20_000);
+
+  // ── Restore ─────────────────────────────────────────────
+
+  function armAudioUnlock() {
+    const unlock = () => {
+      document.removeEventListener('pointerdown', unlock);
+      document.removeEventListener('keydown', unlock);
+      sound.ensure();
+      if (state.status === 'running' && settings.ambient !== 'off' && !sound.room) sound.startRoom(settings.ambient);
+      resync();
+    };
+    document.addEventListener('pointerdown', unlock);
+    document.addEventListener('keydown', unlock);
   }
 
-  function armAudioUnlockForRestoredTimer() {
-    const unlock = () => {
-      audio.ensureContext();
-      if (state.status === 'running' && settings.ambient !== 'off') {
-        audio.startAmbient(settings.ambient, settings.volume);
-      }
-    };
-    document.addEventListener('pointerdown', unlock, { once: true });
-    document.addEventListener('keydown', unlock, { once: true });
+  function resumeRunning(anchor, elapsed, startedAt) {
+    state.status = 'running';
+    state.runAnchorTs = anchor;
+    state.elapsedMs = elapsed;
+    state.startedAt = startedAt;
+    state.bellCursorMs = elapsed;
+    renderBurn();
+    smoke.setEmit(true, true);
+    armAudioUnlock();
+    holdAwake();
+    startTicking();
   }
 
   function restoreTimer() {
     const t = saved?.timer;
     if (!t || typeof t !== 'object') return;
-    if (Number.isInteger(t.durationMin) && t.durationMin >= 0) {
-      state.durationMin = t.durationMin;
-    }
-    const goal = targetMs();
+    if (Number.isInteger(t.durationMin) && t.durationMin >= 0) state.durationMin = Math.min(MAX_MIN, t.durationMin);
+    const goal = goalMs();
     const now = Date.now();
-    const savedFired = Array.isArray(t.firedIntervals)
-      ? t.firedIntervals.filter((n) => typeof n === 'number')
-      : [];
+    const startedAt = typeof t.startedAt === 'number' ? t.startedAt : null;
 
     if (t.status === 'complete') {
-      if (Number(t.elapsedMs) > 0 && (typeof t.startedAt !== 'number' || now - t.startedAt < MAX_RESTORE_OVERDUE_MS)) {
+      if (Number(t.elapsedMs) >= MIN_LOG_MS && (startedAt === null || now - startedAt < MAX_RESTORE_OVERDUE_MS)) {
         state.status = 'complete';
         state.elapsedMs = Number(t.elapsedMs);
-        state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : null;
+        state.lastMinutes = Math.max(1, Math.round(state.elapsedMs / 60_000));
       }
       return;
     }
@@ -1170,82 +1488,56 @@
       const elapsed = Math.max(0, Number(t.elapsedMs) || 0);
       if (remPrep > 0 || elapsed > 0) {
         state.status = 'paused';
-        state.prepRemainingMs = remPrep;
+        state.prepRemainingMs = elapsed > 0 ? 0 : remPrep;
         state.elapsedMs = goal > 0 ? Math.min(goal, elapsed) : elapsed;
-        state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : null;
-        state.firedIntervals = new Set(savedFired);
-        seedPassedIntervals(state.elapsedMs);
+        state.bellCursorMs = state.elapsedMs;
+        state.startedAt = startedAt;
       }
       return;
     }
 
+    let anchor = null;
     if (t.status === 'prep') {
       const prepEndAt = typeof t.prepEndAt === 'number' ? t.prepEndAt : null;
-      if (prepEndAt !== null && prepEndAt > now) {
+      if (prepEndAt === null) return;
+      if (prepEndAt > now) {
         state.status = 'prep';
         state.prepEndAt = prepEndAt;
         state.prepRemainingMs = prepEndAt - now;
-        state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : now;
-        armAudioUnlockForRestoredTimer();
-        startLoop();
+        state.startedAt = startedAt ?? now;
+        armAudioUnlock();
+        holdAwake();
+        startTicking();
         return;
       }
-      if (prepEndAt !== null) {
-        const overrun = Math.max(0, now - prepEndAt);
-        if (goal > 0 && overrun >= goal) {
-          if (overrun - goal < MAX_RESTORE_OVERDUE_MS) {
-            const finishedAt = prepEndAt + goal;
-            recordSitSession(goal, finishedAt);
-            state.status = 'complete';
-            state.elapsedMs = goal;
-          }
-          persist();
-          return;
-        }
-        if (goal === 0 && overrun > MAX_RESTORE_OPEN_MS) {
-          persist();
-          return;
-        }
-        state.status = 'running';
-        state.runAnchorTs = prepEndAt;
-        state.elapsedMs = overrun;
-        state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : prepEndAt;
-        seedPassedIntervals(overrun);
-        armAudioUnlockForRestoredTimer();
-        startLoop();
-        persist();
-      }
+      anchor = prepEndAt;
+    } else if (t.status === 'running') {
+      anchor = typeof t.runAnchorTs === 'number' ? t.runAnchorTs : now - Math.max(0, Number(t.elapsedMs) || 0);
+    } else {
       return;
     }
 
-    if (t.status === 'running') {
-      const anchor = typeof t.runAnchorTs === 'number' ? t.runAnchorTs : null;
-      const elapsed = anchor !== null ? Math.max(0, now - anchor) : Math.max(0, Number(t.elapsedMs) || 0);
-      if (goal > 0 && elapsed >= goal) {
-        if (elapsed - goal < MAX_RESTORE_OVERDUE_MS) {
-          const finishedAt = (anchor ?? now - elapsed) + goal;
-          recordSitSession(goal, finishedAt);
-          state.status = 'complete';
-          state.elapsedMs = goal;
-        }
-        persist();
-        return;
+    const elapsed = Math.max(0, now - anchor);
+    if (goal > 0 && elapsed >= goal) {
+      // It burned out while the page was closed. Log it for when it ended.
+      if (elapsed - goal < MAX_RESTORE_OVERDUE_MS) {
+        state.elapsedMs = goal;
+        state.lastMinutes = recordSit(goal, anchor + goal);
+        state.status = 'complete';
       }
-      if (goal === 0 && elapsed > MAX_RESTORE_OPEN_MS) {
-        persist();
-        return;
-      }
-      state.status = 'running';
-      state.runAnchorTs = anchor ?? (now - elapsed);
-      state.elapsedMs = elapsed;
-      state.startedAt = typeof t.startedAt === 'number' ? t.startedAt : state.runAnchorTs;
-      state.firedIntervals = new Set(savedFired);
-      seedPassedIntervals(elapsed);
-      armAudioUnlockForRestoredTimer();
-      startLoop();
+      persist();
+      return;
     }
+    if (goal === 0 && elapsed > MAX_RESTORE_OPEN_MS) {
+      persist();
+      return;
+    }
+    resumeRunning(anchor, elapsed, startedAt ?? anchor);
   }
 
+  readSmokeStyle();
+  layout();
   restoreTimer();
   renderChrome();
+  renderLog();
 })(typeof window !== 'undefined' ? window : globalThis);

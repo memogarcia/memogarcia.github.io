@@ -1,790 +1,926 @@
+/* Pomodoro. One pin, one ring, one lamp. */
+
+:root {
+  --paper: #b4b6be;
+  --glow-rgb: 250, 242, 214;
+  --hot-rgb: 255, 251, 236;
+  --ink: #1b1b1e;
+  --rail: #151618;
+  --rail-light: rgba(255, 255, 255, 0.5);
+  --bed: #cbcdd3;
+  --tick: rgba(20, 22, 28, 0.5);
+  --vignette: rgba(34, 36, 46, 0.6);
+  --lift: rgba(255, 255, 255, 0.2);
+  --chrome: rgba(24, 25, 30, 0.72);
+  --chrome-strong: #111215;
+  --grain-k: 1;
+  --rib-lo: 0.1;
+  --rib-hi: 0.13;
+
+  --type: Courier, "Courier Prime", "Courier New", "Nimbus Mono PS", "Liberation Mono", monospace;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Radius of the ring. Everything in the scene is measured in it. */
+  --r: clamp(104px, min(38vw, 30vh), 330px);
+  --r: clamp(104px, min(38vw, 30svh), 330px);
+  /* Where the shadow points, set from JS. 6 degrees to the minute. */
+  --a: 150deg;
+  --lamp: 1;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper: #37383d;
+  --ink: #0f0f11;
+  --rail: #08080a;
+  --rail-light: rgba(255, 255, 255, 0.14);
+  --bed: #3c3d43;
+  --tick: rgba(0, 0, 0, 0.62);
+  --vignette: rgba(4, 4, 8, 0.78);
+  --lift: rgba(255, 255, 255, 0.05);
+  --chrome: rgba(232, 228, 216, 0.62);
+  --chrome-strong: #f3efe2;
+  --grain-k: 0.7;
+  --rib-lo: 0.16;
+  --rib-hi: 0.035;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #37383d;
+    --ink: #0f0f11;
+    --rail: #08080a;
+    --rail-light: rgba(255, 255, 255, 0.14);
+    --bed: #3c3d43;
+    --tick: rgba(0, 0, 0, 0.62);
+    --vignette: rgba(4, 4, 8, 0.78);
+    --lift: rgba(255, 255, 255, 0.05);
+    --chrome: rgba(232, 228, 216, 0.62);
+    --chrome-strong: #f3efe2;
+    --grain-k: 0.7;
+    --rib-lo: 0.16;
+    --rib-hi: 0.035;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--paper);
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--ui);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
-  padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-body[data-phase="focus"] {
-  --phase: #364a32;
-  --phase-ink: #faf7f2;
-  --phase-soft: rgba(54, 74, 50, 0.09);
-  --phase-glow: rgba(54, 74, 50, 0.20);
-}
-
-body[data-phase="short"] {
-  --phase: #9c4a2d;
-  --phase-ink: #faf7f2;
-  --phase-soft: rgba(156, 74, 45, 0.09);
-  --phase-glow: rgba(156, 74, 45, 0.20);
-}
-
-body[data-phase="long"] {
-  --phase: #2e4c66;
-  --phase-ink: #faf7f2;
-  --phase-soft: rgba(46, 76, 102, 0.09);
-  --phase-glow: rgba(46, 76, 102, 0.20);
-}
-
-:root[data-theme="dark"] body[data-phase="focus"] {
-  --phase: #b9cca1;
-  --phase-ink: #161816;
-  --phase-soft: rgba(185, 204, 161, 0.12);
-  --phase-glow: rgba(185, 204, 161, 0.24);
-}
-
-:root[data-theme="dark"] body[data-phase="short"] {
-  --phase: #e1ae90;
-  --phase-ink: #161816;
-  --phase-soft: rgba(225, 174, 144, 0.12);
-  --phase-glow: rgba(225, 174, 144, 0.24);
-}
-
-:root[data-theme="dark"] body[data-phase="long"] {
-  --phase: #9ec0dc;
-  --phase-ink: #161816;
-  --phase-soft: rgba(158, 192, 220, 0.12);
-  --phase-glow: rgba(158, 192, 220, 0.24);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) body[data-phase="focus"] {
-    --phase: #b9cca1;
-    --phase-ink: #161816;
-    --phase-soft: rgba(185, 204, 161, 0.12);
-    --phase-glow: rgba(185, 204, 161, 0.24);
-  }
-
-  :root:not([data-theme="light"]) body[data-phase="short"] {
-    --phase: #e1ae90;
-    --phase-ink: #161816;
-    --phase-soft: rgba(225, 174, 144, 0.12);
-    --phase-glow: rgba(225, 174, 144, 0.24);
-  }
-
-  :root:not([data-theme="light"]) body[data-phase="long"] {
-    --phase: #9ec0dc;
-    --phase-ink: #161816;
-    --phase-soft: rgba(158, 192, 220, 0.12);
-    --phase-glow: rgba(158, 192, 220, 0.24);
-  }
-}
-
-.pomo-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px 0 16px;
-}
-
-.pomo-topbar {
-  margin-bottom: 24px;
-}
-
-.phase-tabs {
-  display: inline-grid;
-  grid-template-columns: repeat(3, auto);
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
-}
-
-.phase-tabs button {
-  min-height: 38px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  font: 500 13px/1 var(--sans);
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 
-.phase-tabs button:hover {
-  color: var(--ink);
+[hidden] {
+  display: none !important;
 }
 
-.phase-tabs button[aria-selected="true"] {
-  background: var(--phase);
-  color: var(--phase-ink);
+/* ── Stage ─────────────────────────────────────────────── */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.dial-stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+/* Origin of the scene is the pin. Everything hangs off it. */
+.scene {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 0;
+  height: 0;
 }
 
-.dial-wrap {
-  position: relative;
-  width: min(352px, 84vw);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
+.scene > * {
+  position: absolute;
 }
 
-.dial-svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  display: block;
+.paper {
+  left: -150vmax;
+  top: -150vmax;
+  width: 300vmax;
+  height: 300vmax;
+  background: var(--paper);
 }
 
-.dial-bezel-outer {
-  fill: none;
-  stroke: var(--line);
-  stroke-width: 1;
-  opacity: 0.65;
-}
-
-.dial-bezel-inner {
-  fill: var(--surface-raised);
-  fill-opacity: 0.45;
-  stroke: var(--line);
-  stroke-width: 1;
-  opacity: 0.85;
-}
-
-.dial-track {
-  fill: none;
-  stroke: var(--line);
-  stroke-width: 3;
-}
-
-.dial-ticks line {
-  stroke: var(--line-strong);
-  stroke-width: 1;
-  stroke-linecap: round;
-  transition: stroke 0.25s ease, opacity 0.25s ease;
-}
-
-.dial-ticks line.major {
-  stroke-width: 1.75;
-  stroke: var(--muted);
-  opacity: 0.55;
-}
-
-.dial-ticks line.passed {
-  stroke: var(--phase);
-  opacity: 0.85;
-}
-
-.dial-progress {
-  fill: none;
-  stroke: var(--phase);
-  stroke-width: 4;
-  stroke-linecap: round;
-  transition: stroke 0.35s ease;
-}
-
-body[data-state="running"] .dial-progress {
-  filter: drop-shadow(0 0 8px var(--phase-glow));
-}
-
-.dial-hand-halo {
-  fill: var(--phase-glow);
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: opacity 0.35s ease;
-}
-
-body[data-state="running"] .dial-hand-halo {
-  opacity: 1;
-  animation: pulse-halo 2.8s ease-in-out infinite;
-}
-
-.dial-hand {
-  fill: var(--paper);
-  stroke: var(--phase);
-  stroke-width: 2.75;
-  transition: stroke 0.35s ease;
-}
-
-@keyframes pulse-halo {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.65;
-  }
-  50% {
-    transform: scale(1.28);
-    opacity: 0.25;
-  }
-}
-
-@keyframes dial-done-ring {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-body[data-state="complete"] .dial-progress {
-  animation: dial-done-ring 1.6s ease-in-out 2;
-}
-
-.dial-readout {
+/* Daylight in the room, so the page is not flat before the lamp. */
+.paper::after {
+  content: "";
   position: absolute;
   inset: 0;
+  background: radial-gradient(75vmax 55vmax at 50% 50%, var(--lift), transparent 70%);
+}
+
+.grain {
+  left: -50vw;
+  top: -100vh;
+  width: 100vw;
+  height: 200vh;
+  pointer-events: none;
+  opacity: calc(var(--grain) * var(--grain-k));
+  background-image: var(--grain-img);
+  background-size: 320px 320px;
+}
+
+/* Paper stocks: a noise height map lit from one side, so the tooth of the
+   sheet catches light and shade. Same stocks as the typewriter. */
+:root {
+  --grain-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='12 12 320 320'%3E%3Cfilter id='p' filterUnits='userSpaceOnUse' x='0' y='0' width='344' height='344' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3' stitchTiles='stitch' x='0' y='0' width='320' height='320' result='n'/%3E%3CfeTile in='n' result='t'/%3E%3CfeDiffuseLighting in='t' surfaceScale='0.8' diffuseConstant='1' lighting-color='%23fff' result='l'%3E%3CfeDistantLight azimuth='90' elevation='40'/%3E%3C/feDiffuseLighting%3E%3CfeColorMatrix in='l' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.000 0 0 0 0.643' result='d'/%3E%3CfeColorMatrix in='l' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.000 0 0 0 -0.643' result='w'/%3E%3CfeMerge%3E%3CfeMergeNode in='d'/%3E%3CfeMergeNode in='w'/%3E%3C/feMerge%3E%3C/filter%3E%3Crect width='344' height='344' filter='url%28%23p%29'/%3E%3C/svg%3E");
+  --grain: 0.22;
+}
+
+:root[data-paper="smooth"] {
+  --grain-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='12 12 320 320'%3E%3Cfilter id='p' filterUnits='userSpaceOnUse' x='0' y='0' width='344' height='344' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='1' seed='3' stitchTiles='stitch' x='0' y='0' width='320' height='320' result='n'/%3E%3CfeTile in='n' result='t'/%3E%3CfeDiffuseLighting in='t' surfaceScale='0.5' diffuseConstant='1' lighting-color='%23fff' result='l'%3E%3CfeDistantLight azimuth='90' elevation='40'/%3E%3C/feDiffuseLighting%3E%3CfeColorMatrix in='l' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -0.800 0 0 0 0.514' result='d'/%3E%3CfeColorMatrix in='l' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.800 0 0 0 -0.514' result='w'/%3E%3CfeMerge%3E%3CfeMergeNode in='d'/%3E%3CfeMergeNode in='w'/%3E%3C/feMerge%3E%3C/filter%3E%3Crect width='344' height='344' filter='url%28%23p%29'/%3E%3C/svg%3E");
+  --grain: 0.1;
+}
+
+:root[data-paper="cotton"] {
+  --grain-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='12 12 320 320'%3E%3Cfilter id='p' filterUnits='userSpaceOnUse' x='0' y='0' width='344' height='344' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.34' numOctaves='3' seed='11' stitchTiles='stitch' x='0' y='0' width='320' height='320' result='n'/%3E%3CfeTile in='n' result='t'/%3E%3CfeDiffuseLighting in='t' surfaceScale='1.5' diffuseConstant='1' lighting-color='%23fff' result='l'%3E%3CfeDistantLight azimuth='90' elevation='40'/%3E%3C/feDiffuseLighting%3E%3CfeColorMatrix in='l' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.000 0 0 0 0.643' result='d'/%3E%3CfeColorMatrix in='l' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.000 0 0 0 -0.643' result='w'/%3E%3CfeMerge%3E%3CfeMergeNode in='d'/%3E%3CfeMergeNode in='w'/%3E%3C/feMerge%3E%3C/filter%3E%3Crect width='344' height='344' filter='url%28%23p%29'/%3E%3C/svg%3E");
+  --grain: 0.24;
+}
+
+:root[data-paper="laid"] .grain {
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 117px, rgba(0, 0, 0, var(--rib-lo)) 117px 118px, rgba(255, 255, 255, var(--rib-hi)) 118px 119px, transparent 119px 120px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, var(--rib-lo)) 0 1px, transparent 1px 2px, rgba(255, 255, 255, var(--rib-hi)) 2px 3px, transparent 3px 4px),
+    var(--grain-img);
+  background-size: auto, auto, 320px 320px;
+}
+
+/* On a tall screen the dial rides a little higher, nearer the thumb's reach
+   of the controls than the middle of the glass. */
+@media (max-aspect-ratio: 3/4) {
+  .scene {
+    top: 42%;
+  }
+}
+
+/* ── What turns ────────────────────────────────────────────
+   The shadow points at the minutes left. The lamp sits across the ring from
+   it and looks at the pin. All three turn by the same angle, so one custom
+   property moves the whole mechanism. */
+
+.sweep,
+.pin,
+.lamp {
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+  /* running: one small step a second, drawn as steady travel */
+  transition: transform 1s linear;
+}
+
+.sweep,
+.pin {
+  transform: rotate(var(--a));
+}
+
+.lamp {
+  transform: rotate(var(--a)) translateY(var(--r));
+}
+
+/* winding: each minute is a detent, and the lamp settles into it */
+.scene[data-move="wind"] .sweep,
+.scene[data-move="wind"] .pin,
+.scene[data-move="wind"] .lamp {
+  transition: transform 90ms cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+/* the lamp running round to a new setting on its own */
+.scene[data-move="travel"] .sweep,
+.scene[data-move="travel"] .pin,
+.scene[data-move="travel"] .lamp {
+  transition: transform 560ms cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+.scene[data-move="still"] .sweep,
+.scene[data-move="still"] .pin,
+.scene[data-move="still"] .lamp {
+  transition: none;
+}
+
+/* ── Lamp light ────────────────────────────────────────── */
+
+.lamp-at {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform: translateY(var(--r));
+  opacity: var(--lamp);
+  transition: opacity 500ms ease;
+}
+
+body[data-state="paused"] {
+  --lamp: 0.5;
+}
+
+/* Bloom at the lamp itself. It does not travel down the beam. */
+.hot {
+  position: absolute;
+  left: -350px;
+  top: -350px;
+  width: 700px;
+  height: 700px;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(var(--hot-rgb), 0.9) 0,
+    rgba(var(--hot-rgb), 0.62) 34px,
+    rgba(var(--hot-rgb), 0.34) 90px,
+    rgba(var(--hot-rgb), 0.14) 170px,
+    rgba(var(--hot-rgb), 0.04) 260px,
+    rgba(var(--hot-rgb), 0) 340px);
+}
+
+body.rang .hot {
+  animation: swell 1.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes swell {
+  0% { transform: scale(1); }
+  18% { transform: scale(2.1); }
+  100% { transform: scale(1); }
+}
+
+/* The beam is brightest on its axis and rolls off without a hard edge.
+   The conic gradient widens that edge with distance, like a real penumbra;
+   the mask is the falloff along the beam. */
+.beam {
+  position: absolute;
+  left: -130vmax;
+  top: -130vmax;
+  width: 260vmax;
+  height: 130vmax;
+  pointer-events: none;
+  background:
+    conic-gradient(from -90deg at 50% 100%,
+      rgba(var(--glow-rgb), 0) 0deg,
+      rgba(var(--glow-rgb), 0) 5deg,
+      rgba(var(--glow-rgb), 0.035) 10deg,
+      rgba(var(--glow-rgb), 0.062) 15deg,
+      rgba(var(--glow-rgb), 0.100) 20deg,
+      rgba(var(--glow-rgb), 0.154) 25deg,
+      rgba(var(--glow-rgb), 0.225) 30deg,
+      rgba(var(--glow-rgb), 0.310) 35deg,
+      rgba(var(--glow-rgb), 0.408) 40deg,
+      rgba(var(--glow-rgb), 0.513) 45deg,
+      rgba(var(--glow-rgb), 0.619) 50deg,
+      rgba(var(--glow-rgb), 0.719) 55deg,
+      rgba(var(--glow-rgb), 0.807) 60deg,
+      rgba(var(--glow-rgb), 0.879) 65deg,
+      rgba(var(--glow-rgb), 0.933) 70deg,
+      rgba(var(--glow-rgb), 0.970) 75deg,
+      rgba(var(--glow-rgb), 0.990) 80deg,
+      rgba(var(--glow-rgb), 0.999) 85deg,
+      rgba(var(--glow-rgb), 1.000) 90deg,
+      rgba(var(--glow-rgb), 0.999) 95deg,
+      rgba(var(--glow-rgb), 0.990) 100deg,
+      rgba(var(--glow-rgb), 0.970) 105deg,
+      rgba(var(--glow-rgb), 0.933) 110deg,
+      rgba(var(--glow-rgb), 0.879) 115deg,
+      rgba(var(--glow-rgb), 0.807) 120deg,
+      rgba(var(--glow-rgb), 0.719) 125deg,
+      rgba(var(--glow-rgb), 0.619) 130deg,
+      rgba(var(--glow-rgb), 0.513) 135deg,
+      rgba(var(--glow-rgb), 0.408) 140deg,
+      rgba(var(--glow-rgb), 0.310) 145deg,
+      rgba(var(--glow-rgb), 0.225) 150deg,
+      rgba(var(--glow-rgb), 0.154) 155deg,
+      rgba(var(--glow-rgb), 0.100) 160deg,
+      rgba(var(--glow-rgb), 0.062) 165deg,
+      rgba(var(--glow-rgb), 0.035) 170deg,
+      rgba(var(--glow-rgb), 0) 175deg,
+      rgba(var(--glow-rgb), 0) 180deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 0.97) 6vmax, rgba(0, 0, 0, 0.9) 14vmax, rgba(0, 0, 0, 0.78) 24vmax, rgba(0, 0, 0, 0.62) 36vmax, rgba(0, 0, 0, 0.45) 50vmax, rgba(0, 0, 0, 0.3) 64vmax, rgba(0, 0, 0, 0.18) 78vmax, rgba(0, 0, 0, 0.09) 92vmax, rgba(0, 0, 0, 0.035) 106vmax, rgba(0, 0, 0, 0) 120vmax);
+  mask-image: radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 0.97) 6vmax, rgba(0, 0, 0, 0.9) 14vmax, rgba(0, 0, 0, 0.78) 24vmax, rgba(0, 0, 0, 0.62) 36vmax, rgba(0, 0, 0, 0.45) 50vmax, rgba(0, 0, 0, 0.3) 64vmax, rgba(0, 0, 0, 0.18) 78vmax, rgba(0, 0, 0, 0.09) 92vmax, rgba(0, 0, 0, 0.035) 106vmax, rgba(0, 0, 0, 0) 120vmax);
+  animation: breathe 7s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.96; }
+  50% { opacity: 1; }
+}
+
+/* ── The hand ──────────────────────────────────────────────
+   A shadow: thin and dark at the pin, wider and softer where it lands. */
+
+.shade {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  opacity: calc(0.35 + 0.65 * var(--lamp));
+  transition: opacity 500ms ease;
+}
+
+.shade i {
+  position: absolute;
+  left: -14px;
+  top: calc(var(--r) * -0.875);
+  width: 28px;
+  height: calc(var(--r) * 0.875);
+}
+
+.shade i:first-child {
+  filter: blur(5px);
+  opacity: 0.55;
+  background: linear-gradient(to top, rgba(8, 8, 12, 0.5) 0, rgba(8, 8, 12, 0.4) 60%, rgba(8, 8, 12, 0) 100%);
+  clip-path: polygon(calc(50% - 5px) 100%, calc(50% + 5px) 100%, 100% 0, 0 0);
+}
+
+.shade i:last-child {
+  filter: blur(1.1px);
+  background: linear-gradient(to top, rgba(8, 8, 12, 0.72) 0, rgba(8, 8, 12, 0.6) 50%, rgba(8, 8, 12, 0.44) 84%, rgba(8, 8, 12, 0) 100%);
+  clip-path: polygon(calc(50% - 4px) 100%, calc(50% + 4px) 100%, calc(50% + 6.5px) 0, calc(50% - 6.5px) 0);
+}
+
+/* The pin, seen from above. Its lit side faces the lamp. */
+.pin::before {
+  content: "";
+  position: absolute;
+  left: -6.5px;
+  top: -6.5px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 84%, #b9b9bd 0, #56565b 26%, var(--rail) 62%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 5px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Ring and scale ────────────────────────────────────── */
+
+.ring {
+  left: calc(var(--r) * -1 - 2px);
+  top: calc(var(--r) * -1 - 2px);
+  width: calc(var(--r) * 2 + 4px);
+  height: calc(var(--r) * 2 + 4px);
+  border: 4px solid var(--rail);
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow:
+    0 1px 0 var(--rail-light),
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    inset 0 4px 10px -4px rgba(0, 0, 0, 0.28);
+}
+
+.scale {
+  left: calc(var(--r) * -1.3);
+  top: calc(var(--r) * -1.3);
+  width: calc(var(--r) * 2.6);
+  height: calc(var(--r) * 2.6);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.scale line {
+  stroke: var(--tick);
+  stroke-width: 0.55;
+}
+
+.scale line.major {
+  stroke-width: 0.8;
+}
+
+.scale text {
+  fill: var(--ink);
+  font: 8.2px var(--type);
+  text-anchor: middle;
+  dominant-baseline: central;
+  opacity: 0.82;
+}
+
+/* The whole dial is the knob. Grab it anywhere on the scale and turn. */
+.dial {
+  left: calc(var(--r) * -1.36);
+  top: calc(var(--r) * -1.36);
+  width: calc(var(--r) * 2.72);
+  height: calc(var(--r) * 2.72);
+  border-radius: 50%;
+  cursor: grab;
+  touch-action: none;
+  outline: 0;
+}
+
+.winding .dial {
+  cursor: grabbing;
+}
+
+.dial:focus-visible {
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--chrome-strong) 38%, transparent);
+}
+
+/* ── Lamp ──────────────────────────────────────────────── */
+
+.lamp {
+  pointer-events: none;
+  font-size: clamp(15px, calc(var(--r) * 0.1), 24px);
+}
+
+.pill {
+  position: absolute;
+  left: -1.3em;
+  top: -0.52em;
+  width: 2.6em;
+  height: 1.04em;
+  border-radius: 1em;
+  background: linear-gradient(to bottom, #ffffff 0, #f6f6f4 45%, #dcdcdc 100%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 -2px 3px rgba(0, 0, 0, 0.14),
+    0 0 3px rgba(0, 0, 0, 0.4),
+    0 0 12px rgba(0, 0, 0, 0.22),
+    0 0 26px 6px rgba(var(--hot-rgb), calc(0.55 * var(--lamp)));
+}
+
+.pill i {
+  position: absolute;
+  top: 50%;
+  width: 0.16em;
+  height: 0.16em;
+  margin-top: -0.08em;
+  border-radius: 50%;
+  background: #c9c9c6;
+  box-shadow: inset 0 0.5px 0.5px rgba(0, 0, 0, 0.25);
+}
+
+.pill i:nth-child(1) { left: 0.56em; }
+.pill i:nth-child(2) { left: 0.86em; }
+.pill i:nth-child(3) {
+  left: 1.16em;
+  background: #2a2a2c;
+  transition: background 380ms ease, box-shadow 380ms ease;
+}
+
+body[data-state="running"] .pill i:nth-child(3) {
+  background: #ffb649;
+  box-shadow: 0 0 5px 1px rgba(255, 170, 60, 0.9);
+}
+
+/* ── What is typed on the page ─────────────────────────── */
+
+/* The time sits off to one side of the pin, clear of where the shadow lies
+   for anything up to half an hour. */
+.readout {
+  left: calc(var(--r) * -0.82);
+  top: calc(var(--r) * 0.11);
+  width: calc(var(--r) * 1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
   pointer-events: none;
-  padding: 36px;
+  color: var(--ink);
+  font-family: var(--type);
 }
 
-.dial-eyebrow {
-  margin: 0 0 8px;
-  color: var(--phase);
-  font: 500 11px/1.2 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  transition: color 0.3s ease;
+.readout > * {
+  pointer-events: auto;
 }
 
-.dial-time {
+.time {
   margin: 0;
-  color: var(--ink);
-  font: 300 clamp(50px, 12vw, 68px)/1 var(--sans);
-  letter-spacing: -0.035em;
-  font-variant-numeric: tabular-nums;
-}
-
-.dial-schedule {
-  margin: 12px 0 0;
-  color: var(--muted);
-  font: 400 12px/1.4 var(--mono);
-  font-variant-numeric: tabular-nums;
-  min-height: 17px;
-}
-
-.intention-row {
-  width: min(360px, 90vw);
-  margin-top: 22px;
-}
-
-.intention-input {
-  width: 100%;
-  min-height: 44px;
-  padding: 8px 12px;
+  padding: 0 0.1em;
   border: 0;
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: 6px;
   background: transparent;
-  color: var(--ink);
-  text-align: center;
-  font: 400 17px/1.4 var(--serif);
-  transition: border-color 0.2s ease;
-}
-
-.intention-input::placeholder {
-  color: var(--muted);
-  opacity: 0.72;
-  font-style: italic;
-}
-
-.intention-input:focus {
-  border-bottom-color: var(--phase);
-  outline: none;
-}
-
-.intention-input:focus-visible {
-  outline: 2px solid var(--phase);
-  outline-offset: 4px;
-  border-radius: 4px;
-}
-
-.controls-primary {
-  margin-top: 24px;
-}
-
-.btn-primary {
-  min-height: 48px;
-  min-width: 168px;
-  padding: 0 32px;
-  border: 1px solid var(--phase);
-  border-radius: 999px;
-  background: var(--phase);
-  color: var(--phase-ink);
-  font: 550 14px/1 var(--sans);
-  letter-spacing: 0.02em;
+  color: inherit;
+  font: calc(var(--r) * 0.25) / 1.1 var(--type);
+  font-variant-numeric: tabular-nums;
+  /* a little ink spread */
+  text-shadow: 0 0 0.6px currentColor, 0 0 1.6px color-mix(in srgb, currentColor 40%, transparent);
   cursor: pointer;
-  transition: transform 0.12s ease, opacity 0.15s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.btn-primary:hover {
-  opacity: 0.92;
+.time:focus-visible {
+  outline: 1.5px solid color-mix(in srgb, var(--ink) 45%, transparent);
+  outline-offset: 3px;
 }
 
-.btn-primary:active {
-  transform: scale(0.98);
+.phase {
+  margin: 0;
+  min-height: 1.5em;
+  font-size: clamp(12px, calc(var(--r) * 0.07), 18px);
+  line-height: 1.5;
+  white-space: nowrap;
+  opacity: 0.78;
+  pointer-events: none;
 }
 
-.btn-primary.btn-sm {
-  min-height: 40px;
-  min-width: 96px;
-  padding: 0 20px;
-  font-size: 13px;
+/* Under the ring the page is out of the light, so this is written in the
+   colour of the controls instead of ink. */
+.intention {
+  left: calc(var(--r) * -1.15);
+  top: calc(var(--r) * 1.3 + 8px);
+  width: calc(var(--r) * 2.3);
+  padding: 3px 0 4px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--chrome-strong);
+  caret-color: var(--chrome-strong);
+  font: 16px / 1.4 var(--type);
+  text-align: center;
+  text-overflow: ellipsis;
+  user-select: text;
+  -webkit-user-select: text;
+  transition: opacity 500ms ease;
 }
 
-.controls-secondary {
-  margin-top: 12px;
+.intention::placeholder {
+  color: var(--chrome);
+  opacity: 0.8;
+}
+
+.intention:focus {
+  border-bottom-color: color-mix(in srgb, var(--chrome-strong) 40%, transparent);
+}
+
+.intention:focus::placeholder {
+  opacity: 0.4;
+}
+
+/* Once the timer runs, a session with no name does not need the question. */
+.quiet .intention:placeholder-shown:not(:focus) {
+  opacity: 0;
+}
+
+.hint {
+  flex: 1;
+  margin: 0;
+  padding: 0 10px;
+  text-align: center;
+  line-height: 1.35;
+}
+
+/* ── Vignette ──────────────────────────────────────────── */
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 110% at 50% 44%, transparent 40%, var(--vignette) 118%);
+}
+
+/* ── Quiet chrome ──────────────────────────────────────── */
+
+.chrome {
+  position: fixed;
+  z-index: 5;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px 8px;
+  align-items: center;
+  gap: 4px;
+  color: var(--chrome);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  transition: opacity 500ms ease;
 }
 
-.btn-ghost {
-  min-height: 44px;
-  padding: 0 12px;
+/* While the timer runs and nothing is being touched, only the dial is left. */
+.quiet .chrome:not(:focus-within) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chrome-top {
+  top: max(14px, env(safe-area-inset-top));
+  left: max(18px, env(safe-area-inset-left));
+  right: max(18px, env(safe-area-inset-right));
+  justify-content: space-between;
+}
+
+.chrome-bottom {
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  flex-wrap: wrap;
+  max-width: calc(100% - 36px);
+}
+
+.chrome a,
+.chrome button {
+  min-height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--muted);
-  font: 450 12px/1 var(--mono);
-  cursor: pointer;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-
-.btn-ghost:hover {
-  color: var(--ink);
-  background: var(--phase-soft);
-}
-
-.btn-ghost[aria-pressed="false"] {
-  opacity: 0.7;
-}
-
-.pomo-meta {
-  margin-top: 26px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 12px 16px;
-}
-
-.cycle-dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.cycle-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1.5px solid var(--line-strong);
-  background: transparent;
-  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
-}
-
-.cycle-dot.done {
-  border-color: var(--phase);
-  background: var(--phase);
-}
-
-.cycle-dot.current {
-  border-color: var(--phase);
-  transform: scale(1.15);
-}
-
-.today-summary {
-  margin: 0;
-  color: var(--muted);
-  font: 400 12px/1.4 var(--mono);
+  color: inherit;
+  font: inherit;
   font-variant-numeric: tabular-nums;
-}
-
-.history-drawer {
-  width: min(460px, 100%);
-  margin-top: 28px;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.history-drawer summary {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 46px;
-  padding: 8px 2px;
-  color: var(--muted);
-  font: 450 12px/1 var(--mono);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  text-decoration: none;
   cursor: pointer;
 }
 
-.history-drawer summary::-webkit-details-marker {
-  display: none;
+.chrome button.lead {
+  color: var(--chrome-strong);
 }
 
-.history-drawer summary:hover {
-  color: var(--ink);
+.chrome a:hover,
+.chrome button:hover {
+  color: var(--chrome-strong);
+  background: color-mix(in srgb, var(--chrome-strong) 9%, transparent);
 }
 
-.history-count {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  font-variant-numeric: tabular-nums;
+.chrome :focus-visible {
+  outline: 2px solid var(--chrome-strong);
+  outline-offset: 1px;
 }
 
-.history-body {
-  padding: 4px 0 18px;
+.chrome button.armed {
+  color: var(--chrome-strong);
+  background: color-mix(in srgb, var(--chrome-strong) 14%, transparent);
 }
 
-.history-empty {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
+/* ── Panels ────────────────────────────────────────────── */
 
-.history-list {
-  list-style: none;
-  margin: 4px 0 0;
-  padding: 0;
-}
-
-.history-list li {
+.panel {
+  position: fixed;
+  z-index: 6;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: calc(max(14px, env(safe-area-inset-bottom)) + 46px);
+  width: min(360px, calc(100% - 36px));
+  max-height: calc(100% - 120px);
+  overflow-y: auto;
+  padding: 14px 16px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
   gap: 12px;
-  align-items: baseline;
-  padding: 8px 0;
-  border-top: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--chrome-strong) 14%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bed) 78%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
+  color: var(--chrome-strong);
   font-size: 13px;
 }
 
-.history-list li:first-child {
-  border-top: 0;
+.pref {
+  display: grid;
+  grid-template-columns: 66px 1fr auto;
+  align-items: center;
+  gap: 12px;
 }
 
-.history-time {
-  color: var(--muted);
-  font: 400 11px/1.4 var(--mono);
+.pref > label,
+.pref > span:first-child,
+.note {
+  color: var(--chrome);
+}
+
+.pref output {
+  min-width: 52px;
+  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-.history-note {
-  color: var(--ink);
-  font-family: var(--serif);
-  font-size: 15px;
+.pref input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pref input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--kelvin-track, #ddd);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16);
+}
+
+.pref input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--kelvin-track, #ddd);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16);
+}
+
+/* The thumb is the lamp, small. */
+.pref input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 14px;
+  margin-top: -4px;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(to bottom, #fff, #e2e2e0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 10px 2px rgba(var(--hot-rgb), 0.7);
+}
+
+.pref input[type="range"]::-moz-range-thumb {
+  width: 30px;
+  height: 14px;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(to bottom, #fff, #e2e2e0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 10px 2px rgba(var(--hot-rgb), 0.7);
+}
+
+.pref input[type="number"] {
+  width: 52px;
+  min-height: 30px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--chrome-strong) 9%, transparent);
+  color: var(--chrome-strong);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.seg {
+  grid-column: 2 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  padding: 2px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--chrome-strong) 9%, transparent);
+}
+
+.seg-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.seg button {
+  min-height: 30px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--chrome);
+  font: inherit;
+  cursor: pointer;
+}
+
+.seg button:hover {
+  color: var(--chrome-strong);
+}
+
+.seg button[aria-pressed="true"] {
+  color: var(--chrome-strong);
+  background: color-mix(in srgb, var(--bed) 70%, #fff);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 28px;
+  cursor: pointer;
+}
+
+.check input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--chrome-strong);
+  cursor: pointer;
+}
+
+.keys {
+  margin: 2px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid color-mix(in srgb, var(--chrome-strong) 12%, transparent);
+  color: var(--chrome);
+  line-height: 1.5;
+}
+
+.panel :focus-visible {
+  outline: 2px solid var(--chrome-strong);
+  outline-offset: 1px;
+}
+
+/* The log is a slip of typed paper. */
+.log {
+  font-family: var(--type);
+  font-size: 14px;
+}
+
+.log-empty {
+  margin: 0;
+  color: var(--chrome);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.log-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+
+.log-list li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 1.5ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.log-list .what {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.history-note.empty-note {
-  color: var(--muted);
-  font-style: italic;
+.log-list .what.blank {
+  color: var(--chrome);
 }
 
-.history-dur {
-  color: var(--muted);
-  font: 400 11px/1.4 var(--mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.history-actions {
-  margin-top: 8px;
+.panel-actions {
   display: flex;
-  justify-content: flex-end;
+  gap: 4px;
+  margin: 0 -8px -4px;
+  font-family: var(--ui);
+  font-size: 13px;
 }
 
-.btn-text {
-  min-height: 36px;
-  padding: 4px 0;
-  border: 0;
-  background: none;
-  color: var(--muted);
-  font: 400 12px var(--mono);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
-.btn-text:hover {
-  color: var(--ink);
-}
-
-.shortcut-bar {
-  margin: 28px 0 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 16px;
-  color: var(--muted);
-  font: 400 11px/1.5 var(--mono);
-}
-
-.shortcut-bar kbd,
-.zen-exit kbd {
-  display: inline-block;
-  padding: 1px 5px;
-  border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  background: var(--surface);
-  color: var(--ink);
-  font: 500 10px/1.3 var(--mono);
-}
-
-/* Zen Mode */
-.zen-exit {
-  position: fixed;
-  top: 20px;
-  right: 24px;
-  z-index: 40;
-  min-height: 44px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--paper);
-  color: var(--muted);
-  font: 450 12px/1 var(--mono);
-  cursor: pointer;
-  opacity: 0.45;
-  transition: opacity 0.2s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.zen-exit:hover,
-.zen-exit:focus-visible {
-  opacity: 1;
-  color: var(--ink);
-  border-color: var(--line-strong);
-}
-
-body[data-zen="true"] .site-header,
-body[data-zen="true"] .site-footer,
-body[data-zen="true"] .history-drawer,
-body[data-zen="true"] .shortcut-bar {
-  display: none;
-}
-
-body[data-zen="true"] .pomo-main {
-  min-height: 100dvh;
-  justify-content: center;
-  padding-block: 32px;
-}
-
-body[data-zen="true"] #zen-btn {
-  display: none;
-}
-
-/* Settings Dialog */
-.settings-dialog {
-  width: min(460px, calc(100vw - 32px));
-  padding: 0;
-  border: 1px solid var(--line-strong);
-  border-radius: 12px;
-  background: var(--paper);
-  color: var(--ink);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
-}
-
-.settings-dialog::backdrop {
-  background: rgba(20, 22, 18, 0.48);
-  backdrop-filter: blur(4px);
-}
-
-.settings-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.settings-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--line);
-}
-
-.settings-header h2 {
-  margin: 0;
-  font: 450 22px/1.2 var(--serif);
-}
-
-.icon-close {
-  width: 40px;
-  height: 40px;
+.panel-actions button {
+  min-height: 32px;
+  padding: 0 8px;
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--muted);
-  font: 400 24px/1 var(--sans);
+  color: var(--chrome);
+  font: inherit;
   cursor: pointer;
 }
 
-.icon-close:hover {
-  color: var(--ink);
-  background: var(--surface);
+.panel-actions button:hover,
+.panel-actions button.armed {
+  color: var(--chrome-strong);
+  background: color-mix(in srgb, var(--chrome-strong) 9%, transparent);
 }
 
-.settings-body {
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-height: 70dvh;
-  overflow-y: auto;
+.theme-control svg {
+  pointer-events: none;
 }
 
-.settings-group {
-  border: 0;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.theme-icon-light,
+.theme-icon-dark {
+  display: none;
 }
 
-.settings-group legend {
-  margin-bottom: 4px;
-  color: var(--muted);
-  font: 500 11px/1.4 var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+:root[data-theme="light"] .theme-icon-device,
+:root[data-theme="dark"] .theme-icon-device {
+  display: none;
 }
 
-.settings-grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+:root[data-theme="light"] .theme-icon-light,
+:root[data-theme="dark"] .theme-icon-dark {
+  display: inline;
 }
 
-.settings-grid-4 label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.settings-grid-4 span {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.settings-grid-4 input,
-.settings-row select {
-  width: 100%;
-  min-height: 42px;
-  padding: 6px 10px;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: var(--surface-raised);
-  color: var(--ink);
-  font: 450 14px/1.2 var(--mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.settings-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  font-size: 14px;
-}
-
-.settings-row select {
-  width: auto;
-  min-width: 140px;
-  font-family: var(--sans);
-}
-
-.settings-inline {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.settings-inline input[type="range"] {
-  width: 120px;
-  accent-color: var(--phase);
-}
-
-.mono-val {
-  min-width: 38px;
-  text-align: right;
-  color: var(--muted);
-  font: 400 12px var(--mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.btn-outline {
-  min-height: 40px;
-  padding: 0 14px;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: var(--surface);
-  color: var(--ink);
-  font: 450 12px/1 var(--mono);
-  cursor: pointer;
-}
-
-.btn-outline:hover {
-  border-color: var(--phase);
-  color: var(--phase);
-}
-
-.settings-check {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 36px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.settings-check input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--phase);
-  cursor: pointer;
-}
-
-.settings-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-top: 1px solid var(--line);
-}
-
-@media (max-width: 560px) {
-  .phase-tabs button {
-    padding: 0 13px;
-    font-size: 12px;
+@media (prefers-reduced-motion: reduce) {
+  .beam,
+  body.rang .hot {
+    animation: none;
   }
 
-  .settings-grid-4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .shortcut-bar {
-    display: none;
+  .sweep,
+  .pin,
+  .lamp,
+  .lamp-at,
+  .shade {
+    transition: none !important;
   }
 }

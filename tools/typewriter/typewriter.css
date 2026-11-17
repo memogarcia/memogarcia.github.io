@@ -1,0 +1,791 @@
+/* Typewriter. One sheet, one rail, one lamp. */
+
+:root {
+  --paper: #b4b6be;
+  --glow-rgb: 250, 242, 214;
+  --hot-rgb: 255, 251, 236;
+  --ink: #1b1b1e;
+  --rail: #151618;
+  --rail-light: rgba(255, 255, 255, 0.5);
+  --bed: #cbcdd3;
+  --bed-low: #a9abb3;
+  --tick: rgba(20, 22, 28, 0.34);
+  --vignette: rgba(34, 36, 46, 0.6);
+  --lift: rgba(255, 255, 255, 0.2);
+  --chrome: rgba(24, 25, 30, 0.72);
+  --chrome-strong: #111215;
+  --grain-k: 1;
+  --rib-lo: 0.1;
+  --rib-hi: 0.13;
+
+  --type: Courier, "Courier Prime", "Courier New", "Nimbus Mono PS", "Liberation Mono", monospace;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --fs: clamp(18px, 1.3vw + 7px, 27px);
+  --lh: 1.72em;
+  --rail-y: 66%;
+
+  /* set from JS */
+  --ch: 14px;
+  --cols: 48;
+  --n: 12;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper: #37383d;
+  --ink: #0f0f11;
+  --rail: #08080a;
+  --rail-light: rgba(255, 255, 255, 0.14);
+  --bed: #3c3d43;
+  --bed-low: #2b2c31;
+  --tick: rgba(0, 0, 0, 0.5);
+  --vignette: rgba(4, 4, 8, 0.78);
+  --lift: rgba(255, 255, 255, 0.05);
+  --chrome: rgba(232, 228, 216, 0.62);
+  --chrome-strong: #f3efe2;
+  --grain-k: 0.7;
+  --rib-lo: 0.16;
+  --rib-hi: 0.035;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #37383d;
+    --ink: #0f0f11;
+    --rail: #08080a;
+    --rail-light: rgba(255, 255, 255, 0.14);
+    --bed: #3c3d43;
+    --bed-low: #2b2c31;
+    --tick: rgba(0, 0, 0, 0.5);
+    --vignette: rgba(4, 4, 8, 0.78);
+    --lift: rgba(255, 255, 255, 0.05);
+    --chrome: rgba(232, 228, 216, 0.62);
+    --chrome-strong: #f3efe2;
+    --grain-k: 0.7;
+    --rib-lo: 0.16;
+    --rib-hi: 0.035;
+    color-scheme: dark;
+  }
+}
+
+@media (max-width: 700px) {
+  :root {
+    --rail-y: 60%;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--paper);
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--ui);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.probe {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  visibility: hidden;
+  white-space: pre;
+  font: var(--fs) / 1 var(--type);
+}
+
+/* ── Stage ─────────────────────────────────────────────── */
+
+.stage {
+  position: fixed;
+  top: var(--stage-top, 0);
+  left: 0;
+  width: 100%;
+  height: var(--stage-h, 100%);
+  overflow: hidden;
+  cursor: text;
+  font: var(--fs) / var(--lh) var(--type);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Origin of the scene is the middle of the rail. Everything hangs off it. */
+.scene {
+  position: absolute;
+  left: 50%;
+  top: var(--rail-y);
+  width: 0;
+  height: 0;
+}
+
+.scene > * {
+  position: absolute;
+}
+
+.paper {
+  left: -150vmax;
+  top: -150vmax;
+  width: 300vmax;
+  height: 300vmax;
+  background: var(--paper);
+}
+
+/* Daylight coming from the upper left, so the page is not flat before the lamp. */
+.paper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(75vmax 55vmax at 50% 42%, var(--lift), transparent 70%);
+}
+
+.grain {
+  left: -50vw;
+  top: -100vh;
+  width: 100vw;
+  height: 200vh;
+  pointer-events: none;
+  opacity: calc(var(--grain) * var(--grain-k));
+  background-image: var(--grain-img);
+  background-size: 320px 320px;
+}
+
+/* Paper stocks. Each is a noise height map lit from below, where the lamp sits,
+   so the tooth of the sheet catches light on one side and shade on the other. */
+:root {
+  --grain-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='12 12 320 320'%3E%3Cfilter id='p' filterUnits='userSpaceOnUse' x='0' y='0' width='344' height='344' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3' stitchTiles='stitch' x='0' y='0' width='320' height='320' result='n'/%3E%3CfeTile in='n' result='t'/%3E%3CfeDiffuseLighting in='t' surfaceScale='0.8' diffuseConstant='1' lighting-color='%23fff' result='l'%3E%3CfeDistantLight azimuth='90' elevation='40'/%3E%3C/feDiffuseLighting%3E%3CfeColorMatrix in='l' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.000 0 0 0 0.643' result='d'/%3E%3CfeColorMatrix in='l' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.000 0 0 0 -0.643' result='w'/%3E%3CfeMerge%3E%3CfeMergeNode in='d'/%3E%3CfeMergeNode in='w'/%3E%3C/feMerge%3E%3C/filter%3E%3Crect width='344' height='344' filter='url%28%23p%29'/%3E%3C/svg%3E");
+  --grain: 0.22;
+}
+
+:root[data-paper="smooth"] {
+  --grain-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='12 12 320 320'%3E%3Cfilter id='p' filterUnits='userSpaceOnUse' x='0' y='0' width='344' height='344' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='1' seed='3' stitchTiles='stitch' x='0' y='0' width='320' height='320' result='n'/%3E%3CfeTile in='n' result='t'/%3E%3CfeDiffuseLighting in='t' surfaceScale='0.5' diffuseConstant='1' lighting-color='%23fff' result='l'%3E%3CfeDistantLight azimuth='90' elevation='40'/%3E%3C/feDiffuseLighting%3E%3CfeColorMatrix in='l' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -0.800 0 0 0 0.514' result='d'/%3E%3CfeColorMatrix in='l' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.800 0 0 0 -0.514' result='w'/%3E%3CfeMerge%3E%3CfeMergeNode in='d'/%3E%3CfeMergeNode in='w'/%3E%3C/feMerge%3E%3C/filter%3E%3Crect width='344' height='344' filter='url%28%23p%29'/%3E%3C/svg%3E");
+  --grain: 0.1;
+}
+
+:root[data-paper="cotton"] {
+  --grain-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='12 12 320 320'%3E%3Cfilter id='p' filterUnits='userSpaceOnUse' x='0' y='0' width='344' height='344' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.34' numOctaves='3' seed='11' stitchTiles='stitch' x='0' y='0' width='320' height='320' result='n'/%3E%3CfeTile in='n' result='t'/%3E%3CfeDiffuseLighting in='t' surfaceScale='1.5' diffuseConstant='1' lighting-color='%23fff' result='l'%3E%3CfeDistantLight azimuth='90' elevation='40'/%3E%3C/feDiffuseLighting%3E%3CfeColorMatrix in='l' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.000 0 0 0 0.643' result='d'/%3E%3CfeColorMatrix in='l' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.000 0 0 0 -0.643' result='w'/%3E%3CfeMerge%3E%3CfeMergeNode in='d'/%3E%3CfeMergeNode in='w'/%3E%3C/feMerge%3E%3C/filter%3E%3Crect width='344' height='344' filter='url%28%23p%29'/%3E%3C/svg%3E");
+  --grain: 0.24;
+}
+
+/* Laid paper: fine ribs from the mould wires, and a chain line every inch or so. */
+:root[data-paper="laid"] .grain {
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 117px, rgba(0, 0, 0, var(--rib-lo)) 117px 118px, rgba(255, 255, 255, var(--rib-hi)) 118px 119px, transparent 119px 120px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, var(--rib-lo)) 0 1px, transparent 1px 2px, rgba(255, 255, 255, var(--rib-hi)) 2px 3px, transparent 3px 4px),
+    var(--grain-img);
+  background-size: auto, auto, 320px 320px;
+}
+
+/* ── Lamp ──────────────────────────────────────────────── */
+
+.beam-pos {
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+  transition: transform 190ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Light that does not travel down the beam: the bloom at the lamp itself and
+   the wash it bounces onto the page around it. This part never turns. */
+.hot {
+  position: absolute;
+  left: -60vmax;
+  top: -60vmax;
+  width: 120vmax;
+  height: 60vmax;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 100%,
+      rgba(var(--hot-rgb), 0.9) 0,
+      rgba(var(--hot-rgb), 0.62) 34px,
+      rgba(var(--hot-rgb), 0.34) 90px,
+      rgba(var(--hot-rgb), 0.14) 170px,
+      rgba(var(--hot-rgb), 0.04) 260px,
+      rgba(var(--hot-rgb), 0) 340px),
+    radial-gradient(circle at 50% 100%,
+      rgba(var(--glow-rgb), 0.2) 0,
+      rgba(var(--glow-rgb), 0.13) 16vmax,
+      rgba(var(--glow-rgb), 0.06) 32vmax,
+      rgba(var(--glow-rgb), 0) 56vmax);
+}
+
+/* The lamp is aimed at the middle of the page, so the beam swings slowly
+   as the carriage travels. */
+.beam-aim {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+  transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* The beam is brightest on its axis and rolls off without a hard edge.
+   A conic gradient makes that edge wider with distance, like a real penumbra;
+   the mask is the falloff along the beam. */
+.beam {
+  position: absolute;
+  left: -130vmax;
+  top: -130vmax;
+  width: 260vmax;
+  height: 130vmax;
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  background:
+    conic-gradient(from -90deg at 50% 100%,
+      rgba(var(--glow-rgb), 0) 0deg,
+      rgba(var(--glow-rgb), 0) 5deg,
+      rgba(var(--glow-rgb), 0.035) 10deg,
+      rgba(var(--glow-rgb), 0.062) 15deg,
+      rgba(var(--glow-rgb), 0.100) 20deg,
+      rgba(var(--glow-rgb), 0.154) 25deg,
+      rgba(var(--glow-rgb), 0.225) 30deg,
+      rgba(var(--glow-rgb), 0.310) 35deg,
+      rgba(var(--glow-rgb), 0.408) 40deg,
+      rgba(var(--glow-rgb), 0.513) 45deg,
+      rgba(var(--glow-rgb), 0.619) 50deg,
+      rgba(var(--glow-rgb), 0.719) 55deg,
+      rgba(var(--glow-rgb), 0.807) 60deg,
+      rgba(var(--glow-rgb), 0.879) 65deg,
+      rgba(var(--glow-rgb), 0.933) 70deg,
+      rgba(var(--glow-rgb), 0.970) 75deg,
+      rgba(var(--glow-rgb), 0.990) 80deg,
+      rgba(var(--glow-rgb), 0.999) 85deg,
+      rgba(var(--glow-rgb), 1.000) 90deg,
+      rgba(var(--glow-rgb), 0.999) 95deg,
+      rgba(var(--glow-rgb), 0.990) 100deg,
+      rgba(var(--glow-rgb), 0.970) 105deg,
+      rgba(var(--glow-rgb), 0.933) 110deg,
+      rgba(var(--glow-rgb), 0.879) 115deg,
+      rgba(var(--glow-rgb), 0.807) 120deg,
+      rgba(var(--glow-rgb), 0.719) 125deg,
+      rgba(var(--glow-rgb), 0.619) 130deg,
+      rgba(var(--glow-rgb), 0.513) 135deg,
+      rgba(var(--glow-rgb), 0.408) 140deg,
+      rgba(var(--glow-rgb), 0.310) 145deg,
+      rgba(var(--glow-rgb), 0.225) 150deg,
+      rgba(var(--glow-rgb), 0.154) 155deg,
+      rgba(var(--glow-rgb), 0.100) 160deg,
+      rgba(var(--glow-rgb), 0.062) 165deg,
+      rgba(var(--glow-rgb), 0.035) 170deg,
+      rgba(var(--glow-rgb), 0) 175deg,
+      rgba(var(--glow-rgb), 0) 180deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 0.97) 6vmax, rgba(0, 0, 0, 0.9) 14vmax, rgba(0, 0, 0, 0.78) 24vmax, rgba(0, 0, 0, 0.62) 36vmax, rgba(0, 0, 0, 0.45) 50vmax, rgba(0, 0, 0, 0.3) 64vmax, rgba(0, 0, 0, 0.18) 78vmax, rgba(0, 0, 0, 0.09) 92vmax, rgba(0, 0, 0, 0.035) 106vmax, rgba(0, 0, 0, 0) 120vmax);
+  mask-image: radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 0.97) 6vmax, rgba(0, 0, 0, 0.9) 14vmax, rgba(0, 0, 0, 0.78) 24vmax, rgba(0, 0, 0, 0.62) 36vmax, rgba(0, 0, 0, 0.45) 50vmax, rgba(0, 0, 0, 0.3) 64vmax, rgba(0, 0, 0, 0.18) 78vmax, rgba(0, 0, 0, 0.09) 92vmax, rgba(0, 0, 0, 0.035) 106vmax, rgba(0, 0, 0, 0) 120vmax);
+  animation: breathe 7s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.96; }
+  50% { opacity: 1; }
+}
+
+/* ── Typed lines ───────────────────────────────────────── */
+
+.lines {
+  left: calc(var(--cols) * var(--ch) / -2);
+  top: calc(var(--n) * var(--lh) * -1 - 0.42em);
+  width: calc(var(--cols) * var(--ch) + 2ch);
+  height: calc(var(--n) * var(--lh));
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--ink);
+  -webkit-mask-image: linear-gradient(to top, #000 0, #000 42%, rgba(0, 0, 0, 0.5) 74%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0, #000 42%, rgba(0, 0, 0, 0.5) 74%, transparent 100%);
+}
+
+.lines-inner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.line {
+  flex: none;
+  height: var(--lh);
+  white-space: pre;
+}
+
+.c {
+  display: inline-block;
+  width: 1ch;
+  text-align: center;
+  /* a little ink spread */
+  text-shadow: 0 0 0.6px currentColor, 0 0 1.4px color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.c.w {
+  width: 2ch;
+}
+
+.c.strike {
+  animation: strike 130ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+@keyframes strike {
+  0% { opacity: 0; scale: 1.22; filter: blur(1.2px); }
+  35% { opacity: 1; scale: 1.06; filter: blur(0); }
+  100% { scale: 1; }
+}
+
+.pending {
+  display: inline-block;
+  opacity: 0.5;
+  border-bottom: 1px solid currentColor;
+  line-height: 1.2;
+}
+
+.hint {
+  left: calc(var(--cols) * var(--ch) / -2 + 3ch);
+  top: calc(var(--lh) * -1 - 0.42em);
+  margin: 0;
+  height: var(--lh);
+  white-space: pre;
+  color: var(--ink);
+  opacity: 0.34;
+  pointer-events: none;
+  transition: opacity 240ms ease;
+}
+
+.has-text .hint {
+  opacity: 0;
+  transition: none;
+}
+
+/* ── Rail and scale ─────────────────────────────────── */
+
+.bed {
+  left: -150vmax;
+  top: 0;
+  width: 300vmax;
+  height: 150vmax;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0, rgba(0, 0, 0, 0.06) 9px, transparent 26px),
+    linear-gradient(to bottom, var(--bed) 0, var(--bed-low) 46vh);
+}
+
+.scale {
+  position: absolute;
+  left: calc(150vmax - var(--cols) * var(--ch) / 2);
+  top: 12px;
+  width: calc(var(--cols) * var(--ch) + 1px);
+  height: 11px;
+  opacity: 0.9;
+  background:
+    repeating-linear-gradient(90deg, var(--tick) 0 1px, transparent 1px calc(var(--ch) * 10)) 0 0 / 100% 11px no-repeat,
+    repeating-linear-gradient(90deg, var(--tick) 0 1px, transparent 1px calc(var(--ch) * 5)) 0 0 / 100% 8px no-repeat,
+    repeating-linear-gradient(90deg, var(--tick) 0 1px, transparent 1px var(--ch)) 0 0 / 100% 4px no-repeat;
+}
+
+.rail {
+  left: -150vmax;
+  top: -2px;
+  width: 300vmax;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--rail);
+  box-shadow:
+    0 1px 0 var(--rail-light),
+    0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 5px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Carriage ──────────────────────────────────────────── */
+
+.head-pos {
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+  transition: transform 80ms cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+.head {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.head::before {
+  content: "";
+  position: absolute;
+  left: -260px;
+  top: 2px;
+  width: 520px;
+  height: 150px;
+  pointer-events: none;
+  background: radial-gradient(50% 100% at 50% 0,
+    rgba(var(--hot-rgb), 0.3) 0,
+    rgba(var(--hot-rgb), 0.12) 40%,
+    rgba(var(--hot-rgb), 0) 100%);
+}
+
+.head.kick {
+  animation: kick 110ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+@keyframes kick {
+  0% { translate: 0 0; }
+  30% { translate: 0 1.8px; }
+  100% { translate: 0 0; }
+}
+
+.pill {
+  position: absolute;
+  left: -1.3em;
+  top: -0.52em;
+  width: 2.6em;
+  height: 1.04em;
+  border-radius: 1em;
+  background: linear-gradient(to bottom, #ffffff 0, #f6f6f4 45%, #dcdcdc 100%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 -2px 3px rgba(0, 0, 0, 0.14),
+    0 2px 3px rgba(0, 0, 0, 0.34),
+    0 6px 12px rgba(0, 0, 0, 0.2),
+    0 0 26px 6px rgba(var(--hot-rgb), 0.55);
+}
+
+.pill i {
+  position: absolute;
+  top: 50%;
+  width: 0.16em;
+  height: 0.16em;
+  margin-top: -0.08em;
+  border-radius: 50%;
+  background: #c9c9c6;
+  box-shadow: inset 0 0.5px 0.5px rgba(0, 0, 0, 0.25);
+}
+
+.pill i:nth-child(1) { left: 0.56em; }
+.pill i:nth-child(2) { left: 0.86em; }
+.pill i:nth-child(3) {
+  left: 1.16em;
+  background: #2a2a2c;
+  transition: background 380ms ease, box-shadow 380ms ease;
+}
+
+.pill i.on {
+  background: #ffb649;
+  box-shadow: 0 0 5px 1px rgba(255, 170, 60, 0.9);
+  transition: none;
+}
+
+/* The type guide: a small T that marks where the next letter lands. */
+.guide {
+  position: absolute;
+  left: -1px;
+  top: -1.18em;
+  width: 2px;
+  height: 0.72em;
+  border-radius: 1px;
+  background: var(--rail);
+}
+
+.guide::before {
+  content: "";
+  position: absolute;
+  left: -0.3em;
+  top: 0;
+  width: calc(0.6em + 2px);
+  height: 0.13em;
+  min-height: 3px;
+  border-radius: 1px;
+  background: var(--rail);
+}
+
+.head.kick .guide {
+  animation: hammer 110ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+@keyframes hammer {
+  0% { translate: 0 0; }
+  25% { translate: 0 0.16em; }
+  100% { translate: 0 0; }
+}
+
+.input {
+  position: absolute;
+  left: -0.5ch;
+  top: -2em;
+  width: 2ch;
+  height: 1.4em;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  resize: none;
+  overflow: hidden;
+  opacity: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font: inherit;
+  font-size: max(16px, 1em);
+}
+
+/* ── Vignette ──────────────────────────────────────────── */
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 110% at 50% 38%, transparent 40%, var(--vignette) 118%);
+}
+
+/* ── Quiet chrome ──────────────────────────────────────── */
+
+.chrome {
+  position: fixed;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--chrome);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  transition: opacity 500ms ease;
+}
+
+.typing .chrome {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chrome-top {
+  top: max(14px, env(safe-area-inset-top));
+  left: max(18px, env(safe-area-inset-left));
+  right: max(18px, env(safe-area-inset-right));
+  justify-content: space-between;
+}
+
+.chrome-bottom {
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  flex-wrap: wrap;
+  max-width: calc(100% - 36px);
+}
+
+.chrome a,
+.chrome button {
+  min-height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.chrome a:hover,
+.chrome button:hover {
+  color: var(--chrome-strong);
+  background: color-mix(in srgb, var(--chrome-strong) 9%, transparent);
+}
+
+.chrome :focus-visible {
+  outline: 2px solid var(--chrome-strong);
+  outline-offset: 1px;
+}
+
+.count {
+  padding: 0 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.chrome button.armed {
+  color: var(--chrome-strong);
+  background: color-mix(in srgb, var(--chrome-strong) 14%, transparent);
+}
+
+/* ── Light & paper ─────────────────────────────────────── */
+
+.prefs {
+  position: fixed;
+  z-index: 6;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: calc(max(14px, env(safe-area-inset-bottom)) + 46px);
+  width: min(340px, calc(100% - 36px));
+  padding: 14px 16px;
+  display: grid;
+  gap: 14px;
+  border: 1px solid color-mix(in srgb, var(--chrome-strong) 14%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bed) 78%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
+  color: var(--chrome-strong);
+  font-size: 13px;
+}
+
+.prefs[hidden] {
+  display: none;
+}
+
+.pref {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.pref > label,
+.pref > span {
+  color: var(--chrome);
+}
+
+.pref output {
+  min-width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pref input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pref input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--kelvin-track, #ddd);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16);
+}
+
+.pref input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--kelvin-track, #ddd);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16);
+}
+
+/* The thumb is the carriage, small. */
+.pref input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 14px;
+  margin-top: -4px;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(to bottom, #fff, #e2e2e0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 10px 2px rgba(var(--hot-rgb), 0.7);
+}
+
+.pref input[type="range"]::-moz-range-thumb {
+  width: 30px;
+  height: 14px;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(to bottom, #fff, #e2e2e0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 10px 2px rgba(var(--hot-rgb), 0.7);
+}
+
+.seg {
+  grid-column: 2 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  padding: 2px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--chrome-strong) 9%, transparent);
+}
+
+.seg button {
+  min-height: 30px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--chrome);
+  font: inherit;
+  cursor: pointer;
+}
+
+.seg button:hover {
+  color: var(--chrome-strong);
+}
+
+.seg button[aria-pressed="true"] {
+  color: var(--chrome-strong);
+  background: color-mix(in srgb, var(--bed) 70%, #fff);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.prefs :focus-visible {
+  outline: 2px solid var(--chrome-strong);
+  outline-offset: 1px;
+}
+
+.theme-control[hidden] {
+  display: none;
+}
+
+.theme-control svg {
+  pointer-events: none;
+}
+
+.theme-icon-light,
+.theme-icon-dark {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-icon-device,
+:root[data-theme="dark"] .theme-icon-device {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-icon-light,
+:root[data-theme="dark"] .theme-icon-dark {
+  display: inline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beam,
+  .c.strike,
+  .head.kick,
+  .head.kick .guide {
+    animation: none;
+  }
+
+  .beam-pos,
+  .beam-aim,
+  .head-pos {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Typewriter · A Lamp-Lit Page for Writing</title>
+  <meta name="description" content="Local-first typewriter for the browser. A carriage that moves across the page, a lamp that follows it, synthesized key, bell and carriage return sounds, and nothing else to do but write.">
+  <link rel="canonical" href="https://memo.mx/tools/typewriter/">
+  <meta property="og:site_name" content="Memo Garcia">
+  <meta property="og:title" content="Typewriter">
+  <meta property="og:description" content="A lamp-lit page with a moving carriage and mechanical sounds. Your text stays in your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://memo.mx/tools/typewriter/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://memo.mx/img/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Typewriter">
+  <meta name="twitter:description" content="A lamp-lit page with a moving carriage and mechanical sounds.">
+  <meta name="twitter:image" content="https://memo.mx/img/og-default.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://memo.mx/tools/typewriter/#app",
+        "name": "Typewriter",
+        "url": "https://memo.mx/tools/typewriter/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "description": "Browser typewriter with a moving carriage, a lamp that follows it, and synthesized Web Audio key, bell and carriage return sounds. Text is stored only in localStorage.",
+        "author": { "@type": "Person", "name": "Memo Garcia", "url": "https://memo.mx/about/" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://memo.mx/" },
+          { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://memo.mx/tools/" },
+          { "@type": "ListItem", "position": 3, "name": "Typewriter", "item": "https://memo.mx/tools/typewriter/" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script src="/tools/theme.js"></script>
+  <link rel="stylesheet" href="/tools/typewriter/typewriter.css">
+</head>
+<body>
+  <h1 class="sr-only">Typewriter</h1>
+
+  <main id="stage" class="stage">
+    <div id="scene" class="scene">
+      <div class="paper"></div>
+      <div id="beam-pos" class="beam-pos">
+        <div class="hot"></div>
+        <div id="beam-aim" class="beam-aim">
+          <div id="beam" class="beam"></div>
+        </div>
+      </div>
+      <div class="grain"></div>
+
+      <div class="lines" aria-hidden="true">
+        <div id="lines" class="lines-inner"></div>
+      </div>
+      <p id="hint" class="hint" aria-hidden="true">Start typing.</p>
+
+      <div class="bed">
+        <div class="scale"></div>
+      </div>
+      <div class="rail"></div>
+
+      <div id="head-pos" class="head-pos">
+        <div id="head" class="head">
+          <span class="guide"></span>
+          <span class="pill"><i></i><i></i><i id="led"></i></span>
+        </div>
+        <textarea id="input" class="input" aria-label="Typewriter page. Type to write, Enter for a new line, Backspace to erase."
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" rows="1"></textarea>
+      </div>
+    </div>
+    <div class="vignette"></div>
+  </main>
+
+  <header class="chrome chrome-top">
+    <a class="back" href="/tools/">← Tools</a>
+    <button class="theme-control" type="button" aria-label="Change theme" hidden>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
+        <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
+        <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
+      </svg>
+    </button>
+  </header>
+
+  <footer class="chrome chrome-bottom">
+    <span id="count" class="count">0 words</span>
+    <button id="sound-btn" type="button" aria-pressed="true">Sound on</button>
+    <button id="copy-btn" type="button">Copy</button>
+    <button id="save-btn" type="button">Save .txt</button>
+    <button id="new-btn" type="button">New sheet</button>
+    <button id="prefs-btn" type="button" aria-expanded="false" aria-controls="prefs">Light &amp; paper</button>
+  </footer>
+
+  <div id="prefs" class="prefs" hidden>
+    <div class="pref">
+      <label for="kelvin">Light</label>
+      <input id="kelvin" type="range" min="2000" max="9000" step="100" value="3400" aria-describedby="kelvin-out">
+      <output id="kelvin-out" for="kelvin">3400 K</output>
+    </div>
+    <div class="pref" role="group" aria-label="Paper texture">
+      <span>Paper</span>
+      <div id="papers" class="seg">
+        <button type="button" data-paper="smooth" aria-pressed="false">Smooth</button>
+        <button type="button" data-paper="bond" aria-pressed="true">Bond</button>
+        <button type="button" data-paper="laid" aria-pressed="false">Laid</button>
+        <button type="button" data-paper="cotton" aria-pressed="false">Cotton</button>
+      </div>
+    </div>
+  </div>
+
+  <span id="probe" class="probe" aria-hidden="true">0000000000000000000000000000000000000000</span>
+  <p id="live" class="sr-only" aria-live="polite"></p>
+
+  <script src="/tools/typewriter/typewriter.js"></script>
+</body>
+</html>
