@@ -92,14 +92,17 @@ tools load it directly. Both use the dedicated `memo-tools` app and public key.
 The key grants no read or administrative access. Google's loader remains separate,
 so each page sends one Google page view.
 
-One session is one page opening. Its random ID lives only in memory; reloads,
-navigation and back/forward-cache restoration start another session. It sends
-`page_viewed` once and cumulative `page_session` snapshots every 30 visible
-seconds, on visibility/focus loss and on page exit. Snapshots carry only the
-canonical page path, section, open seconds, active seconds and an exit flag.
-No cookies, browser storage, input values, key values, notes, referrers or URL
-parameters are read or sent by this collector. Do Not Track, Global Privacy
-Control and automated browsers stop collection.
+A session groups visits in one tab until 30 minutes without interaction.
+Its random ID, sequence and last interaction time use `sessionStorage`; no
+persistent visitor identity or cookies are created. Separate tabs normally stay
+separate; browsers can copy session storage when duplicating a tab. Blocked
+storage falls back to separate page visits. Reloads, navigation and back/forward
+restoration each get a unique visit ID and ordered step within the session.
+`page_viewed` fires once per visit; cumulative `page_session` snapshots arrive
+every 30 visible seconds, on visibility/focus loss and exit. Metadata includes
+path, section, visit ID, step, opening time, open/active seconds and exit flag.
+No input values, key values, notes, referrers or URL parameters are collected.
+Do Not Track, Global Privacy Control and automated browsers stop collection.
 
 Active time requires a visible and focused page, within 60 seconds of input or
 scrolling. It estimates engagement rather than attention. Time open includes
@@ -109,8 +112,10 @@ with a credential-free fetch fallback; it never interrupts the page on failure.
 
 Platform Admin's **Tools usage** view at `http://127.0.0.1:3400/#tools-usage`
 shows URL counts, averages and recent sessions, with separate Tools and Blog
-posts filters. It takes each session's maximum cumulative timing, never sums
-heartbeats. Raw data expires after 30 days; earlier page views have no timing.
+posts filters. It takes each visit's maximum cumulative timing, never sums
+heartbeats. Expand a browsing session to see ordered steps, including repeat
+URLs. Filters match sessions but preserve all their available steps. The latest
+200 visits are returned, so earlier steps can be missing. Raw data expires after 30 days; earlier page views have no timing.
 
 Owning sources in `../magnetic`: `products/telemetry/apps/api/apps.toml`,
 `products/telemetry/apps/api/src/events.rs` and
