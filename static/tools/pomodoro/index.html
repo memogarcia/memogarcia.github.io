@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pomodoro Focus Timer · Watch-Dial Work &amp; Break Timer</title>
-  <meta name="description" content="Free local-first Pomodoro focus timer with customizable 25/5/15-minute intervals, singing bowl chimes, soft rain ambience, keyboard shortcuts, and Zen mode.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pomodoro · A Shadow Dial Focus Timer</title>
+  <meta name="description" content="Local-first Pomodoro timer drawn as a shadow dial. A lamp rides a ring, a pin stands in the middle, and the pin's shadow is the hand. Turn the ring to wind it, with synthesized ratchet, tick and bell sounds.">
   <link rel="canonical" href="https://memo.mx/tools/pomodoro/">
   <meta property="og:site_name" content="Memo Garcia">
-  <meta property="og:title" content="Pomodoro Focus Timer">
-  <meta property="og:description" content="Local-first 25/5/15 watch-dial Pomodoro timer with Web Audio chimes, focus noise, daily session log, and Zen mode.">
+  <meta property="og:title" content="Pomodoro">
+  <meta property="og:description" content="A Pomodoro timer where the hand is a shadow. Turn the ring to wind it. Everything stays in your browser.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://memo.mx/tools/pomodoro/">
   <meta property="og:locale" content="en_US">
@@ -16,8 +16,8 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Pomodoro Focus Timer">
-  <meta name="twitter:description" content="Local-first 25/5/15 watch-dial Pomodoro timer with Web Audio chimes, focus noise, and Zen mode.">
+  <meta name="twitter:title" content="Pomodoro">
+  <meta name="twitter:description" content="A Pomodoro timer where the hand is a shadow. Turn the ring to wind it.">
   <meta name="twitter:image" content="https://memo.mx/img/og-default.png">
   <script type="application/ld+json">
   {
@@ -26,14 +26,14 @@
       {
         "@type": "WebApplication",
         "@id": "https://memo.mx/tools/pomodoro/#app",
-        "name": "Pomodoro Focus Timer",
+        "name": "Pomodoro",
         "url": "https://memo.mx/tools/pomodoro/",
         "applicationCategory": "ProductivityApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires JavaScript",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "description": "Watch-dial Pomodoro focus timer with customizable work and break intervals, Web Audio chimes, ambient sound, daily session log, and Zen mode.",
+        "description": "Pomodoro focus timer drawn as a shadow dial: a lamp on a ring, a pin, and its shadow as the hand. Wind it by turning the ring. Focus and break lengths, daily session log and settings are stored only in localStorage.",
         "author": { "@type": "Person", "name": "Memo Garcia", "url": "https://memo.mx/about/" }
       },
       {
@@ -47,241 +47,117 @@
     ]
   }
   </script>
-  <link id="favicon" rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <script src="/tools/theme.js"></script>
-  <link rel="stylesheet" href="/tools/shared.css">
   <link rel="stylesheet" href="/tools/pomodoro/pomodoro.css">
 </head>
 <body data-phase="focus" data-state="idle">
-  <a class="skip" href="#main">Skip to timer</a>
+  <h1 class="sr-only">Pomodoro timer</h1>
 
-  <header class="site-header">
-    <a class="wordmark" href="/">Memo Garcia<span class="wordmark-dot" aria-hidden="true">.</span></a>
-    <nav aria-label="Tools navigation">
-      <a href="/tools/">Tools</a>
-      <a href="/tools/pomodoro/" aria-current="page">Pomodoro</a>
-      <a href="/tools/breathing/">Breathing</a>
-      <a href="/tools/meditation/">Meditation</a>
-      <a href="/tools/fasting/">Fasting</a>
-      <a href="/tools/zenkaku-hankaku/">全角⇄半角</a>
-      <button class="theme-control" type="button" aria-label="Change theme" hidden>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
-          <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
-          <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
-        </svg>
-      </button>
-    </nav>
-  </header>
+  <main id="stage" class="stage">
+    <div id="scene" class="scene" data-move="still">
+      <div class="paper"></div>
 
-  <button id="zen-exit" class="zen-exit" type="button" aria-label="Exit Zen mode (Z or Escape)" hidden>
-    Exit Zen <kbd>Esc</kbd>
-  </button>
-
-  <main id="main" class="pomo-main">
-    <header class="tool-intro">
-      <h1>Pomodoro Focus Timer</h1>
-      <p>Local-first 25/5/15 work and break dial with Web Audio chimes and Zen mode.</p>
-    </header>
-
-    <div class="pomo-topbar">
-      <div class="phase-tabs" role="tablist" aria-label="Timer phase">
-        <button role="tab" type="button" data-phase="focus" aria-selected="true">Focus</button>
-        <button role="tab" type="button" data-phase="short" aria-selected="false" tabindex="-1">Short Break</button>
-        <button role="tab" type="button" data-phase="long" aria-selected="false" tabindex="-1">Long Break</button>
+      <div class="sweep">
+        <div class="lamp-at">
+          <div class="hot"></div>
+          <div class="beam"></div>
+        </div>
+        <div class="shade"><i></i><i></i></div>
       </div>
+      <div class="grain"></div>
+
+      <svg id="scale" class="scale" viewBox="-130 -130 260 260" aria-hidden="true"></svg>
+      <div id="ring" class="ring"></div>
+
+      <div id="dial" class="dial" role="slider" tabindex="0" aria-label="Minutes on the timer"
+        aria-valuemin="1" aria-valuemax="60" aria-valuenow="25"></div>
+
+      <div class="readout">
+        <p id="phase" class="phase">focus 1/4</p>
+        <button id="time" class="time" type="button">25:00</button>
+        <p id="status" class="phase"></p>
+      </div>
+
+      <div class="pin"></div>
+      <div class="lamp">
+        <span class="pill"><i></i><i></i><i id="led"></i></span>
+      </div>
+
+      <label class="sr-only" for="intention">What this session is for</label>
+      <input id="intention" class="intention" type="text" maxlength="120" autocomplete="off"
+        autocapitalize="off" spellcheck="false" placeholder="what is this one for?">
     </div>
-
-    <section class="dial-stage" aria-label="Timer dial">
-      <div class="dial-wrap">
-        <svg class="dial-svg" viewBox="0 0 360 360" aria-hidden="true">
-          <circle class="dial-bezel-outer" cx="180" cy="180" r="170" />
-          <circle class="dial-track" cx="180" cy="180" r="158" />
-          <g id="dial-ticks" class="dial-ticks"></g>
-          <circle class="dial-bezel-inner" cx="180" cy="180" r="129" />
-          <circle id="dial-progress" class="dial-progress" cx="180" cy="180" r="158" transform="rotate(-90 180 180)" />
-          <g id="dial-hand-group" transform="rotate(0 180 180)">
-            <circle class="dial-hand-halo" cx="180" cy="22" r="9" />
-            <circle class="dial-hand" cx="180" cy="22" r="5" />
-          </g>
-        </svg>
-
-        <div class="dial-readout">
-          <p id="phase-eyebrow" class="dial-eyebrow">Focus · 1 / 4</p>
-          <p id="time-display" class="dial-time" aria-label="Time remaining">25:00</p>
-          <p id="schedule-line" class="dial-schedule">Ends at 12:34</p>
-        </div>
-      </div>
-
-      <div class="intention-row">
-        <label class="sr-only" for="intention-input">Session intention</label>
-        <input
-          id="intention-input"
-          class="intention-input"
-          type="text"
-          maxlength="120"
-          autocomplete="off"
-          placeholder="What are you focusing on?"
-        >
-      </div>
-
-      <div class="controls-primary">
-        <button id="toggle-btn" class="btn-primary" type="button">Start Focus</button>
-      </div>
-
-      <div class="controls-secondary" aria-label="Secondary timer actions">
-        <button id="reset-btn" class="btn-ghost" type="button">Reset</button>
-        <button id="add-minute-btn" class="btn-ghost" type="button">+1 min</button>
-        <button id="skip-btn" class="btn-ghost" type="button">Skip</button>
-        <button id="sound-quick-btn" class="btn-ghost" type="button" aria-pressed="true" title="Toggle chime sound (M)">Sound: On</button>
-        <button id="zen-btn" class="btn-ghost" type="button" title="Zen mode (Z)">Zen</button>
-        <button id="settings-btn" class="btn-ghost" type="button" title="Timer settings (S)">Settings</button>
-      </div>
-
-      <p id="live-status" class="sr-only" aria-live="polite"></p>
-    </section>
-
-    <section class="pomo-meta" aria-label="Session progress">
-      <div id="cycle-dots" class="cycle-dots" aria-label="Cycle progress"></div>
-      <p id="today-summary" class="today-summary">0 sessions today</p>
-    </section>
-
-    <details id="history-drawer" class="history-drawer">
-      <summary>
-        <span>Today's log</span>
-        <span id="history-count" class="history-count">0</span>
-      </summary>
-      <div class="history-body">
-        <p id="history-empty" class="history-empty">Completed focus sessions appear here. Stored locally in your browser.</p>
-        <ul id="history-list" class="history-list" hidden></ul>
-        <div class="history-actions">
-          <button id="clear-history-btn" class="btn-text" type="button" hidden>Clear today's log</button>
-        </div>
-      </div>
-    </details>
-
-    <p class="shortcut-bar" aria-label="Keyboard shortcuts">
-      <span><kbd>Space</kbd> Start / Pause</span>
-      <span><kbd>R</kbd> Reset</span>
-      <span><kbd>N</kbd> Next</span>
-      <span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Phase</span>
-      <span><kbd>Z</kbd> Zen</span>
-      <span><kbd>M</kbd> Sound</span>
-    </p>
-
-    <section class="tool-guide" aria-label="About this Pomodoro timer">
-      <h2>How this Pomodoro timer works</h2>
-      <p>Run structured focus sprints followed by short and long breaks without accounts, ads, or network tracking. All settings and your daily session log remain in browser storage.</p>
-      <dl>
-        <dt>Custom work &amp; break cycles</dt>
-        <dd>Adjust Focus (1–120 min), Short Break (1–60 min), Long Break (1–90 min), and cycle count (1–12 rounds) from the Settings dialog.</dd>
-        <dt>Synthesized bells &amp; focus ambience</dt>
-        <dd>Choose Singing bowl, Soft chime, Woodblock, or Silent completion cues, with optional subtle mechanical tick, Soft rain, or Warm noise generated locally via Web Audio.</dd>
-        <dt>Auto-advance &amp; Zen mode</dt>
-        <dd>Optionally auto-start breaks or the next focus block, enable desktop notifications, and press Z to hide navigation for full-focus sessions.</dd>
-      </dl>
-    </section>
+    <div class="vignette"></div>
   </main>
 
-  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
-    <form id="settings-form" method="dialog" class="settings-card">
-      <header class="settings-header">
-        <h2 id="settings-title">Settings</h2>
-        <button id="settings-close-btn" class="icon-close" type="button" aria-label="Close settings">×</button>
-      </header>
+  <header class="chrome chrome-top">
+    <a class="back" href="/tools/">← Tools</a>
+    <p id="hint" class="hint" hidden>Turn the ring to set the time. Space starts it.</p>
+    <button class="theme-control" type="button" aria-label="Change theme" hidden>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
+        <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
+        <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
+      </svg>
+    </button>
+  </header>
 
-      <div class="settings-body">
-        <fieldset class="settings-group">
-          <legend>Durations (minutes)</legend>
-          <div class="settings-grid-4">
-            <label>
-              <span>Focus</span>
-              <input id="opt-focus" type="number" min="1" max="120" step="1" required>
-            </label>
-            <label>
-              <span>Short break</span>
-              <input id="opt-short" type="number" min="1" max="60" step="1" required>
-            </label>
-            <label>
-              <span>Long break</span>
-              <input id="opt-long" type="number" min="1" max="90" step="1" required>
-            </label>
-            <label>
-              <span>Cycle</span>
-              <input id="opt-interval" type="number" min="1" max="12" step="1" required>
-            </label>
-          </div>
-        </fieldset>
-
-        <fieldset class="settings-group">
-          <legend>Sound &amp; Ambience</legend>
-          <div class="settings-row">
-            <label for="opt-chime">Completion tone</label>
-            <div class="settings-inline">
-              <select id="opt-chime">
-                <option value="bell">Singing bowl</option>
-                <option value="chime">Soft chime</option>
-                <option value="wood">Woodblock</option>
-                <option value="off">Silent</option>
-              </select>
-              <button id="test-chime-btn" class="btn-outline" type="button">Test</button>
-            </div>
-          </div>
-          <div class="settings-row">
-            <label for="opt-volume">Volume</label>
-            <div class="settings-inline">
-              <input id="opt-volume" type="range" min="0" max="100" step="5">
-              <span id="opt-volume-label" class="mono-val">70%</span>
-            </div>
-          </div>
-          <div class="settings-row">
-            <label for="opt-ambient">Focus ambience</label>
-            <select id="opt-ambient">
-              <option value="off">Off</option>
-              <option value="rain">Soft rain</option>
-              <option value="warm">Warm noise</option>
-            </select>
-          </div>
-          <label class="settings-check">
-            <input id="opt-tick" type="checkbox">
-            <span>Subtle mechanical tick while running</span>
-          </label>
-        </fieldset>
-
-        <fieldset class="settings-group">
-          <legend>Flow</legend>
-          <label class="settings-check">
-            <input id="opt-auto-break" type="checkbox">
-            <span>Auto-start breaks when focus finishes</span>
-          </label>
-          <label class="settings-check">
-            <input id="opt-auto-focus" type="checkbox">
-            <span>Auto-start focus when break finishes</span>
-          </label>
-          <div class="settings-row">
-            <span>Desktop notifications</span>
-            <button id="opt-notify-btn" class="btn-outline" type="button">Off</button>
-          </div>
-        </fieldset>
-      </div>
-
-      <footer class="settings-footer">
-        <button id="settings-reset-btn" class="btn-text" type="button">Restore defaults</button>
-        <button class="btn-primary btn-sm" type="submit">Done</button>
-      </footer>
-    </form>
-  </dialog>
-
-  <footer class="site-footer">
-    <span>Memo Garcia</span>
-    <div>
-      <a href="/tools/">All tools</a>
-      <a href="/tools/breathing/">Breathing</a>
-      <a href="/tools/meditation/">Meditation</a>
-      <a href="/">Blog</a>
-    </div>
+  <footer class="chrome chrome-bottom">
+    <button id="start-btn" class="lead" type="button">Start</button>
+    <button id="reset-btn" type="button">Reset</button>
+    <button id="skip-btn" type="button">Skip</button>
+    <button id="sound-btn" type="button" aria-pressed="true">Sound on</button>
+    <button id="prefs-btn" type="button" aria-expanded="false" aria-controls="prefs">Light &amp; sound</button>
+    <button id="log-btn" type="button" aria-expanded="false" aria-controls="log">0 sessions</button>
   </footer>
+
+  <div id="prefs" class="panel" hidden>
+    <div class="pref">
+      <label for="kelvin">Light</label>
+      <input id="kelvin" type="range" min="2000" max="9000" step="100" value="3400" aria-describedby="kelvin-out">
+      <output id="kelvin-out" for="kelvin">3400 K</output>
+    </div>
+    <div class="pref" role="group" aria-label="Paper texture">
+      <span>Paper</span>
+      <div id="papers" class="seg">
+        <button type="button" data-paper="smooth" aria-pressed="false">Smooth</button>
+        <button type="button" data-paper="bond" aria-pressed="true">Bond</button>
+        <button type="button" data-paper="laid" aria-pressed="false">Laid</button>
+        <button type="button" data-paper="cotton" aria-pressed="false">Cotton</button>
+      </div>
+    </div>
+    <div class="pref" role="group" aria-label="Ambience during focus">
+      <span>Ambience</span>
+      <div id="ambients" class="seg seg-3">
+        <button type="button" data-ambient="off" aria-pressed="true">Off</button>
+        <button type="button" data-ambient="rain" aria-pressed="false">Rain</button>
+        <button type="button" data-ambient="warm" aria-pressed="false">Warm noise</button>
+      </div>
+    </div>
+    <div class="pref">
+      <label for="rounds">Rounds</label>
+      <span class="note">focus sessions before a long break</span>
+      <input id="rounds" type="number" min="1" max="12" step="1" value="4" inputmode="numeric">
+    </div>
+    <label class="check"><input id="tick" type="checkbox"><span>Tick every second</span></label>
+    <label class="check"><input id="auto-break" type="checkbox"><span>Start breaks on their own</span></label>
+    <label class="check"><input id="auto-focus" type="checkbox"><span>Start focus on its own</span></label>
+    <label class="check"><input id="notify" type="checkbox"><span>Notify me when time is up</span></label>
+    <p class="keys">Space starts and pauses. R resets, N skips, 1 2 3 pick focus, short or long break, the arrow keys wind, M mutes.</p>
+  </div>
+
+  <div id="log" class="panel log" hidden>
+    <p id="log-empty" class="log-empty">Finished focus sessions are typed here. They stay in this browser.</p>
+    <ol id="log-list" class="log-list" hidden></ol>
+    <div id="log-actions" class="panel-actions" hidden>
+      <button id="log-copy" type="button">Copy</button>
+      <button id="log-clear" type="button">Clear</button>
+    </div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
 
   <script src="/tools/pomodoro/pomodoro.js"></script>
 </body>

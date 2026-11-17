@@ -55,8 +55,22 @@ function read(rel) {
   assert.equal(prog.currentHour, 8);
 
   const meditation = require(path.join(ROOT, 'static/tools/meditation/meditation.js'));
-  assert.equal(meditation.formatCountdownMMSS(65_000), '01:05');
-  assert.deepEqual(meditation.computeIntervalTimestampsMs(10, '5'), [300_000]);
+  assert.equal(meditation.formatMinutes(65), '1 h 5 min');
+  assert.equal(meditation.clampMinutes(500), 120);
+  assert.equal(meditation.stickFraction(120), 1);
+  assert.ok(meditation.stickFraction(5) < meditation.stickFraction(45));
+  assert.deepEqual(
+    meditation.bellEvents({ durationMin: 10, intervalMode: '5', endBells: 3 }, 0, 600_000).map((e) => [e.id, e.atMs, e.count]),
+    [['int:300000', 300_000, 1], ['close', 600_000, 3]],
+  );
+  // Open sits have no closing bell. They ring when each 30 minute stick burns out.
+  assert.deepEqual(
+    meditation.bellEvents({ durationMin: 0, intervalMode: '10', endBells: 3 }, 1_200_000, 2_400_000).map((e) => e.id),
+    ['stick:1800000', 'int:2400000'],
+  );
+  assert.deepEqual(meditation.bellEvents({ durationMin: 10, intervalMode: 'half', endBells: 1 }, 300_000, 480_000), []);
+  // A sit logged yesterday and one today make a two day streak.
+  assert.equal(meditation.computeStreakDays([{ day: '2026-11-16' }, { day: '2026-11-17' }], new Date(2026, 10, 17, 9)), 2);
 
   const converter = require(path.join(ROOT, 'static/tools/zenkaku-hankaku/converter.js'));
   assert.equal(converter.convertWidth('ＡＢＣ　１２３', converter.PRESETS.allHalf), 'ABC 123');
@@ -93,7 +107,7 @@ function makeElement(tagName, attrs = {}, dataset = {}) {
     id: attrs.id || '',
     attrs: { ...attrs },
     dataset: { ...dataset },
-    style: {},
+    style: { setProperty(k, v) { this[k] = v; } },
     value: attrs.value ?? '',
     checked: 'checked' in attrs,
     open: 'open' in attrs,
@@ -241,7 +255,7 @@ function mountTool({ htmlPath, jsPath, storageMap = new Map(), nowMs = 1_760_000
     title: '',
     hidden: false,
     body: makeElement('body'),
-    documentElement: { dataset: {} },
+    documentElement: { dataset: {}, style: { setProperty(k, v) { this[k] = v; } } },
     getElementById: (id) => byId.get(id) || makeElement('div', { id }),
     querySelector: (sel) => queryFrom(allEls, sel)[0] || null,
     querySelectorAll: (sel) => queryFrom(allEls, sel),
@@ -398,28 +412,37 @@ function mountTool({ htmlPath, jsPath, storageMap = new Map(), nowMs = 1_760_000
   assert.equal(reloaded.el('history-drawer').open, true);
 }
 
-// 6. Meditation persistence across reload (custom dur, paused sit, note, history open)
+// 6. Meditation persistence across reload (stick length, incense, paused sit, logged sit and its note)
 {
   const storage = new Map();
-  const app = mountTool({ htmlPath: 'static/tools/meditation/index.html', jsPath: 'static/tools/meditation/meditation.js', storageMap: storage, nowMs: 1_760_000_000_000 });
-  app.el('custom-min-btn').click();
-  app.el('custom-min-input').value = '18';
-  app.el('custom-min-apply').click();
-  assert.equal(app.el('custom-min-wrap').hidden, true);
-  app.el('note-input').value = 'Breath counting';
-  app.el('note-input').dispatchEvent('input');
-  app.el('history-drawer').open = true;
-  app.el('history-drawer').dispatchEvent('toggle');
-  app.el('toggle-btn').click(); // start 18m sit
+  const start = new Date(2026, 10, 17, 23, 50, 0).getTime();
+  const app = mountTool({ htmlPath: 'static/tools/meditation/index.html', jsPath: 'static/tools/meditation/meditation.js', storageMap: storage, nowMs: start });
+  app.el('len').value = '18';
+  app.el('len').dispatchEvent('input');
+  app.queryAll('.pick-incense').find((b) => b.dataset.incense === 'hinoki').click();
+  app.el('toggle-btn').click(); // light an 18 minute stick
+  assert.equal(app.document.body.dataset.state, 'running');
+  assert.equal(app.el('incense-btn').hidden, true, 'the stick cannot be swapped while it burns');
   app.advanceClock(12_000);
   app.el('toggle-btn').click(); // pause after 12s
 
-  const reloaded = mountTool({ htmlPath: 'static/tools/meditation/index.html', jsPath: 'static/tools/meditation/meditation.js', storageMap: storage, nowMs: 1_760_000_020_000 });
-  assert.equal(reloaded.document.body.dataset.state, 'paused');
-  assert.equal(reloaded.el('custom-min-btn').textContent, 'Custom (18m)');
-  assert.equal(reloaded.el('time-display').textContent, '17:48');
-  assert.equal(reloaded.el('note-input').value, 'Breath counting');
-  assert.equal(reloaded.el('history-drawer').open, true);
+  const paused = mountTool({ htmlPath: 'static/tools/meditation/index.html', jsPath: 'static/tools/meditation/meditation.js', storageMap: storage, nowMs: start + 20_000 });
+  assert.equal(paused.document.body.dataset.state, 'paused');
+  assert.equal(paused.document.body.dataset.incense, 'hinoki');
+  assert.equal(paused.el('status').textContent, 'Paused · 18 min left');
+  paused.el('toggle-btn').click(); // resume
+
+  // Reopened after midnight, long after the stick burned out: logged for the day it ended.
+  const done = mountTool({ htmlPath: 'static/tools/meditation/index.html', jsPath: 'static/tools/meditation/meditation.js', storageMap: storage, nowMs: start + 60 * 60_000 });
+  assert.equal(done.document.body.dataset.state, 'complete');
+  assert.equal(done.el('status').textContent, 'Sat 18 min');
+  done.el('note-input').value = 'Breath counting';
+  done.el('note-input').dispatchEvent('input');
+  const stored = JSON.parse(storage.get('memo-tools-meditation-v1'));
+  assert.equal(stored.sessions.length, 1);
+  assert.equal(stored.sessions[0].day, '2026-11-18');
+  assert.equal(stored.sessions[0].time, '00:08');
+  assert.equal(stored.sessions[0].note, 'Breath counting');
 }
 
 // 7. Pomodoro persistence across midnight reload
@@ -428,17 +451,36 @@ function mountTool({ htmlPath, jsPath, storageMap = new Map(), nowMs = 1_760_000
   const preMidnight = new Date(2026, 10, 14, 23, 55, 0).getTime();
   const postMidnight = new Date(2026, 10, 15, 0, 5, 0).getTime();
   const app = mountTool({ htmlPath: 'static/tools/pomodoro/index.html', jsPath: 'static/tools/pomodoro/pomodoro.js', storageMap: storage, nowMs: preMidnight });
-  app.el('intention-input').value = 'Ship tools fixes';
-  app.el('intention-input').dispatchEvent('input');
-  app.el('history-drawer').open = true;
-  app.el('history-drawer').dispatchEvent('toggle');
-  app.el('toggle-btn').click(); // start 25m focus
+  app.el('intention').value = 'Ship tools fixes';
+  app.el('intention').dispatchEvent('input');
+  app.el('start-btn').click(); // start 25m focus
 
   const reloaded = mountTool({ htmlPath: 'static/tools/pomodoro/index.html', jsPath: 'static/tools/pomodoro/pomodoro.js', storageMap: storage, nowMs: postMidnight });
   assert.equal(reloaded.document.body.dataset.state, 'running', 'active pomodoro timer must survive reload across midnight');
-  assert.equal(reloaded.el('time-display').textContent, '15:00');
-  assert.equal(reloaded.el('intention-input').value, 'Ship tools fixes');
-  assert.equal(reloaded.el('history-drawer').open, true);
+  assert.equal(reloaded.el('time').textContent, '15:00');
+  assert.equal(reloaded.el('status').textContent, 'until 00:20');
+  assert.equal(reloaded.el('intention').value, 'Ship tools fixes');
+}
+
+// 7b. A pomodoro that ran out while the page was closed is still logged, with its real times
+{
+  const storage = new Map();
+  const started = new Date(2026, 10, 14, 10, 0, 0).getTime();
+  const app = mountTool({ htmlPath: 'static/tools/pomodoro/index.html', jsPath: 'static/tools/pomodoro/pomodoro.js', storageMap: storage, nowMs: started });
+  app.el('intention').value = 'Write the post';
+  app.el('intention').dispatchEvent('input');
+  app.el('start-btn').click();
+
+  const later = mountTool({ htmlPath: 'static/tools/pomodoro/index.html', jsPath: 'static/tools/pomodoro/pomodoro.js', storageMap: storage, nowMs: started + 40 * 60_000 });
+  assert.equal(later.document.body.dataset.state, 'complete');
+  assert.equal(later.el('phase').textContent, 'done. short break next');
+  assert.equal(later.el('log-btn').textContent, '1 session · 25m');
+  const stored = JSON.parse(storage.get('memo-tools-pomodoro-v1'));
+  assert.equal(stored.sessions.length, 1);
+  assert.equal(stored.sessions[0].start, '10:00');
+  assert.equal(stored.sessions[0].end, '10:25');
+  assert.equal(stored.sessions[0].note, 'Write the post');
+  assert.equal(stored.cycleCount, 1);
 }
 
 // 8. Zenkaku-Hankaku converter persistence (input text, rules, inspect mode, advanced open)

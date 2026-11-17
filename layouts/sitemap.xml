@@ -10,7 +10,7 @@
   </url>
     {{- end }}
   {{- end }}
-  {{- range (slice "tools/" "tools/pomodoro/" "tools/breathing/" "tools/meditation/" "tools/fasting/" "tools/zenkaku-hankaku/") }}
+  {{- range (slice "tools/" "tools/pomodoro/" "tools/breathing/" "tools/meditation/" "tools/fasting/" "tools/zenkaku-hankaku/" "tools/typewriter/") }}
   <url>
     <loc>{{ . | absURL }}</loc>
   </url>
