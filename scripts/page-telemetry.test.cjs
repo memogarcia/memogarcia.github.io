@@ -7,26 +7,32 @@ const source = readFileSync(join(root, 'static/js/page-telemetry.js'), 'utf8');
 function mount(options = {}) {
   let clock = 0, timer;
   const storage = options.storage || new Map();
+  const browserStorage = options.browserStorage || new Map();
   const listeners = {}, events = [], requests = [];
   const on = (name, callback) => { listeners[name] = callback; };
   const document = {
+    referrer: options.referrer || '',
     currentScript: { dataset: options.post ? { section: 'posts', page: '/posts/example/' } : {} },
     visibilityState: 'visible', hasFocus: () => true, addEventListener: on,
   };
   const navigator = { sendBeacon: (url, body) => { events.push(JSON.parse(body)); return true; }, ...options.navigator };
   const context = { document, navigator, window: {},
     Date: { now: () => (options.now || 1800000000000) + clock },
+    localStorage: options.blockStorage ? { getItem() { throw Error(); }, setItem() { throw Error(); } } : {
+      getItem: (key) => browserStorage.get(key), setItem: (key, value) => browserStorage.set(key, value)
+    },
     sessionStorage: options.blockStorage ? { getItem() { throw Error(); }, setItem() { throw Error(); } } : {
       getItem: (key) => storage.get(key), setItem: (key, value) => storage.set(key, value)
     },
     location: { origin: 'https://memo.mx', pathname: options.post ? '/posts/example/' : '/tools/typewriter/', search: '?private=text', hash: '#private', ...options.location },
+    URL, URLSearchParams,
     performance: { now: () => clock }, crypto: require('node:crypto'),
     addEventListener: on, setInterval: (fn) => { timer = fn; },
     fetch: (url, request) => { requests.push(request); return Promise.resolve(); },
   };
   runInNewContext(source, context);
   runInNewContext(source, context);
-  return { events, requests, document, navigator, storage, advance: (ms) => { clock += ms; },
+  return { events, requests, document, navigator, storage, telemetry: context.window.memoToolTelemetry, advance: (ms) => { clock += ms; },
     fire: (name, event = {}) => listeners[name]?.(event), tick: () => timer?.() };
 }
 const app = mount();
@@ -95,3 +101,38 @@ assert.equal(idle.events.at(-1).events[0].properties.visit_index, 1);
 assert.equal(mount({ blockStorage: true }).events.length, 2);
 const denied = new Map(); mount({storage: denied, navigator: {doNotTrack:'1'}}); assert.equal(denied.size, 0);
 console.log('Cross-page sessions: ordering, repeated URLs, timeout, blocked storage and opt-outs passed.');
+
+const insights = mount({referrer:'https://google.com/search?q=PRIVATE',navigator:{language:'ja-JP'},location:{search:'?utm_campaign=private-person&private=secret'}});
+const props = insights.events[0].events[0].properties;
+assert.equal(props.source,'google.com'); assert.equal(props.language,'ja'); assert.equal(props.campaign,'Other');
+insights.telemetry.begin(); insights.telemetry.begin();
+assert.equal(insights.events.filter(b=>b.events[0].name==='tool_started').length,1);
+insights.advance(2000000); insights.fire('keydown');
+insights.telemetry.finish(); insights.telemetry.finish();
+const startedAction=insights.events.find(b=>b.events[0].name==='tool_started').events[0];
+const endedAction=insights.events.find(b=>b.events[0].name==='tool_completed').events[0];
+assert.equal(startedAction.properties.action_id,endedAction.properties.action_id);
+assert.equal(startedAction.properties.visit_id,endedAction.properties.visit_id,'A quiet timer keeps its original visit');
+assert.equal(startedAction.sessionID,endedAction.sessionID);
+assert.ok(!JSON.stringify(insights.events).includes('PRIVATE'));
+assert.ok(!JSON.stringify(insights.events).includes('private-person'));
+insights.navigator.globalPrivacyControl=true; const countBeforeOptOut=insights.events.length;
+insights.telemetry.begin(); insights.telemetry.finish(); assert.equal(insights.events.length,countBeforeOptOut);
+const converted=mount(); converted.telemetry.converted(); converted.telemetry.converted();
+assert.equal(converted.events.filter(b=>b.events[0].name==='tool_completed').length,1);
+console.log('Audience sanitization, paired actions, quiet timers, deduplication and opt-outs passed.');
+
+const browsers = new Map();
+const browserOne = mount({browserStorage:browsers});
+const visitor = browserOne.events[0].events[0].properties.visitor_id;
+assert.match(visitor,/^[a-f0-9-]{36}$/);
+const laterTab = mount({browserStorage:browsers,post:true,now:1800000000000+29*86400000});
+assert.equal(laterTab.events[0].events[0].properties.visitor_id,visitor,'Same browser across tabs, pages and sessions');
+assert.notEqual(laterTab.events[0].events[0].sessionID,browserOne.events[0].events[0].sessionID);
+assert.notEqual(mount({browserStorage:browsers,now:1800000000000+30*86400000}).events[0].events[0].properties.visitor_id,visitor,'Fixed 30-day expiry is not extended by visits');
+assert.equal(mount({blockStorage:true}).events[0].events[0].properties.visitor_id,undefined,'Blocked storage is not replaced by a per-visit ID');
+const optOutBrowser = new Map(); mount({browserStorage:optOutBrowser,navigator:{globalPrivacyControl:true}}); assert.equal(optOutBrowser.size,0);
+const openPage = mount(); const originalVisitor=openPage.events[0].events[0].properties.visitor_id;
+openPage.advance(30*86400000); openPage.tick();
+assert.notEqual(openPage.events.at(-1).events[0].properties.visitor_id,originalVisitor,'Long-open pages also expire IDs');
+console.log('Unique browsers: cross-tab deduplication, fixed expiry, blocked storage and opt-outs passed.');

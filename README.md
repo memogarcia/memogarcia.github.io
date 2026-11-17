@@ -86,22 +86,31 @@ panel and GA Realtime. Local tests do not prove GA receipt.
 
 ### Magnetic telemetry
 
-`static/js/page-telemetry.js` sends anonymous page sessions for tools and
+`static/js/page-telemetry.js` sends usage events for tools and
 published blog posts. Hugo includes it only on production post pages; static
 tools load it directly. Both use the dedicated `memo-tools` app and public key.
 The key grants no read or administrative access. Google's loader remains separate,
 so each page sends one Google page view.
 
 A session groups visits in one tab until 30 minutes without interaction.
-Its random ID, sequence and last interaction time use `sessionStorage`; no
-persistent visitor identity or cookies are created. Separate tabs normally stay
+Its random ID, sequence and last interaction time use `sessionStorage`. A separate
+random browser ID in first-party `localStorage` counts unique visitors. It expires
+30 days after creation, without a sliding extension. No cookie, fingerprint or
+IP matching is used. Blocked storage leaves unique visitors unmeasured. Different
+devices, private browsing and cleared storage can count one person again.
+Separate tab sessions normally stay
 separate; browsers can copy session storage when duplicating a tab. Blocked
 storage falls back to separate page visits. Reloads, navigation and back/forward
 restoration each get a unique visit ID and ordered step within the session.
 `page_viewed` fires once per visit; cumulative `page_session` snapshots arrive
 every 30 visible seconds, on visibility/focus loss and exit. Metadata includes
 path, section, visit ID, step, opening time, open/active seconds and exit flag.
-No input values, key values, notes, referrers or URL parameters are collected.
+No input values, key values, notes or full referring URLs are collected. Audience
+metadata includes the referring hostname, two-letter language and a fixed campaign
+code. Unknown campaign values become Other. The intake adds country, reduced
+browser/device/OS information and a masked network prefix. Full IPs are not stored.
+Starts and completions use a temporary action ID scoped to their original visit.
+Quiet timer completion keeps that context even after the tab session expires.
 Do Not Track, Global Privacy Control and automated browsers stop collection.
 
 Active time requires a visible and focused page, within 60 seconds of input or
@@ -111,11 +120,15 @@ are observed lower bounds. No retries are made. The collector uses sendBeacon
 with a credential-free fetch fallback; it never interrupts the page on failure.
 
 Platform Admin's **Tools usage** view at `http://127.0.0.1:3400/#tools-usage`
-shows URL counts, averages and recent sessions, with separate Tools and Blog
-posts filters. It takes each visit's maximum cumulative timing, never sums
+shows page visits, unique browsers, median active time, completed actions and
+recent journeys. Filters cover tools/posts, country, source, device, browser,
+language and campaign over 7, 14 or 30 days. It takes each visit's maximum cumulative timing, never sums
 heartbeats. Expand a browsing session to see ordered steps, including repeat
 URLs. Filters match sessions but preserve all their available steps. The latest
-200 visits are returned, so earlier steps can be missing. Raw data expires after 30 days; earlier page views have no timing.
+200 visits are returned for journeys, so earlier steps can be missing. Summaries
+use all matching visits. Raw events and browser IDs expire after 30 days. Older
+visits lack the new fields and cannot be backfilled with unique visitors. Daily
+page totals without browser or network IDs remain for 400 days.
 
 Owning sources in `../magnetic`: `products/telemetry/apps/api/apps.toml`,
 `products/telemetry/apps/api/src/events.rs` and

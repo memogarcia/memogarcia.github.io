@@ -509,6 +509,7 @@
   }
 
   function update(reason, struck) {
+    if (struck && text) window.memoToolTelemetry?.begin();
     const before = state;
     const now = render(struck);
     state = now;
@@ -910,6 +911,7 @@
   copyBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(text);
+      if (text) { window.memoToolTelemetry?.begin(); window.memoToolTelemetry?.finish(); }
       flash(copyBtn, 'Copied');
     } catch {
       flash(copyBtn, 'Copy failed');
@@ -928,6 +930,7 @@
     a.download = name;
     document.body.appendChild(a);
     a.click();
+    window.memoToolTelemetry?.begin(); window.memoToolTelemetry?.finish();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }

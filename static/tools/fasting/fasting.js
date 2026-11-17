@@ -1166,6 +1166,8 @@
   // ── Actions ─────────────────────────────────────────────
 
   function startFast() {
+    window.memoToolTelemetry?.cancel();
+    window.memoToolTelemetry?.begin();
     const now = Date.now();
     const start = state.plannedStartTime && state.plannedStartTime <= now ? state.plannedStartTime : now;
     state.isFasting = true;
@@ -1195,6 +1197,7 @@
     if (!prog) return;
     // Under a minute is a slip of the finger, not a fast.
     if (log && prog.elapsedMs >= 60_000) {
+      window.memoToolTelemetry?.finish();
       history.push({
         startedAt: state.startTime,
         endedAt: now,
