@@ -40,7 +40,10 @@
   let lh = 40;
   let cols = 48;
   let visible = 12;
-  let state = { paras: 1, last: 1, w: 0, x: 0 };
+  let state = { row: 0, crow: 0, w: 0, x: 0 };
+  let caret = 0; // where the next letter lands, as an offset into text
+  let view = null; // row rolled onto the rail for reading; null follows the caret
+  let rows = [];
   let composing = false;
   let pendingEl = null;
   const lineEls = new Map();
@@ -269,57 +272,86 @@
 
   const WIDE = /[ᄀ-ᅟ⺀-꓏가-힣豈-﫿︰-﹏＀-｠￠-￦]/;
   const cw = (c) => (c.length > 1 || WIDE.test(c) ? 2 : 1);
-  const widthOf = (chars) => chars.reduce((n, c) => n + cw(c), 0);
+  const widthOf = (items) => items.reduce((n, it) => n + cw(it.c), 0);
 
   // Break like a typist: after the bell, the next space returns the carriage.
   // A word that still runs into the margin is carried to the next line.
-  function wrap(para) {
+  // Every letter keeps its offset in the text, so a click or an arrow key can
+  // find its way back from the page to the string.
+  function wrap(para, base) {
     const out = [];
     let line = [];
+    let start = base;
     let w = 0;
     let lastSpace = -1;
+    let o = base;
+    const close = (items, s) => out.push({ items, start: s, end: items.length ? items[items.length - 1].o + items[items.length - 1].c.length : s });
     for (const c of para) {
       const k = cw(c);
       if (c === ' ' && w > 0 && w >= cols - BELL_ZONE) {
-        out.push(line);
+        close(line, start);
         line = [];
         w = 0;
         lastSpace = -1;
+        o += c.length;
+        start = o;
         continue;
       }
       if (w + k > cols) {
         if (lastSpace >= 0) {
           const carry = line.slice(lastSpace + 1);
-          out.push(line.slice(0, lastSpace));
+          close(line.slice(0, lastSpace), start);
           line = carry;
+          start = carry.length ? carry[0].o : o;
           w = widthOf(carry);
         } else {
-          out.push(line);
+          close(line, start);
           line = [];
+          start = o;
           w = 0;
         }
         lastSpace = -1;
       }
       if (c === ' ') lastSpace = line.length;
-      line.push(c);
+      line.push({ c, o });
       w += k;
+      o += c.length;
     }
-    out.push(line);
+    close(line, start);
     return out;
   }
 
-  function tail() {
-    const paras = text.split('\n');
-    const lines = [];
-    let last = 1;
-    for (let p = paras.length - 1; p >= 0 && lines.length < visible; p--) {
-      const wrapped = wrap(paras[p]);
-      if (p === paras.length - 1) last = wrapped.length;
-      for (let i = wrapped.length - 1; i >= 0 && lines.length < visible; i--) {
-        lines.unshift({ id: p + ':' + i, chars: wrapped[i] });
-      }
+  function layoutAll() {
+    const rows = [];
+    let base = 0;
+    text.split('\n').forEach((para, p) => {
+      wrap(para, base).forEach((r, i) => {
+        r.id = p + ':' + i;
+        rows.push(r);
+      });
+      base += para.length + 1;
+    });
+    return rows;
+  }
+
+  // The row the carriage sits on: the last one that starts at or before the caret.
+  function rowOf(rows, at) {
+    let r = 0;
+    while (r + 1 < rows.length && rows[r + 1].start <= at) r++;
+    return r;
+  }
+
+  const colOf = (row, at) => row.items.reduce((n, it) => n + (it.o < at ? cw(it.c) : 0), 0);
+
+  // Nearest letter boundary to a column on a row.
+  function offsetAt(row, col) {
+    let w = 0;
+    for (const it of row.items) {
+      const k = cw(it.c);
+      if (col <= w + k / 2) return it.o;
+      w += k;
     }
-    return { lines, paras: paras.length, last };
+    return row.end;
   }
 
   function measure() {
@@ -367,30 +399,39 @@
     return s;
   }
 
-  function syncLine(el, id, chars, animate) {
-    const cur = el._chars || [];
+  // Only the letters just struck animate, wherever on the line they land.
+  function syncLine(el, id, items, struck) {
+    const cur = el._items || [];
     let k = 0;
-    while (k < cur.length && k < chars.length && cur[k] === chars[k]) k++;
+    while (k < cur.length && k < items.length && cur[k].c === items[k].c) k++;
     while (el.childNodes.length > k) el.lastChild.remove();
-    const strike = animate && chars.length - k <= 2;
-    for (let i = k; i < chars.length; i++) el.appendChild(glyph(chars[i], id, i, strike));
-    el._chars = chars;
+    for (let i = k; i < items.length; i++) {
+      const it = items[i];
+      const hit = struck && it.o >= struck[0] && it.o < struck[1];
+      el.appendChild(glyph(it.c, id, i, hit));
+    }
+    el._items = items;
   }
 
-  function render(animate) {
+  function render(struck) {
     if (pendingEl) {
       pendingEl.remove();
       pendingEl = null;
     }
-    const t = tail();
-    const want = new Set(t.lines.map((l) => l.id));
+    rows = layoutAll();
+    caret = clamp(caret, 0, text.length);
+    const crow = rowOf(rows, caret);
+    if (view != null && (view === crow || view < 0 || view >= rows.length)) view = null;
+    const top = view == null ? crow : view;
+    const shown = rows.slice(Math.max(0, top - visible + 1), top + 1);
+    const want = new Set(shown.map((l) => l.id));
     for (const [id, el] of lineEls) {
       if (!want.has(id)) {
         el.remove();
         lineEls.delete(id);
       }
     }
-    t.lines.forEach((l, i) => {
+    shown.forEach((l, i) => {
       let el = lineEls.get(l.id);
       if (!el) {
         el = document.createElement('div');
@@ -398,14 +439,15 @@
         lineEls.set(l.id, el);
       }
       if (linesEl.children[i] !== el) linesEl.insertBefore(el, linesEl.children[i] || null);
-      syncLine(el, l.id, l.chars, animate);
+      syncLine(el, l.id, l.items, struck);
     });
-    const w = widthOf(t.lines[t.lines.length - 1].chars);
+    const w = colOf(rows[crow], caret);
     const x = (w - cols / 2 + 0.5) * ch;
     document.body.classList.toggle('has-text', text.length > 0);
+    document.body.classList.toggle('reading', view != null);
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     countEl.textContent = words + (words === 1 ? ' word' : ' words');
-    return { paras: t.paras, last: t.last, w, x };
+    return { row: top, crow, w, x };
   }
 
   // The lamp leans toward the middle of the page: right at the left margin,
@@ -430,11 +472,11 @@
   }
 
   function feedPaper(dir) {
-    if (reducedMotion.matches) return;
+    if (reducedMotion.matches || !dir) return;
     linesEl.getAnimations().forEach((a) => a.cancel());
     linesEl.animate(
       [{ transform: `translateY(${dir * lh}px)` }, { transform: 'translateY(0)' }],
-      { duration: 190, easing: 'cubic-bezier(0.3, 0.9, 0.3, 1)' }
+      { duration: 150 + 40 * Math.min(4, Math.abs(dir)), easing: 'cubic-bezier(0.3, 0.9, 0.3, 1)' }
     );
   }
 
@@ -460,9 +502,15 @@
 
   const panAt = (w) => clamp((w / cols - 0.5) * 1.1, -0.7, 0.7);
 
-  function update(reason) {
+  // Rolling the platen: one ratchet click per line, and the carriage stays put.
+  function roll(delta, pan) {
+    snd.feed(pan, clamp(Math.abs(delta), 1, 3));
+    feedPaper(clamp(delta, -4, 4));
+  }
+
+  function update(reason, struck) {
     const before = state;
-    const now = render(reason !== 'resize' && reason !== 'load');
+    const now = render(struck);
     state = now;
 
     if (reason === 'resize' || reason === 'load') {
@@ -470,9 +518,23 @@
       return;
     }
 
-    const delta = now.paras !== before.paras ? Math.sign(now.paras - before.paras) : now.last - before.last;
+    const delta = now.row - before.row;
 
-    if (delta > 0) {
+    if (reason === 'scroll') {
+      if (delta) roll(delta, panAt(now.w));
+      return;
+    }
+
+    if (reason === 'move' || Math.abs(delta) > 1) {
+      if (delta) roll(delta, panAt(now.w));
+      else if (before.x !== now.x) snd.release(panAt(now.w));
+      const ms = clamp(70 + Math.abs(before.x - now.x) * 0.3, 90, 420);
+      moveHead(now.x, ms, 'cubic-bezier(0.3, 0.8, 0.3, 1)');
+      if (reason === 'move') {
+        persist();
+        return;
+      }
+    } else if (delta > 0) {
       const ms = clamp(150 + Math.abs(before.x - now.x) * 0.36, 170, 520);
       snd.carriage(panAt(before.w), panAt(now.w), ms, reason === 'enter' ? 0 : 0.05);
       feedPaper(1);
@@ -509,32 +571,95 @@
     const s = clean(raw);
     if (!s) return;
     const pan = panAt(state.w);
-    text += s;
+    const at = caret;
+    text = text.slice(0, at) + s + text.slice(at);
+    caret = at + s.length;
+    view = null;
+    goal = null;
     markTyping();
+    const struck = [at, caret];
     if (s === '\n') {
-      update('enter');
+      update('enter', struck);
     } else if (s.length <= 2 && Array.from(s).length === 1) {
       if (s === ' ') snd.space(pan);
       else snd.strike(pan, s.codePointAt(0));
-      update('char');
+      update('char', struck);
     } else {
       const n = Math.min(5, s.length);
       for (let i = 0; i < n; i++) setTimeout(() => snd.strike(pan, 97 + i * 3), i * 38);
-      update('paste');
+      update('paste', struck);
     }
   }
 
   function backspace() {
     markTyping();
-    if (!text) {
+    view = null;
+    goal = null;
+    if (!caret) {
+      snd.dud();
+      if (state.row !== state.crow) update('move');
+      return;
+    }
+    const code = text.charCodeAt(caret - 1);
+    const pair = code >= 0xdc00 && code <= 0xdfff && caret > 1;
+    const from = caret - (pair ? 2 : 1);
+    text = text.slice(0, from) + text.slice(caret);
+    caret = from;
+    snd.back(panAt(state.w));
+    update('back');
+  }
+
+  /* ── Moving the carriage and the paper ─────────────────── */
+
+  let goal = null; // column to aim for when moving up and down through short lines
+
+  function setCaret(at) {
+    caret = clamp(at, 0, text.length);
+    view = null;
+    update('move');
+  }
+
+  function step(dir) {
+    let at = caret + dir;
+    // Never land between the two halves of a surrogate pair.
+    const code = text.charCodeAt(dir < 0 ? at : caret);
+    if (dir < 0 && code >= 0xdc00 && code <= 0xdfff && at > 0) at--;
+    if (dir > 0 && code >= 0xd800 && code <= 0xdbff) at++;
+    goal = null;
+    setCaret(at);
+  }
+
+  function verticalTo(r) {
+    const crow = rowOf(rows, caret);
+    if (goal == null) goal = colOf(rows[crow], caret);
+    r = clamp(r, 0, rows.length - 1);
+    if (r === crow) {
       snd.dud();
       return;
     }
-    const code = text.charCodeAt(text.length - 1);
-    const pair = code >= 0xdc00 && code <= 0xdfff && text.length > 1;
-    text = text.slice(0, pair ? -2 : -1);
-    snd.back(panAt(state.w));
-    update('back');
+    const keep = goal;
+    setCaret(offsetAt(rows[r], keep));
+    goal = keep;
+  }
+
+  function scrollBy(n) {
+    if (!rows.length) return;
+    const from = view == null ? rowOf(rows, caret) : view;
+    const to = clamp(from + n, 0, rows.length - 1);
+    if (to === from) return;
+    view = to;
+    update('scroll');
+  }
+
+  // Where on the page a point lands: which row, which column, or null below the rail.
+  function pointToCaret(px, py) {
+    // The frame around the lines never moves, even while the paper feeds.
+    const r = linesEl.parentNode.getBoundingClientRect();
+    const k = Math.floor((r.bottom - py) / lh);
+    if (k < 0) return null;
+    const row = clamp(state.row - k, 0, rows.length - 1);
+    const col = Math.round((px - r.left) / ch);
+    return offsetAt(rows[row], clamp(col, 0, cols));
   }
 
   function resetInput() {
@@ -568,9 +693,23 @@
     pendingEl = document.createElement('span');
     pendingEl.className = 'pending';
     pendingEl.textContent = s;
-    const lastLine = linesEl.lastElementChild;
-    if (lastLine) lastLine.appendChild(pendingEl);
+    const row = rows[rowOf(rows, caret)];
+    const el = row && lineEls.get(row.id);
+    if (!el) return;
+    const i = row.items.filter((it) => it.o < caret).length;
+    el.insertBefore(pendingEl, el.childNodes[i] || null);
   }
+
+  // A typewriter has no clipboard: every letter has to be struck.
+  function refuse(e) {
+    e.preventDefault();
+    snd.dud();
+  }
+  input.addEventListener('paste', refuse);
+  input.addEventListener('drop', refuse);
+  input.addEventListener('beforeinput', (e) => {
+    if (/^insertFrom(Paste|Drop|Yank|PasteAsQuotation)/.test(e.inputType)) refuse(e);
+  });
 
   input.addEventListener('compositionstart', () => { composing = true; });
   input.addEventListener('compositionend', () => {
@@ -588,14 +727,53 @@
     flush();
   });
 
-  const HOLD = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown']);
   input.addEventListener('keydown', (e) => {
     snd.wake();
-    if (HOLD.has(e.key)) {
+    if (composing) return;
+    const crow = rowOf(rows, caret);
+    const meta = e.metaKey || e.ctrlKey;
+    let handled = true;
+    switch (e.key) {
+      case 'ArrowLeft':
+        if (meta) { goal = null; setCaret(rows[crow].start); } else step(-1);
+        break;
+      case 'ArrowRight':
+        if (meta) { goal = null; setCaret(rows[crow].end); } else step(1);
+        break;
+      case 'ArrowUp':
+        if (meta) { goal = null; setCaret(0); } else verticalTo(crow - 1);
+        break;
+      case 'ArrowDown':
+        if (meta) { goal = null; setCaret(text.length); } else verticalTo(crow + 1);
+        break;
+      case 'Home':
+        goal = null;
+        setCaret(meta ? 0 : rows[crow].start);
+        break;
+      case 'End':
+        goal = null;
+        setCaret(meta ? text.length : rows[crow].end);
+        break;
+      case 'PageUp':
+        scrollBy(-Math.max(1, visible - 2));
+        break;
+      case 'PageDown':
+        scrollBy(Math.max(1, visible - 2));
+        break;
+      case 'Escape':
+        if (view != null && prefs.hidden) {
+          view = null;
+          update('scroll');
+        } else handled = false;
+        break;
+      default:
+        handled = false;
+    }
+    if (handled) {
       e.preventDefault();
       return;
     }
-    if (e.metaKey || e.ctrlKey) {
+    if (meta) {
       const k = e.key.toLowerCase();
       if (k === 's') {
         e.preventDefault();
@@ -612,21 +790,67 @@
     else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey) snd.release(panAt(state.w));
   });
 
+  const NAV = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown']);
+
   // Any key typed while focus is elsewhere lands on the page.
   document.addEventListener('keydown', (e) => {
     if (e.target === input || e.metaKey || e.ctrlKey || e.altKey) return;
-    if (e.target.closest && e.target.closest('button, a') && (e.key === 'Enter' || e.key === ' ' || e.key === 'Tab')) return;
+    if (e.target.closest && e.target.closest('button, a, input') && (e.key === 'Enter' || e.key === ' ' || e.key === 'Tab' || NAV.has(e.key))) return;
     if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter') input.focus({ preventScroll: true });
   });
 
+  // A click on the page moves the carriage there. A drag, or a touch swipe,
+  // rolls the paper to read what scrolled away.
+  let press = null;
   stage.addEventListener('pointerdown', (e) => {
     snd.wake();
     setPrefs(false);
     if (e.target !== input) e.preventDefault();
     input.focus({ preventScroll: true });
+    press = { id: e.pointerId, x: e.clientX, y: e.clientY, ly: e.clientY, acc: 0, dragged: false };
   });
+  stage.addEventListener('pointermove', (e) => {
+    if (!press || press.id !== e.pointerId || e.pointerType === 'mouse') return;
+    press.acc += e.clientY - press.ly;
+    press.ly = e.clientY;
+    if (!press.dragged && Math.abs(press.acc) < 10) return;
+    press.dragged = true;
+    const n = Math.trunc(press.acc / lh);
+    if (n) {
+      press.acc -= n * lh;
+      scrollBy(-n);
+    }
+  });
+  const release = (e) => {
+    if (!press || press.id !== e.pointerId) return;
+    const p = press;
+    press = null;
+    if (e.type !== 'pointerup' || p.dragged || !text) return;
+    if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > 10) return;
+    const at = pointToCaret(e.clientX, e.clientY);
+    if (at != null) {
+      goal = null;
+      setCaret(at);
+    }
+  };
+  stage.addEventListener('pointerup', release);
+  stage.addEventListener('pointercancel', release);
   stage.addEventListener('click', () => input.focus({ preventScroll: true }));
   input.addEventListener('focus', resetInput);
+
+  let wheelAcc = 0;
+  stage.addEventListener('wheel', (e) => {
+    if (e.ctrlKey) return; // pinch zoom
+    e.preventDefault();
+    wheelAcc += e.deltaMode === 1 ? e.deltaY * lh : e.deltaMode === 2 ? e.deltaY * lh * visible : e.deltaY;
+    const n = Math.trunc(wheelAcc / (lh * 0.8));
+    if (n) {
+      wheelAcc -= n * lh * 0.8;
+      scrollBy(n);
+    }
+    clearTimeout(stage._wheelT);
+    stage._wheelT = setTimeout(() => { wheelAcc = 0; }, 160);
+  }, { passive: false });
 
   let moved = 0;
   document.addEventListener('pointermove', (e) => {
@@ -644,7 +868,7 @@
   function persistNow() {
     clearTimeout(saveTimer);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ text, sound: soundOn, kelvin, paper }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ text, caret, sound: soundOn, kelvin, paper }));
     } catch { /* storage blocked: the page still works for this visit */ }
   }
   function persist() {
@@ -737,6 +961,9 @@
     // The old sheet leaves as a ghost, so anything typed meanwhile lands on the new one.
     const ghost = reducedMotion.matches ? null : linesEl.cloneNode(true);
     text = '';
+    caret = 0;
+    view = null;
+    goal = null;
     linesEl.getAnimations().forEach((a) => a.cancel());
     update('back');
     moveHead(state.x, 320, 'cubic-bezier(0.45, 0, 0.2, 1)');
@@ -843,6 +1070,7 @@
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved && typeof saved.text === 'string') text = saved.text;
+    caret = saved && Number.isFinite(saved.caret) ? clamp(saved.caret, 0, text.length) : text.length;
     if (saved && saved.sound === false) soundOn = false;
     if (saved && Number.isFinite(saved.kelvin)) kelvin = saved.kelvin;
     if (saved && typeof saved.paper === 'string') paper = saved.paper;

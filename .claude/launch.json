@@ -48,6 +48,18 @@
         "/Users/memo/src/memogarcia.github.io/static"
       ],
       "port": 4175
+    },
+    {
+      "name": "static-5",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4177",
+        "--directory",
+        "/Users/memo/src/memogarcia.github.io/static"
+      ],
+      "port": 4177
     }
   ]
 }

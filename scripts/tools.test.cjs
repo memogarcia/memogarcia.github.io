@@ -20,21 +20,18 @@ function read(rel) {
   assert.match(sharedCss, /@media\s*\(max-width:\s*600px\)/, 'tools shared.css mobile breakpoint should match 600px');
 
   const fastingCss = read('static/tools/fasting/fasting.css');
-  assert.match(fastingCss, /\.preset-chip\s*\{[^}]*align-items:\s*center;/, 'fasting .preset-chip must align-items center');
-  assert.doesNotMatch(fastingCss, /\.preset-chip\s*\{[^}]*align-items:\s*baseline;/);
-  assert.match(fastingCss, /\.spotlight-card,\s*\.inspector-card\s*\{[^}]*max-width:\s*100%;/);
-  assert.match(fastingCss, /\.benefits-section\s*\{[^}]*max-width:\s*100%;/);
-  assert.match(fastingCss, /\.history-drawer\s*\{[^}]*max-width:\s*100%;/);
-  assert.match(fastingCss, /\.hourly-item-tags\s*\{[^}]*margin:\s*6px 0 0;/);
+  assert.match(fastingCss, /\.stage\s*\{[^}]*overflow:\s*clip;/, 'fasting stage must not be scrollable from script or focus');
+  assert.doesNotMatch(fastingCss, /shared\.css/);
 
   const breathingHtml = read('static/tools/breathing/index.html');
-  assert.doesNotMatch(breathingHtml, /<span>4-7-8<\/span>\s*<small>4-7-8<\/small>/);
-  assert.match(breathingHtml, /id="breath-core"[^>]*r="92"/);
-  assert.match(breathingHtml, /class="dial-bezel-inner"[^>]*r="138"/);
+  assert.doesNotMatch(breathingHtml, /shared\.css/, 'breathing has its own stylesheet');
+  assert.equal((breathingHtml.match(/role="radio" data-pattern="/g) || []).length, 4, 'one pen per pattern');
+  assert.match(breathingHtml, /<canvas id="chart"/);
 
   const fastingHtml = read('static/tools/fasting/index.html');
-  assert.match(fastingHtml, /id="reset-now-quick-btn"/);
-  assert.match(fastingHtml, /class="fast-toolbar"/);
+  assert.doesNotMatch(fastingHtml, /shared\.css/, 'fasting has its own stylesheet');
+  // Every hour from 0 to 72 is in the page for readers without the glass.
+  assert.equal((fastingHtml.match(/class="hour-item"/g) || []).length, 73);
 }
 
 // 2. Unit helper checks from tool modules
@@ -42,9 +39,15 @@ function read(rel) {
   const breathing = require(path.join(ROOT, 'static/tools/breathing/breathing.js'));
   assert.equal(breathing.getCycleDurationMs('box'), 16_000);
   assert.equal(breathing.getCycleDurationMs('478'), 19_000);
-  assert.equal(breathing.getOrbRadius(0), 94);
-  assert.equal(breathing.getOrbRadius(1), 138);
-  assert.ok(breathing.getOrbRadius(0) > 92, 'breathing orb min radius must stay outside steady core circle (r=92)');
+  assert.equal(breathing.getCycleDurationMs('sigh'), 9_000);
+  // The pen's height is lung volume: empty, full after the inhale, halfway down the exhale.
+  assert.equal(breathing.getVolumeAt('box', 0), 0);
+  assert.equal(breathing.getVolumeAt('box', 4), 1);
+  assert.equal(breathing.getVolumeAt('box', 6), 1);
+  assert.ok(Math.abs(breathing.getVolumeAt('box', 10) - 0.5) < 1e-9);
+  assert.equal(breathing.getPhaseAtElapsed('478', 5_000).phase.kind, 'hold');
+  assert.equal(breathing.getPhaseAtElapsed('478', 19_500).cycleIndex, 1);
+  assert.equal(breathing.formatMMSS(61_000), '01:01');
 
   const fasting = require(path.join(ROOT, 'static/tools/fasting/fasting.js'));
   assert.equal(fasting.formatGoalLabel(16 * 60), '16h');
@@ -53,6 +56,15 @@ function read(rel) {
   const prog = fasting.computeFastProgress(1_000_000, 16 * 60, 1_000_000 + 8 * 3_600_000);
   assert.equal(prog.pct, 50);
   assert.equal(prog.currentHour, 8);
+  // Full at the start, half at half time, empty at and past the goal.
+  assert.equal(fasting.waterLevel(0, 16 * 3_600_000), 1);
+  assert.equal(fasting.waterLevel(8 * 3_600_000, 16 * 3_600_000), 0.5);
+  assert.equal(fasting.waterLevel(20 * 3_600_000, 16 * 3_600_000), 0);
+  assert.ok(fasting.hourToY(0, 16) < fasting.hourToY(16, 16), 'hour 0 is the top of the glass');
+  assert.equal(fasting.phaseAt(12).id, 'ketosis');
+  assert.equal(fasting.phaseAt(11).id, 'glycogen');
+  // A three day glass labels every 12 hours on a tick every 3.
+  assert.deepEqual(fasting.markPlan(72), { tick: 3, label: 12 });
 
   const meditation = require(path.join(ROOT, 'static/tools/meditation/meditation.js'));
   assert.equal(meditation.formatMinutes(65), '1 h 5 min');
@@ -178,7 +190,21 @@ function makeElement(tagName, attrs = {}, dataset = {}) {
     getBoundingClientRect() {
       return { top: 0, bottom: 200 };
     },
+    closest() {
+      return null;
+    },
+    animate() {
+      return { onfinish: null, cancel() {}, finish() {} };
+    },
+    // A canvas that draws nothing.
+    getContext() {
+      return new Proxy({}, { get: (t, k) => (k in t ? t[k] : () => ({ addColorStop() {} })), set: (t, k, v) => { t[k] = v; return true; } });
+    },
   };
+  // Script reaches for a parent or a child the parser did not keep.
+  el.parentElement = el;
+  const findOne = el.querySelector;
+  el.querySelector = (sel) => findOne.call(el, sel) || (/^[a-z]+$/.test(sel) ? makeElement(sel) : null);
   Object.defineProperty(el, 'className', {
     get: () => [...classes].join(' '),
     set: (val) => {
@@ -196,6 +222,7 @@ function matchSelector(el, sel) {
   if (s === '.seg[data-rule]') return el.classList.contains('seg') && 'rule' in el.dataset;
   if (s === '.phase-tabs [role="tab"]') return el.attrs.role === 'tab';
   if (s === '.pattern-tabs [role="tab"]') return el.attrs.role === 'tab';
+  if (s === '#patterns [data-pattern]') return el.attrs.role === 'radio' && 'pattern' in el.dataset;
   if (s === '.dur-chip[data-dur]') return el.classList.contains('dur-chip') && 'dur' in el.dataset;
   if (s === '.preset-chip[data-preset]') return el.classList.contains('preset-chip') && 'preset' in el.dataset;
   if (s === '.preset-chip[data-min]') return el.classList.contains('preset-chip') && 'min' in el.dataset;
@@ -223,7 +250,7 @@ function mountTool({ htmlPath, jsPath, storageMap = new Map(), nowMs = 1_760_000
   const allEls = [];
   const byId = new Map();
 
-  const tagRe = /<(div|section|details|summary|button|input|select|option|p|span|h1|h2|ul|ol|li|svg|circle|g|dialog|form|textarea|link|main|header|footer)\b([^>]*)>/gi;
+  const tagRe = /<(div|section|details|summary|button|input|select|option|p|span|h1|h2|ul|ol|li|svg|circle|g|dialog|form|textarea|link|main|header|footer|canvas)\b([^>]*)>/gi;
   let m;
   let curSeg = null;
   while ((m = tagRe.exec(html))) {
@@ -308,6 +335,8 @@ function mountTool({ htmlPath, jsPath, storageMap = new Map(), nowMs = 1_760_000
   Object.assign(window, { window });
 
   let nextId = 1;
+  // Frames wait until a test draws one.
+  const frames = [];
   const ctx = {
     window,
     globalThis: window,
@@ -332,13 +361,18 @@ function mountTool({ htmlPath, jsPath, storageMap = new Map(), nowMs = 1_760_000
       createBufferSource() { return { buffer: null, loop: false, connect() {}, start() {}, stop() {} }; }
       resume() {}
     },
-    requestAnimationFrame: () => nextId++,
+    requestAnimationFrame: (fn) => { frames.push(fn); return nextId++; },
     cancelAnimationFrame: () => {},
     setInterval: () => nextId++,
     clearInterval: () => {},
     setTimeout: () => nextId++,
     clearTimeout: () => {},
     Math, Number, String, Boolean, Array, Object, Set, Map, JSON, RegExp, Error, URL, encodeURIComponent, TextEncoder, Buffer,
+    matchMedia: () => ({ matches: false, addEventListener() {} }),
+    getComputedStyle: () => ({ getPropertyValue: () => '' }),
+    performance: { now: () => clock },
+    MutationObserver: class { observe() {} },
+    Path2D: class { moveTo() {} lineTo() {} bezierCurveTo() {} quadraticCurveTo() {} closePath() {} rect() {} arc() {} },
   };
 
   runInNewContext(read(jsPath), ctx);
@@ -351,65 +385,92 @@ function mountTool({ htmlPath, jsPath, storageMap = new Map(), nowMs = 1_760_000
     window,
     storageMap,
     advanceClock: (ms) => { clock += ms; },
+    frame: () => frames.splice(0).forEach((fn) => fn(clock)),
   };
 }
 
-// 4. Breathing persistence across reload (pattern, custom dur, sound mute, history open, active timer)
+// 4. Breathing persistence across reload (pattern, custom length, mute, a lead-in that ran out while closed)
 {
   const storage = new Map();
-  let app = mountTool({ htmlPath: 'static/tools/breathing/index.html', jsPath: 'static/tools/breathing/breathing.js', storageMap: storage, nowMs: 1_760_000_000_000 });
-  app.queryAll('.pattern-tabs [role="tab"]').find((b) => b.dataset.pattern === '478').click();
-  app.el('custom-dur-btn').click();
-  assert.equal(app.el('custom-dur-wrap').hidden, false);
-  app.el('custom-dur-input').value = '7';
-  app.el('custom-dur-apply').click();
-  assert.equal(app.el('custom-dur-wrap').hidden, true, 'Set should close custom duration editor');
-  app.el('sound-quick-btn').click();
-  app.el('history-drawer').open = true;
-  app.el('history-drawer').dispatchEvent('toggle');
-  app.el('toggle-btn').click(); // start (prep default 0 -> running immediately)
+  const app = mountTool({ htmlPath: 'static/tools/breathing/index.html', jsPath: 'static/tools/breathing/breathing.js', storageMap: storage, nowMs: 1_760_000_000_000 });
+  assert.equal(app.document.body.dataset.state, 'idle');
+  assert.equal(app.el('length-btn').textContent, '2 min');
+  app.queryAll('#patterns [data-pattern]').find((b) => b.dataset.pattern === '478').click();
+  assert.equal(app.document.body.dataset.pattern, '478');
+  app.el('opt-custom').value = '7';
+  app.el('opt-custom-set').click();
+  assert.equal(app.el('length-btn').textContent, '7 min');
+  app.el('sound-btn').click();
+  assert.equal(app.el('sound-btn').textContent, 'Sound off');
+  app.el('toggle-btn').click(); // start: a 3 second lead-in first
+  assert.equal(app.document.body.dataset.state, 'prep');
+  app.frame();
+  assert.equal(app.el('word').textContent, 'Settle in');
 
-  // Reload 4s later -> running session should continue accurately at 06:56 left!
-  let reloaded = mountTool({ htmlPath: 'static/tools/breathing/index.html', jsPath: 'static/tools/breathing/breathing.js', storageMap: storage, nowMs: 1_760_000_004_000 });
+  // Reopened 4s later: the lead-in ended a second ago, so it is one second into the first inhale.
+  const reloaded = mountTool({ htmlPath: 'static/tools/breathing/index.html', jsPath: 'static/tools/breathing/breathing.js', storageMap: storage, nowMs: 1_760_000_004_000 });
   assert.equal(reloaded.document.body.dataset.pattern, '478');
   assert.equal(reloaded.document.body.dataset.state, 'running');
-  assert.equal(reloaded.el('custom-dur-btn').textContent, 'Custom (7m)');
-  assert.equal(reloaded.el('sound-quick-btn').textContent, 'Sound: Off');
-  assert.equal(reloaded.el('history-drawer').open, true);
-  assert.equal(reloaded.el('session-line').textContent, '06:56 left');
+  assert.equal(reloaded.el('length-btn').textContent, '7 min');
+  assert.equal(reloaded.el('sound-btn').textContent, 'Sound off');
+  reloaded.frame();
+  assert.equal(reloaded.el('word').textContent, 'Inhale');
+  assert.equal(reloaded.el('count').textContent, '3');
+  assert.equal(reloaded.el('sub').textContent, 'cycle 1 · 6:59 left');
 
-  // Toggle sound back on and verify cueBeforeMute preference kept custom sound or tones
-  reloaded.el('sound-quick-btn').click();
-  assert.equal(reloaded.el('sound-quick-btn').textContent, 'Sound: On');
+  // Unmuting brings back the cue that was on before.
+  reloaded.el('sound-btn').click();
+  assert.equal(reloaded.el('sound-btn').textContent, 'Sound on');
+  assert.equal(JSON.parse(storage.get('memo-tools-breathing-v1')).settings.cue, 'tones');
 }
 
-// 5. Fasting persistence across reload (goal, custom closed on apply, filter, inspectedHour, historyOpen, active fast)
+// 5. Fasting persistence across reload (custom goal, backdated start, active fast, pinned hour, log)
 {
   const storage = new Map();
   const app = mountTool({ htmlPath: 'static/tools/fasting/index.html', jsPath: 'static/tools/fasting/fasting.js', storageMap: storage, nowMs: 1_760_000_000_000 });
-  app.el('custom-goal-btn').click();
-  assert.equal(app.el('custom-goal-panel').hidden, false);
+  assert.equal(app.document.body.dataset.state, 'idle');
+  assert.equal(app.el('toggle-btn').textContent, 'Pour');
+
+  app.el('goal-btn').click();
+  assert.equal(app.el('panel-goal').hidden, false);
+  app.el('custom-btn').click();
+  assert.equal(app.el('custom-row').hidden, false);
   app.el('custom-hours').value = '19';
   app.el('custom-minutes').value = '30';
-  app.el('apply-custom-btn').click();
-  assert.equal(app.el('custom-goal-panel').hidden, true, 'Set goal should close custom goal panel');
+  app.el('custom-apply').click();
+  assert.equal(app.el('custom-row').hidden, true, 'Set should close the custom goal row');
+  assert.equal(app.el('goal-btn').textContent, 'Goal 19h 30m');
 
-  app.queryAll('.filter-chip[data-filter]').find((c) => c.dataset.filter === '12-23').click();
-  app.el('shift-minus-1h').click();
-  assert.equal(app.el('reset-now-quick-btn').hidden, false);
-  app.el('history-drawer').open = true;
-  app.el('history-drawer').dispatchEvent('toggle');
-  app.el('toggle-btn').click(); // start fast -> jumps inspector to current hour (Hour 1)
-  assert.equal(app.el('insp-badge').textContent, 'Hour 1');
-  app.el('next-hour-btn').click(); // inspect Hour 2 while fasting
+  app.el('earlier-1h').click();
+  assert.equal(app.el('start-now').hidden, false);
+  assert.equal(app.el('start-btn').textContent, 'Started 1h ago');
+
+  app.el('toggle-btn').click(); // pour: the fast starts an hour ago
+  assert.equal(app.document.body.dataset.state, 'running');
+  assert.equal(app.el('card-hour').textContent, 'Hour 1', 'the card follows the hour you are in');
+  assert.equal(app.el('card-when').textContent, 'now');
+  app.el('card-next').click();
+  assert.equal(app.el('card-hour').textContent, 'Hour 2');
+  assert.equal(app.el('card-now').hidden, false);
 
   const reloaded = mountTool({ htmlPath: 'static/tools/fasting/index.html', jsPath: 'static/tools/fasting/fasting.js', storageMap: storage, nowMs: 1_760_000_060_000 });
   assert.equal(reloaded.document.body.dataset.state, 'running');
-  assert.equal(reloaded.el('custom-goal-btn').textContent, 'Custom (19h 30m)');
-  assert.equal(reloaded.el('custom-goal-panel').hidden, true);
-  assert.equal(reloaded.queryAll('.filter-chip[data-filter]').find((c) => c.dataset.filter === '12-23').getAttribute('aria-pressed'), 'true');
-  assert.equal(reloaded.el('insp-badge').textContent, 'Hour 2');
-  assert.equal(reloaded.el('history-drawer').open, true);
+  assert.equal(reloaded.el('goal-btn').textContent, 'Goal 19h 30m');
+  assert.equal(reloaded.el('card-hour').textContent, 'Hour 2');
+  assert.equal(reloaded.el('time').textContent, '01:01:00');
+  reloaded.el('time').click();
+  assert.equal(reloaded.el('time').textContent, '18:29:00', 'remaining of a 19h 30m goal');
+
+  // Ending asks twice, then logs.
+  reloaded.el('toggle-btn').click();
+  assert.equal(reloaded.el('toggle-btn').textContent, 'End now?');
+  reloaded.el('toggle-btn').click();
+  assert.equal(reloaded.document.body.dataset.state, 'idle');
+  const store = JSON.parse(storage.get('memo-tools-fasting-v1'));
+  assert.equal(store.history.length, 1);
+  assert.equal(store.history[0].elapsedMs, 3_660_000);
+  assert.equal(store.history[0].goalMinutes, 19 * 60 + 30);
+  assert.equal(reloaded.el('stats').textContent, '1 fast · longest 1h 1m · average 1h 1m · 0 reached the goal');
 }
 
 // 6. Meditation persistence across reload (stick length, incense, paused sit, logged sit and its note)

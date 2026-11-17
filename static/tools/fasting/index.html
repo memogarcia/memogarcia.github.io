@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Intermittent Fasting Timer &amp; 0–72 Hour Milestone Tracker</title>
-  <meta name="description" content="Local-first intermittent fasting timer with 16:8, 18:6, 20:4, OMAD, 36h, 48h, and 72h goals, backdated start times, and hour-by-hour physiological milestones from 0h to 72h.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Intermittent Fasting Timer · One Glass of Water, 0–72 Hours</title>
+  <meta name="description" content="Local-first intermittent fasting timer drawn as a glass of water that empties toward your goal. 16:8, 18:6, 20:4, OMAD, 36h, 48h and 72h presets, backdated start times, and hour-by-hour metabolic milestones from 0h to 72h etched on the glass.">
   <link rel="canonical" href="https://memo.mx/tools/fasting/">
   <meta property="og:site_name" content="Memo Garcia">
-  <meta property="og:title" content="Intermittent Fasting Timer &amp; 0–72 Hour Tracker">
-  <meta property="og:description" content="Track 12:12 to 72h fasts with custom goals, editable start times, and hour-by-hour metabolic stages from digestion to autophagy.">
+  <meta property="og:title" content="Fasting Timer · One Glass of Water">
+  <meta property="og:description" content="A fasting timer that is a glass of water. Full when you start, empty at your goal, with the body's changes from 0h to 72h etched on the side.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://memo.mx/tools/fasting/">
   <meta property="og:locale" content="en_US">
@@ -16,8 +16,8 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Intermittent Fasting Timer &amp; 0–72 Hour Tracker">
-  <meta name="twitter:description" content="Local-first fasting timer for 16:8, 18:6, 20:4, OMAD, and extended fasts with 0h–72h metabolic milestones.">
+  <meta name="twitter:title" content="Fasting Timer · One Glass of Water">
+  <meta name="twitter:description" content="Full when you start, empty at your goal. 16:8 to 72h, with hour-by-hour milestones etched on the glass.">
   <meta name="twitter:image" content="https://memo.mx/img/og-default.png">
   <script type="application/ld+json">
   {
@@ -33,7 +33,7 @@
         "browserRequirements": "Requires JavaScript",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "description": "Local-first intermittent and extended fasting tracker with 12:12 to 72h presets, custom goals, editable start times, and hour-by-hour metabolic milestones.",
+        "description": "Intermittent and extended fasting timer drawn as a glass of water that empties toward the goal, with 12:12 to 72h presets, custom goals, editable start times, hour-by-hour metabolic milestones, synthesized glass sounds, and a fasting log stored only in localStorage.",
         "author": { "@type": "Person", "name": "Memo Garcia", "url": "https://memo.mx/about/" }
       },
       {
@@ -77,316 +77,238 @@
   }
   </script>
   <link id="favicon" rel="icon" href="/favicon.ico">
+  <link id="favicon" rel="icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <script src="/tools/theme.js"></script>
-  <link rel="stylesheet" href="/tools/shared.css">
   <link rel="stylesheet" href="/tools/fasting/fasting.css">
 </head>
 <body data-state="idle" data-phase="digestion">
-  <a class="skip" href="#main">Skip to fasting timer</a>
+  <h1 class="sr-only">Intermittent fasting timer</h1>
 
-  <header class="site-header">
-    <a class="wordmark" href="/">Memo Garcia<span class="wordmark-dot" aria-hidden="true">.</span></a>
-    <nav aria-label="Tools navigation">
-      <a href="/tools/">Tools</a>
-      <a href="/tools/pomodoro/">Pomodoro</a>
-      <a href="/tools/breathing/">Breathing</a>
-      <a href="/tools/meditation/">Meditation</a>
-      <a href="/tools/fasting/" aria-current="page">Fasting</a>
-      <a href="/tools/zenkaku-hankaku/">全角⇄半角</a>
+  <main id="stage" class="stage">
+    <div id="scene" class="scene">
+      <div class="wall"></div>
+      <div class="lamp"></div>
+      <div class="table"></div>
+      <div class="grain"></div>
+      <div class="shade"><i class="caustic"></i></div>
+
+      <svg id="glass" class="glass" viewBox="0 0 200 440" role="slider" tabindex="0"
+        aria-label="Hour on the glass" aria-valuemin="0" aria-valuemax="72" aria-valuenow="16"></svg>
+
+      <p id="now-tag" class="now-tag" aria-hidden="true"></p>
+
+      <div class="readout">
+        <p id="phase" class="phase">16h · 16:8</p>
+        <button id="time" class="time" type="button" title="Elapsed or remaining (T)">16:00:00</button>
+        <p id="status" class="phase status">Pour the glass to start.</p>
+      </div>
+    </div>
+
+    <article id="card" class="card" aria-live="polite">
+      <p class="card-head">
+        <button id="card-prev" class="card-step" type="button" aria-label="Previous hour">‹</button>
+        <span id="card-hour" class="card-hour">Hour 16</span>
+        <button id="card-next" class="card-step" type="button" aria-label="Next hour">›</button>
+        <span id="card-when" class="card-when">at the goal</span>
+      </p>
+      <p id="card-phase" class="card-phase">Fat &amp; Ketone Shift</p>
+      <h2 id="card-title" class="card-title">16:8 daily intermittent threshold</h2>
+      <p id="card-text" class="card-text">Classic 16:8 target. Low insulin and steady fat oxidation support metabolic flexibility and calm focus.</p>
+      <p id="card-meta" class="card-meta">Fuel: Predominantly fat + ketones · Insulin: Very low</p>
+      <button id="card-now" class="card-now" type="button" hidden>Back to now</button>
+    </article>
+
+    <div class="vignette"></div>
+
+    <header class="chrome chrome-top">
+      <a class="back" href="/tools/">← Tools</a>
       <button class="theme-control" type="button" aria-label="Change theme" hidden>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
           <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
           <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
         </svg>
       </button>
-    </nav>
-  </header>
-
-  <main id="main" class="fast-main">
-    <header class="tool-intro">
-      <h1>Intermittent Fasting Timer</h1>
-      <p>Local-first 12:12 to 72h fasting tracker with editable start times and 0h–72h milestones.</p>
     </header>
 
-    <section class="goal-bar" aria-label="Fasting goal presets">
-      <div class="preset-tabs" role="group" aria-label="Fasting duration presets">
-        <button class="preset-chip" type="button" data-preset="12h" aria-pressed="false">12h <small>12:12</small></button>
-        <button class="preset-chip" type="button" data-preset="14h" aria-pressed="false">14h <small>14:10</small></button>
-        <button class="preset-chip" type="button" data-preset="16h" aria-pressed="true">16h <small>16:8</small></button>
-        <button class="preset-chip" type="button" data-preset="18h" aria-pressed="false">18h <small>18:6</small></button>
-        <button class="preset-chip" type="button" data-preset="20h" aria-pressed="false">20h <small>20:4</small></button>
-        <button class="preset-chip" type="button" data-preset="24h" aria-pressed="false">24h <small>OMAD</small></button>
-        <button class="preset-chip" type="button" data-preset="36h" aria-pressed="false">36h</button>
-        <button class="preset-chip" type="button" data-preset="48h" aria-pressed="false">48h</button>
-        <button class="preset-chip" type="button" data-preset="72h" aria-pressed="false">72h</button>
-        <button id="custom-goal-btn" class="preset-chip" type="button" data-preset="custom" aria-pressed="false">Custom</button>
-      </div>
+    <footer class="chrome chrome-bottom">
+      <button id="toggle-btn" class="lead" type="button">Pour</button>
+      <button id="discard-btn" type="button" hidden>Discard</button>
+      <button id="goal-btn" type="button" aria-expanded="false" aria-controls="panel-goal">Goal 16h</button>
+      <button id="start-btn" type="button" aria-expanded="false" aria-controls="panel-start">Started now</button>
+      <button id="sound-btn" type="button" aria-pressed="true">Sound on</button>
+      <button id="log-btn" type="button" aria-expanded="false" aria-controls="panel-log">Log</button>
+      <a class="to-notes" href="#notes">Hours</a>
 
-      <div id="custom-goal-panel" class="custom-goal-panel" hidden>
-        <label>
-          <span>Hours</span>
-          <input id="custom-hours" type="number" min="1" max="168" step="1" value="17">
-        </label>
-        <label>
-          <span>Minutes</span>
-          <input id="custom-minutes" type="number" min="0" max="59" step="5" value="0">
-        </label>
-        <button id="apply-custom-btn" class="btn-outline" type="button">Set goal</button>
-      </div>
-    </section>
-
-    <section class="dial-stage" aria-label="Fasting dial">
-      <div class="dial-wrap">
-        <svg class="dial-svg" viewBox="0 0 360 360" aria-hidden="true">
-          <circle class="dial-bezel-outer" cx="180" cy="180" r="170" />
-          <circle class="dial-track" cx="180" cy="180" r="158" />
-          <g id="dial-milestones" class="dial-milestones"></g>
-          <circle class="dial-bezel-inner" cx="180" cy="180" r="129" />
-          <circle id="dial-progress" class="dial-progress" cx="180" cy="180" r="158" transform="rotate(-90 180 180)" />
-          <g id="dial-hand-group" transform="rotate(0 180 180)">
-            <circle class="dial-hand-halo" cx="180" cy="22" r="9" />
-            <circle class="dial-hand" cx="180" cy="22" r="5" />
-          </g>
-        </svg>
-
-        <div class="dial-readout">
-          <p id="phase-eyebrow" class="dial-eyebrow">Goal · 16h (16:8)</p>
-          <p id="time-display" class="dial-time" aria-label="Fasting timer">16:00:00</p>
-          <p id="progress-line" class="dial-sub">Ready to start</p>
-          <p id="schedule-line" class="dial-schedule">Starts now · Goal at --:--</p>
-        </div>
-      </div>
-
-      <div class="fast-toolbar">
-        <div class="display-switch" role="group" aria-label="Timer display mode">
-          <button id="mode-elapsed-btn" class="switch-pill" type="button" aria-pressed="true">Elapsed</button>
-          <button id="mode-remaining-btn" class="switch-pill" type="button" aria-pressed="false">Remaining</button>
-        </div>
-
-        <div id="start-time-bar" class="start-time-bar">
-          <span id="start-time-summary" class="start-time-summary">Start time: Now</span>
-          <div class="start-quick-btns">
-            <button id="shift-minus-1h" class="btn-chip" type="button" title="Move start 1 hour earlier">-1h</button>
-            <button id="shift-minus-2h" class="btn-chip" type="button" title="Move start 2 hours earlier">-2h</button>
-            <button id="edit-start-btn" class="btn-chip" type="button">Edit start</button>
-            <button id="reset-now-quick-btn" class="btn-chip" type="button" hidden>Now</button>
+      <div id="panel-goal" class="panel" hidden>
+        <div class="pref" role="group" aria-label="Fasting goal">
+          <span>Goal</span>
+          <div class="seg cols-5">
+            <button class="pick-goal" type="button" data-preset="12h" aria-pressed="false">12h</button>
+            <button class="pick-goal" type="button" data-preset="14h" aria-pressed="false">14h</button>
+            <button class="pick-goal" type="button" data-preset="16h" aria-pressed="true">16h</button>
+            <button class="pick-goal" type="button" data-preset="18h" aria-pressed="false">18h</button>
+            <button class="pick-goal" type="button" data-preset="20h" aria-pressed="false">20h</button>
+            <button class="pick-goal" type="button" data-preset="24h" aria-pressed="false">24h</button>
+            <button class="pick-goal" type="button" data-preset="36h" aria-pressed="false">36h</button>
+            <button class="pick-goal" type="button" data-preset="48h" aria-pressed="false">48h</button>
+            <button class="pick-goal" type="button" data-preset="72h" aria-pressed="false">72h</button>
+            <button id="custom-btn" class="pick-goal" type="button" data-preset="custom" aria-pressed="false">Other</button>
           </div>
         </div>
+        <p id="goal-note" class="note">16:8. Eat inside an 8 hour window.</p>
+        <div id="custom-row" class="pref custom-row" hidden>
+          <span>Other</span>
+          <div class="hm">
+            <label><input id="custom-hours" type="number" min="1" max="168" step="1" value="17" inputmode="numeric"> h</label>
+            <label><input id="custom-minutes" type="number" min="0" max="59" step="5" value="0" inputmode="numeric"> min</label>
+            <button id="custom-apply" type="button">Set</button>
+          </div>
+        </div>
+        <label class="check"><input id="notify" type="checkbox"><span>Notify me when the glass is empty</span></label>
       </div>
 
-      <div id="edit-start-panel" class="edit-start-panel" hidden>
-        <label for="start-datetime">Started at</label>
-        <input id="start-datetime" type="datetime-local">
-        <div class="edit-start-actions">
-          <button id="save-start-btn" class="btn-outline" type="button">Apply</button>
-          <button id="reset-start-now-btn" class="btn-chip" type="button">Set to now</button>
-          <button id="cancel-start-btn" class="btn-chip" type="button">Cancel</button>
+      <div id="panel-start" class="panel" hidden>
+        <div class="pref">
+          <label for="start-input">Started</label>
+          <input id="start-input" class="field" type="datetime-local">
+        </div>
+        <div class="pref" role="group" aria-label="Move the start">
+          <span>Move</span>
+          <div class="seg cols-3">
+            <button id="earlier-1h" type="button">1h earlier</button>
+            <button id="earlier-2h" type="button">2h earlier</button>
+            <button id="start-now" type="button" hidden>Now</button>
+          </div>
+        </div>
+        <p class="note">Already started? Move the start back and the glass pours to where it would be.</p>
+      </div>
+
+      <div id="panel-log" class="panel panel-log" hidden>
+        <p id="stats" class="stats">No fasts yet.</p>
+        <label class="sr-only" for="note-input">Note for this fast</label>
+        <input id="note-input" class="field" type="text" maxlength="120" autocomplete="off" placeholder="What is in the glass? water, black coffee, salt">
+        <p id="log-empty" class="log-empty">Finished fasts are written here. They stay in this browser.</p>
+        <ul id="log-list" class="log-list" hidden></ul>
+        <div id="log-actions" class="panel-actions" hidden>
+          <button id="log-copy" type="button">Copy</button>
+          <button id="log-clear" type="button">Clear</button>
         </div>
       </div>
+    </footer>
 
-      <div class="intention-row">
-        <label class="sr-only" for="fast-note-input">Fasting note</label>
-        <input
-          id="fast-note-input"
-          class="intention-input"
-          type="text"
-          maxlength="120"
-          autocomplete="off"
-          placeholder="Optional note (e.g. black coffee, water, electrolytes)"
-        >
-      </div>
-
-      <div class="controls-primary">
-        <button id="toggle-btn" class="btn-primary" type="button">Start Fast</button>
-      </div>
-
-      <div class="controls-secondary" aria-label="Secondary fasting actions">
-        <button id="discard-btn" class="btn-ghost" type="button" hidden>Discard</button>
-        <button id="sound-quick-btn" class="btn-ghost" type="button" aria-pressed="true" title="Toggle goal chime (M)">Chime: On</button>
-        <button id="notify-btn" class="btn-ghost" type="button" aria-pressed="false">Alerts: Off</button>
-      </div>
-
-      <p id="live-status" class="sr-only" aria-live="polite"></p>
-    </section>
-
-    <section id="spotlight-card" class="spotlight-card" aria-label="Current fasting hour">
-      <div class="spotlight-head">
-        <span id="spotlight-badge" class="hour-badge">Hour 0</span>
-        <span id="spotlight-phase" class="phase-tag">Digestion</span>
-        <span id="spotlight-status" class="spotlight-status">Preview</span>
-      </div>
-      <h2 id="spotlight-title" class="spotlight-title">Last meal enters digestion</h2>
-      <p id="spotlight-benefit" class="spotlight-benefit">Carbohydrates and proteins begin breaking down as nutrients move from stomach to small intestine.</p>
-      <div class="marker-row">
-        <span id="marker-fuel" class="marker-pill">Fuel: Dietary glucose</span>
-        <span id="marker-insulin" class="marker-pill">Insulin: Rising</span>
-        <span id="marker-shift" class="marker-pill">Shift: Nutrient uptake</span>
-      </div>
-      <div class="hour-progress-wrap" id="hour-progress-wrap" hidden>
-        <div class="hour-progress-track">
-          <div id="hour-progress-fill" class="hour-progress-fill"></div>
-        </div>
-        <span id="hour-progress-label" class="hour-progress-label">0m / 60m</span>
-      </div>
-      <p id="next-hour-preview" class="next-hour-preview">Next (Hour 1): Glucose absorption peaks</p>
-    </section>
-
-    <section class="benefits-section" aria-label="Per-hour benefits of fasting">
-      <div class="benefits-header">
-        <div>
-          <h2>Per-hour benefits (0h to 72h)</h2>
-          <p class="benefits-sub">Select any hour on the map to inspect what shifts in your body, or browse hour by hour below.</p>
-        </div>
-        <div class="inspector-nav">
-          <button id="prev-hour-btn" class="btn-chip" type="button" aria-label="Previous hour">← Prev</button>
-          <button id="current-hour-btn" class="btn-chip" type="button">Current</button>
-          <button id="next-hour-btn" class="btn-chip" type="button" aria-label="Next hour">Next →</button>
-        </div>
-      </div>
-
-      <div class="legend-row" aria-label="Metabolic phase legend">
-        <span class="leg-item"><i class="leg-swatch ph-digestion"></i>0–3h Digestion</span>
-        <span class="leg-item"><i class="leg-swatch ph-glycogen"></i>4–11h Glycogen</span>
-        <span class="leg-item"><i class="leg-swatch ph-ketosis"></i>12–23h Ketosis</span>
-        <span class="leg-item"><i class="leg-swatch ph-autophagy"></i>24–47h Autophagy</span>
-        <span class="leg-item"><i class="leg-swatch ph-extended"></i>48–72h Deep</span>
-      </div>
-
-      <div id="hour-matrix" class="hour-matrix" role="listbox" aria-label="Hour selector from 0h to 72h"></div>
-
-      <article id="inspector-card" class="inspector-card" aria-live="polite">
-        <div class="inspector-top">
-          <span id="insp-badge" class="hour-badge">Hour 16</span>
-          <span id="insp-phase" class="phase-tag">Fat &amp; Ketone Shift</span>
-          <span id="insp-rel" class="insp-rel">Selected goal hour</span>
-        </div>
-        <h3 id="insp-title" class="insp-title">16:8 daily intermittent threshold</h3>
-        <p id="insp-benefit" class="insp-benefit">Classic 16:8 target. Low insulin and steady fat oxidation support metabolic flexibility and calm focus.</p>
-        <div class="marker-row">
-          <span id="insp-fuel" class="marker-pill">Fuel: Predominantly fat + ketones</span>
-          <span id="insp-insulin" class="marker-pill">Insulin: Very low</span>
-          <span id="insp-shift" class="marker-pill">Shift: Steady lipolysis</span>
-        </div>
-      </article>
-
-      <div class="filter-bar" role="group" aria-label="Filter hourly breakdown">
-        <button class="filter-chip" type="button" data-filter="all" aria-pressed="true">All (0–72h)</button>
-        <button class="filter-chip" type="button" data-filter="goal" aria-pressed="false">Up to goal</button>
-        <button class="filter-chip" type="button" data-filter="0-11" aria-pressed="false">0–11h</button>
-        <button class="filter-chip" type="button" data-filter="12-23" aria-pressed="false">12–23h</button>
-        <button class="filter-chip" type="button" data-filter="24-47" aria-pressed="false">24–47h</button>
-        <button class="filter-chip" type="button" data-filter="48-72" aria-pressed="false">48–72h</button>
-      </div>
-
-      <ol id="hourly-list" class="hourly-list">
-        <li class="hourly-item" data-hour="0" tabindex="0"><div class="hourly-item-hour"><span>0h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Meal digestion begins</h3><span class="hourly-item-phase">Digestion</span></div><p class="hourly-item-desc">Food enters the stomach and upper intestine. Blood glucose begins rising as carbohydrates start breaking down.</p><p class="hourly-item-tags">Fuel: Dietary carbs &amp; fat · Insulin: Rising · Nutrient uptake</p></div></li>
-        <li class="hourly-item" data-hour="1" tabindex="0"><div class="hourly-item-hour"><span>1h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Glucose absorption peaks</h3><span class="hourly-item-phase">Digestion</span></div><p class="hourly-item-desc">Pancreatic insulin rises to move absorbed glucose into muscle, liver, and fat cells while suppressing fat release.</p><p class="hourly-item-tags">Fuel: Dietary glucose · Insulin: Peaking · Energy storage</p></div></li>
-        <li class="hourly-item" data-hour="2" tabindex="0"><div class="hourly-item-hour"><span>2h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Glycogen storage and protein uptake</h3><span class="hourly-item-phase">Digestion</span></div><p class="hourly-item-desc">Muscle and liver top off glycogen reserves and absorb amino acids from your last meal.</p><p class="hourly-item-tags">Fuel: Dietary glucose · Insulin: High, tapering · Glycogen synthesis</p></div></li>
-        <li class="hourly-item" data-hour="3" tabindex="0"><div class="hourly-item-hour"><span>3h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Gastric emptying slows down</h3><span class="hourly-item-phase">Digestion</span></div><p class="hourly-item-desc">Most simple carbohydrates have cleared the stomach, and insulin begins stepping down from its post-meal peak.</p><p class="hourly-item-tags">Fuel: Late dietary nutrients · Insulin: Descending · Post-meal taper</p></div></li>
-        <li class="hourly-item" data-hour="4" tabindex="0"><div class="hourly-item-hour"><span>4h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Post-absorptive transition</h3><span class="hourly-item-phase">Glycogen Drawdown</span></div><p class="hourly-item-desc">Gut nutrient delivery fades and the liver starts releasing stored glycogen to keep blood sugar steady.</p><p class="hourly-item-tags">Fuel: Blood glucose + liver glycogen · Insulin: Falling · Glucagon rises</p></div></li>
-        <li class="hourly-item" data-hour="5" tabindex="0"><div class="hourly-item-hour"><span>5h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Insulin settles toward baseline</h3><span class="hourly-item-phase">Glycogen Drawdown</span></div><p class="hourly-item-desc">Lower insulin eases the brake on stored triglycerides, allowing early fat mobilization to warm up.</p><p class="hourly-item-tags">Fuel: Liver glycogen · Insulin: Trending low · Storage switch closes</p></div></li>
-        <li class="hourly-item" data-hour="6" tabindex="0"><div class="hourly-item-hour"><span>6h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Gut motility sweeps clean</h3><span class="hourly-item-phase">Glycogen Drawdown</span></div><p class="hourly-item-desc">Housekeeping waves sweep residual food and bacteria down the small intestine, giving the upper gut a quiet break.</p><p class="hourly-item-tags">Fuel: Liver glycogen · Insulin: Low · Migrating motor complex</p></div></li>
-        <li class="hourly-item" data-hour="7" tabindex="0"><div class="hourly-item-hour"><span>7h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Digestive workload drops</h3><span class="hourly-item-phase">Glycogen Drawdown</span></div><p class="hourly-item-desc">Less blood flow and metabolic effort go toward digestion, which often reduces post-meal sluggishness.</p><p class="hourly-item-tags">Fuel: Liver glycogen + fatty acids · Insulin: Low · Resting gut</p></div></li>
-        <li class="hourly-item" data-hour="8" tabindex="0"><div class="hourly-item-hour"><span>8h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Lipolysis begins contributing</h3><span class="hourly-item-phase">Glycogen Drawdown</span></div><p class="hourly-item-desc">Adipose tissue releases more free fatty acids into circulation so skeletal muscle can spare remaining glucose.</p><p class="hourly-item-tags">Fuel: Glycogen + free fatty acids · Insulin: Low · Fat release starts</p></div></li>
-        <li class="hourly-item" data-hour="9" tabindex="0"><div class="hourly-item-hour"><span>9h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Peripheral tissues shift to fat</h3><span class="hourly-item-phase">Glycogen Drawdown</span></div><p class="hourly-item-desc">Resting muscles lean more on fatty acids for fuel, preserving liver glycogen for the brain and red blood cells.</p><p class="hourly-item-tags">Fuel: Glycogen + fatty acids · Insulin: Low · Glucose sparing</p></div></li>
-        <li class="hourly-item" data-hour="10" tabindex="0"><div class="hourly-item-hour"><span>10h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Gluconeogenesis supports glucose</h3><span class="hourly-item-phase">Glycogen Drawdown</span></div><p class="hourly-item-desc">As liver glycogen thins out, the liver steps up gluconeogenesis to keep blood glucose stable without food.</p><p class="hourly-item-tags">Fuel: Glycogen + glycerol/amino acids · Insulin: Low baseline · Endogenous glucose</p></div></li>
-        <li class="hourly-item" data-hour="11" tabindex="0"><div class="hourly-item-hour"><span>11h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Fat mobilization accelerates</h3><span class="hourly-item-phase">Glycogen Drawdown</span></div><p class="hourly-item-desc">Insulin rests near fasting baseline while fatty acid oxidation climbs toward the metabolic switch point.</p><p class="hourly-item-tags">Fuel: Fatty acids + waning glycogen · Insulin: Low baseline · Pre-ketosis ramp</p></div></li>
-        <li class="hourly-item" data-hour="12" tabindex="0"><div class="hourly-item-hour"><span>12h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Metabolic switch threshold</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">For many adults, liver glycogen reaches low levels here and fat breakdown becomes the primary source of resting fuel.</p><p class="hourly-item-tags">Fuel: Free fatty acids + early ketones · Insulin: Fasting baseline · Glycogen low</p></div></li>
-        <li class="hourly-item" data-hour="13" tabindex="0"><div class="hourly-item-hour"><span>13h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Early ketone production starts</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">The liver converts surplus acetyl-CoA from fat oxidation into beta-hydroxybutyrate (BHB) for brain and heart fuel.</p><p class="hourly-item-tags">Fuel: Fatty acids + BHB · Insulin: Fasting baseline · Hepatic ketogenesis</p></div></li>
-        <li class="hourly-item" data-hour="14" tabindex="0"><div class="hourly-item-hour"><span>14h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Fat oxidation climbs, hunger pulses pass</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Fat burning deepens. Hunger waves triggered by habit often peak for 15 to 20 minutes and fade when hydrated.</p><p class="hourly-item-tags">Fuel: Fatty acids + rising ketones · Insulin: Very low · Ghrelin wave</p></div></li>
-        <li class="hourly-item" data-hour="15" tabindex="0"><div class="hourly-item-hour"><span>15h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Measurable ketone lift for most fasts</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Blood ketones rise above fed baseline, providing steady backup energy with fewer blood sugar swings.</p><p class="hourly-item-tags">Fuel: Fat + ketones · Insulin: Very low · Cleaner fuel mix</p></div></li>
-        <li class="hourly-item is-selected" data-hour="16" tabindex="0"><div class="hourly-item-hour"><span>16h</span><span class="hourly-item-state">Goal</span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">16:8 daily intermittent threshold</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Classic 16:8 target. Low insulin and steady fat oxidation support metabolic flexibility and calm focus.</p><p class="hourly-item-tags">Fuel: Predominantly fat + ketones · Insulin: Very low · Steady lipolysis</p></div></li>
-        <li class="hourly-item" data-hour="17" tabindex="0"><div class="hourly-item-hour"><span>17h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Mild norepinephrine preserves alertness</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Gentle sympathetic tone helps maintain resting energy expenditure and mental sharpness despite no food intake.</p><p class="hourly-item-tags">Fuel: Fat + ketones · Insulin: Very low · Alertness preserved</p></div></li>
-        <li class="hourly-item" data-hour="18" tabindex="0"><div class="hourly-item-hour"><span>18h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Cellular cleanup signals rise</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Low energy availability activates AMPK and quiets mTOR, priming early cellular recycling alongside deeper fat burn.</p><p class="hourly-item-tags">Fuel: Fat + ketones · Insulin: Very low · AMPK rises, mTOR drops</p></div></li>
-        <li class="hourly-item" data-hour="19" tabindex="0"><div class="hourly-item-hour"><span>19h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Growth hormone pulses preserve lean mass</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Higher growth hormone pulse amplitude supports fat mobilization while helping protect skeletal muscle protein.</p><p class="hourly-item-tags">Fuel: Fat + ketones · Insulin: Very low · HGH pulsatility</p></div></li>
-        <li class="hourly-item" data-hour="20" tabindex="0"><div class="hourly-item-hour"><span>20h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">20:4 milestone: deep fat reliance</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Liver glycogen is largely spent, so mobilized body fat and ketones cover almost all resting caloric demand.</p><p class="hourly-item-tags">Fuel: Fatty acids + ketones · Insulin: Very low · Liver glycogen minimal</p></div></li>
-        <li class="hourly-item" data-hour="21" tabindex="0"><div class="hourly-item-hour"><span>21h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Brain draws a larger share from ketones</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Higher BHB availability reduces the brain's glucose requirement, easing pressure on amino acid breakdown.</p><p class="hourly-item-tags">Fuel: Fatty acids + ketones · Insulin: Very low · Neural ketone use</p></div></li>
-        <li class="hourly-item" data-hour="22" tabindex="0"><div class="hourly-item-hour"><span>22h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Inflammatory signaling dips</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">With zero postprandial glucose spikes for nearly a day, circulating inflammatory cytokines tend to settle.</p><p class="hourly-item-tags">Fuel: Fatty acids + ketones · Insulin: Very low · Lower post-meal stress</p></div></li>
-        <li class="hourly-item" data-hour="23" tabindex="0"><div class="hourly-item-hour"><span>23h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Approaching the 24-hour mark</h3><span class="hourly-item-phase">Fat &amp; Ketone Shift</span></div><p class="hourly-item-desc">Ketogenesis and cellular housekeeping build momentum as the digestive tract enjoys nearly a full day of rest.</p><p class="hourly-item-tags">Fuel: Fatty acids + ketones · Insulin: Very low · Repair transition</p></div></li>
-        <li class="hourly-item" data-hour="24" tabindex="0"><div class="hourly-item-hour"><span>24h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">24-hour (OMAD) milestone</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Cellular recycling (autophagy) ramps up to break down worn organelles and misfolded proteins while ketones climb.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Autophagy active</p></div></li>
-        <li class="hourly-item" data-hour="25" tabindex="0"><div class="hourly-item-hour"><span>25h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Extended gut rest and mucosal turnover</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">A full day without digestive load reduces gut barrier friction and supports epithelial recovery.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Intestinal rest</p></div></li>
-        <li class="hourly-item" data-hour="26" tabindex="0"><div class="hourly-item-hour"><span>26h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">BHB acts as a signaling molecule</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Beyond fuel, beta-hydroxybutyrate signals antioxidant and stress-resistance gene pathways.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Oxidative defense</p></div></li>
-        <li class="hourly-item" data-hour="27" tabindex="0"><div class="hourly-item-hour"><span>27h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Elevated growth hormone supports lean tissue</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Sustained growth hormone release shifts substrate preference away from protein breakdown toward adipose stores.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Protein sparing</p></div></li>
-        <li class="hourly-item" data-hour="28" tabindex="0"><div class="hourly-item-hour"><span>28h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Intracellular lipid clearance deepens</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Liver and muscle cells clear stored ectopic fat droplets, supporting stronger insulin sensitivity when you next eat.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Insulin sensitivity</p></div></li>
-        <li class="hourly-item" data-hour="29" tabindex="0"><div class="hourly-item-hour"><span>29h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Day-one hunger often softens</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Steady ketones and flatter blood glucose frequently blunt acute hunger signals compared with hours 12 to 20.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Appetite steadies</p></div></li>
-        <li class="hourly-item" data-hour="30" tabindex="0"><div class="hourly-item-hour"><span>30h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Mitochondrial quality control</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Damaged mitochondria are tagged and recycled (mitophagy), favoring more efficient energy-producing networks.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Mitophagy active</p></div></li>
-        <li class="hourly-item" data-hour="31" tabindex="0"><div class="hourly-item-hour"><span>31h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Watch water and sodium balance</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Low insulin increases kidney sodium excretion; plain water plus electrolytes helps prevent fatigue or headaches.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Natriuresis check</p></div></li>
-        <li class="hourly-item" data-hour="32" tabindex="0"><div class="hourly-item-hour"><span>32h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Overwhelmingly fat-derived expenditure</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Lipolysis and ketogenesis supply the vast majority of resting energy needs while blood sugar stays tight.</p><p class="hourly-item-tags">Fuel: Fatty acids + ketones · Insulin: Minimal · Deep fat oxidation</p></div></li>
-        <li class="hourly-item" data-hour="33" tabindex="0"><div class="hourly-item-hour"><span>33h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">BDNF neuro-support pathways active</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Ketones and mild metabolic stress promote brain-derived neurotrophic factor (BDNF), tied to synaptic resilience.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · BDNF signaling</p></div></li>
-        <li class="hourly-item" data-hour="34" tabindex="0"><div class="hourly-item-hour"><span>34h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Overnight deep metabolic adaptation</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Maintaining sleep and hydration through day two keeps cortisol steadier and supports cellular maintenance.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Calm autonomic tone</p></div></li>
-        <li class="hourly-item" data-hour="35" tabindex="0"><div class="hourly-item-hour"><span>35h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Nutritional ketosis deepens</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Many adults cross higher ketone concentrations here (often around 1.0 mmol/L or above, varying by diet and activity).</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Higher BHB range</p></div></li>
-        <li class="hourly-item" data-hour="36" tabindex="0"><div class="hourly-item-hour"><span>36h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">36-hour milestone: sustained cellular renewal</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Continuous low insulin and strong AMPK signaling keep autophagy and fat oxidation running smoothly.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Full-day fast complete</p></div></li>
-        <li class="hourly-item" data-hour="37" tabindex="0"><div class="hourly-item-hour"><span>37h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Protein conservation tightens</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">As brain tissues adapt further to ketone bodies, daily protein catabolism drops below day-one rates.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Nitrogen sparing</p></div></li>
-        <li class="hourly-item" data-hour="38" tabindex="0"><div class="hourly-item-hour"><span>38h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Adipose release stays steady</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Blood glucose remains remarkably flat without post-meal swings while fat stores fuel daily activity.</p><p class="hourly-item-tags">Fuel: Fatty acids + ketones · Insulin: Minimal · Flat glycemic curve</p></div></li>
-        <li class="hourly-item" data-hour="39" tabindex="0"><div class="hourly-item-hour"><span>39h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Antioxidant defenses stay upregulated</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Stress-response proteins help protect cells against reactive oxygen species during fat-heavy metabolism.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Cellular resilience</p></div></li>
-        <li class="hourly-item" data-hour="40" tabindex="0"><div class="hourly-item-hour"><span>40h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Hepatic fat burden eases</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Extended fasting gives the liver space to clear stored triglycerides and restore tighter metabolic signaling.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Liver clearance</p></div></li>
-        <li class="hourly-item" data-hour="41" tabindex="0"><div class="hourly-item-hour"><span>41h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Tissue-wide cleanup continues</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Autophagy across liver, muscle, and neural tissues continues clearing aging protein aggregates.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Lysosomal turnover</p></div></li>
-        <li class="hourly-item" data-hour="42" tabindex="0"><div class="hourly-item-hour"><span>42h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Mental clarity when electrolytes hold</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Many report calm mental steadiness at this stage, provided sodium, potassium, and fluids are kept balanced.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Ketone-fueled focus</p></div></li>
-        <li class="hourly-item" data-hour="43" tabindex="0"><div class="hourly-item-hour"><span>43h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Glycerol sustains essential glucose</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Fat breakdown supplies glycerol backbones to cover essential glucose without leaning heavily on muscle tissue.</p><p class="hourly-item-tags">Fuel: Ketones + fat + glycerol · Insulin: Minimal · Minimal muscle draw</p></div></li>
-        <li class="hourly-item" data-hour="44" tabindex="0"><div class="hourly-item-hour"><span>44h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Digestive enzyme demand stays quiet</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Digestive secretions remain minimal, letting the gut lining stay calm prior to eventual refeeding.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Deep GI rest</p></div></li>
-        <li class="hourly-item" data-hour="45" tabindex="0"><div class="hourly-item-hour"><span>45h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Growth hormone pulses stay elevated</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Counter-regulatory hormones help preserve lean structure as you approach two full days.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Tissue defense</p></div></li>
-        <li class="hourly-item" data-hour="46" tabindex="0"><div class="hourly-item-hour"><span>46h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Leukocyte energy conservation shifts</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Lower IGF-1 and PKA signaling begin nudging white blood cell turnover toward conservation and renewal.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Immune signaling</p></div></li>
-        <li class="hourly-item" data-hour="47" tabindex="0"><div class="hourly-item-hour"><span>47h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Approaching the 48-hour threshold</h3><span class="hourly-item-phase">Autophagy &amp; Repair</span></div><p class="hourly-item-desc">Check hydration, sodium, and how you feel physically before continuing into a third fasting day.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Electrolyte check</p></div></li>
-        <li class="hourly-item" data-hour="48" tabindex="0"><div class="hourly-item-hour"><span>48h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">48-hour milestone: low IGF-1 and deep repair</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Two days in, baseline insulin and IGF-1 drop substantially, keeping cellular maintenance prioritized over growth.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · IGF-1 reduced</p></div></li>
-        <li class="hourly-item" data-hour="49" tabindex="0"><div class="hourly-item-hour"><span>49h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Repair mode holds over anabolic growth</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Low IGF-1 signaling reduces proliferative pressure and favors cellular stress-resistance programs.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Low mTOR/IGF-1</p></div></li>
-        <li class="hourly-item" data-hour="50" tabindex="0"><div class="hourly-item-hour"><span>50h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Brain ketone share rises further</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Neural tissues cover a large majority of energy demand with ketones, conserving remaining protein reserves.</p><p class="hourly-item-tags">Fuel: High ketones + fatty acids · Insulin: Minimal · Deep keto-adaptation</p></div></li>
-        <li class="hourly-item" data-hour="51" tabindex="0"><div class="hourly-item-hour"><span>51h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Inflammatory tone remains quiet</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Absence of dietary inflammatory triggers and steady BHB signaling help keep baseline inflammation low.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Low oxidative load</p></div></li>
-        <li class="hourly-item" data-hour="52" tabindex="0"><div class="hourly-item-hour"><span>52h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Keep exertion gentle</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Light walking and mobility feel good here, while high-intensity training is better saved until after refeeding.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Gentle movement</p></div></li>
-        <li class="hourly-item" data-hour="53" tabindex="0"><div class="hourly-item-hour"><span>53h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Prolonged immune signaling adjustments</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Extended nutrient scarcity continues signaling older immune cells to clear out in readiness for renewal.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · White cell turnover</p></div></li>
-        <li class="hourly-item" data-hour="54" tabindex="0"><div class="hourly-item-hour"><span>54h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Listen closely to physical cues</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">At 54 hours, persistent dizziness, palpitations, or weakness are clear signals to stop and refeed slowly.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Safety check-in</p></div></li>
-        <li class="hourly-item" data-hour="55" tabindex="0"><div class="hourly-item-hour"><span>55h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Steady hepatic ketogenesis</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">The liver cleanly converts mobilized adipose fatty acids into circulating ketones at a stable multi-day pace.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Liver fat export</p></div></li>
-        <li class="hourly-item" data-hour="56" tabindex="0"><div class="hourly-item-hour"><span>56h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Ketones settle toward multi-day plateau</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">In clinical fasting studies, blood ketones often climb toward 2 to 4 mmol/L around day two to three.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Ketone plateau</p></div></li>
-        <li class="hourly-item" data-hour="57" tabindex="0"><div class="hourly-item-hour"><span>57h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Sustained intracellular recycling</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Lysosomal turnover continues clearing damaged cellular debris while nutrient-sensing pathways stay quiet.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Deep autophagy</p></div></li>
-        <li class="hourly-item" data-hour="58" tabindex="0"><div class="hourly-item-hour"><span>58h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Intestinal stem cell readiness</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Animal and organoid fasting research points to heightened intestinal stem cell readiness for post-fast renewal.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Gut priming</p></div></li>
-        <li class="hourly-item" data-hour="59" tabindex="0"><div class="hourly-item-hour"><span>59h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Stand up slowly and stay hydrated</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Lower blood volume from water and sodium loss makes slow posture changes and electrolytes important.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Blood pressure care</p></div></li>
-        <li class="hourly-item" data-hour="60" tabindex="0"><div class="hourly-item-hour"><span>60h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">60-hour mark: fat-adapted fasting state</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Two and a half days without calories leaves exogenous glucose long gone and lipid metabolism fully dominant.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Full lipid reliance</p></div></li>
-        <li class="hourly-item" data-hour="61" tabindex="0"><div class="hourly-item-hour"><span>61h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Cellular defense programs remain active</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Continued low insulin and IGF-1 keep maintenance and antioxidant genes active without dietary interruption.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Stress-resistance</p></div></li>
-        <li class="hourly-item" data-hour="62" tabindex="0"><div class="hourly-item-hour"><span>62h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">High protein conservation efficiency</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Endogenous glucose demand stays low enough that lean tissue breakdown remains tightly conserved.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Muscle sparing</p></div></li>
-        <li class="hourly-item" data-hour="63" tabindex="0"><div class="hourly-item-hour"><span>63h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Steady neural ketone oxidation</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Efficient brain uptake of acetoacetate and BHB supports alertness late into day three.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Cognitive steadiness</p></div></li>
-        <li class="hourly-item" data-hour="64" tabindex="0"><div class="hourly-item-hour"><span>64h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Prolonged oxidative and inflammatory calm</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Systemic inflammatory markers often bottom out relative to baseline when hydration and sleep remain solid.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Systemic quiet</p></div></li>
-        <li class="hourly-item" data-hour="65" tabindex="0"><div class="hourly-item-hour"><span>65h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Plan a gentle refeeding meal</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Prepare light broth, cooked vegetables, or small protein portions rather than a large sugar- or fat-heavy meal.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Refeed planning</p></div></li>
-        <li class="hourly-item" data-hour="66" tabindex="0"><div class="hourly-item-hour"><span>66h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Digestive enzymes sit downregulated</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Because stomach acid and digestive enzymes have scaled down, breaking the fast slowly prevents cramping.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Protect gut comfort</p></div></li>
-        <li class="hourly-item" data-hour="67" tabindex="0"><div class="hourly-item-hour"><span>67h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Final stretch of a 3-day fast</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Mild chilliness is common as energy conserves; dress warmly and avoid strenuous output.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Warmth &amp; rest</p></div></li>
-        <li class="hourly-item" data-hour="68" tabindex="0"><div class="hourly-item-hour"><span>68h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Deep lipid mobilization continues</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Fatty acid release and ketone synthesis stay steady while insulin sits near its physiological floor.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Sustained ketosis</p></div></li>
-        <li class="hourly-item" data-hour="69" tabindex="0"><div class="hourly-item-hour"><span>69h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Immune renewal signaling deepens</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Prolonged low PKA and IGF-1 signaling primes hematopoietic stem cell renewal upon careful refeeding.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Hematopoietic cue</p></div></li>
-        <li class="hourly-item" data-hour="70" tabindex="0"><div class="hourly-item-hour"><span>70h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Two hours from the 72-hour mark</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Have broth or a gentle first bite ready so ending the fast stays unhurried and controlled.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Transition readiness</p></div></li>
-        <li class="hourly-item" data-hour="71" tabindex="0"><div class="hourly-item-hour"><span>71h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">Final hour toward 72 hours</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Cellular recycling, ketone fuel use, and immune reset signaling sit at multi-day depth.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Peak multi-day state</p></div></li>
-        <li class="hourly-item" data-hour="72" tabindex="0"><div class="hourly-item-hour"><span>72h</span><span class="hourly-item-state"></span></div><div><div class="hourly-item-top"><h3 class="hourly-item-title">72-hour milestone: prolonged fast complete</h3><span class="hourly-item-phase">Extended Fast</span></div><p class="hourly-item-desc">Deep ketosis, sustained autophagy, and immune renewal signaling. Refeed slowly and consult a doctor before going past 72 hours.</p><p class="hourly-item-tags">Fuel: Ketones + fatty acids · Insulin: Minimal · Stem cell &amp; autophagy cue</p></div></li>
-      </ol>
-
-      <p class="fasting-footnote">Timing is approximate and varies with prior meals, liver glycogen stores, sleep, and activity. Drink water throughout, replace electrolytes on fasts over 24 hours, and check with a clinician before multi-day fasts.</p>
-    </section>
-
-    <section class="fast-meta" aria-label="Fasting summary">
-      <p id="stats-summary" class="today-summary">0 completed fasts</p>
-    </section>
-
-    <details id="history-drawer" class="history-drawer">
-      <summary>
-        <span>Fasting log</span>
-        <span id="history-count" class="history-count">0</span>
-      </summary>
-      <div class="history-body">
-        <p id="history-empty" class="history-empty">Completed fasts appear here. Stored locally in your browser.</p>
-        <ul id="history-list" class="history-list" hidden></ul>
-        <div class="history-actions">
-          <button id="clear-history-btn" class="btn-text" type="button" hidden>Clear fasting log</button>
-        </div>
-      </div>
-    </details>
+    <p id="live" class="sr-only" aria-live="polite"></p>
   </main>
 
-  <footer class="site-footer">
-    <span>Memo Garcia</span>
-    <div>
-      <a href="/tools/">All tools</a>
-      <a href="/tools/meditation/">Meditation</a>
-      <a href="/tools/breathing/">Breathing</a>
-      <a href="/">Blog</a>
+  <section id="notes" class="notes" aria-label="What changes hour by hour">
+    <div class="notes-inner">
+      <h2>Hour by hour, 0 to 72</h2>
+      <p>The glass holds the whole fast. It is full when you start and empty at your goal, so the waterline sits at the hour you are in. The etched lines are where the body changes fuel: digestion, glycogen, ketosis, autophagy and the deep end of an extended fast. Presets cover 12:12, 14:10, 16:8, 18:6, 20:4, OMAD (24h), 36h, 48h and 72h, or any goal up to a week.</p>
+      <p class="keys">
+        <span><kbd>Space</kbd> pour</span>
+        <span><kbd>↑</kbd> <kbd>↓</kbd> read another hour</span>
+        <span><kbd>T</kbd> elapsed or remaining</span>
+        <span><kbd>M</kbd> sound</span>
+      </p>
+      <h3 class="phase-head" id="phase-digestion"><span>0 to 3 hours</span> Digestion</h3>
+      <ol class="hours">
+        <li id="h-0" class="hour-item" data-hour="0"><span class="hour-n">0h</span><div><h4>Meal digestion begins</h4><p>Food enters the stomach and upper intestine. Blood glucose begins rising as carbohydrates start breaking down.</p><p class="hour-m">Fuel: Dietary carbs &amp; fat · Insulin: Rising · Nutrient uptake</p></div></li>
+        <li id="h-1" class="hour-item" data-hour="1"><span class="hour-n">1h</span><div><h4>Glucose absorption peaks</h4><p>Pancreatic insulin rises to move absorbed glucose into muscle, liver, and fat cells while suppressing fat release.</p><p class="hour-m">Fuel: Dietary glucose · Insulin: Peaking · Energy storage</p></div></li>
+        <li id="h-2" class="hour-item" data-hour="2"><span class="hour-n">2h</span><div><h4>Glycogen storage and protein uptake</h4><p>Muscle and liver top off glycogen reserves and absorb amino acids from your last meal.</p><p class="hour-m">Fuel: Dietary glucose · Insulin: High, tapering · Glycogen synthesis</p></div></li>
+        <li id="h-3" class="hour-item" data-hour="3"><span class="hour-n">3h</span><div><h4>Gastric emptying slows down</h4><p>Most simple carbohydrates have cleared the stomach, and insulin begins stepping down from its post-meal peak.</p><p class="hour-m">Fuel: Late dietary nutrients · Insulin: Descending · Post-meal taper</p></div></li>
+      </ol>
+      <h3 class="phase-head" id="phase-glycogen"><span>4 to 11 hours</span> Glycogen drawdown</h3>
+      <ol class="hours">
+        <li id="h-4" class="hour-item" data-hour="4"><span class="hour-n">4h</span><div><h4>Post-absorptive transition</h4><p>Gut nutrient delivery fades and the liver starts releasing stored glycogen to keep blood sugar steady.</p><p class="hour-m">Fuel: Blood glucose + liver glycogen · Insulin: Falling · Glucagon rises</p></div></li>
+        <li id="h-5" class="hour-item" data-hour="5"><span class="hour-n">5h</span><div><h4>Insulin settles toward baseline</h4><p>Lower insulin eases the brake on stored triglycerides, allowing early fat mobilization to warm up.</p><p class="hour-m">Fuel: Liver glycogen · Insulin: Trending low · Storage switch closes</p></div></li>
+        <li id="h-6" class="hour-item" data-hour="6"><span class="hour-n">6h</span><div><h4>Gut motility sweeps clean</h4><p>Housekeeping waves sweep residual food and bacteria down the small intestine, giving the upper gut a quiet break.</p><p class="hour-m">Fuel: Liver glycogen · Insulin: Low · Migrating motor complex</p></div></li>
+        <li id="h-7" class="hour-item" data-hour="7"><span class="hour-n">7h</span><div><h4>Digestive workload drops</h4><p>Less blood flow and metabolic effort go toward digestion, which often reduces post-meal sluggishness.</p><p class="hour-m">Fuel: Liver glycogen + fatty acids · Insulin: Low · Resting gut</p></div></li>
+        <li id="h-8" class="hour-item" data-hour="8"><span class="hour-n">8h</span><div><h4>Lipolysis begins contributing</h4><p>Adipose tissue releases more free fatty acids into circulation so skeletal muscle can spare remaining glucose.</p><p class="hour-m">Fuel: Glycogen + free fatty acids · Insulin: Low · Fat release starts</p></div></li>
+        <li id="h-9" class="hour-item" data-hour="9"><span class="hour-n">9h</span><div><h4>Peripheral tissues shift to fat</h4><p>Resting muscles lean more on fatty acids for fuel, preserving liver glycogen for the brain and red blood cells.</p><p class="hour-m">Fuel: Glycogen + fatty acids · Insulin: Low · Glucose sparing</p></div></li>
+        <li id="h-10" class="hour-item" data-hour="10"><span class="hour-n">10h</span><div><h4>Gluconeogenesis supports glucose</h4><p>As liver glycogen thins out, the liver steps up gluconeogenesis to keep blood glucose stable without food.</p><p class="hour-m">Fuel: Glycogen + glycerol/amino acids · Insulin: Low baseline · Endogenous glucose</p></div></li>
+        <li id="h-11" class="hour-item" data-hour="11"><span class="hour-n">11h</span><div><h4>Fat mobilization accelerates</h4><p>Insulin rests near fasting baseline while fatty acid oxidation climbs toward the metabolic switch point.</p><p class="hour-m">Fuel: Fatty acids + waning glycogen · Insulin: Low baseline · Pre-ketosis ramp</p></div></li>
+      </ol>
+      <h3 class="phase-head" id="phase-ketosis"><span>12 to 23 hours</span> Fat and ketone shift</h3>
+      <ol class="hours">
+        <li id="h-12" class="hour-item" data-hour="12"><span class="hour-n">12h</span><div><h4>Metabolic switch threshold</h4><p>For many adults, liver glycogen reaches low levels here and fat breakdown becomes the primary source of resting fuel.</p><p class="hour-m">Fuel: Free fatty acids + early ketones · Insulin: Fasting baseline · Glycogen low</p></div></li>
+        <li id="h-13" class="hour-item" data-hour="13"><span class="hour-n">13h</span><div><h4>Early ketone production starts</h4><p>The liver converts surplus acetyl-CoA from fat oxidation into beta-hydroxybutyrate (BHB) for brain and heart fuel.</p><p class="hour-m">Fuel: Fatty acids + BHB · Insulin: Fasting baseline · Hepatic ketogenesis</p></div></li>
+        <li id="h-14" class="hour-item" data-hour="14"><span class="hour-n">14h</span><div><h4>Fat oxidation climbs, hunger pulses pass</h4><p>Fat burning deepens. Hunger waves triggered by habit often peak for 15 to 20 minutes and fade when hydrated.</p><p class="hour-m">Fuel: Fatty acids + rising ketones · Insulin: Very low · Ghrelin wave</p></div></li>
+        <li id="h-15" class="hour-item" data-hour="15"><span class="hour-n">15h</span><div><h4>Measurable ketone lift for most fasts</h4><p>Blood ketones rise above fed baseline, providing steady backup energy with fewer blood sugar swings.</p><p class="hour-m">Fuel: Fat + ketones · Insulin: Very low · Cleaner fuel mix</p></div></li>
+        <li id="h-16" class="hour-item" data-hour="16"><span class="hour-n">16h</span><div><h4>16:8 daily intermittent threshold</h4><p>Classic 16:8 target. Low insulin and steady fat oxidation support metabolic flexibility and calm focus.</p><p class="hour-m">Fuel: Predominantly fat + ketones · Insulin: Very low · Steady lipolysis</p></div></li>
+        <li id="h-17" class="hour-item" data-hour="17"><span class="hour-n">17h</span><div><h4>Mild norepinephrine preserves alertness</h4><p>Gentle sympathetic tone helps maintain resting energy expenditure and mental sharpness despite no food intake.</p><p class="hour-m">Fuel: Fat + ketones · Insulin: Very low · Alertness preserved</p></div></li>
+        <li id="h-18" class="hour-item" data-hour="18"><span class="hour-n">18h</span><div><h4>Cellular cleanup signals rise</h4><p>Low energy availability activates AMPK and quiets mTOR, priming early cellular recycling alongside deeper fat burn.</p><p class="hour-m">Fuel: Fat + ketones · Insulin: Very low · AMPK rises, mTOR drops</p></div></li>
+        <li id="h-19" class="hour-item" data-hour="19"><span class="hour-n">19h</span><div><h4>Growth hormone pulses preserve lean mass</h4><p>Higher growth hormone pulse amplitude supports fat mobilization while helping protect skeletal muscle protein.</p><p class="hour-m">Fuel: Fat + ketones · Insulin: Very low · HGH pulsatility</p></div></li>
+        <li id="h-20" class="hour-item" data-hour="20"><span class="hour-n">20h</span><div><h4>20:4 milestone: deep fat reliance</h4><p>Liver glycogen is largely spent, so mobilized body fat and ketones cover almost all resting caloric demand.</p><p class="hour-m">Fuel: Fatty acids + ketones · Insulin: Very low · Liver glycogen minimal</p></div></li>
+        <li id="h-21" class="hour-item" data-hour="21"><span class="hour-n">21h</span><div><h4>Brain draws a larger share from ketones</h4><p>Higher BHB availability reduces the brain's glucose requirement, easing pressure on amino acid breakdown.</p><p class="hour-m">Fuel: Fatty acids + ketones · Insulin: Very low · Neural ketone use</p></div></li>
+        <li id="h-22" class="hour-item" data-hour="22"><span class="hour-n">22h</span><div><h4>Inflammatory signaling dips</h4><p>With zero postprandial glucose spikes for nearly a day, circulating inflammatory cytokines tend to settle.</p><p class="hour-m">Fuel: Fatty acids + ketones · Insulin: Very low · Lower post-meal stress</p></div></li>
+        <li id="h-23" class="hour-item" data-hour="23"><span class="hour-n">23h</span><div><h4>Approaching the 24-hour mark</h4><p>Ketogenesis and cellular housekeeping build momentum as the digestive tract enjoys nearly a full day of rest.</p><p class="hour-m">Fuel: Fatty acids + ketones · Insulin: Very low · Repair transition</p></div></li>
+      </ol>
+      <h3 class="phase-head" id="phase-autophagy"><span>24 to 47 hours</span> Autophagy and repair</h3>
+      <ol class="hours">
+        <li id="h-24" class="hour-item" data-hour="24"><span class="hour-n">24h</span><div><h4>24-hour (OMAD) milestone</h4><p>Cellular recycling (autophagy) ramps up to break down worn organelles and misfolded proteins while ketones climb.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Autophagy active</p></div></li>
+        <li id="h-25" class="hour-item" data-hour="25"><span class="hour-n">25h</span><div><h4>Extended gut rest and mucosal turnover</h4><p>A full day without digestive load reduces gut barrier friction and supports epithelial recovery.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Intestinal rest</p></div></li>
+        <li id="h-26" class="hour-item" data-hour="26"><span class="hour-n">26h</span><div><h4>BHB acts as a signaling molecule</h4><p>Beyond fuel, beta-hydroxybutyrate signals antioxidant and stress-resistance gene pathways.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Oxidative defense</p></div></li>
+        <li id="h-27" class="hour-item" data-hour="27"><span class="hour-n">27h</span><div><h4>Elevated growth hormone supports lean tissue</h4><p>Sustained growth hormone release shifts substrate preference away from protein breakdown toward adipose stores.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Protein sparing</p></div></li>
+        <li id="h-28" class="hour-item" data-hour="28"><span class="hour-n">28h</span><div><h4>Intracellular lipid clearance deepens</h4><p>Liver and muscle cells clear stored ectopic fat droplets, supporting stronger insulin sensitivity when you next eat.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Insulin sensitivity</p></div></li>
+        <li id="h-29" class="hour-item" data-hour="29"><span class="hour-n">29h</span><div><h4>Day-one hunger often softens</h4><p>Steady ketones and flatter blood glucose frequently blunt acute hunger signals compared with hours 12 to 20.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Appetite steadies</p></div></li>
+        <li id="h-30" class="hour-item" data-hour="30"><span class="hour-n">30h</span><div><h4>Mitochondrial quality control</h4><p>Damaged mitochondria are tagged and recycled (mitophagy), favoring more efficient energy-producing networks.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Mitophagy active</p></div></li>
+        <li id="h-31" class="hour-item" data-hour="31"><span class="hour-n">31h</span><div><h4>Watch water and sodium balance</h4><p>Low insulin increases kidney sodium excretion; plain water plus electrolytes helps prevent fatigue or headaches.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Natriuresis check</p></div></li>
+        <li id="h-32" class="hour-item" data-hour="32"><span class="hour-n">32h</span><div><h4>Overwhelmingly fat-derived expenditure</h4><p>Lipolysis and ketogenesis supply the vast majority of resting energy needs while blood sugar stays tight.</p><p class="hour-m">Fuel: Fatty acids + ketones · Insulin: Minimal · Deep fat oxidation</p></div></li>
+        <li id="h-33" class="hour-item" data-hour="33"><span class="hour-n">33h</span><div><h4>BDNF neuro-support pathways active</h4><p>Ketones and mild metabolic stress promote brain-derived neurotrophic factor (BDNF), tied to synaptic resilience.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · BDNF signaling</p></div></li>
+        <li id="h-34" class="hour-item" data-hour="34"><span class="hour-n">34h</span><div><h4>Overnight deep metabolic adaptation</h4><p>Maintaining sleep and hydration through day two keeps cortisol steadier and supports cellular maintenance.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Calm autonomic tone</p></div></li>
+        <li id="h-35" class="hour-item" data-hour="35"><span class="hour-n">35h</span><div><h4>Nutritional ketosis deepens</h4><p>Many adults cross higher ketone concentrations here (often around 1.0 mmol/L or above, varying by diet and activity).</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Higher BHB range</p></div></li>
+        <li id="h-36" class="hour-item" data-hour="36"><span class="hour-n">36h</span><div><h4>36-hour milestone: sustained cellular renewal</h4><p>Continuous low insulin and strong AMPK signaling keep autophagy and fat oxidation running smoothly.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Full-day fast complete</p></div></li>
+        <li id="h-37" class="hour-item" data-hour="37"><span class="hour-n">37h</span><div><h4>Protein conservation tightens</h4><p>As brain tissues adapt further to ketone bodies, daily protein catabolism drops below day-one rates.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Nitrogen sparing</p></div></li>
+        <li id="h-38" class="hour-item" data-hour="38"><span class="hour-n">38h</span><div><h4>Adipose release stays steady</h4><p>Blood glucose remains remarkably flat without post-meal swings while fat stores fuel daily activity.</p><p class="hour-m">Fuel: Fatty acids + ketones · Insulin: Minimal · Flat glycemic curve</p></div></li>
+        <li id="h-39" class="hour-item" data-hour="39"><span class="hour-n">39h</span><div><h4>Antioxidant defenses stay upregulated</h4><p>Stress-response proteins help protect cells against reactive oxygen species during fat-heavy metabolism.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Cellular resilience</p></div></li>
+        <li id="h-40" class="hour-item" data-hour="40"><span class="hour-n">40h</span><div><h4>Hepatic fat burden eases</h4><p>Extended fasting gives the liver space to clear stored triglycerides and restore tighter metabolic signaling.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Liver clearance</p></div></li>
+        <li id="h-41" class="hour-item" data-hour="41"><span class="hour-n">41h</span><div><h4>Tissue-wide cleanup continues</h4><p>Autophagy across liver, muscle, and neural tissues continues clearing aging protein aggregates.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Lysosomal turnover</p></div></li>
+        <li id="h-42" class="hour-item" data-hour="42"><span class="hour-n">42h</span><div><h4>Mental clarity when electrolytes hold</h4><p>Many report calm mental steadiness at this stage, provided sodium, potassium, and fluids are kept balanced.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Ketone-fueled focus</p></div></li>
+        <li id="h-43" class="hour-item" data-hour="43"><span class="hour-n">43h</span><div><h4>Glycerol sustains essential glucose</h4><p>Fat breakdown supplies glycerol backbones to cover essential glucose without leaning heavily on muscle tissue.</p><p class="hour-m">Fuel: Ketones + fat + glycerol · Insulin: Minimal · Minimal muscle draw</p></div></li>
+        <li id="h-44" class="hour-item" data-hour="44"><span class="hour-n">44h</span><div><h4>Digestive enzyme demand stays quiet</h4><p>Digestive secretions remain minimal, letting the gut lining stay calm prior to eventual refeeding.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Deep GI rest</p></div></li>
+        <li id="h-45" class="hour-item" data-hour="45"><span class="hour-n">45h</span><div><h4>Growth hormone pulses stay elevated</h4><p>Counter-regulatory hormones help preserve lean structure as you approach two full days.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Tissue defense</p></div></li>
+        <li id="h-46" class="hour-item" data-hour="46"><span class="hour-n">46h</span><div><h4>Leukocyte energy conservation shifts</h4><p>Lower IGF-1 and PKA signaling begin nudging white blood cell turnover toward conservation and renewal.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Immune signaling</p></div></li>
+        <li id="h-47" class="hour-item" data-hour="47"><span class="hour-n">47h</span><div><h4>Approaching the 48-hour threshold</h4><p>Check hydration, sodium, and how you feel physically before continuing into a third fasting day.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Electrolyte check</p></div></li>
+      </ol>
+      <h3 class="phase-head" id="phase-extended"><span>48 to 72 hours</span> Extended fast</h3>
+      <ol class="hours">
+        <li id="h-48" class="hour-item" data-hour="48"><span class="hour-n">48h</span><div><h4>48-hour milestone: low IGF-1 and deep repair</h4><p>Two days in, baseline insulin and IGF-1 drop substantially, keeping cellular maintenance prioritized over growth.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · IGF-1 reduced</p></div></li>
+        <li id="h-49" class="hour-item" data-hour="49"><span class="hour-n">49h</span><div><h4>Repair mode holds over anabolic growth</h4><p>Low IGF-1 signaling reduces proliferative pressure and favors cellular stress-resistance programs.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Low mTOR/IGF-1</p></div></li>
+        <li id="h-50" class="hour-item" data-hour="50"><span class="hour-n">50h</span><div><h4>Brain ketone share rises further</h4><p>Neural tissues cover a large majority of energy demand with ketones, conserving remaining protein reserves.</p><p class="hour-m">Fuel: High ketones + fatty acids · Insulin: Minimal · Deep keto-adaptation</p></div></li>
+        <li id="h-51" class="hour-item" data-hour="51"><span class="hour-n">51h</span><div><h4>Inflammatory tone remains quiet</h4><p>Absence of dietary inflammatory triggers and steady BHB signaling help keep baseline inflammation low.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Low oxidative load</p></div></li>
+        <li id="h-52" class="hour-item" data-hour="52"><span class="hour-n">52h</span><div><h4>Keep exertion gentle</h4><p>Light walking and mobility feel good here, while high-intensity training is better saved until after refeeding.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Gentle movement</p></div></li>
+        <li id="h-53" class="hour-item" data-hour="53"><span class="hour-n">53h</span><div><h4>Prolonged immune signaling adjustments</h4><p>Extended nutrient scarcity continues signaling older immune cells to clear out in readiness for renewal.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · White cell turnover</p></div></li>
+        <li id="h-54" class="hour-item" data-hour="54"><span class="hour-n">54h</span><div><h4>Listen closely to physical cues</h4><p>At 54 hours, persistent dizziness, palpitations, or weakness are clear signals to stop and refeed slowly.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Safety check-in</p></div></li>
+        <li id="h-55" class="hour-item" data-hour="55"><span class="hour-n">55h</span><div><h4>Steady hepatic ketogenesis</h4><p>The liver cleanly converts mobilized adipose fatty acids into circulating ketones at a stable multi-day pace.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Liver fat export</p></div></li>
+        <li id="h-56" class="hour-item" data-hour="56"><span class="hour-n">56h</span><div><h4>Ketones settle toward multi-day plateau</h4><p>In clinical fasting studies, blood ketones often climb toward 2 to 4 mmol/L around day two to three.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Ketone plateau</p></div></li>
+        <li id="h-57" class="hour-item" data-hour="57"><span class="hour-n">57h</span><div><h4>Sustained intracellular recycling</h4><p>Lysosomal turnover continues clearing damaged cellular debris while nutrient-sensing pathways stay quiet.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Deep autophagy</p></div></li>
+        <li id="h-58" class="hour-item" data-hour="58"><span class="hour-n">58h</span><div><h4>Intestinal stem cell readiness</h4><p>Animal and organoid fasting research points to heightened intestinal stem cell readiness for post-fast renewal.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Gut priming</p></div></li>
+        <li id="h-59" class="hour-item" data-hour="59"><span class="hour-n">59h</span><div><h4>Stand up slowly and stay hydrated</h4><p>Lower blood volume from water and sodium loss makes slow posture changes and electrolytes important.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Blood pressure care</p></div></li>
+        <li id="h-60" class="hour-item" data-hour="60"><span class="hour-n">60h</span><div><h4>60-hour mark: fat-adapted fasting state</h4><p>Two and a half days without calories leaves exogenous glucose long gone and lipid metabolism fully dominant.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Full lipid reliance</p></div></li>
+        <li id="h-61" class="hour-item" data-hour="61"><span class="hour-n">61h</span><div><h4>Cellular defense programs remain active</h4><p>Continued low insulin and IGF-1 keep maintenance and antioxidant genes active without dietary interruption.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Stress-resistance</p></div></li>
+        <li id="h-62" class="hour-item" data-hour="62"><span class="hour-n">62h</span><div><h4>High protein conservation efficiency</h4><p>Endogenous glucose demand stays low enough that lean tissue breakdown remains tightly conserved.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Muscle sparing</p></div></li>
+        <li id="h-63" class="hour-item" data-hour="63"><span class="hour-n">63h</span><div><h4>Steady neural ketone oxidation</h4><p>Efficient brain uptake of acetoacetate and BHB supports alertness late into day three.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Cognitive steadiness</p></div></li>
+        <li id="h-64" class="hour-item" data-hour="64"><span class="hour-n">64h</span><div><h4>Prolonged oxidative and inflammatory calm</h4><p>Systemic inflammatory markers often bottom out relative to baseline when hydration and sleep remain solid.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Systemic quiet</p></div></li>
+        <li id="h-65" class="hour-item" data-hour="65"><span class="hour-n">65h</span><div><h4>Plan a gentle refeeding meal</h4><p>Prepare light broth, cooked vegetables, or small protein portions rather than a large sugar- or fat-heavy meal.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Refeed planning</p></div></li>
+        <li id="h-66" class="hour-item" data-hour="66"><span class="hour-n">66h</span><div><h4>Digestive enzymes sit downregulated</h4><p>Because stomach acid and digestive enzymes have scaled down, breaking the fast slowly prevents cramping.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Protect gut comfort</p></div></li>
+        <li id="h-67" class="hour-item" data-hour="67"><span class="hour-n">67h</span><div><h4>Final stretch of a 3-day fast</h4><p>Mild chilliness is common as energy conserves; dress warmly and avoid strenuous output.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Warmth &amp; rest</p></div></li>
+        <li id="h-68" class="hour-item" data-hour="68"><span class="hour-n">68h</span><div><h4>Deep lipid mobilization continues</h4><p>Fatty acid release and ketone synthesis stay steady while insulin sits near its physiological floor.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Sustained ketosis</p></div></li>
+        <li id="h-69" class="hour-item" data-hour="69"><span class="hour-n">69h</span><div><h4>Immune renewal signaling deepens</h4><p>Prolonged low PKA and IGF-1 signaling primes hematopoietic stem cell renewal upon careful refeeding.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Hematopoietic cue</p></div></li>
+        <li id="h-70" class="hour-item" data-hour="70"><span class="hour-n">70h</span><div><h4>Two hours from the 72-hour mark</h4><p>Have broth or a gentle first bite ready so ending the fast stays unhurried and controlled.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Transition readiness</p></div></li>
+        <li id="h-71" class="hour-item" data-hour="71"><span class="hour-n">71h</span><div><h4>Final hour toward 72 hours</h4><p>Cellular recycling, ketone fuel use, and immune reset signaling sit at multi-day depth.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Peak multi-day state</p></div></li>
+        <li id="h-72" class="hour-item" data-hour="72"><span class="hour-n">72h</span><div><h4>72-hour milestone: prolonged fast complete</h4><p>Deep ketosis, sustained autophagy, and immune renewal signaling. Refeed slowly and consult a doctor before going past 72 hours.</p><p class="hour-m">Fuel: Ketones + fatty acids · Insulin: Minimal · Stem cell &amp; autophagy cue</p></div></li>
+      </ol>
+      <p class="fine">Timing is approximate and varies with prior meals, liver glycogen stores, sleep, and activity. Drink water throughout, replace electrolytes on fasts over 24 hours, and check with a clinician before multi-day fasts. Everything you enter stays in this browser.</p>
+
+      <p class="notes-foot">
+        <a href="/tools/">All tools</a>
+        <a href="/tools/meditation/">Meditation</a>
+        <a href="/tools/breathing/">Breathing</a>
+        <a href="/">Blog</a>
+      </p>
     </div>
-  </footer>
+  </section>
 
   <script src="/tools/fasting/fasting.js"></script>
 </body>

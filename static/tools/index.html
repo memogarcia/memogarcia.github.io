@@ -62,108 +62,141 @@
   <link rel="icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <script src="/tools/theme.js"></script>
-  <link rel="stylesheet" href="/tools/shared.css">
+  <link rel="stylesheet" href="/tools/index.css">
+  <script src="/tools/index.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-  <header class="site-header">
-    <a class="wordmark" href="/">Memo Garcia<span class="wordmark-dot" aria-hidden="true">.</span></a>
-    <nav aria-label="Tools navigation">
-      <a href="/tools/" aria-current="page">Tools</a>
-      <a href="/tools/pomodoro/">Pomodoro</a>
-      <a href="/tools/breathing/">Breathing</a>
-      <a href="/tools/meditation/">Meditation</a>
-      <a href="/tools/fasting/">Fasting</a>
-      <a href="/tools/zenkaku-hankaku/">全角⇄半角</a>
-      <a href="/tools/typewriter/">Typewriter</a>
-      <button class="theme-control" type="button" aria-label="Change theme" hidden>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
-          <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
-          <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
-        </svg>
-      </button>
-    </nav>
+
+  <div class="desk" aria-hidden="true">
+    <div id="lamp" class="lamp"></div>
+    <div class="grain"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <header class="chrome">
+    <a class="home" href="/">Memo Garcia<span aria-hidden="true">.</span></a>
+    <button class="theme-control" type="button" aria-label="Change theme" hidden>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
+        <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
+        <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
+      </svg>
+    </button>
   </header>
 
   <main id="main">
-    <section class="tools-heading">
-      <h1>Tools</h1>
-      <p>Small utilities that run locally in your browser with no accounts, no tracking, and no network requests.</p>
+    <section class="intro">
+      <h1>Tools<span class="caret" aria-hidden="true"></span></h1>
+      <p>A few quiet objects for working, breathing and sitting. They live in your browser and send nothing anywhere.</p>
     </section>
 
-    <ul class="tools-list">
-      <li>
+    <ul class="cards">
+      <li class="card">
         <a href="/tools/pomodoro/">
-          <span>
-            <span class="tool-meta">Focus Timer · 集中</span>
-            <span class="tool-name">Pomodoro</span>
-            <span class="tool-desc">A ring, a lamp, and a pin whose shadow is the hand. Turn the ring to wind it. Synthesized ratchet, tick, and bell sounds. Sessions stay in your browser.</span>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">→</span>
+          <svg class="art" viewBox="0 0 200 120" aria-hidden="true">
+            <g class="ring">
+              <circle cx="100" cy="60" r="44"/>
+              <circle class="thin" cx="100" cy="60" r="36"/>
+              <path class="ticks" pathLength="60" d="M100 20a40 40 0 1 1 0 80a40 40 0 1 1 0-80"/>
+            </g>
+            <path class="shadow" d="M100 60 L131 34"/>
+            <circle class="pin" cx="100" cy="60" r="3.2"/>
+          </svg>
+          <span class="no">No. 01</span>
+          <span class="meta">Focus timer · 集中</span>
+          <span class="name">Pomodoro</span>
+          <span class="desc">Wind the ring and let the pin&rsquo;s shadow walk back to zero. A bell rings when it gets there.</span>
         </a>
       </li>
-      <li>
+      <li class="card">
         <a href="/tools/breathing/">
-          <span>
-            <span class="tool-meta">Breath Pacer · 呼吸</span>
-            <span class="tool-name">Breathing</span>
-            <span class="tool-desc">Four paced patterns (Box 4-4-4-4, 4-7-8, Coherent 5-5, and Physiological Sigh) drawn by a pen on scrolling chart paper, with the next breaths printed ahead.</span>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">→</span>
+          <svg class="art" viewBox="0 0 200 120" aria-hidden="true">
+            <path class="grid" d="M10 20h180M10 40h180M10 60h180M10 80h180M10 100h180M30 14v92M60 14v92M90 14v92M120 14v92M150 14v92M180 14v92"/>
+            <path class="trace" d="M10 92 L32 30 L56 30 L80 92 L104 92 L126 30 L148 30"/>
+            <path class="ahead" d="M148 30 L172 92 L190 92"/>
+            <circle class="pen" cx="148" cy="30" r="3.4"/>
+          </svg>
+          <span class="no">No. 02</span>
+          <span class="meta">Breath pacer · 呼吸</span>
+          <span class="name">Breathing</span>
+          <span class="desc">A pen draws your breath on scrolling chart paper. Follow the line up, hold at the top, let it fall.</span>
         </a>
       </li>
-      <li>
+      <li class="card">
         <a href="/tools/meditation/">
-          <span>
-            <span class="tool-meta">Silent Sitting · 瞑想</span>
-            <span class="tool-name">Meditation</span>
-            <span class="tool-desc">A stick of incense for a clock. It burns for the length of the sit, and a bowl, temple bell or tingsha rings when it goes out.</span>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">→</span>
+          <svg class="art" viewBox="0 0 200 120" aria-hidden="true">
+            <path class="smoke" d="M100 36c-6-6 6-10 0-16s4-10 -2-16"/>
+            <path class="stick" d="M100 40 L100 96"/>
+            <circle class="ember" cx="100" cy="39" r="2.6"/>
+            <path class="bowl" d="M70 96h60c-3 10-14 14-30 14s-27-4-30-14z"/>
+          </svg>
+          <span class="no">No. 03</span>
+          <span class="meta">Silent sitting · 瞑想</span>
+          <span class="name">Meditation</span>
+          <span class="desc">Light a stick of incense and sit until it burns out. A bowl rings when the smoke stops.</span>
         </a>
       </li>
-      <li>
+      <li class="card">
         <a href="/tools/fasting/">
-          <span>
-            <span class="tool-meta">Metabolic Timer · 断食</span>
-            <span class="tool-name">Fasting</span>
-            <span class="tool-desc">Track fasts with preset or custom hour goals, editable start times, and hour-by-hour physiological milestones from 0h to 72h.</span>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">→</span>
+          <svg class="art" viewBox="0 0 200 120" aria-hidden="true">
+            <defs><clipPath id="art-glass"><path d="M80.4 16 L83.6 101 H116.4 L119.6 16Z"/></clipPath></defs>
+            <g clip-path="url(#art-glass)"><rect class="water" x="70" y="46" width="60" height="70"/></g>
+            <path class="water-line" d="M81 46h38"/>
+            <path class="tumbler" d="M78 14 L81.6 104 H118.4 L122 14"/>
+            <ellipse class="tumbler" cx="100" cy="14" rx="22" ry="2.6"/>
+            <path class="etched" d="M85 26h6M85 36h3M85 46h6M85 56h3M85 66h6M85 76h3M85 86h6M85 96h3"/>
+            <path class="phase-line" d="M86 66h28"/>
+          </svg>
+          <span class="no">No. 04</span>
+          <span class="meta">Metabolic timer · 断食</span>
+          <span class="name">Fasting</span>
+          <span class="desc">Pour a glass when you stop eating. It is empty at your goal, and the lines on it say what your body is doing on the way.</span>
         </a>
       </li>
-      <li>
+      <li class="card">
         <a href="/tools/zenkaku-hankaku/">
-          <span>
-            <span class="tool-meta">Japanese Text · 全角・半角</span>
-            <span class="tool-name">Zenkaku ⇄ Hankaku</span>
-            <span class="tool-desc">Convert full-width and half-width letters, digits, symbols, spaces, and katakana (including dakuten) with live width inspection.</span>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">→</span>
+          <svg class="art" viewBox="0 0 200 120" aria-hidden="true">
+            <path class="grid strong" d="M40 24h96v72H40zM64 24v72M88 24v72M112 24v72M40 60h96"/>
+            <text class="kana" x="52" y="50" text-anchor="middle">全</text>
+            <text class="kana" x="76" y="50" text-anchor="middle">Ａ</text>
+            <text class="kana" x="100" y="50" text-anchor="middle">カ</text>
+            <text class="kana half" x="52" y="86" text-anchor="middle">半</text>
+            <text class="kana half" x="76" y="86" text-anchor="middle">A</text>
+            <text class="kana half" x="100" y="86" text-anchor="middle">ｶ</text>
+            <g class="seal" transform="rotate(-6 158 74)">
+              <rect x="144" y="60" width="28" height="28" rx="3"/>
+              <text x="158" y="80" text-anchor="middle">印</text>
+            </g>
+          </svg>
+          <span class="no">No. 05</span>
+          <span class="meta">Japanese text · 全角・半角</span>
+          <span class="name">Zenkaku ⇄ Hankaku</span>
+          <span class="desc">For when ＡＢＣ should have been ABC. Full-width and half-width text, katakana included.</span>
         </a>
       </li>
-      <li>
+      <li class="card">
         <a href="/tools/typewriter/">
-          <span>
-            <span class="tool-meta">Writing · 筆記</span>
-            <span class="tool-name">Typewriter</span>
-            <span class="tool-desc">A page, a carriage that moves across it, and a lamp that follows. Synthesized key, bell, and carriage return sounds. Text stays in your browser.</span>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">→</span>
+          <svg class="art" viewBox="0 0 200 120" aria-hidden="true">
+            <rect class="sheet" x="52" y="8" width="96" height="76"/>
+            <path class="typed" d="M64 26h62M64 38h70M64 50h48M64 62h26"/>
+            <path class="rail" d="M24 84h152"/>
+            <rect class="head" x="88" y="78" width="12" height="12" rx="1.5"/>
+          </svg>
+          <span class="no">No. 06</span>
+          <span class="meta">Writing · 筆記</span>
+          <span class="name">Typewriter</span>
+          <span class="desc">One sheet and a carriage that won&rsquo;t let you paste. Every letter has to be struck.</span>
         </a>
       </li>
     </ul>
   </main>
 
-  <footer class="site-footer">
-    <span>Memo Garcia</span>
-    <div>
-      <a href="/">Blog</a>
-      <a href="/labs/">Labs</a>
-      <a href="/archives/">Archives</a>
-      <a href="/about/">About</a>
-    </div>
+  <footer class="chrome chrome-bottom">
+    <a href="/">Blog</a>
+    <a href="/labs/">Labs</a>
+    <a href="/archives/">Archives</a>
+    <a href="/about/">About</a>
   </footer>
 </body>
 </html>
