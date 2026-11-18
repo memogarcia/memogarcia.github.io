@@ -1,20 +1,16 @@
 ---
-title: "Chapter 1: Multi-Region Cloud Training - Building the Baseline"
+title: "Multi-Region Cloud Training, Part 1: Baseline Repo and Environments"
 date: 2025-10-17T09:10:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-01-baseline/
 ---
 
-Building systems across multiple regions is notoriously difficult. You have to navigate latency, configuration drift, and complex networking topologies. Before we dive into the fun stuff - like GitOps with Argo CD or cross-cluster routing with Istio - we need to establish a rock-solid foundation. 
+Working across two clusters makes it easy to run a command against the wrong context. Before installing Argo CD or Istio, we lock down cluster names, container image variables, and repeatable local commands.
 
-In this lab series, we're going to build a realistic multi-region deployment from the ground up. 
+**Cost note:** Running a true multi-region AWS setup for a training lab gets expensive fast. This series mocks two regions with two separate Kubernetes clusters (for example, local `kind` or `k3d` clusters) named `prod-us-east-1` and `prod-eu-west-1`.
 
-**A quick note on cost:** Running a true multi-region architecture in AWS just for a training lab can get expensive quickly. To keep costs down while still learning the core concepts, we will mock our "regions" by using two separate Kubernetes clusters. Throughout this guide, we'll refer to our cluster contexts as `prod-us-east-1` and `prod-eu-west-1`.
-
-### The Lay of the Land
-
-Here is a high-level map of where we're starting. Over the next few chapters, we'll wire up Argo CD and Istio, but for now, we just have our local development environment, our GitHub repository, and a container registry.
+## Starting Layout
 
 ```text
  [Dev Laptop]
@@ -24,29 +20,28 @@ Here is a high-level map of where we're starting. Over the next few chapters, we
         │                 │
         │ manifests       │ images
         ▼                 ▼
-   (Soon: Argo CD and Istio mesh)
+   (Next: Argo CD and Istio mesh)
 
  Contexts: prod-us-east-1, prod-eu-west-1
 ```
 
-### Standardizing with Taskfile
+## Standardizing Commands with Taskfile
 
-When you're constantly switching between clusters, it's incredibly easy to make a mistake and run a command in the wrong environment (we've all accidentally deployed to production instead of staging). To prevent this, we want to standardize our local commands so every step is repeatable and explicit. 
+Instead of relying on your current `kubectl` context or ad-hoc shell scripts, wrap repeated commands in a root `Taskfile.yml`. Every command passes `--context` explicitly.
 
-Instead of writing a collection of custom bash scripts that vary from project to project, we'll use a `Taskfile`. It wraps our common actions, explicitly defines our variables, and keeps our cognitive load low.
-
-First, let's set up our `Taskfile.yml` at the root of our project. Notice how we explicitly map our US and EU cluster contexts here:
+Variable order matters in Task v3: `GIT_SHA` must appear before `TAG`, and `TAG` before `IMAGE`, because root `vars` are evaluated top to bottom. Wrapping variables with `default` lets you override `REGISTRY`, `TAG`, or cluster contexts from the environment or CLI (`REGISTRY=ghcr.io/my-org TAG=v1 task docker:build`).
 
 ```yaml
+# Taskfile.yml
 version: '3'
 vars:
-  REGISTRY: "ghcr.io/your-org"
-  APP: "echo-api"
-  IMAGE: "{{.REGISTRY}}/{{.APP}}:{{.TAG}}"
-  TAG: "{{.TAG | default .GIT_SHA}}"
-  GIT_SHA: { sh: "git rev-parse --short HEAD" }
-  CTX_US: "prod-us-east-1"
-  CTX_EU: "prod-eu-west-1"
+  REGISTRY: '{{.REGISTRY | default "ghcr.io/your-org"}}'
+  APP: '{{.APP | default "echo-api"}}'
+  GIT_SHA: { sh: "git rev-parse --short HEAD || echo dev" }
+  TAG: '{{.TAG | default .GIT_SHA}}'
+  IMAGE: '{{.REGISTRY}}/{{.APP}}:{{.TAG}}'
+  CTX_US: '{{.CTX_US | default "prod-us-east-1"}}'
+  CTX_EU: '{{.CTX_EU | default "prod-eu-west-1"}}'
 
 tasks:
   ctx:list:
@@ -54,40 +49,40 @@ tasks:
     cmds:
       - kubectl config get-contexts
   k:ver:
-    desc: "Check Kubernetes versions across both regions"
+    desc: "Check Kubernetes versions across both clusters"
     cmds:
-      - kubectl --context {{.CTX_US}} version --short
-      - kubectl --context {{.CTX_EU}} version --short
+      - kubectl --context {{.CTX_US}} version
+      - kubectl --context {{.CTX_EU}} version
   docker:build:
     desc: "Build the application container"
     dir: app
     cmds:
       - docker build -t {{.IMAGE}} .
   docker:push:
-    desc: "Push the application to the registry"
+    desc: "Push the application container to the registry"
     dir: app
     cmds:
       - docker push {{.IMAGE}}
 ```
 
-### Verifying the Foundation
+Note that `kubectl version` no longer accepts `--short` (it was removed in Kubernetes 1.28; concise output is now the default).
 
-With our Taskfile in place, let's make sure our environment is actually ready to go. Run the following command to check your contexts:
+## Verification
+
+Confirm both contexts exist in your kubeconfig:
 
 ```bash
 task ctx:list
 ```
 
-You should see both `prod-us-east-1` and `prod-eu-west-1` in the output. 
+You should see `prod-us-east-1` and `prod-eu-west-1`.
 
-Next, let's verify that we can talk to both clusters and that their versions match our expectations. This step ensures our authentication is working before we start trying to apply complex manifests.
+Next, confirm both API servers are reachable and authentication works:
 
 ```bash
 task k:ver
 ```
 
-If both clusters respond with their respective Kubernetes versions, our foundation is set. We have standardized our local tooling, defined our environments, and verified our access. 
+Both contexts should print client and server versions. Next, we install Argo CD and wire both clusters to an `ApplicationSet`.
 
-In the next part, we'll introduce Argo CD and start deploying applications using GitOps so we never have to run `kubectl apply` manually again.
-
-[Continue to Part 2: GitOps with Argo CD](/posts/multi-region-series-part-2-argocd/)
+[Index](/posts/multi-region-learning/) · [Next: Part 2](/posts/multi-region-series-part-2-argocd/)

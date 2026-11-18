@@ -10,7 +10,11 @@ data:
 
     export const options = {
       vus: 200,
-      duration: '3m'
+      duration: '3m',
+      thresholds: {
+        http_req_duration: ['p(95)<100', 'p(99)<250'],
+        http_req_failed: ['rate<0.01'],
+      },
     };
 
     export default function() {

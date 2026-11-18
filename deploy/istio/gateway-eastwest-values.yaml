@@ -1,3 +1,4 @@
+# Taskfile.yml passes --set networkGateway=<us-net|eu-net> so istio/gateway exposes port 15443.
 labels:
   istio: eastwestgateway
 service:

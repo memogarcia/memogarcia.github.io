@@ -1,51 +1,50 @@
 ---
-title: "Multi region cloud training"
+title: "Multi-Region Cloud Training"
 date: 2025-10-17T09:00:00-07:00
 draft: false
 ---
 
-Train teams on multi region, high throughput, chaos tested GitOps without burning money.
+Hands-on lab notes for practicing multi-region Kubernetes, GitOps, Istio cross-cluster routing, progressive delivery, chaos testing, and load testing without paying for two cloud regions.
 
-Assumptions/Constraints
+## Assumptions and Constraints
 
-- Money note: We mock “multi region” with two Kubernetes clusters, not two AWS regions.
-- You have two kube contexts reachable from your workstation.
-- You control a container registry and a GitHub repo.
-- Optional AWS: use IRSA or EKS Pod Identity in Lab 4.
+- Cost boundary: this series mocks "multi-region" with two Kubernetes clusters (for example, `kind` or `k3d`), not two AWS regions.
+- You have two kube contexts reachable from your workstation: `prod-us-east-1` and `prod-eu-west-1`.
+- You control a container registry and a GitHub repository.
+- Part 4 (AWS IAM) is optional if you are running local clusters.
 
-Labs
+## Labs
 
-- [Part 1 - Baseline Repo and Environments](/posts/multi-region-series-part-1-baseline/)
-  Sets shared variables and `task` wrappers. Confirms contexts and versions.
-- [Part 2 - GitOps with Argo CD](/posts/multi-region-series-part-2-argocd/)
-  Installs Argo CD and deploys one app to both clusters with ApplicationSet.
-- [Part 3 - Istio Multi Region Mesh](/posts/multi-region-series-part-3-istio/)
-  Installs Istio with a single mesh across clusters and an east west gateway.
-- [Part 4 - AWS Identity (IRSA and Pod Identity)](/posts/multi-region-series-part-4-identity/)
-  Gives pods AWS creds with IRSA or Pod Identity. Includes when to choose which.
-- [Part 5 - Sample App and Overlays](/posts/multi-region-series-part-5-app/)
-  Deploys a tiny HTTP service with region specific overlays.
-- [Part 6 - CI with GitHub Actions and Taskfile](/posts/multi-region-series-part-6-ci/)
-  Builds and pushes images with CI that mirrors local `task` commands.
-- [Part 7 - CD with Istio and Argo CD](/posts/multi-region-series-part-7-cd/)
-  Adds connection pools, outlier detection, and traffic splitting.
-- [Part 7.1 - Progressive Delivery with Argo Rollouts](/posts/multi-region-series-part-7a-rollouts/)
-  Uses Argo Rollouts for canary, blue green, and header based releases.
-- [Part 8 - Chaos Testing](/posts/multi-region-series-part-8-chaos/)
-  Kills pods and injects latency to prove resilience.
-- [Part 9 - Load and SLOs](/posts/multi-region-series-part-9-load/)
-  Generates load with k6 and checks p95 and p99 across clusters.
+- [Part 1: Baseline Repo and Environments](/posts/multi-region-series-part-1-baseline/)
+  Sets shared variables and `task` wrappers. Confirms cluster contexts and versions.
+- [Part 2: GitOps with Argo CD](/posts/multi-region-series-part-2-argocd/)
+  Installs Argo CD, registers both clusters with region labels, and deploys across them with an `ApplicationSet`.
+- [Part 3: Istio Multi-Region Mesh](/posts/multi-region-series-part-3-istio/)
+  Installs Istio across two networks with east-west gateways, mTLS routing, and `ServiceEntry` wiring.
+- [Part 4: AWS Identity (IRSA vs Pod Identity)](/posts/multi-region-series-part-4-identity/)
+  Grants pods temporary AWS credentials with IRSA or EKS Pod Identity, with the tradeoffs for each.
+- [Part 5: Sample App and Overlays](/posts/multi-region-series-part-5-app/)
+  Deploys a small Go HTTP service with region-specific Kustomize overlays.
+- [Part 6: CI with GitHub Actions and Taskfile](/posts/multi-region-series-part-6-ci/)
+  Builds and pushes images in CI using the same `task` commands you run locally, then updates the Kustomize image tag.
+- [Part 7: CD with Istio Traffic Policy](/posts/multi-region-series-part-7-cd/)
+  Adds connection pools, outlier detection, and weighted traffic splits across `v1` and `v2`.
+- [Part 7.1: Progressive Delivery with Argo Rollouts](/posts/multi-region-series-part-7a-rollouts/)
+  Replaces the `Deployment` with an Argo `Rollout` for automated canary steps, header-based routing, and Prometheus analysis.
+- [Part 8: Chaos Testing](/posts/multi-region-series-part-8-chaos/)
+  Schedules recurring pod kills and injects network latency with Chaos Mesh.
+- [Part 9: Load Generation and SLOs](/posts/multi-region-series-part-9-load/)
+  Runs k6 inside the cluster with SLO thresholds to compare in-cluster and cross-cluster p95 and p99 latency.
 
-How to Use
+## How to Use
 
-1) Set two contexts. Example: `prod-us-east-1` and `prod-eu-west-1`.
-2) Work through Part 1 then follow in order. Each lab is self contained and runnable.
-3) Swap in kind or k3d for local clusters to keep spend near zero.
-4) In Part 4 choose one identity path. IRSA covers EKS, Fargate, and other clusters with an OIDC provider. Pod Identity is EKS only and requires Linux EC2 nodes.
+1. Configure two kube contexts (`prod-us-east-1` and `prod-eu-west-1`). Local `kind` or `k3d` clusters keep spend near zero.
+2. Start at Part 1 and work in order. Parts 5 through 7 build a `Deployment`-based app under `deploy/overlays/`; Part 7.1 migrates it to `deploy/rollouts/` for Argo Rollouts.
+3. In Part 4, pick one AWS identity path if you are on AWS. IRSA works on EKS, Fargate, and clusters with an OIDC provider. EKS Pod Identity is EKS-only and requires Linux EC2 nodes.
 
-ASCII Diagram (full architecture)
+## Architecture
 
-```
+```text
  [Dev Laptop]
      |  task, kubectl, helm
      v
@@ -60,40 +59,45 @@ ASCII Diagram (full architecture)
                          /         \
                         v           v
                  +-----------------------+      +-----------------------+
-                 |  Cluster: US         |      |  Cluster: EU         |
-                 |  ns echo             |      |  ns echo             |
-                 |  istiod              |      |  istiod              |
-                 |  east-west gateway   |<====>|  east-west gateway   |
-                 |  echo v1/v2 (sidecar)|      |  echo v1/v2 (sidecar)|
-                 |  VS/DR (LB, retries) |      |  VS/DR (LB, retries) |
-                 |  Chaos Mesh + k6     |      |  Chaos Mesh + k6     |
+                 |  Cluster: US          |      |  Cluster: EU          |
+                 |  ns echo              |      |  ns echo              |
+                 |  istiod               |      |  istiod               |
+                 |  east-west gateway    |<====>|  east-west gateway    |
+                 |  echo (sidecar)       | mTLS |  echo (sidecar)       |
+                 |  VS/DR (pool/outlier) |      |  VS/DR (pool/outlier) |
+                 |  Chaos Mesh + k6      |      |  Chaos Mesh + k6      |
                  +-----------------------+      +-----------------------+
 
- Identity per pod (optional):
+ Identity per pod (optional, AWS):
    [Pod + SA aws-sa]
       |  IRSA: OIDC token -> STS AssumeRoleWithWebIdentity -> creds
-      |  Pod Identity: EKS agent -> STS AssumeRole -> creds
+      |  Pod Identity: EKS agent -> EKS Auth AssumeRoleForPodIdentity -> STS -> creds
       v
    [AWS APIs]
 
- Notes: multi network meshID=training-mesh, trustDomain=corp.local; cross cluster via gateway + ServiceEntry.
+ Notes: multi-network meshID=training-mesh, trustDomain=corp.local;
+ cross-cluster routing via east-west gateway, Gateway/VirtualService, and ServiceEntry.
 ```
 
-Verification/DoD
+## Verification
 
-- By the end of Lab 9, you can shift traffic, inject failure, and measure latency across two clusters.
+By the end of Part 9, you can sync region-specific manifests to two clusters, roll out an image with automated canary checks, inject pod kills and latency, and measure local versus cross-cluster latency against k6 thresholds.
 
-Taskfile targets in this repo
+## Taskfile Targets in This Repo
 
-- `task k:ver` prints cluster versions for both contexts.
-- `task istio:install:all` installs Istio control plane in both clusters.
-- `task istio:gw:all` installs an east west gateway in both clusters.
+- `task k:ver` prints client and server versions for both contexts.
+- `task istio:install:all` installs `istio-base` and `istiod` in both clusters.
+- `task istio:gw:all` installs the east-west gateway in both clusters on port `15443`.
 - `task argocd:install:all` installs Argo CD in both clusters.
+- `task obs:install:all` installs `kube-prometheus-stack`, an Envoy `PodMonitor`, and Kiali in both clusters.
+- `task rollouts:install:all` installs the Argo Rollouts controller in both clusters.
+- `task rollouts:apply:all` applies the Rollouts overlays directly to both clusters.
 - `task chaos:install:all` installs Chaos Mesh in both clusters.
-- `task obs:install:all` installs Prometheus, Grafana, and Kiali in both clusters.
 
-Source files
+## Source Files
 
-- Taskfile: https://github.com/memogarcia/memogarcia.github.io/blob/master/Taskfile.yml
-- Istio values: https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/istio/values-istio.yaml
-- Istio east west gateway values: https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/istio/gateway-eastwest-values.yaml
+- [Taskfile.yml](https://github.com/memogarcia/memogarcia.github.io/blob/master/Taskfile.yml)
+- [deploy/istio/values-istio.yaml](https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/istio/values-istio.yaml)
+- [deploy/istio/gateway-eastwest-values.yaml](https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/istio/gateway-eastwest-values.yaml)
+- [deploy/istio/podmonitor.yaml](https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/istio/podmonitor.yaml)
+- [deploy/apps/rollouts-appset.yaml](https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/apps/rollouts-appset.yaml)

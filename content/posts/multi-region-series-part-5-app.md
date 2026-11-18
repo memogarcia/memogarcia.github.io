@@ -1,48 +1,74 @@
 ---
-title: "Chapter 5: Multi-Region Cloud Training - Sample App and Overlays"
+title: "Multi-Region Cloud Training, Part 5: Sample App and Overlays"
 date: 2025-10-17T09:14:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-05-app/
 ---
 
-We have our GitOps pipeline, our cross-cluster mesh, and secure IAM roles. Now, we actually need something to deploy. 
+Across regions, most of a workload's manifests stay identical (image, ports, selectors) while a small set of fields varies by cluster (environment variables, replicas, resource limits). Duplicating `deployment.yaml` per region guarantees drift as soon as someone updates one copy and forgets the other.
 
-When deploying applications across multiple regions, you almost always run into the configuration drift problem. Ninety percent of your deployment manifest is identical (the container image, the ports, the health checks), but ten percent needs to be highly specific to the region (environment variables, database connection strings, resource limits).
+Here we build a small Go HTTP service and split its Kubernetes manifests into a shared Kustomize base plus per-region overlays.
 
-Copying and pasting the entire `Deployment.yaml` into two different folders is a terrible idea. When you inevitably need to update a label or add a sidecar, you'll forget to update one of the copies. 
+## Sample App and Container Build
 
-Instead, we'll use **Kustomize**. Kustomize allows us to define a shared "base" configuration and then apply region-specific "overlays" (patches) on top of it.
-
-### The App: A Tiny HTTP Server
-
-Let's start with the code. We just need a simple Go service that prints out the region it's running in. This will help us prove that our region-specific configuration is actually working.
+Create `app/main.go`. It prints both `REGION` and `VERSION` so we can verify region overlays now and `v1`/`v2` traffic splits in Part 7.
 
 ```go
 // app/main.go
 package main
 
 import (
-  "fmt"
-  "log"
-  "net/http"
-  "os"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
-  region := os.Getenv("REGION")
-  http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "ok region=%s\n", region)
-  })
-  
-  fmt.Println("Starting server on :8080...")
-  log.Fatal(http.ListenAndServe(":8080", nil))
+	region := os.Getenv("REGION")
+	version := os.Getenv("VERSION")
+	if version == "" {
+		version = "v1"
+	}
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "ok region=%s version=%s\n", region, version)
+	})
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "ok")
+	})
+
+	log.Println("starting server on :8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
 
-### The Base Configuration
+Initialize the module (`cd app && go mod init echo-api`) and add a minimal `app/Dockerfile` so `task docker:build` from Part 1 can build it:
 
-Next, we define our base manifests. These are the building blocks that are true regardless of where the app runs. Notice that we leave the `REGION` environment variable somewhat generic here (falling back to the namespace name if nothing overrides it).
+```dockerfile
+# app/Dockerfile
+FROM golang:1.23-alpine AS build
+WORKDIR /src
+COPY go.mod main.go ./
+RUN CGO_ENABLED=0 go build -o /echo-api .
+
+FROM alpine:3.20
+COPY --from=build /echo-api /usr/local/bin/echo-api
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/echo-api"]
+```
+
+Build and push the initial image before committing the manifests (`REGISTRY=ghcr.io/your-org TAG=v1 task docker:build docker:push`).
+
+## Base Manifests
+
+Create `deploy/base/echo/` with three files: `deployment.yaml`, `service.yaml`, and `kustomization.yaml`.
+
+Notice two deliberate details in `deployment.yaml`:
+
+- `REGION` uses a plain string `value: unknown` rather than `valueFrom`. If the base used `valueFrom` and a Strategic Merge Patch added `value: us`, Kustomize would merge both keys into the same `env` item and Kubernetes would reject the Pod spec (`valueFrom` cannot be set alongside `value`).
+- `serviceAccountName: aws-sa` is commented out so the manifest runs on local clusters if you skipped Part 4. Uncomment it if you configured IRSA or EKS Pod Identity.
 
 ```yaml
 # deploy/base/echo/deployment.yaml
@@ -55,22 +81,30 @@ spec:
   selector:
     matchLabels:
       app: echo
+      version: v1
   template:
     metadata:
       labels:
         app: echo
+        version: v1
     spec:
-      serviceAccountName: aws-sa
+      # Uncomment if you configured aws-sa in Part 4
+      # serviceAccountName: aws-sa
       containers:
         - name: echo
-          image: ghcr.io/your-org/echo-api:latest
+          image: ghcr.io/your-org/echo-api:v1
           env:
             - name: REGION
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+              value: unknown
+            - name: VERSION
+              value: v1
           ports:
             - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 3
 ---
 # deploy/base/echo/service.yaml
 apiVersion: v1
@@ -81,24 +115,36 @@ spec:
   selector:
     app: echo
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 8080
 ```
 
-### The Regional Overlays
+Add the base `kustomization.yaml` so overlays can reference `deploy/base/echo`:
 
-Here is where Kustomize shines. For our US deployment, we create an overlay. The `kustomization.yaml` tells Kustomize to start with the base folder, and then apply `patch.yaml` over the top of it.
+```yaml
+# deploy/base/echo/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - service.yaml
+```
+
+## Regional Overlays
+
+Each region gets an overlay using modern Kustomize syntax (`resources` and `patches`, replacing the deprecated `bases` and `patchesStrategicMerge` fields).
 
 ```yaml
 # deploy/overlays/us/echo/kustomization.yaml
-bases:
-  - "../../../base/echo"
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 namespace: echo
-patchesStrategicMerge:
-  - patch.yaml
+resources:
+  - ../../../base/echo
+patches:
+  - path: patch.yaml
 ```
-
-Our patch is surgical. We don't need to redefine the replicas, the ports, or the service account. We just need to drill down to the specific `env` array and override the `REGION` value. Kustomize handles merging this cleanly into the base template.
 
 ```yaml
 # deploy/overlays/us/echo/patch.yaml
@@ -115,26 +161,37 @@ spec:
             - name: REGION
               value: us
 ```
-*(You would create an identical overlay structure for the `eu` region, setting the value to `eu`)*
 
-### Verification
+Create the matching EU overlay under `deploy/overlays/eu/echo/` with `value: eu`. You can render either overlay locally before committing to verify the merged YAML:
 
-If you recall from Part 2, our Argo CD `ApplicationSet` is already looking for these overlay paths based on the cluster's region label. Once you commit this code, Argo CD will automatically sync the US overlay to the US cluster, and the EU overlay to the EU cluster.
-
-To prove it worked, we can execute a curl command inside the clusters. 
-
-In the US cluster, the pods should respond with `us`:
 ```bash
-kubectl --context prod-us-east-1 -n echo exec -it deploy/echo -- curl -s echo.echo
-# Output: ok region=us
+kubectl kustomize deploy/overlays/us/echo
 ```
 
-And in the EU cluster, they should respond with `eu`:
+## Verification
+
+Commit and push `deploy/base/echo/` and `deploy/overlays/{us,eu}/echo/`. The `ApplicationSet` from Part 2 watches `deploy/overlays/{{.metadata.labels.region}}/echo` and syncs each overlay to its matching cluster.
+
+Verify responses from inside each cluster using an ephemeral curl pod (the `alpine` app image does not bundle `curl`):
+
 ```bash
-kubectl --context prod-eu-west-1 -n echo exec -it deploy/echo -- curl -s echo.echo
-# Output: ok region=eu
+kubectl --context prod-us-east-1 -n echo run curl --rm -it --restart=Never \
+  --image=curlimages/curl -- curl -sS http://echo.echo.svc.cluster.local
+# ok region=us version=v1
+
+kubectl --context prod-eu-west-1 -n echo run curl --rm -it --restart=Never \
+  --image=curlimages/curl -- curl -sS http://echo.echo.svc.cluster.local
+# ok region=eu version=v1
 ```
 
-Our app is live, and our multi-region configuration strategy is clean, DRY (Don't Repeat Yourself), and manageable. 
+If you completed Part 3, you can also verify cross-cluster routing from US to EU now:
 
-[Previous: Part 4](/posts/multi-region-series-part-4-identity/) · [Continue to Part 6: CI with GitHub Actions](/posts/multi-region-series-part-6-ci/)
+```bash
+kubectl --context prod-us-east-1 -n echo run curl --rm -it --restart=Never \
+  --image=curlimages/curl -- curl -sS http://echo.eu.mesh.local
+# ok region=eu version=v1
+```
+
+Next, we automate image builds and tag updates in GitHub Actions.
+
+[Previous: Part 4](/posts/multi-region-series-part-4-identity/) · [Index](/posts/multi-region-learning/) · [Next: Part 6](/posts/multi-region-series-part-6-ci/)

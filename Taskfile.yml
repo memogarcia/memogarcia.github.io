@@ -1,11 +1,11 @@
 version: '3'
 vars:
-  # Override via env: REGISTRY=ghcr.io/your-org task ...
-  REGISTRY: "ghcr.io/your-org"
-  APP: "echo-api"
-  IMAGE: "{{.REGISTRY}}/{{.APP}}:{{.TAG}}"
-  TAG: "{{.TAG | default .GIT_SHA}}"
+  # Override via env: REGISTRY=ghcr.io/your-org TAG=v1 task ...
+  REGISTRY: '{{.REGISTRY | default "ghcr.io/your-org"}}'
+  APP: '{{.APP | default "echo-api"}}'
   GIT_SHA: { sh: "git rev-parse --short HEAD || echo dev" }
+  TAG: '{{.TAG | default .GIT_SHA}}'
+  IMAGE: '{{.REGISTRY}}/{{.APP}}:{{.TAG}}'
   CTX_US: '{{.CTX_US | default "prod-us-east-1"}}'
   CTX_EU: '{{.CTX_EU | default "prod-eu-west-1"}}'
   ISTIO_NS: "istio-system"
@@ -32,25 +32,27 @@ tasks:
     deps: [istio:repo]
     cmds:
       - kubectl --context {{.CTX_US}} create ns {{.ISTIO_NS}} --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
+      - kubectl --context {{.CTX_US}} label ns {{.ISTIO_NS}} topology.istio.io/network=us-net --overwrite
       - helm --kube-context {{.CTX_US}} upgrade --install istio-base istio/base -n {{.ISTIO_NS}}
-      - helm --kube-context {{.CTX_US}} upgrade --install istiod istio/istiod -n {{.ISTIO_NS}} -f deploy/istio/values-istio.yaml --set global.meshID={{.MESH_ID}} --set global.trustDomain={{.TRUST_DOMAIN}} --set global.network=us-net --wait
+      - helm --kube-context {{.CTX_US}} upgrade --install istiod istio/istiod -n {{.ISTIO_NS}} -f deploy/istio/values-istio.yaml --set global.meshID={{.MESH_ID}} --set global.trustDomain={{.TRUST_DOMAIN}} --set global.multiCluster.clusterName=prod-us --set global.network=us-net --wait
   istio:install:eu:
     deps: [istio:repo]
     cmds:
       - kubectl --context {{.CTX_EU}} create ns {{.ISTIO_NS}} --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
+      - kubectl --context {{.CTX_EU}} label ns {{.ISTIO_NS}} topology.istio.io/network=eu-net --overwrite
       - helm --kube-context {{.CTX_EU}} upgrade --install istio-base istio/base -n {{.ISTIO_NS}}
-      - helm --kube-context {{.CTX_EU}} upgrade --install istiod istio/istiod -n {{.ISTIO_NS}} -f deploy/istio/values-istio.yaml --set global.meshID={{.MESH_ID}} --set global.trustDomain={{.TRUST_DOMAIN}} --set global.network=eu-net --wait
+      - helm --kube-context {{.CTX_EU}} upgrade --install istiod istio/istiod -n {{.ISTIO_NS}} -f deploy/istio/values-istio.yaml --set global.meshID={{.MESH_ID}} --set global.trustDomain={{.TRUST_DOMAIN}} --set global.multiCluster.clusterName=prod-eu --set global.network=eu-net --wait
   istio:install:all:
     deps: [istio:install:us, istio:install:eu]
 
   istio:gw:us:
     deps: [istio:repo]
     cmds:
-      - helm --kube-context {{.CTX_US}} upgrade --install istio-eastwestgateway istio/gateway -n {{.ISTIO_NS}} -f deploy/istio/gateway-eastwest-values.yaml --wait
+      - helm --kube-context {{.CTX_US}} upgrade --install istio-eastwestgateway istio/gateway -n {{.ISTIO_NS}} -f deploy/istio/gateway-eastwest-values.yaml --set networkGateway=us-net --wait
   istio:gw:eu:
     deps: [istio:repo]
     cmds:
-      - helm --kube-context {{.CTX_EU}} upgrade --install istio-eastwestgateway istio/gateway -n {{.ISTIO_NS}} -f deploy/istio/gateway-eastwest-values.yaml --wait
+      - helm --kube-context {{.CTX_EU}} upgrade --install istio-eastwestgateway istio/gateway -n {{.ISTIO_NS}} -f deploy/istio/gateway-eastwest-values.yaml --set networkGateway=eu-net --wait
   istio:gw:all:
     deps: [istio:gw:us, istio:gw:eu]
 
@@ -125,12 +127,14 @@ tasks:
     cmds:
       - kubectl --context {{.CTX_US}} create ns observability --dry-run=client -o yaml | kubectl --context {{.CTX_US}} apply -f -
       - helm --kube-context {{.CTX_US}} upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability --set-string prometheus-node-exporter.hostRootFsMount.mountPropagation= --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
+      - kubectl --context {{.CTX_US}} apply -f deploy/istio/podmonitor.yaml
       - helm --kube-context {{.CTX_US}} upgrade --install kiali kiali/kiali-server -n {{.ISTIO_NS}} --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
   obs:install:eu:
     deps: [obs:repo]
     cmds:
       - kubectl --context {{.CTX_EU}} create ns observability --dry-run=client -o yaml | kubectl --context {{.CTX_EU}} apply -f -
       - helm --kube-context {{.CTX_EU}} upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n observability --set-string prometheus-node-exporter.hostRootFsMount.mountPropagation= --set grafana.service.type=LoadBalancer --set prometheus.service.type=LoadBalancer --set alertmanager.service.type=LoadBalancer --wait
+      - kubectl --context {{.CTX_EU}} apply -f deploy/istio/podmonitor.yaml
       - helm --kube-context {{.CTX_EU}} upgrade --install kiali kiali/kiali-server -n {{.ISTIO_NS}} --set auth.strategy=anonymous --set service.type=LoadBalancer --wait
   obs:install:all:
     deps: [obs:install:us, obs:install:eu]

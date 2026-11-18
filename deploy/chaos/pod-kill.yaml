@@ -1,13 +1,16 @@
 apiVersion: chaos-mesh.org/v1alpha1
-kind: PodChaos
+kind: Schedule
 metadata:
   name: kill-echo
   namespace: chaos-testing
 spec:
-  action: pod-kill
-  mode: one
-  duration: "1m"
-  selector:
-    namespaces: [ "echo" ]
-    labelSelectors:
-      app: echo
+  schedule: "@every 1m"
+  concurrencyPolicy: Forbid
+  type: PodChaos
+  podChaos:
+    action: pod-kill
+    mode: one
+    selector:
+      namespaces: [ "echo" ]
+      labelSelectors:
+        app: echo

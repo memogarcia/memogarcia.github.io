@@ -4,6 +4,8 @@ metadata:
   name: echo-rollouts
   namespace: argocd
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
     - clusters:
         selector:
@@ -15,17 +17,25 @@ spec:
                 - eu
   template:
     metadata:
-      name: 'echo-rollouts-{{name}}'
+      name: 'echo-rollouts-{{.name}}'
     spec:
       project: default
       destination:
-        server: '{{server}}'
+        server: '{{.server}}'
         namespace: echo
       source:
         repoURL: https://github.com/memogarcia/memogarcia.github.io
-        targetRevision: main
-        path: deploy/rollouts/overlays/{{metadata.labels.region}}
+        targetRevision: master
+        path: deploy/rollouts/overlays/{{.metadata.labels.region}}
+      ignoreDifferences:
+        - group: networking.istio.io
+          kind: VirtualService
+          jqPathExpressions:
+            - .spec.http[].route[].weight
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true

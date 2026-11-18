@@ -1,100 +1,129 @@
 ---
-title: "Chapter 7.1: Multi-Region Cloud Training - Progressive Delivery with Argo Rollouts"
-date: 2025-10-19T10:45:00-07:00
+title: "Multi-Region Cloud Training, Part 7.1: Progressive Delivery with Argo Rollouts"
+date: 2025-10-17T09:17:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-07a-rollouts/
 ---
 
-In the previous section, we manually configured Istio to split traffic between two versions. While powerful, doing this by hand for every release is a fast track to burnout. 
+Shifting Istio `VirtualService` weights by hand for every release does not scale. Here we replace the `Deployment` setup from Parts 5 through 7 with **Argo Rollouts**, which steps through canary weights (`10% -> 25% -> 50% -> 100%`), queries Prometheus for canary 5xx errors, and aborts automatically if the check fails.
 
-We want an automated controller that says: *"Deploy the new version, send 10% of traffic to it, wait a minute, check Prometheus to see if the error rate spiked. If it looks good, increase to 50%. If it fails, instantly roll back to the old version."*
+## Prerequisites: Prometheus, Envoy Scraping, and Argo Rollouts
 
-This process is called Progressive Delivery, and we're going to implement it using **Argo Rollouts**.
+The `AnalysisTemplate` below queries `istio_requests_total` from Prometheus in the `observability` namespace. By default, `kube-prometheus-stack` does **not** scrape Istio Envoy sidecars (`:15090/stats/prometheus`), so you also need a `PodMonitor` labeled `release: kube-prometheus-stack` (see [deploy/istio/podmonitor.yaml](https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/istio/podmonitor.yaml)).
 
-### Enter the Rollout Resource
+Install Prometheus, the Envoy `PodMonitor`, Kiali, and the Argo Rollouts controller in both clusters using the repo `Taskfile.yml`:
 
-Argo Rollouts replaces the standard Kubernetes `Deployment` object with a custom `Rollout` object. It natively understands how to talk to Istio to adjust traffic weights, and it can query metrics providers (like Prometheus) to make automated promotion decisions.
-
-First, you'll need to install the Argo Rollouts controller in both of your clusters. We've added tasks for this:
 ```bash
+task obs:install:all
 task rollouts:install:all
 ```
-*(Tip: Install the CLI plugin locally with `brew install argoproj/tap/kubectl-argo-rollouts` for an excellent terminal UI).*
 
-### Redesigning the Architecture
+Install the local `kubectl` plugin to watch rollout progress from the terminal:
 
-To make this work, Argo Rollouts requires two distinct Kubernetes `Services`: a "stable" service and a "canary" service. The Rollout controller dynamically updates the pod selectors on these services as it progresses through the release.
+```bash
+brew install argoproj/tap/kubectl-argo-rollouts
+```
+
+## Migrating From `Deployment` to `Rollout`
+
+Argo Rollouts manages pods via a `Rollout` resource and switches two `Service` selectors (`echo-stable` and `echo-canary`) by pod template hash as revisions progress. Because this replaces the `Deployment` from Part 5, delete the old `echo` and `echo-v2` deployments before applying the Rollouts stack (or use `task rollouts:apply:all`, which deletes `deploy/echo` first). If you wired the EU east-west `VirtualService` in Part 3, update its destination host from `echo.echo.svc.cluster.local` to `echo-stable.echo.svc.cluster.local`.
+
+The full manifests live under `deploy/rollouts/` in this repo:
+
+### Services (`deploy/rollouts/base/services.yaml`)
 
 ```yaml
-# services.yaml
 apiVersion: v1
 kind: Service
-metadata: { name: echo-stable, namespace: echo }
+metadata:
+  name: echo-stable
+  namespace: echo
 spec:
-  selector: { app: echo } # Rollout manages this selector
-  ports: [ { port: 80, targetPort: 8080 } ]
+  selector:
+    app: echo # Argo Rollouts adds rollouts-pod-template-hash
+  ports:
+    - port: 80
+      targetPort: 8080
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: echo-canary, namespace: echo }
+metadata:
+  name: echo-canary
+  namespace: echo
 spec:
-  selector: { app: echo } # Rollout manages this selector
-  ports: [ { port: 80, targetPort: 8080 } ]
+  selector:
+    app: echo # Argo Rollouts adds rollouts-pod-template-hash
+  ports:
+    - port: 80
+      targetPort: 8080
 ```
 
-Next, we update our Istio `VirtualService`. Instead of hardcoding the weights like we did in Part 7, we set them to 100/0. We are telling Istio the baseline state, and **Argo Rollouts will programmatically modify this VirtualService** in real-time during a release.
+### VirtualService (`deploy/rollouts/base/virtualservice.yaml`)
 
-We've also added a cool feature here: an A/B testing route. Anyone sending the header `x-user-type: beta` will skip the weight logic entirely and get routed directly to the canary pods.
+This `VirtualService` keeps baseline weights at `100 / 0` on the `primary` route and lets Argo Rollouts mutate those weights during a rollout. A separate `ab-test` route pins requests carrying `x-user-type: beta` directly to `echo-canary`.
 
 ```yaml
-# virtualservice.yaml
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
-metadata: { name: echo-rollouts, namespace: echo }
+metadata:
+  name: echo-rollouts
+  namespace: echo
 spec:
-  hosts: [ "echo-stable.echo.svc.cluster.local" ]
-  gateways: [ "mesh" ]
+  hosts:
+    - "echo-stable.echo.svc.cluster.local"
+  gateways: ["mesh"]
   http:
-    # A/B Test: Force beta users to the canary
     - name: ab-test
       match:
         - headers:
             x-user-type:
               exact: beta
       route:
-        - destination: { host: echo-canary.echo.svc.cluster.local, port: { number: 80 } }
+        - destination:
+            host: echo-canary.echo.svc.cluster.local
+            port:
+              number: 80
           weight: 100
-    # Primary Route: Argo Rollouts manages these weights
     - name: primary
       route:
-        - destination: { host: echo-stable.echo.svc.cluster.local, port: { number: 80 } }
+        - destination:
+            host: echo-stable.echo.svc.cluster.local
+            port:
+              number: 80
           weight: 100
-        - destination: { host: echo-canary.echo.svc.cluster.local, port: { number: 80 } }
+        - destination:
+            host: echo-canary.echo.svc.cluster.local
+            port:
+              number: 80
           weight: 0
 ```
 
-### The Rollout Strategy
+Keep `ab-test` out of `trafficRouting.istio.virtualService.routes` in the `Rollout` below. Argo Rollouts should manage the weighted `primary` route only; `ab-test` is a header-only route that always sends 100% of matching traffic to `echo-canary`.
 
-Now, the main event. We define our `Rollout` object. Notice the `strategy` block. We explicitly define the steps: set weight to 10%, pause for 60 seconds, run an automated Analysis, set weight to 25%, pause, and so on.
+### Rollout (`deploy/rollouts/base/rollout.yaml`)
 
 ```yaml
-# rollout.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
-metadata: { name: echo, namespace: echo }
+metadata:
+  name: echo
+  namespace: echo
 spec:
   replicas: 4
   selector:
-    matchLabels: { app: echo }
+    matchLabels:
+      app: echo
   template:
     metadata:
-      labels: { app: echo }
+      labels:
+        app: echo
     spec:
       containers:
         - name: echo
           image: ghcr.io/your-org/echo-api:1.0.0
-          ports: [ { containerPort: 8080 } ]
+          ports:
+            - containerPort: 8080
   strategy:
     canary:
       canaryService: echo-canary
@@ -103,11 +132,10 @@ spec:
         istio:
           virtualService:
             name: echo-rollouts
-            routes: [ "primary" ]
+            routes: ["primary"]
       steps:
         - setWeight: 10
         - pause: { duration: 60 }
-        # Automated safety check
         - analysis:
             templates:
               - templateName: success-rate
@@ -117,49 +145,78 @@ spec:
         - pause: { duration: 60 }
 ```
 
-The `ab-test` route can stay in the `VirtualService`, but do not list it under `trafficRouting.istio.virtualService.routes`. Argo Rollouts should manage the weighted `primary` route only. The header-only route sends 100% of matching traffic to the canary service, so it is not a stable/canary weighted route.
+The version checked into [deploy/rollouts/base/rollout.yaml](https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/rollouts/base/rollout.yaml) uses an inline `python:3.12-alpine` HTTP server so you can run the lab without pushing a custom image first, and the regional overlays (`deploy/rollouts/overlays/{us,eu}/patch.yaml`) inject `REGION=us` and `REGION=eu` via a JSON patch targeting `kind: Rollout`.
 
-### The Automated Safety Check (AnalysisTemplate)
+### AnalysisTemplate (`deploy/rollouts/base/analysis.yaml`)
 
-How does Argo Rollouts know if the canary is healthy? We define an `AnalysisTemplate`. This tells the controller how to query Prometheus and what constitutes "success". 
-
-In this case, we query Istio's built-in metrics. If the non-5xx success rate drops below 99% during the canary phase, the rollout will automatically abort and route 100% of traffic back to the stable pods.
+Scope the PromQL query to `destination_service_name="echo-canary"`. Filtering only by `destination_workload_namespace="echo"` mixes 90% healthy stable traffic with 10% canary traffic at the first step, which would let a canary fail nearly 10% of its own requests while keeping the namespace-wide rate above 99%.
 
 ```yaml
-# analysis.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
-metadata: { name: success-rate, namespace: echo }
+metadata:
+  name: success-rate
+  namespace: echo
 spec:
   metrics:
     - name: non-5xx-rate
       interval: 30s
       count: 3
-      successCondition: result[0] >= 0.99
+      # Treats empty or zero-traffic windows as passing so an idle lab cluster does not abort.
+      # In production, drop isNaN(result[0]) and `or vector(1)` so silent canaries fail.
+      successCondition: isNaN(result[0]) || result[0] >= 0.99
       failureLimit: 1
       provider:
         prometheus:
           address: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
           query: |
-            sum(rate(istio_requests_total{reporter="destination", destination_workload_namespace="echo", response_code!~"5.."}[1m]))
-            /
-            sum(rate(istio_requests_total{reporter="destination", destination_workload_namespace="echo"}[1m]))
+            (
+              sum(rate(istio_requests_total{reporter="destination", destination_workload_namespace="echo", destination_service_name="echo-canary", response_code!~"5.."}[1m]))
+              /
+              sum(rate(istio_requests_total{reporter="destination", destination_workload_namespace="echo", destination_service_name="echo-canary"}[1m]))
+            ) or vector(1)
 ```
 
-### Verification
+### Preventing Argo CD `selfHeal` From Fighting Argo Rollouts
 
-To trigger a rollout, simply change the image tag in your Kustomize overlays and commit. Argo CD will sync the new template, and Argo Rollouts will take over.
+In Part 2, our `ApplicationSet` enabled `automated.selfHeal: true`. If Argo CD watches `virtualservice.yaml` (which stores `weight: 100 / 0` in Git) with `selfHeal: true` and no diff exclusions, Argo CD immediately reverts the weights every time Argo Rollouts shifts traffic.
 
-Watch the magic happen using the CLI tool:
+Switch your `ApplicationSet` to [deploy/apps/rollouts-appset.yaml](https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/apps/rollouts-appset.yaml), which points to `deploy/rollouts/overlays/{{.metadata.labels.region}}`, ignores `.spec.http[].route[].weight` on `VirtualService`, and sets `RespectIgnoreDifferences=true`:
+
+```yaml
+      ignoreDifferences:
+        - group: networking.istio.io
+          kind: VirtualService
+          jqPathExpressions:
+            - .spec.http[].route[].weight
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+```
+
+## Verification
+
+Trigger a new rollout by bumping the image tag in your overlay (or editing the `Rollout` template) and pushing to Git.
+
+Watch the rollout in US. Note that `kubectl` requires global flags (`--context`, `-n`) **after** the plugin name (`argo rollouts`):
+
 ```bash
-kubectl --context prod-us-east-1 -n echo argo rollouts get rollout echo --watch
+kubectl argo rollouts get rollout echo --context prod-us-east-1 -n echo --watch
 ```
 
-While it's running, you can test the A/B routing header we configured earlier:
+While the canary step is paused, send traffic from a sidecar-injected pod inside the cluster (`gateways: ["mesh"]` applies only to meshed callers) to test the header route and feed metrics into Prometheus:
+
 ```bash
-curl -sS -H 'x-user-type: beta' http://echo-stable.echo.svc.cluster.local
+kubectl --context prod-us-east-1 -n echo run curl --rm -it --restart=Never \
+  --image=curlimages/curl -- curl -sS -H 'x-user-type: beta' http://echo-stable.echo.svc.cluster.local
 ```
 
-If the Prometheus metrics are healthy, the rollout will progress to 100% and the new version becomes "stable". If the app starts throwing 500 errors, the controller will abort and retreat to safety. We have achieved safe, automated, progressive delivery across multiple regions.
+If the canary non-5xx rate stays at or above 99%, Argo Rollouts promotes through `25%` and `50%` to `100%`. If it drops below 99%, the controller aborts and resets `primary` back to `100 / 0`.
 
-[Previous: Part 7](/posts/multi-region-series-part-7-cd/) · [Continue to Part 8: Chaos Testing](/posts/multi-region-series-part-8-chaos/)
+Next, we inject pod kills and network latency with Chaos Mesh.
+
+[Previous: Part 7](/posts/multi-region-series-part-7-cd/) · [Index](/posts/multi-region-learning/) · [Next: Part 8](/posts/multi-region-series-part-8-chaos/)

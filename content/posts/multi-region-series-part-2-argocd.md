@@ -1,20 +1,12 @@
 ---
-title: "Chapter 2: Multi-Region Cloud Training - GitOps with Argo CD"
+title: "Multi-Region Cloud Training, Part 2: GitOps with Argo CD"
 date: 2025-10-17T09:11:00-07:00
 draft: false
 aliases:
   - /posts/multi-region-series-02-argocd/
 ---
 
-If you're managing multiple clusters, applying manifests by hand with `kubectl apply` quickly becomes a nightmare. You lose track of what is deployed where, configuration drift sets in, and rolling back a bad change turns into an archeological dig through your terminal history.
-
-The solution is GitOps. We want our GitHub repository to be the absolute single source of truth. If a manifest isn't in main, it doesn't run in the cluster. Period.
-
-To achieve this, we're going to use Argo CD. We'll set it up as a control plane that watches our repository and automatically syncs changes out to both our US and EU clusters.
-
-### The ApplicationSet Approach
-
-We could manually create an Argo CD `Application` resource for every app in every cluster, but that scales poorly. Instead, we'll use an `ApplicationSet`. This allows us to define a template: "For every cluster that matches this label, deploy this application."
+Running `kubectl apply` by hand against two clusters leads to configuration drift and slow rollbacks. Here we set up Argo CD as a single control plane that watches Git and reconciles both clusters from cluster labels.
 
 ```text
  [GitHub Repo (manifests)]
@@ -27,20 +19,32 @@ We could manually create an Argo CD `Application` resource for every app in ever
    (syncs us)   (syncs eu)
 ```
 
-### Labeling and Registration
+## Installing Argo CD and Registering Clusters
 
-First, Argo CD needs to know our clusters exist and what "region" they represent. The ApplicationSet cluster generator reads labels from Argo CD's registered cluster secrets, not from Kubernetes namespace labels.
+Install Argo CD in your control cluster (or both clusters using `task argocd:install:all` from the repo `Taskfile.yml`):
 
-Assuming you have Argo CD running in a control cluster (or one of your regions acting as the control plane), register each cluster with a `region` label. This gives Argo CD the credentials it needs to deploy resources on your behalf and gives the ApplicationSet a safe selector.
+```bash
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+
+helm --kube-context prod-us-east-1 upgrade --install argocd argo/argo-cd \
+  -n argocd --create-namespace \
+  --set server.service.type=LoadBalancer \
+  --wait
+```
+
+Log in with the Argo CD CLI before registering clusters (`argocd login <ARGOCD_SERVER>` using the initial password in secret `argocd-initial-admin-secret`, or port-forward `svc/argocd-server` locally).
+
+Register both target clusters with an explicit `region` label. The `ApplicationSet` cluster generator reads labels from Argo CD's registered cluster Secrets in the `argocd` namespace, not from Kubernetes namespace labels.
 
 ```bash
 argocd cluster add prod-us-east-1 --name prod-us --label region=us --yes
 argocd cluster add prod-eu-west-1 --name prod-eu --label region=eu --yes
 ```
 
-### Writing the ApplicationSet
+## Writing the ApplicationSet
 
-Now for the magic. We define an `ApplicationSet` that uses the cluster generator. It looks at all the clusters Argo CD knows about, grabs their `region` label, and uses that to figure out which Kustomize overlay to apply.
+Instead of maintaining a separate `Application` per cluster, an `ApplicationSet` templates one `Application` per registered cluster matching `region in [us, eu]` and selects its overlay path from `metadata.labels.region`.
 
 Save this as `deploy/apps/echo-appset.yaml`:
 
@@ -51,44 +55,57 @@ metadata:
   name: echo-multicluster
   namespace: argocd
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
-    # Target only registered clusters with an explicit region label
     - clusters:
         selector:
           matchExpressions:
             - key: region
               operator: In
-              values: [ "us", "eu" ]
+              values: ["us", "eu"]
   template:
     metadata:
-      name: 'echo-{{name}}'
+      name: 'echo-{{.name}}'
     spec:
       project: default
       destination:
-        server: '{{server}}'
+        server: '{{.server}}'
         namespace: echo
       source:
         repoURL: https://github.com/your-org/your-repo
         targetRevision: main
-        # Here is the clever part: we dynamically inject the region label
-        # to pick the correct overlay (e.g., deploy/rollouts/overlays/us)
-        path: deploy/rollouts/overlays/{{metadata.labels.region}}
+        path: deploy/overlays/{{.metadata.labels.region}}/echo
       syncPolicy:
-        automated: 
+        automated:
           prune: true
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
 ```
 
-### Verifying the Deployment
+A few details worth calling out:
 
-Once you apply that ApplicationSet to your control cluster, Argo CD takes over. You can verify it worked by checking the application list:
+- `goTemplate: true` with `missingkey=error` replaces the deprecated `fasttemplate` engine (`{{name}}`) and fails fast if a cluster is missing the `region` label.
+- `CreateNamespace=true` ensures Argo CD creates the `echo` namespace on each target cluster before applying manifests.
+- `path: deploy/overlays/{{.metadata.labels.region}}/echo` matches the `Deployment` overlays we build in Parts 5 through 7. In Part 7.1, when we migrate to Argo Rollouts, we switch to `deploy/rollouts/overlays/{{.metadata.labels.region}}` and add `ignoreDifferences` so `selfHeal: true` does not overwrite live traffic weights (see [deploy/apps/rollouts-appset.yaml](https://github.com/memogarcia/memogarcia.github.io/blob/master/deploy/apps/rollouts-appset.yaml) in this repo).
+
+## Verification
+
+Apply the `ApplicationSet` to your control cluster:
+
+```bash
+kubectl --context prod-us-east-1 -n argocd apply -f deploy/apps/echo-appset.yaml
+```
+
+List the generated applications:
 
 ```bash
 argocd app list
 ```
 
-You should see two applications, `echo-prod-us` and `echo-prod-eu`, and their status should be `Sync OK`. You can also check the clusters directly to confirm the `echo` namespace was created. 
+You should see `echo-prod-us` and `echo-prod-eu`. Until we commit the overlay manifests in Part 5, both applications will show a sync error for the missing path; once Part 5 is pushed, their status should move to `Synced` and `Healthy`, and the `echo` namespace will exist in both clusters.
 
-We now have a continuous deployment pipeline that automatically targets multiple regions based on cluster labels. Next, we'll tackle the hardest part of multi-region architecture: cross-cluster networking with Istio.
+Next, we install Istio across both clusters and wire up cross-cluster traffic.
 
-[Previous: Part 1](/posts/multi-region-series-part-1-baseline/) · [Continue to Part 3: Istio Multi Region Mesh](/posts/multi-region-series-part-3-istio/)
+[Previous: Part 1](/posts/multi-region-series-part-1-baseline/) · [Index](/posts/multi-region-learning/) · [Next: Part 3](/posts/multi-region-series-part-3-istio/)
