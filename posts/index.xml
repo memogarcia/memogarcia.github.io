@@ -166,121 +166,117 @@ At small scale, the person who gets paged probably wrote the code. They know wha
     </item>
     
     <item>
-      <title>Chapter 7.1: Multi-Region Cloud Training - Progressive Delivery with Argo Rollouts</title>
-      <link>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</link>
-      <pubDate>Sun, 19 Oct 2025 10:45:00 -0700</pubDate>
-      
-      <guid>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</guid>
-      <description>In the previous section, we manually configured Istio to split traffic between two versions. While powerful, doing this by hand for every release is a fast track to burnout.
-We want an automated controller that says: &amp;ldquo;Deploy the new version, send 10% of traffic to it, wait a minute, check Prometheus to see if the error rate spiked. If it looks good, increase to 50%. If it fails, instantly roll back to the old version.</description>
-    </item>
-    
-    <item>
-      <title>Chapter 8: Multi-Region Cloud Training - Chaos Testing</title>
-      <link>https://memo.mx/posts/multi-region-series-part-8-chaos/</link>
-      <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
-      
-      <guid>https://memo.mx/posts/multi-region-series-part-8-chaos/</guid>
-      <description>We&amp;rsquo;ve spent a lot of time building a resilient, multi-region architecture. We have multiple replicas, automated rollbacks, and cross-cluster routing. But architecture diagrams lie. The only way to know if your system is actually resilient is to break it on purpose.
-This is Chaos Engineering. We are going to intentionally inject failures into our clusters to verify that our safety mechanisms actually work when things go wrong.
-To do this, we&amp;rsquo;ll use Chaos Mesh, a powerful Kubernetes-native chaos engineering platform.</description>
-    </item>
-    
-    <item>
-      <title>Chapter 9: Multi-Region Cloud Training - Load Generation and SLOs</title>
+      <title>Multi-Region Cloud Training, Part 9: Load Generation and SLOs</title>
       <link>https://memo.mx/posts/multi-region-series-part-9-load/</link>
-      <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
+      <pubDate>Fri, 17 Oct 2025 09:19:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-9-load/</guid>
-      <description>We&amp;rsquo;ve reached the final stage of our multi-region deployment lab. We have GitOps, service meshes, dynamic IAM, progressive delivery, and chaos testing. But none of that matters if the application falls over the moment it receives real user traffic.
-To prove our architecture is ready for production, we need to test it under load and measure our latency against our Service Level Objectives (SLOs).
-Instead of running a load testing tool from our laptops (which introduces internet latency and local network bottlenecks into the results), we are going to run our load generator directly inside the Kubernetes clusters.</description>
+      <description>Running a load generator from a laptop mixes home ISP jitter and client-side bottlenecks into your measurements. Here we run k6 as a Kubernetes Job inside the cluster with explicit SLO thresholds so we can compare two paths directly:
+In-cluster latency: US pod calling http://echo-stable.echo.svc.cluster.local/ (or http://echo.echo.svc.cluster.local/ if you skipped Part 7.1). Cross-cluster latency: US pod calling http://echo.eu.mesh.local/ across the Istio east-west gateway from Part 3. k6 Script With SLO Thresholds Store the script in a ConfigMap (deploy/tools/k6/script-configmap.</description>
     </item>
     
     <item>
-      <title>Chapter 7: Multi-Region Cloud Training - CD with Istio Traffic Policy</title>
+      <title>Multi-Region Cloud Training, Part 8: Chaos Testing</title>
+      <link>https://memo.mx/posts/multi-region-series-part-8-chaos/</link>
+      <pubDate>Fri, 17 Oct 2025 09:18:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-part-8-chaos/</guid>
+      <description>Multiple replicas and traffic policies look reassuring in YAML, but you only find out how they behave by injecting faults while traffic is running. Here we install Chaos Mesh and run two experiments against the echo workload: scheduled pod kills and artificial network delay.
+Installing Chaos Mesh Install Chaos Mesh in the US cluster (or in both clusters with task chaos:install:all):
+BASHCopy helm repo add chaos-mesh https://charts.chaos-mesh.org helm repo update helm --kube-context prod-us-east-1 upgrade --install chaos-mesh chaos-mesh/chaos-mesh \ -n chaos-testing \ --create-namespace \ --set dashboard.</description>
+    </item>
+    
+    <item>
+      <title>Multi-Region Cloud Training, Part 7.1: Progressive Delivery with Argo Rollouts</title>
+      <link>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</link>
+      <pubDate>Fri, 17 Oct 2025 09:17:00 -0700</pubDate>
+      
+      <guid>https://memo.mx/posts/multi-region-series-part-7a-rollouts/</guid>
+      <description>Shifting Istio VirtualService weights by hand for every release does not scale. Here we replace the Deployment setup from Parts 5 through 7 with Argo Rollouts, which steps through canary weights (10% -&amp;gt; 25% -&amp;gt; 50% -&amp;gt; 100%), queries Prometheus for canary 5xx errors, and aborts automatically if the check fails.
+Prerequisites: Prometheus, Envoy Scraping, and Argo Rollouts The AnalysisTemplate below queries istio_requests_total from Prometheus in the observability namespace. By default, kube-prometheus-stack does not scrape Istio Envoy sidecars (:15090/stats/prometheus), so you also need a PodMonitor labeled release: kube-prometheus-stack (see deploy/istio/podmonitor.</description>
+    </item>
+    
+    <item>
+      <title>Multi-Region Cloud Training, Part 7: CD with Istio Traffic Policy</title>
       <link>https://memo.mx/posts/multi-region-series-part-7-cd/</link>
       <pubDate>Fri, 17 Oct 2025 09:16:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-7-cd/</guid>
-      <description>Continuous Deployment is great until you automatically deploy a critical bug to every region simultaneously. If our Argo CD pipeline instantly updates 100% of our pods to a broken version, our global availability drops to zero.
-To prevent this, we need to decouple deployment (starting the new pods) from release (sending user traffic to those pods).
-Since we already have Istio installed for our cross-cluster mesh, we can leverage its Envoy proxies to control the flow of traffic with extreme precision.</description>
+      <description>Updating every pod in both regions at once exposes 100% of traffic to any regression in a new build. To separate deploying new pods from shifting user traffic onto them, we add an Istio DestinationRule and VirtualService to split traffic by weight and shed failing pods before they cause a cascading failure.
+Standard Kubernetes Service load balancing distributes requests evenly across every ready pod (using random selection under iptables/nftables kube-proxy, or round-robin under ipvs), so traffic share is tied to replica count.</description>
     </item>
     
     <item>
-      <title>Chapter 6: Multi-Region Cloud Training - CI with GitHub Actions</title>
+      <title>Multi-Region Cloud Training, Part 6: CI with GitHub Actions and Taskfile</title>
       <link>https://memo.mx/posts/multi-region-series-part-6-ci/</link>
       <pubDate>Fri, 17 Oct 2025 09:15:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-6-ci/</guid>
-      <description>We have a GitOps pipeline waiting to deploy our app, but how does the new image actually get built and telling Argo CD to deploy it?
-The classic anti-pattern is having a developer build a Docker image on their laptop, push it with the latest tag, and then run kubectl rollout restart. This breaks the GitOps contract and makes debugging impossible because latest means something different every day.
-Instead, we want our Continuous Integration (CI) system to handle the build, and then programmatically commit the new image tag back to our repository.</description>
+      <description>Right now, pushing a code change requires building an image by hand and editing the tag in Git. Pushing mutable tags like latest breaks traceability because you can no longer tell which commit is running in which cluster.
+Here we wire GitHub Actions to run the same task targets we run locally, tag every image with ${{ github.sha }}, and update deploy/base/echo/kustomization.yaml with kustomize edit set image so Argo CD rolls it out.</description>
     </item>
     
     <item>
-      <title>Chapter 5: Multi-Region Cloud Training - Sample App and Overlays</title>
+      <title>Multi-Region Cloud Training, Part 5: Sample App and Overlays</title>
       <link>https://memo.mx/posts/multi-region-series-part-5-app/</link>
       <pubDate>Fri, 17 Oct 2025 09:14:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-5-app/</guid>
-      <description>We have our GitOps pipeline, our cross-cluster mesh, and secure IAM roles. Now, we actually need something to deploy.
-When deploying applications across multiple regions, you almost always run into the configuration drift problem. Ninety percent of your deployment manifest is identical (the container image, the ports, the health checks), but ten percent needs to be highly specific to the region (environment variables, database connection strings, resource limits).
-Copying and pasting the entire Deployment.</description>
+      <description>Across regions, most of a workload&amp;rsquo;s manifests stay identical (image, ports, selectors) while a small set of fields varies by cluster (environment variables, replicas, resource limits). Duplicating deployment.yaml per region guarantees drift as soon as someone updates one copy and forgets the other.
+Here we build a small Go HTTP service and split its Kubernetes manifests into a shared Kustomize base plus per-region overlays.
+Sample App and Container Build Create app/main.</description>
     </item>
     
     <item>
-      <title>Chapter 4: Multi-Region Cloud Training - AWS Identity (IRSA vs Pod Identity)</title>
+      <title>Multi-Region Cloud Training, Part 4: AWS Identity (IRSA vs Pod Identity)</title>
       <link>https://memo.mx/posts/multi-region-series-part-4-identity/</link>
       <pubDate>Fri, 17 Oct 2025 09:13:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-4-identity/</guid>
-      <description>When your applications run in Kubernetes, they eventually need to talk to cloud services - reading from an S3 bucket, publishing to an SNS topic, or querying DynamoDB.
-The absolute worst way to do this is by hardcoding AWS Access Keys into your application&amp;rsquo;s environment variables or secrets. It&amp;rsquo;s a massive security vulnerability waiting to happen. The slightly less terrible way is assigning an IAM role to the underlying EC2 worker nodes, but that breaks the principle of least privilege (every pod on that node gets the same permissions).</description>
+      <description>Skip this part if you are running local kind or k3d clusters without AWS.
+Workloads on Kubernetes often need to call AWS APIs (S3, SNS, DynamoDB). Static IAM access keys stored in secrets leak easily and require manual rotation. Attaching an IAM role to the EC2 worker node gives every pod on that node the same permissions.
+To scope credentials to a single Kubernetes ServiceAccount, AWS offers two mechanisms: IRSA (IAM Roles for Service Accounts) and EKS Pod Identity.</description>
     </item>
     
     <item>
-      <title>Chapter 3: Multi-Region Cloud Training - Istio Multi-Region Mesh</title>
+      <title>Multi-Region Cloud Training, Part 3: Istio Multi-Region Mesh</title>
       <link>https://memo.mx/posts/multi-region-series-part-3-istio/</link>
       <pubDate>Fri, 17 Oct 2025 09:12:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-3-istio/</guid>
-      <description>Now that we can deploy to multiple clusters, we need them to talk to each other. If a service in the US needs to reach a service in the EU, how does that traffic route? How do we secure it?
-We could expose everything to the public internet via Ingress, but that&amp;rsquo;s a massive security risk for internal API traffic. Instead, we&amp;rsquo;ll use Istio to build a multi-primary, multi-network service mesh.</description>
+      <description>Because our two clusters sit on separate networks without a flat pod IP space, a pod in US cannot reach a pod IP in EU directly. To route internal traffic between clusters without exposing application services on public Ingress, we install Istio in both clusters with east-west gateways and wire cross-cluster calls over mTLS on port 15443.
+TEXTCopy Cross-cluster routing via east-west gateways +-----------+ mTLS (port 15443) +-----------+ | Cluster US|&amp;lt;=================================&amp;gt;| Cluster EU| | istiod | | istiod | | east-west | ServiceEntry + DestinationRule | east-west | | gateway | ------------------------------&amp;gt; | gateway | | echo svc | | echo svc | +-----------+ +-----------+ Shared Trust Prerequisite Both clusters must share the same meshID and trustDomain, and they must share a common root CA.</description>
     </item>
     
     <item>
-      <title>Chapter 2: Multi-Region Cloud Training - GitOps with Argo CD</title>
+      <title>Multi-Region Cloud Training, Part 2: GitOps with Argo CD</title>
       <link>https://memo.mx/posts/multi-region-series-part-2-argocd/</link>
       <pubDate>Fri, 17 Oct 2025 09:11:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-2-argocd/</guid>
-      <description>If you&amp;rsquo;re managing multiple clusters, applying manifests by hand with kubectl apply quickly becomes a nightmare. You lose track of what is deployed where, configuration drift sets in, and rolling back a bad change turns into an archeological dig through your terminal history.
-The solution is GitOps. We want our GitHub repository to be the absolute single source of truth. If a manifest isn&amp;rsquo;t in main, it doesn&amp;rsquo;t run in the cluster.</description>
+      <description>Running kubectl apply by hand against two clusters leads to configuration drift and slow rollbacks. Here we set up Argo CD as a single control plane that watches Git and reconciles both clusters from cluster labels.
+TEXTCopy [GitHub Repo (manifests)] │ ▼ [Argo CD (control)] ╱ ╲ ▼ ▼ [Cluster US] [Cluster EU] (syncs us) (syncs eu) Installing Argo CD and Registering Clusters Install Argo CD in your control cluster (or both clusters using task argocd:install:all from the repo Taskfile.</description>
     </item>
     
     <item>
-      <title>Chapter 1: Multi-Region Cloud Training - Building the Baseline</title>
+      <title>Multi-Region Cloud Training, Part 1: Baseline Repo and Environments</title>
       <link>https://memo.mx/posts/multi-region-series-part-1-baseline/</link>
       <pubDate>Fri, 17 Oct 2025 09:10:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-series-part-1-baseline/</guid>
-      <description>Building systems across multiple regions is notoriously difficult. You have to navigate latency, configuration drift, and complex networking topologies. Before we dive into the fun stuff - like GitOps with Argo CD or cross-cluster routing with Istio - we need to establish a rock-solid foundation.
-In this lab series, we&amp;rsquo;re going to build a realistic multi-region deployment from the ground up.
-A quick note on cost: Running a true multi-region architecture in AWS just for a training lab can get expensive quickly.</description>
+      <description>Working across two clusters makes it easy to run a command against the wrong context. Before installing Argo CD or Istio, we lock down cluster names, container image variables, and repeatable local commands.
+Cost note: Running a true multi-region AWS setup for a training lab gets expensive fast. This series mocks two regions with two separate Kubernetes clusters (for example, local kind or k3d clusters) named prod-us-east-1 and prod-eu-west-1.
+Starting Layout TEXTCopy [Dev Laptop] │ (task, kubectl) ▼ [GitHub Repo] [Container Registry] │ │ │ manifests │ images ▼ ▼ (Next: Argo CD and Istio mesh) Contexts: prod-us-east-1, prod-eu-west-1 Standardizing Commands with Taskfile Instead of relying on your current kubectl context or ad-hoc shell scripts, wrap repeated commands in a root Taskfile.</description>
     </item>
     
     <item>
-      <title>Multi region cloud training</title>
+      <title>Multi-Region Cloud Training</title>
       <link>https://memo.mx/posts/multi-region-learning/</link>
       <pubDate>Fri, 17 Oct 2025 09:00:00 -0700</pubDate>
       
       <guid>https://memo.mx/posts/multi-region-learning/</guid>
-      <description>Train teams on multi region, high throughput, chaos tested GitOps without burning money.
-Assumptions/Constraints
-Money note: We mock “multi region” with two Kubernetes clusters, not two AWS regions. You have two kube contexts reachable from your workstation. You control a container registry and a GitHub repo. Optional AWS: use IRSA or EKS Pod Identity in Lab 4. Labs
-Part 1 - Baseline Repo and Environments Sets shared variables and task wrappers.</description>
+      <description>Hands-on lab notes for practicing multi-region Kubernetes, GitOps, Istio cross-cluster routing, progressive delivery, chaos testing, and load testing without paying for two cloud regions.
+Assumptions and Constraints Cost boundary: this series mocks &amp;ldquo;multi-region&amp;rdquo; with two Kubernetes clusters (for example, kind or k3d), not two AWS regions. You have two kube contexts reachable from your workstation: prod-us-east-1 and prod-eu-west-1. You control a container registry and a GitHub repository. Part 4 (AWS IAM) is optional if you are running local clusters.</description>
     </item>
     
     <item>
