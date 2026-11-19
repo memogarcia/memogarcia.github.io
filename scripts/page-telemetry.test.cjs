@@ -120,6 +120,15 @@ insights.navigator.globalPrivacyControl=true; const countBeforeOptOut=insights.e
 insights.telemetry.begin(); insights.telemetry.finish(); assert.equal(insights.events.length,countBeforeOptOut);
 const converted=mount(); converted.telemetry.converted(); converted.telemetry.converted();
 assert.equal(converted.events.filter(b=>b.events[0].name==='tool_completed').length,1);
+
+const cut = mount({ location: { pathname: '/tools/cut/' } });
+cut.telemetry.begin();
+cut.telemetry.converted();
+cut.telemetry.converted();
+const cutEvents = cut.events.map(({ events }) => events[0]);
+assert.deepEqual(cutEvents.map(({ name }) => name), ['page_viewed', 'page_session', 'tool_started', 'tool_completed']);
+assert.ok(cutEvents.every(({ properties }) => properties.path === '/tools/cut/' && properties.section === 'tools'));
+assert.equal(cutEvents[2].properties.action_id, cutEvents[3].properties.action_id);
 console.log('Audience sanitization, paired actions, quiet timers, deduplication and opt-outs passed.');
 
 const browsers = new Map();

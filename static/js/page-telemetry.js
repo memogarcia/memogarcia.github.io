@@ -7,7 +7,7 @@
   if (location.origin !== 'https://memo.mx' || blocked() || window.memoPageTelemetry) return;
   const script = document.currentScript;
   const tools = ['/tools/', '/tools/pomodoro/', '/tools/breathing/', '/tools/meditation/',
-    '/tools/fasting/', '/tools/zenkaku-hankaku/', '/tools/typewriter/'];
+    '/tools/fasting/', '/tools/zenkaku-hankaku/', '/tools/typewriter/', '/tools/cut/'];
   const section = script?.dataset.section === 'posts' ? 'posts' : 'tools';
   const path = section === 'posts' ? script.dataset.page : location.pathname;
   if (section === 'tools' ? !tools.includes(path) :
