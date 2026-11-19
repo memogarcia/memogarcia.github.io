@@ -125,8 +125,22 @@
 
             <div class="quick-row">
               <button id="quick-text-btn" type="button" class="btn-secondary flex-1">+ Caption</button>
-              <button id="demo-btn" type="button" class="btn-secondary" title="Play Last Train, an editable 30-second demo reel">Play 30s demo</button>
+              <button id="demo-btn" type="button" class="btn-secondary" title="Watch Last Train, an editable photo film with recorded station sound">Watch demo</button>
             </div>
+            <details class="reel-credits">
+              <summary>Film credits &amp; sources</summary>
+              <p>Six camera photographs. Two field recordings. Edited together as a photo film, not a record of one journey.</p>
+              <p>Photography, under the <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>:</p>
+              <ul>
+                <li><a href="https://unsplash.com/photos/C6xxEZd5kCw" target="_blank" rel="noopener">Nichika Sakurai</a> · Ueno</li>
+                <li><a href="https://unsplash.com/photos/nOAixxwkG50" target="_blank" rel="noopener">BREAKIFY</a> · Platform</li>
+                <li><a href="https://unsplash.com/photos/5pkYWUDDthQ" target="_blank" rel="noopener">Hugh Han</a> · Passengers</li>
+                <li><a href="https://unsplash.com/photos/ALmaIiORITY" target="_blank" rel="noopener">Finan Akbar</a> · Carriage, Nikko</li>
+                <li><a href="https://unsplash.com/photos/z_BqHQblmwo" target="_blank" rel="noopener">Noham Genevieve</a> · Passing lights</li>
+                <li><a href="https://unsplash.com/photos/XZBppPCX3Vo" target="_blank" rel="noopener">Andreas Rasmussen</a> · Rain</li>
+              </ul>
+              <p>Sound by RutgerMuller, recorded in Japan in 2016: <a href="https://freesound.org/people/RutgerMuller/sounds/361913/" target="_blank" rel="noopener">station ambience</a> and <a href="https://freesound.org/people/RutgerMuller/sounds/364866/" target="_blank" rel="noopener">departing train</a>. <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a>. Excerpted, levelled, and faded.</p>
+            </details>
           </div>
 
           <div id="media-list" class="media-list" role="list">
@@ -162,22 +176,28 @@
 
       <!-- Center: Video Preview Stage -->
       <section class="stage-panel" aria-label="Video preview">
+        <div class="screening-header">
+          <div><span class="screening-wordmark">Cut</span><span id="screening-title">Last Train</span></div>
+          <button id="screening-close" type="button" class="screening-close">Back to editor <span aria-hidden="true">×</span></button>
+        </div>
         <div class="stage-viewport" id="stage-viewport">
           <div class="canvas-frame" id="canvas-frame">
             <canvas id="preview-canvas" width="720" height="1280" aria-label="Video preview canvas"></canvas>
+          </div>
             <div id="stage-empty" class="stage-empty">
               <div class="stage-empty-inner">
-                <h2 class="stage-empty-title">Free online video editor</h2>
-                <p class="stage-empty-sub">Drop clips here to start editing. Your files stay on your device. No account required.</p>
+                <p class="stage-empty-eyebrow">A 30-second photo film</p>
+                <h2 class="stage-empty-title">Last Train</h2>
+                <p class="stage-empty-sub">Japan after dark.<br>Real photographs. Sound from the platform.</p>
                 <div class="stage-empty-actions">
-                  <button id="empty-import-btn" type="button" class="btn-primary">Import media</button>
-                  <button id="empty-demo-btn" type="button" class="btn-secondary">Play 30s demo reel</button>
+                  <button id="empty-demo-btn" type="button" class="btn-primary">Watch the film</button>
+                  <button id="empty-import-btn" type="button" class="btn-secondary">Start with your own media</button>
                 </div>
+                <p class="stage-empty-note">Every cut is editable. Headphones recommended.</p>
               </div>
             </div>
-          </div>
         </div>
-
+        <input id="screening-scrub" class="screening-scrub" type="range" min="0" max="30" step="0.1" value="0" aria-label="Film position">
         <!-- Transport Bar -->
         <div class="transport">
           <div class="transport-time">
@@ -206,6 +226,9 @@
           </div>
 
           <div class="transport-right">
+            <button id="cinema-btn" type="button" class="icon-btn" title="Cinema view" aria-label="Open cinema view" disabled>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>
+            </button>
             <button id="master-mute-btn" type="button" class="icon-btn" title="Mute / Unmute preview" aria-label="Mute preview" aria-pressed="false">
               <svg class="icon-vol-on" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>
               <svg class="icon-vol-off" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
@@ -625,6 +648,7 @@
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="screening-dialog" aria-label="Cinema view"></dialog>
 
   <script src="/tools/cut/cut.js"></script>
 </body>
