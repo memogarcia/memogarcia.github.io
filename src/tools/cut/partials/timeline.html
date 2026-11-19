@@ -1,0 +1,79 @@
+<!-- Bottom Multi-Track Timeline -->
+<section class="timeline-dock" aria-label="Timeline">
+  <div class="timeline-toolbar">
+    <div class="tl-tools-left">
+      <button id="split-btn" type="button" class="tool-btn" title="Split clip at playhead (S)" disabled>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 3v18"/><path d="M4 8h4v8H4"/><path d="M20 8h-4v8h4"/></svg>
+        <span>Split</span>
+        <kbd>S</kbd>
+      </button>
+      <button id="dup-btn" type="button" class="tool-btn" title="Duplicate selected clip (D)" disabled>
+        <span>Duplicate</span>
+        <kbd>D</kbd>
+      </button>
+      <button id="del-btn" type="button" class="tool-btn danger" title="Delete selected clip (Del · Shift+Del to ripple)" disabled>
+        <span>Delete</span>
+      </button>
+      <span class="tl-sep" aria-hidden="true"></span>
+      <button id="tl-text-btn" type="button" class="tool-btn" title="Add caption at playhead (T)">
+        <span>+ Text</span>
+        <kbd>T</kbd>
+      </button>
+      <button id="close-gaps-btn" type="button" class="tool-btn" title="Remove blank gaps between video clips" disabled>
+        <span>Close gaps</span>
+      </button>
+    </div>
+
+    <div class="tl-tools-right">
+      <button id="snap-btn" type="button" class="tool-btn" aria-pressed="true" title="Snap clips to edges and playhead">
+        <span>Snap</span>
+      </button>
+      <div class="zoom-group" aria-label="Timeline zoom">
+        <button id="zoom-out-btn" type="button" class="icon-btn sm" title="Zoom out (-)" aria-label="Zoom out">−</button>
+        <input id="zoom-slider" type="range" min="24" max="220" step="4" value="72" aria-label="Timeline zoom level">
+        <button id="zoom-in-btn" type="button" class="icon-btn sm" title="Zoom in (+)" aria-label="Zoom in">+</button>
+        <button id="zoom-fit-btn" type="button" class="mini-btn" title="Fit whole project in view">Fit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="timeline-grid">
+    <div class="track-headers">
+      <div class="ruler-corner" aria-hidden="true">TIME</div>
+      <div class="track-head" data-track="text">
+        <span class="track-tag tag-text" aria-hidden="true">T</span>
+        <span class="track-name">Text</span>
+        <button type="button" class="track-toggle" data-toggle-track="text" title="Hide / Show text track" aria-label="Hide or show text track" aria-pressed="false">●</button>
+      </div>
+      <div class="track-head" data-track="video">
+        <span class="track-tag tag-video" aria-hidden="true">V</span>
+        <span class="track-name">Video</span>
+        <button type="button" class="track-toggle" data-toggle-track="video" title="Mute / Unmute video audio" aria-label="Mute or unmute video audio" aria-pressed="false">●</button>
+      </div>
+      <div class="track-head" data-track="audio">
+        <span class="track-tag tag-audio" aria-hidden="true">A</span>
+        <span class="track-name">Audio</span>
+        <button type="button" class="track-toggle" data-toggle-track="audio" title="Mute / Unmute audio track" aria-label="Mute or unmute audio track" aria-pressed="false">●</button>
+      </div>
+    </div>
+
+    <div class="timeline-scroll" id="timeline-scroll">
+      <div class="timeline-content" id="timeline-content">
+        <div class="ruler-row" id="ruler-row">
+          <canvas id="ruler-canvas" height="28"></canvas>
+        </div>
+
+        <div class="track-lane" id="lane-text" data-track="text"></div>
+        <div class="track-lane" id="lane-video" data-track="video"></div>
+        <div class="track-lane" id="lane-audio" data-track="audio"></div>
+
+        <div id="snap-line" class="snap-line" hidden></div>
+
+        <div id="playhead" class="playhead" aria-hidden="true">
+          <div class="playhead-cap"></div>
+          <div class="playhead-line"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

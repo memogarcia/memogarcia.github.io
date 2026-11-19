@@ -4,62 +4,8 @@
     {
       "name": "static",
       "runtimeExecutable": "python3",
-      "runtimeArgs": [
-        "-m",
-        "http.server",
-        "4173",
-        "--directory",
-        "/Users/memo/src/memogarcia.github.io/static"
-      ],
+      "runtimeArgs": ["-m", "http.server", "4173", "--directory", "/Users/memo/src/memogarcia.github.io/static"],
       "port": 4173
-    },
-    {
-      "name": "static-2",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": [
-        "-m",
-        "http.server",
-        "4174",
-        "--directory",
-        "/Users/memo/src/memogarcia.github.io/static"
-      ],
-      "port": 4174
-    },
-    {
-      "name": "static-4",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": [
-        "-m",
-        "http.server",
-        "4176",
-        "--directory",
-        "/Users/memo/src/memogarcia.github.io/static"
-      ],
-      "port": 4176
-    },
-    {
-      "name": "static-3",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": [
-        "-m",
-        "http.server",
-        "4175",
-        "--directory",
-        "/Users/memo/src/memogarcia.github.io/static"
-      ],
-      "port": 4175
-    },
-    {
-      "name": "static-5",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": [
-        "-m",
-        "http.server",
-        "4177",
-        "--directory",
-        "/Users/memo/src/memogarcia.github.io/static"
-      ],
-      "port": 4177
     }
   ]
 }

@@ -1,0 +1,53 @@
+<!-- Center: Video Preview Stage -->
+<section class="stage-panel" aria-label="Video preview">
+  <div class="stage-viewport" id="stage-viewport">
+    <div class="canvas-frame" id="canvas-frame">
+      <canvas id="preview-canvas" width="720" height="1280" aria-label="Video preview canvas"></canvas>
+      <div id="stage-empty" class="stage-empty">
+        <div class="stage-empty-inner">
+          <p class="stage-empty-title">Start cutting</p>
+          <p class="stage-empty-sub">Drop clips anywhere, import from disk, or open the built-in demo reel.</p>
+          <div class="stage-empty-actions">
+            <button id="empty-import-btn" type="button" class="btn-primary">Import media</button>
+            <button id="empty-demo-btn" type="button" class="btn-secondary">Try demo reel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transport Bar -->
+  <div class="transport">
+    <div class="transport-time">
+      <span id="time-current" class="timecode">00:00.0</span>
+      <span class="time-slash">/</span>
+      <span id="time-total" class="timecode muted">00:00.0</span>
+    </div>
+
+    <div class="transport-controls">
+      <button id="jump-start-btn" type="button" class="icon-btn" title="Jump to start (Home)" aria-label="Jump to start">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20 9 12l10-8v16Z"/><path d="M5 19V5"/></svg>
+      </button>
+      <button id="step-back-btn" type="button" class="icon-btn" title="Step back 0.1s (←)" aria-label="Step back">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button id="play-btn" type="button" class="play-btn" title="Play / Pause (Space)" aria-label="Play" aria-pressed="false">
+        <svg class="icon-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      </button>
+      <button id="step-fwd-btn" type="button" class="icon-btn" title="Step forward 0.1s (→)" aria-label="Step forward">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <button id="jump-end-btn" type="button" class="icon-btn" title="Jump to end (End)" aria-label="Jump to end">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l10 8-10 8V4Z"/><path d="M19 5v14"/></svg>
+      </button>
+    </div>
+
+    <div class="transport-right">
+      <button id="master-mute-btn" type="button" class="icon-btn" title="Mute / Unmute preview" aria-label="Mute preview" aria-pressed="false">
+        <svg class="icon-vol-on" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>
+        <svg class="icon-vol-off" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>

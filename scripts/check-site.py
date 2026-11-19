@@ -44,7 +44,7 @@ class Page(HTMLParser):
 assert (root / 'index.html').is_file(), 'Build artifact missing: index.html'
 assert (root / 'CNAME').read_text().strip() == 'memo.mx'
 assert not any(path.is_file() for folder in root.rglob('node_modules') for path in folder.rglob('*')), 'Dependency files leaked into build'
-for folder in ('preview', 'content', 'themes', 'layouts', 'scripts'):
+for folder in ('preview', 'content', 'themes', 'layouts', 'scripts', 'src'):
     assert not (root / folder).exists(), f'Source folder leaked into build: {folder}'
 
 published = {'posts': 0, 'stories': 0}
@@ -125,4 +125,6 @@ ET.parse(root / 'index.xml')
 ET.parse(root / 'sitemap.xml')
 assert (root / 'img/me-main-page.png').is_file(), 'Legacy image mount missing'
 assert (root / 'img/chapter-1-title.png').is_file(), 'New image mount missing'
+for built in ('index.html', 'cut.js', 'cut.css'):
+    assert (root / 'tools/cut' / built).is_file(), f'Cut build missing: {built} (run npm run build before Hugo)'
 print(f'Checked {checked} pages, {published["posts"]} published posts, {published["stories"]} published stories, {drafts} excluded drafts/future pages, {comments} comment embeds, assets, code blocks, RSS, sitemap, search, and page styles.')

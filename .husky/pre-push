@@ -1,0 +1,2 @@
+# Typecheck, line limit, tests, and the production build of src/tools into static/tools.
+npm run check

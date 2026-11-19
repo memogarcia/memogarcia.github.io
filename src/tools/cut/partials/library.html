@@ -1,0 +1,53 @@
+<!-- Left: Media & Captions Drawer -->
+<aside class="panel media-panel" aria-label="Media and captions library">
+  <div class="panel-tabs" role="tablist" aria-label="Library tabs">
+    <button type="button" class="tab-btn" data-tab="media" role="tab" aria-selected="true">Media</button>
+    <button type="button" class="tab-btn" data-tab="captions" role="tab" aria-selected="false">Captions</button>
+  </div>
+
+  <!-- Media Tab -->
+  <div id="tab-media" class="tab-pane">
+    <div class="media-actions">
+      <button id="import-btn" type="button" class="import-dropzone">
+        <span class="import-plus">+</span>
+        <span class="import-label">Import video, photo, audio</span>
+        <span class="import-sub">MP4, WebM, MOV, PNG, MP3, SRT</span>
+      </button>
+      <input id="file-input" type="file" accept="video/*,image/*,audio/*,.srt,.vtt" multiple hidden>
+
+      <div class="quick-row">
+        <button id="quick-text-btn" type="button" class="btn-secondary flex-1">+ Caption</button>
+        <button id="demo-btn" type="button" class="btn-secondary" title="Load a playable 3-clip demo reel with transitions, captions, and music">Demo</button>
+      </div>
+    </div>
+
+    <div id="media-list" class="media-list" role="list">
+      <p class="empty-note">Imported files stay in your browser. Click any item to append it to the timeline.</p>
+    </div>
+  </div>
+
+  <!-- Captions Tab -->
+  <div id="tab-captions" class="tab-pane" hidden>
+    <div class="captions-pane">
+      <div class="field-group">
+        <label class="field-label">Quick style presets</label>
+        <p class="field-hint mt-0">Click a style to drop a caption at the playhead.</p>
+        <div id="caption-cards" class="caption-cards"></div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label" for="bulk-captions">Script or .SRT import</label>
+          <button id="srt-file-btn" type="button" class="text-btn">Open .srt</button>
+          <input id="srt-file-input" type="file" accept=".srt,.vtt,.txt" hidden>
+        </div>
+        <textarea id="bulk-captions" class="text-area" rows="5" placeholder="Paste .srt subtitles, or one caption per line to auto-time across your video…"></textarea>
+        <label class="check-row">
+          <input id="bulk-replace" type="checkbox" checked>
+          <span>Replace existing captions</span>
+        </label>
+        <button id="bulk-captions-btn" type="button" class="btn-secondary full-width mt-xs">Generate captions on timeline</button>
+      </div>
+    </div>
+  </div>
+</aside>

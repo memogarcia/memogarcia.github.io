@@ -1,0 +1,19 @@
+{
+  "name": "memogarcia-github-io",
+  "private": true,
+  "description": "Build tooling for the TypeScript tools under src/tools.",
+  "scripts": {
+    "build": "node scripts/build-tools.mjs",
+    "dev": "node scripts/build-tools.mjs --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:cut": "node scripts/cut.test.cjs",
+    "lint:lines": "node scripts/check-line-limit.mjs --all",
+    "check": "npm run typecheck && npm run lint:lines && npm run test:cut && npm run build",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "husky": "^9.1.7",
+    "typescript": "^7.0.2"
+  }
+}

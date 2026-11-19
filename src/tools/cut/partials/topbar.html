@@ -1,0 +1,39 @@
+<!-- Top Studio Header -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a class="back-link" href="/tools/">← Tools</a>
+    <span class="sep" aria-hidden="true">/</span>
+    <h1 class="brand">Cut</h1>
+    <span id="save-status" class="save-status" title="Edits and imported files auto-save locally in IndexedDB">Local</span>
+  </div>
+
+  <div class="topbar-center" role="group" aria-label="Canvas aspect ratio">
+    <div class="aspect-group" id="aspect-group">
+      <button type="button" class="seg-btn" data-aspect="9:16" aria-pressed="true" title="9:16 Vertical (Reels / TikTok / Shorts)">9:16</button>
+      <button type="button" class="seg-btn" data-aspect="16:9" aria-pressed="false" title="16:9 Landscape (YouTube / Wide)">16:9</button>
+      <button type="button" class="seg-btn" data-aspect="1:1" aria-pressed="false" title="1:1 Square">1:1</button>
+      <button type="button" class="seg-btn" data-aspect="4:5" aria-pressed="false" title="4:5 Portrait Feed">4:5</button>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="history-btns">
+      <button id="undo-btn" type="button" class="icon-btn" title="Undo (Cmd/Ctrl+Z)" aria-label="Undo" disabled>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+      </button>
+      <button id="redo-btn" type="button" class="icon-btn" title="Redo (Cmd/Ctrl+Shift+Z)" aria-label="Redo" disabled>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+      </button>
+    </div>
+    <button id="new-project-btn" type="button" class="mini-btn" title="Clear project and start fresh">New</button>
+    <button id="shortcuts-btn" type="button" class="icon-btn" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+    <button class="theme-control icon-btn" type="button" aria-label="Change theme" hidden>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
+        <g class="theme-icon-light"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g>
+        <g class="theme-icon-dark"><path d="M20.5 13.2A8.5 8.5 0 0 1 10.8 3.5a8.5 8.5 0 1 0 9.7 9.7Z"/></g>
+      </svg>
+    </button>
+    <button id="export-open-btn" type="button" class="btn-primary">Export</button>
+  </div>
+</header>

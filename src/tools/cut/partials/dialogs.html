@@ -1,0 +1,102 @@
+<!-- Seam Transition Popover -->
+<div id="trans-popover" class="trans-popover" hidden role="dialog" aria-label="Clip transition">
+  <div class="trans-pop-head">
+    <span>Transition</span>
+    <button id="trans-pop-close" type="button" class="icon-btn sm" aria-label="Close">×</button>
+  </div>
+  <div id="trans-pop-grid" class="trans-pop-grid"></div>
+  <div class="field-row mt-sm">
+    <label class="field-sub" for="trans-pop-dur">Duration</label>
+    <output id="trans-pop-dur-out" class="field-val">0.45s</output>
+  </div>
+  <input id="trans-pop-dur" type="range" min="0.15" max="1.2" step="0.05" value="0.45">
+</div>
+
+<!-- Timeline Drag Tooltip -->
+<div id="drag-tip" class="drag-tip" hidden aria-hidden="true"></div>
+
+<!-- Export Modal -->
+<div id="export-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="export-modal-title">
+  <div class="modal-backdrop" data-close-modal="export-modal"></div>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="export-modal-title">Export video</h2>
+      <button type="button" class="icon-btn" data-close-modal="export-modal" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-sub">Rendered directly on your machine using HTML5 Canvas, Web Audio, and MediaRecorder. No server, no watermark.</p>
+
+      <div class="export-options" id="export-options">
+        <div class="field-group">
+          <label class="field-label">Resolution</label>
+          <div class="pill-row">
+            <button type="button" class="pill-btn" data-res="720" aria-pressed="true">720p (Fast)</button>
+            <button type="button" class="pill-btn" data-res="1080" aria-pressed="false">1080p (HD)</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Frame rate</label>
+          <div class="pill-row">
+            <button type="button" class="pill-btn" data-fps="30" aria-pressed="true">30 fps</button>
+            <button type="button" class="pill-btn" data-fps="60" aria-pressed="false">60 fps</button>
+          </div>
+        </div>
+
+        <div class="export-summary" id="export-summary">
+          <div><span>Output</span><strong id="export-dims">720 × 1280</strong></div>
+          <div><span>Duration</span><strong id="export-dur">00:00.0</strong></div>
+          <div><span>Format</span><strong id="export-fmt">Detecting…</strong></div>
+        </div>
+      </div>
+
+      <div id="export-progress-box" class="export-progress" hidden>
+        <div class="export-preview-wrap">
+          <canvas id="export-preview-canvas" width="270" height="270"></canvas>
+        </div>
+        <div class="progress-track"><div id="export-bar" class="progress-bar"></div></div>
+        <div class="progress-meta">
+          <span id="export-status">Rendering…</span>
+          <span id="export-pct" class="timecode">0%</span>
+        </div>
+        <p class="field-hint">Keep this tab visible while exporting for steady frame timing.</p>
+      </div>
+
+      <div id="export-done-box" class="export-done" hidden>
+        <p class="done-msg">Export ready.</p>
+        <a id="export-download-link" class="btn-primary full-width" download>Download video</a>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button id="export-cancel-btn" type="button" class="btn-secondary" data-close-modal="export-modal">Close</button>
+      <button id="export-start-btn" type="button" class="btn-primary">Render &amp; Download</button>
+    </div>
+  </div>
+</div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div id="shortcuts-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+  <div class="modal-backdrop" data-close-modal="shortcuts-modal"></div>
+  <div class="modal-card sm">
+    <div class="modal-head">
+      <h2 id="shortcuts-title">Keyboard shortcuts</h2>
+      <button type="button" class="icon-btn" data-close-modal="shortcuts-modal" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <dl class="shortcut-list">
+        <div><dt><kbd>Space</kbd></dt><dd>Play / Pause</dd></div>
+        <div><dt><kbd>S</kbd></dt><dd>Split clip at playhead</dd></div>
+        <div><dt><kbd>T</kbd></dt><dd>Add caption at playhead</dd></div>
+        <div><dt><kbd>D</kbd></dt><dd>Duplicate selected clip</dd></div>
+        <div><dt><kbd>Del</kbd> / <kbd>⇧ Del</kbd></dt><dd>Delete / Ripple-delete clip</dd></div>
+        <div><dt><kbd>←</kbd> / <kbd>→</kbd></dt><dd>Step 0.1s (hold Shift for 1s)</dd></div>
+        <div><dt><kbd>Home</kbd> / <kbd>End</kbd></dt><dd>Jump to start / end</dd></div>
+        <div><dt><kbd>⌘/Ctrl</kbd> + <kbd>Z</kbd></dt><dd>Undo (add Shift to Redo)</dd></div>
+        <div><dt><kbd>+</kbd> / <kbd>−</kbd> / <kbd>⌘ Scroll</kbd></dt><dd>Zoom timeline in / out</dd></div>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>

@@ -1,0 +1,226 @@
+<!-- Right: Context-Sensitive Inspector -->
+<aside class="panel inspector-panel" aria-label="Clip inspector">
+  <div class="panel-head">
+    <span id="inspector-title" class="panel-title">Canvas</span>
+    <span id="inspector-meta" class="panel-meta">9:16</span>
+  </div>
+
+  <div class="inspector-body">
+    <!-- Default / Project Settings -->
+    <div id="insp-project" class="insp-section">
+      <div class="field-group">
+        <label class="field-label">Canvas Background</label>
+        <div class="swatch-row" id="bg-swatches">
+          <button type="button" class="swatch" data-color="#0e0f12" style="--sw:#0e0f12" title="Charcoal"></button>
+          <button type="button" class="swatch" data-color="#000000" style="--sw:#000000" title="Pure Black"></button>
+          <button type="button" class="swatch" data-color="#f4f0e4" style="--sw:#f4f0e4" title="Warm Paper"></button>
+          <button type="button" class="swatch" data-color="#19232c" style="--sw:#19232c" title="Midnight"></button>
+          <button type="button" class="swatch" data-color="#2c1d1a" style="--sw:#2c1d1a" title="Espresso"></button>
+          <input id="bg-color-input" type="color" class="color-picker" value="#0e0f12" aria-label="Custom canvas background color">
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <p class="tip-title">80/20 workflow</p>
+        <ul class="tip-list">
+          <li><strong>Space</strong> plays or pauses</li>
+          <li><strong>S</strong> splits at the red needle</li>
+          <li><strong>Click ◇</strong> between clips for transitions</li>
+          <li><strong>Drag preview</strong> to reframe video or move captions</li>
+          <li><strong>Shift + Del</strong> ripple-deletes a clip</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Video / Image Inspector -->
+    <div id="insp-video" class="insp-section" hidden>
+      <div class="field-group" id="v-speed-group">
+        <div class="field-row">
+          <label class="field-label" for="v-speed">Speed</label>
+          <output id="v-speed-out" class="field-val">1.00×</output>
+        </div>
+        <div class="pill-row" id="v-speed-presets">
+          <button type="button" class="pill-btn" data-speed="0.5">0.5×</button>
+          <button type="button" class="pill-btn" data-speed="1">1×</button>
+          <button type="button" class="pill-btn" data-speed="1.5">1.5×</button>
+          <button type="button" class="pill-btn" data-speed="2">2×</button>
+        </div>
+        <input id="v-speed" type="range" min="0.25" max="4" step="0.05" value="1">
+      </div>
+
+      <div class="field-group" id="v-audio-group">
+        <div class="field-row">
+          <label class="field-label" for="v-vol">Audio</label>
+          <div class="inline-actions">
+            <output id="v-vol-out" class="field-val">100%</output>
+            <button id="v-mute-btn" type="button" class="mini-btn" aria-pressed="false">Mute</button>
+          </div>
+        </div>
+        <input id="v-vol" type="range" min="0" max="200" step="1" value="100">
+        <button id="v-extract-audio-btn" type="button" class="btn-secondary full-width mt-xs" hidden>Detach audio to track A</button>
+      </div>
+
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label">Framing</label>
+          <button id="v-frame-reset" type="button" class="text-btn">Reset</button>
+        </div>
+        <div class="pill-row">
+          <button id="v-fit-cover" type="button" class="pill-btn" data-fit="cover">Fill</button>
+          <button id="v-fit-contain" type="button" class="pill-btn" data-fit="contain">Fit</button>
+          <button id="v-rotate-btn" type="button" class="pill-btn" title="Rotate 90°">↻ 90°</button>
+          <button id="v-flip-btn" type="button" class="pill-btn" aria-pressed="false" title="Flip horizontally">⇄ Flip</button>
+        </div>
+        <label class="check-row" id="v-blur-row">
+          <input id="v-blur-bg" type="checkbox" checked>
+          <span>Blurred backdrop when fitted</span>
+        </label>
+        <div class="field-row mt-sm">
+          <label class="field-sub" for="v-zoom">Zoom</label>
+          <output id="v-zoom-out" class="field-val">100%</output>
+        </div>
+        <input id="v-zoom" type="range" min="50" max="250" step="1" value="100">
+        <p class="field-hint">Drag directly on the preview to reframe.</p>
+      </div>
+
+      <div class="field-group" id="v-motion-group" hidden>
+        <label class="field-label">Photo motion</label>
+        <div class="filter-grid" id="v-kenburns-grid"></div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label">Filter</label>
+          <button id="v-color-reset" type="button" class="text-btn">Reset</button>
+        </div>
+        <div class="filter-grid" id="v-filter-grid"></div>
+        <div class="slider-stack">
+          <div class="field-row">
+            <label class="field-sub" for="v-bright">Brightness</label>
+            <output id="v-bright-out" class="field-val">100%</output>
+          </div>
+          <input id="v-bright" type="range" min="40" max="170" step="1" value="100">
+          <div class="field-row">
+            <label class="field-sub" for="v-contrast">Contrast</label>
+            <output id="v-contrast-out" class="field-val">100%</output>
+          </div>
+          <input id="v-contrast" type="range" min="40" max="170" step="1" value="100">
+          <div class="field-row">
+            <label class="field-sub" for="v-sat">Saturation</label>
+            <output id="v-sat-out" class="field-val">100%</output>
+          </div>
+          <input id="v-sat" type="range" min="0" max="200" step="1" value="100">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Transition in &amp; fades</label>
+        <div class="filter-grid" id="v-trans-grid"></div>
+        <div id="v-trans-dur-wrap">
+          <div class="field-row">
+            <label class="field-sub" for="v-trans-dur">Transition length</label>
+            <output id="v-trans-dur-out" class="field-val">0.45s</output>
+          </div>
+          <input id="v-trans-dur" type="range" min="0.15" max="1.2" step="0.05" value="0.45">
+        </div>
+        <div class="field-row mt-sm">
+          <label class="field-sub" for="v-fadein">Fade in from black</label>
+          <output id="v-fadein-out" class="field-val">0.0s</output>
+        </div>
+        <input id="v-fadein" type="range" min="0" max="2" step="0.1" value="0">
+        <div class="field-row">
+          <label class="field-sub" for="v-fadeout">Fade out to black</label>
+          <output id="v-fadeout-out" class="field-val">0.0s</output>
+        </div>
+        <input id="v-fadeout" type="range" min="0" max="2" step="0.1" value="0">
+      </div>
+    </div>
+
+    <!-- Text Inspector -->
+    <div id="insp-text" class="insp-section" hidden>
+      <div class="field-group">
+        <label class="field-label" for="t-content">Caption text</label>
+        <textarea id="t-content" class="text-area" rows="3" placeholder="Type your caption…"></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Style preset</label>
+        <div class="filter-grid" id="t-preset-grid"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Motion</label>
+        <div class="pill-row" id="t-anim-row">
+          <button type="button" class="pill-btn" data-anim="pop">Pop</button>
+          <button type="button" class="pill-btn" data-anim="fade">Fade</button>
+          <button type="button" class="pill-btn" data-anim="slide">Slide</button>
+          <button type="button" class="pill-btn" data-anim="none">None</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label" for="t-size">Size</label>
+          <output id="t-size-out" class="field-val">44px</output>
+        </div>
+        <input id="t-size" type="range" min="20" max="96" step="1" value="44">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Position</label>
+        <div class="pill-row" id="t-pos-row">
+          <button type="button" class="pill-btn" data-pos="top">Top</button>
+          <button type="button" class="pill-btn" data-pos="center">Center</button>
+          <button type="button" class="pill-btn" data-pos="bottom">Bottom</button>
+        </div>
+        <p class="field-hint">Or drag the text directly on the preview.</p>
+      </div>
+
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label">Custom colors</label>
+          <button id="t-color-reset" type="button" class="text-btn">Preset default</button>
+        </div>
+        <div class="color-pair">
+          <label class="color-chip">
+            <input id="t-color" type="color" value="#ffffff">
+            <span>Text</span>
+          </label>
+          <label class="color-chip">
+            <input id="t-bg" type="color" value="#121316">
+            <span>Backdrop</span>
+          </label>
+        </div>
+        <button id="t-apply-all-btn" type="button" class="btn-secondary full-width mt-sm">Apply style to all captions</button>
+      </div>
+    </div>
+
+    <!-- Audio Inspector -->
+    <div id="insp-audio" class="insp-section" hidden>
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label" for="a-vol">Volume</label>
+          <div class="inline-actions">
+            <output id="a-vol-out" class="field-val">85%</output>
+            <button id="a-mute-btn" type="button" class="mini-btn" aria-pressed="false">Mute</button>
+          </div>
+        </div>
+        <input id="a-vol" type="range" min="0" max="200" step="1" value="85">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Audio fades</label>
+        <div class="field-row">
+          <label class="field-sub" for="a-fadein">Fade in</label>
+          <output id="a-fadein-out" class="field-val">0.2s</output>
+        </div>
+        <input id="a-fadein" type="range" min="0" max="3" step="0.1" value="0.2">
+        <div class="field-row">
+          <label class="field-sub" for="a-fadeout">Fade out</label>
+          <output id="a-fadeout-out" class="field-val">0.4s</output>
+        </div>
+        <input id="a-fadeout" type="range" min="0" max="3" step="0.1" value="0.4">
+      </div>
+    </div>
+  </div>
+</aside>

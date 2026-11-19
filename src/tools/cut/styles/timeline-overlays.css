@@ -1,0 +1,219 @@
+/* Seam Transition Diamond */
+.seam-btn {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  z-index: 5;
+  padding: 0;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--ink-soft);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px var(--shadow);
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.seam-btn::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: var(--ink-soft);
+  opacity: 0.65;
+}
+
+.seam-btn:hover {
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.16);
+  border-color: var(--accent);
+}
+
+.seam-btn.active {
+  background: var(--accent);
+  border-color: #ffffff;
+}
+
+.seam-btn.active::after {
+  background: #ffffff;
+  opacity: 1;
+}
+
+/* Seam Transition Popover */
+.trans-popover {
+  position: fixed;
+  z-index: 55;
+  width: 224px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 14px 36px var(--shadow);
+}
+
+.trans-popover[hidden] {
+  display: none;
+}
+
+.trans-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font: 600 11px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+.trans-pop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+/* Timeline Drag Tooltip */
+.drag-tip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 70;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: var(--ink);
+  color: var(--bg);
+  font: 600 11px var(--mono);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  box-shadow: 0 4px 14px var(--shadow);
+  will-change: transform;
+}
+
+.drag-tip[hidden] {
+  display: none;
+}
+
+.export-preview-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+#export-preview-canvas {
+  max-width: 100%;
+  max-height: 180px;
+  width: auto;
+  height: auto;
+  border-radius: 6px;
+  background: #0b0c0e;
+  border: 1px solid var(--line);
+}
+
+.clip-label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  padding: 0 11px;
+  font-size: 11px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.clip-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clip-pill {
+  flex-shrink: 0;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.45);
+  font: 10px var(--mono);
+}
+
+.trim-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  z-index: 4;
+  cursor: ew-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trim-handle::after {
+  content: "";
+  width: 2.5px;
+  height: 16px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.55);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.clip-block:hover .trim-handle::after,
+.clip-block.selected .trim-handle::after {
+  opacity: 1;
+}
+
+.trim-left { left: 0; }
+.trim-right { right: 0; }
+
+/* Playhead & Snap Line */
+
+.snap-line {
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  left: 0;
+  width: 1.5px;
+  background: var(--snap);
+  z-index: 5;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  z-index: 6;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.playhead-cap {
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 12px;
+  height: 14px;
+  background: var(--playhead);
+  clip-path: polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%);
+  pointer-events: auto;
+  cursor: ew-resize;
+}
+
+.playhead-line {
+  position: absolute;
+  top: 12px;
+  bottom: 0;
+  left: -1px;
+  width: 2px;
+  background: var(--playhead);
+}
+

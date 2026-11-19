@@ -1,0 +1,225 @@
+/* ── App Shell ─────────────────────────────────────────── */
+
+.app {
+  display: grid;
+  grid-template-rows: 48px minmax(0, 1fr) 236px;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ── Topbar ────────────────────────────────────────────── */
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  z-index: 10;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.back-link {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font: 12px var(--mono);
+  white-space: nowrap;
+}
+
+.back-link:hover {
+  color: var(--ink);
+}
+
+.sep {
+  color: var(--ink-faint);
+}
+
+.brand {
+  margin: 0;
+  font: 700 15px / 1 var(--mono);
+  letter-spacing: -0.02em;
+}
+
+.save-status {
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: 10px var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.save-status.is-saved {
+  border-color: var(--video-border);
+  color: var(--ink-soft);
+}
+
+.topbar-center {
+  display: flex;
+  justify-content: center;
+}
+
+.aspect-group {
+  display: inline-flex;
+  padding: 2px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  gap: 2px;
+}
+
+.seg-btn {
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font: 11.5px var(--mono);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.seg-btn:hover {
+  color: var(--ink);
+}
+
+.seg-btn[aria-pressed="true"] {
+  background: var(--panel-alt);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.history-btns {
+  display: inline-flex;
+  gap: 2px;
+  margin-right: 2px;
+}
+
+/* ── Buttons ───────────────────────────────────────────── */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  font-size: 12.5px;
+  text-decoration: none;
+  transition: background 0.12s ease, transform 0.08s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--panel-alt);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 12.5px;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--ink-soft);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-soft);
+  font: 600 13px var(--mono);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.icon-btn.sm {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--panel-alt);
+  color: var(--ink);
+}
+
+.text-btn {
+  border: 0;
+  background: transparent;
+  padding: 2px 4px;
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.text-btn:hover {
+  text-decoration: underline;
+}
+
+.mini-btn {
+  padding: 3px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--panel-alt);
+  color: var(--ink-soft);
+  font: 11px var(--mono);
+}
+
+.mini-btn:hover,
+.mini-btn[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Theme icons */
+.theme-control[hidden] { display: none; }
+.theme-icon-light, .theme-icon-dark { display: none; }
+:root[data-theme="light"] .theme-icon-device,
+:root[data-theme="dark"] .theme-icon-device { display: none; }
+:root[data-theme="light"] .theme-icon-light,
+:root[data-theme="dark"] .theme-icon-dark { display: inline; }
+

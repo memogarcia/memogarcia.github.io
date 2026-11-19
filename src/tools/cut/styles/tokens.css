@@ -1,0 +1,164 @@
+/* Cut — Browser Video Editor. Studio-first dark & archival light table themes. */
+
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("/fonts/source-serif-4/roman.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+:root {
+  /* Light mode: warm archival Moviola editing table */
+  --bg: #ece7dc;
+  --panel: #f5f1e7;
+  --panel-alt: #e6e0d2;
+  --stage: #ddd6c7;
+  --ink: #1b1b1e;
+  --ink-soft: #5c5b56;
+  --ink-faint: rgba(27, 27, 30, 0.22);
+  --line: #d4cdbe;
+  --line-strong: #beb6a4;
+  --accent: #b4392b;
+  --accent-hover: #992d21;
+  --accent-ink: #faf7f2;
+  --accent-soft: rgba(180, 57, 43, 0.12);
+
+  /* Track identity colors */
+  --video-bg: #2e4a41;
+  --video-border: #487365;
+  --video-ink: #f4f1e8;
+
+  --text-bg: #6a4c2a;
+  --text-border: #9c7240;
+  --text-ink: #fbf6ec;
+
+  --audio-bg: #2c435a;
+  --audio-border: #4a6f94;
+  --audio-ink: #eef4fa;
+
+  --playhead: #c83e2f;
+  --snap: #d48c28;
+  --shadow: rgba(24, 22, 18, 0.14);
+
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace;
+  --serif: "Source Serif 4", Georgia, serif;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  /* Dark mode: quiet editing room */
+  --bg: #111215;
+  --panel: #17181c;
+  --panel-alt: #1f2127;
+  --stage: #0b0c0e;
+  --ink: #efeae0;
+  --ink-soft: #9698a0;
+  --ink-faint: rgba(239, 234, 224, 0.16);
+  --line: #272930;
+  --line-strong: #393c46;
+  --accent: #de5646;
+  --accent-hover: #ea695a;
+  --accent-ink: #fffaf4;
+  --accent-soft: rgba(222, 86, 70, 0.16);
+
+  --video-bg: #1f3932;
+  --video-border: #3a6e5e;
+  --video-ink: #eaf3ef;
+
+  --text-bg: #4c371d;
+  --text-border: #8c6533;
+  --text-ink: #fbf0df;
+
+  --audio-bg: #1c3145;
+  --audio-border: #38638c;
+  --audio-ink: #e5f1fc;
+
+  --playhead: #ef5343;
+  --snap: #f0b14b;
+  --shadow: rgba(0, 0, 0, 0.45);
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111215;
+    --panel: #17181c;
+    --panel-alt: #1f2127;
+    --stage: #0b0c0e;
+    --ink: #efeae0;
+    --ink-soft: #9698a0;
+    --ink-faint: rgba(239, 234, 224, 0.16);
+    --line: #272930;
+    --line-strong: #393c46;
+    --accent: #de5646;
+    --accent-hover: #ea695a;
+    --accent-ink: #fffaf4;
+    --accent-soft: rgba(222, 86, 70, 0.16);
+
+    --video-bg: #1f3932;
+    --video-border: #3a6e5e;
+    --video-ink: #eaf3ef;
+
+    --text-bg: #4c371d;
+    --text-border: #8c6533;
+    --text-ink: #fbf0df;
+
+    --audio-bg: #1c3145;
+    --audio-border: #38638c;
+    --audio-ink: #e5f1fc;
+
+    --playhead: #ef5343;
+    --snap: #f0b14b;
+    --shadow: rgba(0, 0, 0, 0.45);
+
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+

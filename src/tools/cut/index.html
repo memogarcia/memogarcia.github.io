@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cut · Browser Video Editor</title>
+  <meta name="description" content="Local-first video editor in the browser. Trim, split, add transitions, layer captions and music, apply color filters, and export MP4 or WebM without uploading a single file.">
+  <link rel="canonical" href="https://memo.mx/tools/cut/">
+  <meta property="og:site_name" content="Memo Garcia">
+  <meta property="og:title" content="Cut · Browser Video Editor">
+  <meta property="og:description" content="Trim, split, title, and export video right in the browser. Files stay on your machine.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://memo.mx/tools/cut/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://memo.mx/img/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cut · Browser Video Editor">
+  <meta name="twitter:description" content="Trim, split, title, and export video right in the browser.">
+  <meta name="twitter:image" content="https://memo.mx/img/og-default.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://memo.mx/tools/cut/#app",
+        "name": "Cut",
+        "url": "https://memo.mx/tools/cut/",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript, HTML5 Canvas, Web Audio, and MediaRecorder",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "description": "Local-first browser video editor for trimming, splitting, adding transitions, captions and audio, color grading, and exporting video without server uploads.",
+        "author": { "@type": "Person", "name": "Memo Garcia", "url": "https://memo.mx/about/" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://memo.mx/" },
+          { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://memo.mx/tools/" },
+          { "@type": "ListItem", "position": 3, "name": "Cut", "item": "https://memo.mx/tools/cut/" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script src="/tools/theme.js"></script>
+  <script src="/js/page-telemetry.js" defer></script>
+  <script src="/tools/analytics.js" defer></script>
+  <link rel="stylesheet" href="/tools/cut/cut.css">
+</head>
+<body>
+  <div id="drop-overlay" class="drop-overlay" hidden aria-hidden="true">
+    <div class="drop-overlay-card">
+      <div class="drop-overlay-icon">+</div>
+      <p class="drop-overlay-title">Drop video, photos, audio, or .srt</p>
+      <p class="drop-overlay-sub">Processed locally in your browser. Nothing is uploaded.</p>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- @include partials/topbar.html -->
+
+    <!-- Middle 3-Pane Workspace -->
+    <main class="workspace">
+      <!-- @include partials/library.html -->
+
+      <!-- @include partials/stage.html -->
+
+      <!-- @include partials/inspector.html -->
+    </main>
+
+    <!-- @include partials/timeline.html -->
+  </div>
+
+  <!-- @include partials/dialogs.html -->
+
+  <script src="/tools/cut/cut.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+/* Cut — Browser Video Editor. Bundled to /tools/cut/cut.css by scripts/build-tools.mjs. */
+@import './tokens.css';
+@import './shell.css';
+@import './workspace.css';
+@import './inspector.css';
+@import './timeline.css';
+@import './timeline-overlays.css';
+@import './dialogs.css';

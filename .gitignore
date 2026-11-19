@@ -8,3 +8,6 @@ resources/
 .playwright-cli/
 output/
 preview/
+
+# Build output of src/tools (npm run build); CI builds it before Hugo
+static/tools/cut/

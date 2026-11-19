@@ -1,21 +1,27 @@
-// Run: node scripts/cut.test.cjs
+// Run: node scripts/cut.test.cjs  (Node 22.18+ strips the TypeScript types natively)
 const assert = require('node:assert/strict');
-const { readFileSync } = require('node:fs');
+const { readdirSync, readFileSync } = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
-const E = require(path.join(ROOT, 'static/tools/cut/engine.js'));
+const SRC = path.join(ROOT, 'src/tools/cut');
+const E = require(path.join(SRC, 'engine/index.ts'));
+
+const readDir = (dir, ext) => readdirSync(dir)
+  .filter((f) => f.endsWith(ext))
+  .sort()
+  .map((f) => readFileSync(path.join(dir, f), 'utf8'))
+  .join('\n');
 
 // 1. HTML & index registration checks
 {
-  const cutHtml = readFileSync(path.join(ROOT, 'static/tools/cut/index.html'), 'utf8');
+  const cutHtml = readFileSync(path.join(SRC, 'index.html'), 'utf8') + readDir(path.join(SRC, 'partials'), '.html');
   assert.match(cutHtml, /<h1 class="brand">Cut<\/h1>/);
   assert.match(cutHtml, /src="\/tools\/theme\.js"/);
   assert.match(cutHtml, /src="\/js\/page-telemetry\.js" defer/);
   assert.match(cutHtml, /src="\/tools\/analytics\.js" defer/);
-  assert.match(cutHtml, /src="\/tools\/cut\/engine\.js"/);
-  assert.match(cutHtml, /src="\/tools\/cut\/storage\.js"/);
   assert.match(cutHtml, /src="\/tools\/cut\/cut\.js"/);
+  assert.match(cutHtml, /href="\/tools\/cut\/cut\.css"/);
   assert.ok(!cutHtml.includes('no accounts or tracking'));
 
   const toolsIndex = readFileSync(path.join(ROOT, 'static/tools/index.html'), 'utf8');
@@ -26,7 +32,7 @@ const E = require(path.join(ROOT, 'static/tools/cut/engine.js'));
   assert.ok(!cutHtml.includes('<div class="track-headers" aria-hidden="true">'));
 
   // Mobile toast must reset top: auto when pinning bottom, and ruler canvas stays sticky
-  const cutCss = readFileSync(path.join(ROOT, 'static/tools/cut/cut.css'), 'utf8');
+  const cutCss = readDir(path.join(SRC, 'styles'), '.css');
   assert.match(cutCss, /#ruler-canvas\s*\{[^}]*position:\s*sticky;/);
   assert.match(cutCss, /@media\s*\(max-width:\s*760px\)[\s\S]*\.toast\s*\{[^}]*top:\s*auto;[^}]*bottom:\s*20px;/);
 }
@@ -127,9 +133,14 @@ const E = require(path.join(ROOT, 'static/tools/cut/engine.js'));
   const r1 = E.createVideoClip({ id: 'a', kind: 'image', name: 'A' }, 0, { duration: 3 });
   const r2 = E.createVideoClip({ id: 'b', kind: 'image', name: 'B' }, 3, { duration: 2 });
   const r3 = E.createVideoClip({ id: 'c', kind: 'image', name: 'C' }, 5, { duration: 4 });
-  const afterRipple = E.rippleDeleteClip([r1, r2, r3], r2.id);
-  assert.equal(afterRipple.length, 2);
+  const caption = E.createTextClip(6, { duration: 2 });
+  const music = E.createAudioClip({ id: 'mu', kind: 'audio', name: 'Bed', duration: 9 }, 0);
+  const afterRipple = E.rippleDeleteClip([r1, r2, r3, caption, music], r2.id);
+  assert.equal(afterRipple.length, 4);
   assert.equal(afterRipple.find((c) => c.id === r3.id).start, 3);
+  // Captions after the cut move with the picture; a bed that spans the cut stays put.
+  assert.equal(afterRipple.find((c) => c.id === caption.id).start, 4);
+  assert.equal(afterRipple.find((c) => c.id === music.id).start, 0);
 }
 
 // 6. Seam transitions detection & evaluation
@@ -271,6 +282,33 @@ with wrap`;
   assert.equal(E.detectMediaKind('track.m4a', ''), 'audio');
   assert.equal(E.detectMediaKind('captions.srt', ''), 'subtitle');
   assert.equal(E.detectMediaKind('doc.pdf', 'application/pdf'), null);
+}
+
+// 11. Regressions from the TypeScript migration review
+{
+  // Splitting a caption must not animate the cut: the halves keep alpha 1 at the seam.
+  const cap = E.createTextClip(0, { duration: 4, animation: 'pop' });
+  const split = E.splitClipAt([cap], cap.id, 2);
+  const [left, right] = split.clips;
+  assert.equal(E.evalTextAnim(left, left.duration - 0.01).alpha, 1);
+  assert.equal(E.evalTextAnim(right, 0.01).alpha, 1);
+  assert.equal(E.evalTextAnim(right, 0.01).scale, 1);
+  // Missing fades still fall back to the default animation length
+  assert.equal(E.evalTextAnim({ duration: 3, animation: 'fade' }, 0).alpha, 0);
+
+  // Duplicating a clip places the copy right after the original (preserveOrder)
+  const m1 = E.createVideoClip({ id: 'm1', kind: 'video', name: 'A', duration: 10 }, 0, { duration: 10 });
+  const m2 = E.createVideoClip({ id: 'm2', kind: 'video', name: 'B', duration: 2 }, 10, { duration: 2 });
+  const copy = { ...m1, id: 'copy', start: 10 };
+  const dup = E.resolveVideoTrackOverlap([m1, m2, copy], copy.id, { preserveOrder: true });
+  const at = Object.fromEntries(dup.map((c) => [c.id, c.start]));
+  assert.deepEqual(at, { [m1.id]: 0, copy: 10, [m2.id]: 20 });
+
+  // Timecode tenths survive floating-point error
+  assert.equal(E.formatTimecode(61.3), '01:01.3');
+  assert.equal(E.formatTimecode(0.3), '00:00.3');
+  assert.equal(E.formatTimecode(59.99), '00:59.9');
+  assert.equal(E.formatTimecode(119.95, false), '01:59');
 }
 
 console.log('Cut engine, transitions, SRT/script captions, overlap resolution, history, and HTML integration checks passed.');

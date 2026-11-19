@@ -64,6 +64,22 @@ python3 scripts/check-site.py public
 
 The last check requires a generated site. Builds write only to `public/`; workflows deploy that folder. The ignored `preview/` folder contains the earlier design snapshots and is not published. Legacy images in `content/img/` are mounted at `/img/` alongside new images in `static/img/`.
 
+## TypeScript tools
+
+Cut (`/tools/cut/`) is written in TypeScript under `src/tools/cut/`. esbuild bundles it into
+`static/tools/cut/` (`cut.js`, `cut.css`, and `index.html` assembled from `partials/`). That
+output is gitignored; the workflow builds it before Hugo runs.
+
+```sh
+npm install        # also installs the git hooks
+npm run dev        # rebuild on change, then serve static/ as usual
+npm run check      # typecheck, line limit, Cut tests, production build
+```
+
+Hooks (husky): `pre-commit` rejects staged source files over 500 lines; `pre-push` runs
+`npm run check`. Files that were already longer are listed in `scripts/check-line-limit.mjs`
+until they are split.
+
 ## Tools analytics
 
 The seven static tools pages bypass Hugo's head partial. Each loads
