@@ -468,6 +468,17 @@ main {
 .head { fill: var(--ink); stroke: none; transition: transform 1s steps(8); }
 .card:hover .head { transform: translateX(36px); }
 
+/* Cut */
+.film { fill: rgba(255, 255, 255, 0.22); stroke: var(--ink); stroke-width: 1.4; }
+.sprocket { stroke: var(--ink-soft); stroke-width: 2.2; stroke-linecap: butt; }
+.frame { fill: none; stroke: var(--ink-faint); stroke-width: 1.2; }
+.splice { stroke: var(--red); stroke-width: 1.8; }
+.splice-cap { fill: var(--red); stroke: none; }
+.film-left,
+.film-right { transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.card:hover .film-left { transform: translateX(-5px); }
+.card:hover .film-right { transform: translateX(5px); }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
