@@ -1,11 +1,10 @@
 {{ define "main" }}
-<main id="main" class="article-main">
-  <header class="article-heading"><h1>{{ .Title }}</h1></header>
-  {{ range (where site.RegularPages "Section" "posts").GroupByDate "2006" }}
-  <section class="archive-year">
-    <h2>{{ .Key }}</h2>
-    {{ partial "memo/post-list.html" .Pages }}
+<main id="main" class="archive-main">
+  <header class="section-heading">
+    <h1>{{ .Title }}</h1>
+  </header>
+  <section class="writing" aria-label="Archives">
+    {{ partial "memo/year-list.html" ((where site.RegularPages "Section" "posts").GroupByDate "2006") }}
   </section>
-  {{ end }}
 </main>
 {{ end }}

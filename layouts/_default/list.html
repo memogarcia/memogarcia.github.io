@@ -3,18 +3,47 @@
   {{ if .IsHome }}
   <section class="intro" aria-labelledby="welcome">
     <h1 id="welcome" lang="ja">{{ site.Params.homeInfoParams.Title }}</h1>
-    <div>{{ site.Params.homeInfoParams.Content | markdownify }}</div>
-    <a class="intro-link" href="https://networksbyanalogy.com/">Networks by Analogy <span aria-hidden="true">↗</span></a>
-    <a class="intro-link" href="https://magneticenterprises.com/">Magnetic Enterprises <span aria-hidden="true">↗</span></a>
+    <div class="intro-body">
+      <div class="intro-bio">{{ site.Params.homeInfoParams.Content | markdownify }}</div>
+      <div class="intro-links" aria-label="Projects">
+        <a class="intro-link" href="https://networksbyanalogy.com/">Networks by Analogy <span aria-hidden="true">↗</span></a>
+        <a class="intro-link" href="https://magneticenterprises.com/">Magnetic Enterprises <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
   </section>
+  {{ $stories := (where site.RegularPages "Section" "stories").ByDate.Reverse }}
+  {{ if gt (len $stories) 0 }}
+  <section class="stories-shelf" aria-label="Short stories">
+    <div class="index-group index-group--stories">
+      <h2 class="index-rail">Stories</h2>
+      <div class="index-column">
+        <ol class="post-list post-list--compact post-list--stories">
+          {{ range first 3 $stories }}
+          <li><a href="{{ .RelPermalink }}">
+            <span class="post-title">{{ .Title }}</span>
+            {{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2" }}</time>{{ end }}
+            <span class="row-arrow" aria-hidden="true">→</span>
+          </a></li>
+          {{ end }}
+        </ol>
+        <a class="shelf-more" href="{{ "stories/" | relURL }}">All short stories <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+  {{ end }}
   <section id="writing" class="writing" aria-label="Writing">
-    {{ partial "memo/post-list.html" (where site.RegularPages "Section" "posts").ByDate.Reverse }}
+    {{ partial "memo/year-list.html" ((where site.RegularPages "Section" "posts").GroupByDate "2006") }}
   </section>
   {{ else }}
-  <header class="article-heading"><h1>{{ .Title }}</h1></header>
-  {{ with .Content }}<div class="prose">{{ partial "memo/content.html" . }}</div>{{ end }}
-  <section class="writing" aria-label="{{ .Title }}">
-    {{ partial "memo/post-list.html" .Pages.ByDate.Reverse }}
+  <section class="section-page{{ if eq .Section "stories" }} section-page--stories{{ end }}">
+    <header class="section-heading">
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p class="section-subtitle">{{ . }}</p>{{ end }}
+    </header>
+    {{ with .Content }}<div class="prose">{{ partial "memo/content.html" . }}</div>{{ end }}
+    <section class="writing" aria-label="{{ .Title }}">
+      {{ partial "memo/post-list.html" .Pages.ByDate.Reverse }}
+    </section>
   </section>
   {{ end }}
 </main>

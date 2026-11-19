@@ -1,0 +1,14 @@
+{{ range . }}
+<div class="index-group">
+  <h2 class="index-rail">{{ .Key }}</h2>
+  <ol class="post-list post-list--compact">
+    {{ range .Pages }}
+    <li><a href="{{ .RelPermalink }}">
+      <span class="post-title">{{ .Title }}</span>
+      {{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2" }}</time>{{ end }}
+      <span class="row-arrow" aria-hidden="true">→</span>
+    </a></li>
+    {{ end }}
+  </ol>
+</div>
+{{ end }}

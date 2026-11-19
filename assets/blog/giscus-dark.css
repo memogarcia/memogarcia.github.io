@@ -1,15 +1,15 @@
 /* Keep this palette aligned with the dark theme in style.css. */
 main {
-  --paper: #161816;
-  --ink: #f1efe6;
-  --muted: #959d90;
-  --line: #2b332b;
-  --accent: #b9cca1;
-  --code-surface: #1f241f;
-  --code-key: #9bc2e6;
-  --code-string: #a9c898;
-  --code-comment: #8c9688;
-  --code-number: #dab188;
-  --danger: #e49b91;
+  --paper: #171614;
+  --ink: #ede7db;
+  --muted: #9a9285;
+  --line: #2d2a25;
+  --accent: #b0c69c;
+  --code-surface: #1e1c19;
+  --code-key: #99bcde;
+  --code-string: #a9c797;
+  --code-comment: #8e8679;
+  --code-number: #d8a77e;
+  --danger: #c9735e;
   color-scheme: dark;
 }

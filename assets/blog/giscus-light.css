@@ -1,15 +1,15 @@
 /* Keep this palette aligned with the light theme in style.css. */
 main {
-  --paper: #faf7f2;
-  --ink: #1a1c18;
-  --muted: #666c62;
-  --line: #e8e4db;
-  --accent: #364a32;
-  --code-surface: #f2eee5;
-  --code-key: #2c5282;
-  --code-string: #3e6837;
-  --code-comment: #666e63;
-  --code-number: #8c562e;
-  --danger: #a33a32;
+  --paper: #f5f0e6;
+  --ink: #1c1b18;
+  --muted: #665f54;
+  --line: #dfd7c7;
+  --accent: #2f4b34;
+  --code-surface: #ede6d8;
+  --code-key: #284b73;
+  --code-string: #335c38;
+  --code-comment: #6e675b;
+  --code-number: #8d4d2a;
+  --danger: #994130;
   color-scheme: light;
 }

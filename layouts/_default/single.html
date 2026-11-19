@@ -11,7 +11,7 @@
 {{ $backLabel := "← All posts" }}
 {{ if $isLab }}{{ $back = "labs/" | relURL }}{{ $backLabel = "← All labs" }}{{ end }}
 {{ if $isStory }}{{ $back = "stories/" | relURL }}{{ $backLabel = "← Short stories" }}{{ end }}
-<main id="main" class="article-main">
+<main id="main" class="article-main{{ if $isStory }} article-main--story{{ end }}{{ if $isLabIndex }} article-main--labs{{ end }}">
   {{ if or $isPost $isStory }}
   <div class="article-top">
     <a class="back-link" href="{{ $back }}">{{ $backLabel }}</a>
@@ -20,7 +20,7 @@
   <article>
     <header class="article-heading">
       {{ if or $isPost $isStory }}
-      <p class="eyebrow"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time></p>
+      <p class="eyebrow">{{ if $isStory }}<span>Short story</span><span class="eyebrow-sep" aria-hidden="true">·</span>{{ end }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time>{{ if gt .WordCount 150 }}<span class="eyebrow-sep" aria-hidden="true">·</span><span>{{ .ReadingTime }} min read</span>{{ end }}</p>
       {{ end }}
       <h1>{{ .Title }}</h1>
     </header>
@@ -42,16 +42,16 @@
       {{ range $i, $lab := $labs }}
         {{ if eq $lab.RelPermalink $current }}
           {{ if gt $i 0 }}
-            {{ with index $labs (sub $i 1) }}<a class="prev-link" href="{{ .RelPermalink }}">← {{ .Title }}</a>{{ end }}
+            {{ with index $labs (sub $i 1) }}<a class="prev-link" href="{{ .RelPermalink }}"><span class="nav-label">← Previous</span><span class="nav-title">{{ .Title }}</span></a>{{ end }}
           {{ end }}
           {{ if lt (add $i 1) (len $labs) }}
-            {{ with index $labs (add $i 1) }}<a class="next-link" href="{{ .RelPermalink }}">{{ .Title }} →</a>{{ end }}
+            {{ with index $labs (add $i 1) }}<a class="next-link" href="{{ .RelPermalink }}"><span class="nav-label">Next →</span><span class="nav-title">{{ .Title }}</span></a>{{ end }}
           {{ end }}
         {{ end }}
       {{ end }}
     {{ else }}
-      {{ with .NextInSection }}<a class="prev-link" href="{{ .RelPermalink }}">← {{ .Title }}</a>{{ end }}
-      {{ with .PrevInSection }}<a class="next-link" href="{{ .RelPermalink }}">{{ .Title }} →</a>{{ end }}
+      {{ with .NextInSection }}<a class="prev-link" href="{{ .RelPermalink }}"><span class="nav-label">← Newer</span><span class="nav-title">{{ .Title }}</span></a>{{ end }}
+      {{ with .PrevInSection }}<a class="next-link" href="{{ .RelPermalink }}"><span class="nav-label">Older →</span><span class="nav-title">{{ .Title }}</span></a>{{ end }}
     {{ end }}
   </nav>
   {{ end }}
