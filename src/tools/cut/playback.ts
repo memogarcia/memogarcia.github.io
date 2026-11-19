@@ -8,6 +8,7 @@ import { closeTransitionPopover } from './popover.ts';
 import { perf, project, S } from './state.ts';
 import { updatePlayheadUI, updateTimecodeUI } from './timeline.ts';
 import { markActiveTool, showToast } from './ui.ts';
+import { isScreening, updateScreening } from './screening.ts';
 
 const previewCtx = context2d(el.previewCanvas, { alpha: false });
 let previewRafId = 0;
@@ -52,8 +53,9 @@ export function renderPreview(): void {
   // Clips end on an exclusive boundary. Hold the last image when playback stops at the end.
   const atEnd = !S.playing && S.playhead > 0 && S.playhead === E.computeProjectDuration(project().clips);
   const frameTime = atEnd ? S.playhead - 0.001 : S.playhead;
-  renderFrame(previewCtx, project(), el.previewCanvas.width, el.previewCanvas.height, frameTime, true);
+  renderFrame(previewCtx, project(), el.previewCanvas.width, el.previewCanvas.height, frameTime, !isScreening());
   updateTimecodeUI();
+  updateScreening();
   updatePlayheadUI();
   const dt = performance.now() - t0;
   perf.previewFrames += 1;

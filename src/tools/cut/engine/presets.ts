@@ -59,6 +59,19 @@ export const KEN_BURNS = {
 const SANS = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
 export const TEXT_PRESETS = {
+  cinema: {
+    label: 'Cinema',
+    fontFamily: '"Helvetica Neue", Arial, sans-serif',
+    fontWeight: 500,
+    color: '#f5f3ed',
+    bgColor: 'transparent',
+    strokeColor: '',
+    strokeWidth: 0,
+    uppercase: false,
+    radius: 0,
+    padX: 8,
+    padY: 6,
+  },
   caption: {
     label: 'Caption',
     fontFamily: SANS,

@@ -8,6 +8,7 @@ import { addTextAtPlayhead } from './ingest.ts';
 import { seekTo, togglePlayback } from './playback.ts';
 import { closeTransitionPopover } from './popover.ts';
 import { project, S } from './state.ts';
+import { closeScreening, isScreening } from './screening.ts';
 
 function isTyping(): boolean {
   const tag = document.activeElement?.tagName;
@@ -42,6 +43,7 @@ function runShortcut(ev: KeyboardEvent): boolean {
 export function wireKeyboard(): void {
   window.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape') {
+      if (isScreening()) { ev.preventDefault(); closeScreening(); return; }
       onEscape();
       return;
     }
@@ -56,6 +58,14 @@ export function wireKeyboard(): void {
     const typing = isTyping();
     const mod = ev.metaKey || ev.ctrlKey;
     const key = ev.key.toLowerCase();
+    if (isScreening()) {
+      if (typing || mod || ev.altKey) return;
+      if (ev.code === 'Space' && document.activeElement?.tagName === 'BUTTON') return;
+      if (['Space', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.code)) {
+        if (runShortcut(ev)) ev.preventDefault();
+      }
+      return;
+    }
     if (mod && !ev.altKey && (key === 'z' || key === 'y')) {
       if (typing) return;
       ev.preventDefault();

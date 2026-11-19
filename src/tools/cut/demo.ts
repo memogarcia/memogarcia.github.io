@@ -1,34 +1,35 @@
 // Loads the reel's media through the same path as imported files, so it can be edited and restored.
 import { fitTimelineZoom } from './actions.ts';
 import { ensureAudioContext } from './audio.ts';
-import { cutLastTrain, reelPhotos } from './demo-sequence.ts';
+import { cutLastTrain, REEL_ID, reelAudio, reelPhotos } from './demo-sequence.ts';
 import type { ReelSource } from './demo-sequence.ts';
 import { el } from './dom.ts';
 import { commitState } from './history.ts';
 import { loadAudioMedia, loadImageMedia } from './ingest.ts';
 import { persistMedia } from './persist.ts';
 import { pausePlayback, startPlayback } from './playback.ts';
-import { makeProceduralThumbs } from './procedural.ts';
+import { openScreening } from './screening.ts';
 import { mediaMap, S } from './state.ts';
 import type { MediaItem } from './types.ts';
 import { showToast } from './ui.ts';
 
 async function loadSource(key: ReelSource): Promise<MediaItem> {
-  const id = `cut-last-train-${key}`;
-  if (key === 'route') {
-    return {
-      id, name: 'Night service route map', kind: 'procedural', sceneId: 'night-route',
-      duration: 9, width: 720, height: 1280, thumbs: makeProceduralThumbs('night-route', 9),
-    };
+  const id = `${REEL_ID}-${key}`;
+  const isAudio = key === 'station' || key === 'departure';
+  const name = isAudio ? reelAudio[key] : reelPhotos[key];
+  const url = isAudio ? `/demos/cut-last-train-${key}.mp3` : `/img/cut-last-train-${key}-photo.webp`;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 20_000);
+  let blob: Blob;
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) throw new Error(`Missing reel source: ${name}`);
+    blob = await response.blob();
+  } finally {
+    window.clearTimeout(timeout);
   }
-  const isScore = key === 'score';
-  const name = isScore ? 'Last Train · 120 BPM' : reelPhotos[key];
-  const url = isScore ? '/demos/cut-last-train.mp3' : `/img/${id}.webp`;
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Missing reel source: ${name}`);
-  const blob = await response.blob();
   const file = new File([blob], name, { type: blob.type });
-  const item = await (isScore ? loadAudioMedia(file) : loadImageMedia(file));
+  const item = await (isAudio ? loadAudioMedia(file) : loadImageMedia(file));
   if (!item) throw new Error(`Could not decode reel source: ${name}`);
   return { ...item, id, name };
 }
@@ -48,12 +49,13 @@ export async function loadDemoReel(): Promise<void> {
     await S.restored;
     const originalHistory = S.history;
     const photoKeys = Object.keys(reelPhotos) as (keyof typeof reelPhotos)[];
-    const keys: ReelSource[] = [...photoKeys, 'route', 'score'];
+    const keys: ReelSource[] = [...photoKeys, 'station', 'departure'];
     const results = await Promise.allSettled(keys.map(async (key) => {
-      const existing = mediaMap.get(`cut-last-train-${key}`);
+      const existing = mediaMap.get(`${REEL_ID}-${key}`);
       const item = existing ?? await loadSource(key);
       if (!existing) newItems.add(item);
       prepared.set(key, item);
+      for (const button of buttons) button.textContent = `Loading ${prepared.size}/${keys.length}`;
     }));
     if (results.some((r) => r.status === 'rejected')) {
       showToast('Could not load the demo. Try again.');
@@ -71,10 +73,13 @@ export async function loadDemoReel(): Promise<void> {
     }
     S.playhead = 0;
     el.timelineScroll.scrollLeft = 0;
-    commitState((p) => ({ ...p, aspect: '9:16', clips, selectedClipId: clips[0].id }), { media: true, resize: true });
+    commitState((p) => ({ ...p, aspect: '16:9', bgColor: '#090a0b', clips, selectedClipId: null }), { media: true, resize: true });
     fitTimelineZoom();
+    openScreening();
     startPlayback();
     el.playBtn.focus({ preventScroll: true });
+  } catch {
+    showToast('Could not load the film. Try again.');
   } finally {
     for (const item of newItems) {
       if (item.url && mediaMap.get(item.id) !== item) URL.revokeObjectURL(item.url);

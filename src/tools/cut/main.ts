@@ -9,6 +9,7 @@ import { restoreSavedSession } from './persist.ts';
 import { wireTransitionPopover } from './popover.ts';
 import { renderAll } from './refresh.ts';
 import { S } from './state.ts';
+import { wireScreening } from './screening.ts';
 
 buildInspectorGrids();
 buildCaptionPresetCards();
@@ -17,5 +18,6 @@ wireInspectorControls();
 wireTransitionPopover();
 wireCanvasInteractions();
 wireKeyboard();
+wireScreening();
 renderAll();
 S.restored = restoreSavedSession().catch(() => {});

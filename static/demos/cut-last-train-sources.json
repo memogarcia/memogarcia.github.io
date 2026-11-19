@@ -1,0 +1,21 @@
+{
+  "title": "Last Train",
+  "description": "A 30-second photo film assembled from independent photographs and field recordings. These sources do not document one journey.",
+  "retrieved": "2026-11-19",
+  "photographyLicense": "https://unsplash.com/license",
+  "photographs": [
+    {"file": "/img/cut-last-train-ueno-photo.webp", "author": "Nichika Sakurai", "source": "https://unsplash.com/photos/C6xxEZd5kCw", "original": "https://images.unsplash.com/photo-1707739371228-629948fc3518", "published": "2024-02-12", "camera": "Fujifilm X-E4"},
+    {"file": "/img/cut-last-train-platform-photo.webp", "author": "BREAKIFY", "source": "https://unsplash.com/photos/nOAixxwkG50", "original": "https://images.unsplash.com/photo-1645346828273-268036c2f561", "published": "2022-02-20", "camera": "Canon EOS M6"},
+    {"file": "/img/cut-last-train-passengers-photo.webp", "author": "Hugh Han", "source": "https://unsplash.com/photos/5pkYWUDDthQ", "original": "https://images.unsplash.com/photo-1521517407911-565264e7d82d", "published": "2018-03-20", "camera": "Nikon D750"},
+    {"file": "/img/cut-last-train-interior-photo.webp", "author": "Finan Akbar", "source": "https://unsplash.com/photos/ALmaIiORITY", "original": "https://images.unsplash.com/photo-1510235648-f06447c246e3", "published": "2017-11-09", "location": "Nikko, Japan"},
+    {"file": "/img/cut-last-train-blur-photo.webp", "author": "Noham Genevieve", "source": "https://unsplash.com/photos/z_BqHQblmwo", "original": "https://images.unsplash.com/photo-1723196320608-2bfff06d7e19", "published": "2024-08-09", "camera": "Canon EOS M50 II"},
+    {"file": "/img/cut-last-train-street-photo.webp", "author": "Andreas Rasmussen", "source": "https://unsplash.com/photos/XZBppPCX3Vo", "original": "https://images.unsplash.com/photo-1567193528962-75ed7b575b76", "published": "2019-08-30", "camera": "Sony ILCE-7SM2"}
+  ],
+  "photoProcessing": "Unsplash image delivery: w=2200&q=88&fm=webp&fit=max. Street photo additionally compressed with cwebp -q 82 -m 6. Reframing, light color adjustments and motion are non-destructive timeline edits. No generated imagery.",
+  "soundLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "recordings": [
+    {"file": "/demos/cut-last-train-station.mp3", "author": "RutgerMuller", "source": "https://freesound.org/people/RutgerMuller/sounds/361913/", "download": "https://cdn.freesound.org/previews/361/361913_179538-hq.mp3", "recorded": "2016-10", "equipment": "Zoom H2n, MS stereo", "processing": "First 30 seconds; highpass 65 Hz; gain 0.65; 0.35s fade in; 3s fade out. MP3 192 kbps, stereo, 48 kHz."},
+    {"file": "/demos/cut-last-train-departure.mp3", "author": "RutgerMuller", "source": "https://freesound.org/people/RutgerMuller/sounds/364866/", "download": "https://cdn.freesound.org/previews/364/364866_179538-hq.mp3", "recorded": "2016-10", "equipment": "Zoom H2n, MS stereo", "processing": "Full 6.621s recording; highpass 55 Hz; gain 0.55; 0.15s fade in; 1.12s fade out. MP3 192 kbps, stereo, 48 kHz."}
+  ],
+  "soundEdit": "Platform ambience at 78% across the film. Departure at 64% from 17.1s to 23.7s, leading the picture cut at 18s. No synthesized music or generated voices. Additional clip fades remain editable."
+}

@@ -311,12 +311,12 @@ with wrap`;
   assert.equal(E.formatTimecode(119.95, false), '01:59');
 }
 
-// The editable reel has picture and music for the full 30 seconds, including after a speed cut.
+// The photo film covers 30 seconds, and every sound stays inside its recorded source.
 {
   const { cutLastTrain, reelPhotos } = require(path.join(SRC, 'demo-sequence.ts'));
   const media = {
-    route: { id: 'route', kind: 'procedural', duration: 9 },
-    score: { id: 'score', kind: 'audio', duration: 30 },
+    station: { id: 'station', kind: 'audio', duration: 30 },
+    departure: { id: 'departure', kind: 'audio', duration: 6.621 },
   };
   for (const [id, name] of Object.entries(reelPhotos)) media[id] = { id, name, kind: 'image' };
   const clips = cutLastTrain(media);
@@ -329,12 +329,22 @@ with wrap`;
   }
   assert.equal(end, 30);
   assert.equal(E.computeProjectDuration(clips), 30);
-  const score = clips.find((c) => c.track === 'audio');
-  assert.equal(score.start, 0);
-  assert.equal(score.duration, end);
-  const [normal, fast] = shots.filter((c) => c.mediaId === 'route');
-  assert.equal(fast.sourceStart, normal.sourceStart + normal.duration * normal.speed);
-  assert.equal(fast.speed, 2);
+  assert.ok(shots.every((c) => c.kind === 'image'));
+  const sounds = clips.filter((c) => c.track === 'audio');
+  assert.equal(sounds[0].start, 0);
+  assert.equal(sounds[0].duration, end);
+  for (const sound of sounds) {
+    assert.ok(sound.sourceStart + sound.duration * sound.speed <= sound.mediaDuration);
+    assert.ok(sound.start + sound.duration <= end);
+  }
+  // Sound leads the departure shot, rather than restarting abruptly with the picture.
+  assert.ok(sounds[1].start < shots.find((c) => c.mediaId === 'blur').start);
+  for (const key of Object.keys(reelPhotos)) {
+    assert.ok(readFileSync(path.join(ROOT, `static/img/cut-last-train-${key}-photo.webp`)).length > 1000);
+  }
+  for (const key of ['station', 'departure']) {
+    assert.ok(readFileSync(path.join(ROOT, `static/demos/cut-last-train-${key}.mp3`)).length > 1000);
+  }
 }
 
 console.log('Cut engine, demo timing, transitions, captions, history, and HTML integration checks passed.');
