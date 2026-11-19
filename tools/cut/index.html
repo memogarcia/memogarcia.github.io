@@ -70,7 +70,7 @@
         <a class="back-link" href="/tools/">← Tools</a>
         <span class="sep" aria-hidden="true">/</span>
         <h1 class="brand">Cut</h1>
-        <span id="save-status" class="save-status" title="Edits and imported files auto-save locally in IndexedDB">Local</span>
+        <span id="save-status" class="save-status" title="Saved on this device in your browser">Saved</span>
       </div>
 
       <div class="topbar-center" role="group" aria-label="Canvas aspect ratio">
@@ -91,8 +91,13 @@
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
           </button>
         </div>
-        <button id="new-project-btn" type="button" class="mini-btn" title="Clear project and start fresh">New</button>
-        <button id="shortcuts-btn" type="button" class="icon-btn" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+        <button id="project-menu-btn" type="button" class="icon-btn" popovertarget="project-menu" title="More options" aria-label="More options" aria-haspopup="menu">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+        </button>
+        <div id="project-menu" class="menu-popover" popover role="menu" aria-label="Project options">
+          <button id="new-project-btn" type="button" class="menu-item" role="menuitem">New project</button>
+          <button id="shortcuts-btn" type="button" class="menu-item" role="menuitem">Keyboard shortcuts <kbd>?</kbd></button>
+        </div>
         <button class="theme-control icon-btn" type="button" aria-label="Change theme" hidden>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <g class="theme-icon-device"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></g>
@@ -122,12 +127,7 @@
               <span class="import-sub">MP4, WebM, MOV, PNG, MP3, SRT</span>
             </button>
             <input id="file-input" type="file" accept="video/*,image/*,audio/*,.srt,.vtt" multiple hidden>
-
-            <div class="quick-row">
-              <button id="quick-text-btn" type="button" class="btn-secondary flex-1">+ Caption</button>
-              <button id="demo-btn" type="button" class="btn-secondary" title="Watch Last Train, an editable photo film with recorded station sound">Watch demo</button>
-            </div>
-            <details class="reel-credits">
+            <details id="reel-credits" class="reel-credits" hidden>
               <summary>Film credits &amp; sources</summary>
               <p>Six camera photographs. Two field recordings. Edited together as a photo film, not a record of one journey.</p>
               <p>Photography, under the <a href="https://unsplash.com/license" target="_blank" rel="noopener">Unsplash License</a>:</p>
@@ -164,11 +164,7 @@
                 <input id="srt-file-input" type="file" accept=".srt,.vtt,.txt" hidden>
               </div>
               <textarea id="bulk-captions" class="text-area" rows="5" placeholder="Paste .srt subtitles, or one caption per line to auto-time across your video…"></textarea>
-              <label class="check-row">
-                <input id="bulk-replace" type="checkbox" checked>
-                <span>Replace existing captions</span>
-              </label>
-              <button id="bulk-captions-btn" type="button" class="btn-secondary full-width mt-xs">Generate captions on timeline</button>
+              <button id="bulk-captions-btn" type="button" class="btn-secondary full-width mt-xs">Add to timeline</button>
             </div>
           </div>
         </div>
@@ -184,18 +180,16 @@
           <div class="canvas-frame" id="canvas-frame">
             <canvas id="preview-canvas" width="720" height="1280" aria-label="Video preview canvas"></canvas>
           </div>
-            <div id="stage-empty" class="stage-empty">
-              <div class="stage-empty-inner">
-                <p class="stage-empty-eyebrow">A 30-second photo film</p>
-                <h2 class="stage-empty-title">Last Train</h2>
-                <p class="stage-empty-sub">Japan after dark.<br>Real photographs. Sound from the platform.</p>
-                <div class="stage-empty-actions">
-                  <button id="empty-demo-btn" type="button" class="btn-primary">Watch the film</button>
-                  <button id="empty-import-btn" type="button" class="btn-secondary">Start with your own media</button>
-                </div>
-                <p class="stage-empty-note">Every cut is editable. Headphones recommended.</p>
+          <div id="stage-empty" class="stage-empty">
+            <div class="stage-empty-inner">
+              <h2 class="stage-empty-title">Create your video</h2>
+              <p class="stage-empty-sub">Drop video, photos, or audio here. Files stay on your device.</p>
+              <div class="stage-empty-actions">
+                <button id="empty-import-btn" type="button" class="btn-primary">Import media</button>
               </div>
+              <button id="empty-demo-btn" type="button" class="stage-empty-link">or try a sample project</button>
             </div>
+          </div>
         </div>
         <input id="screening-scrub" class="screening-scrub" type="range" min="0" max="30" step="0.1" value="0" aria-label="Film position">
         <!-- Transport Bar -->
@@ -210,15 +204,9 @@
             <button id="jump-start-btn" type="button" class="icon-btn" title="Jump to start (Home)" aria-label="Jump to start">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20 9 12l10-8v16Z"/><path d="M5 19V5"/></svg>
             </button>
-            <button id="step-back-btn" type="button" class="icon-btn" title="Step back 0.1s (←)" aria-label="Step back">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-            </button>
             <button id="play-btn" type="button" class="play-btn" title="Play / Pause (Space)" aria-label="Play" aria-pressed="false">
               <svg class="icon-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>
               <svg class="icon-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
-            </button>
-            <button id="step-fwd-btn" type="button" class="icon-btn" title="Step forward 0.1s (→)" aria-label="Step forward">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
             </button>
             <button id="jump-end-btn" type="button" class="icon-btn" title="Jump to end (End)" aria-label="Jump to end">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l10 8-10 8V4Z"/><path d="M19 5v14"/></svg>
@@ -240,27 +228,17 @@
       <!-- Right: Context-Sensitive Inspector -->
       <aside class="panel inspector-panel" aria-label="Clip inspector">
         <div class="panel-head">
-          <span id="inspector-title" class="panel-title">Canvas</span>
-          <span id="inspector-meta" class="panel-meta">9:16</span>
+          <span id="inspector-title" class="panel-title">Edit</span>
+          <span id="inspector-meta" class="panel-meta"></span>
         </div>
 
         <div class="inspector-body">
-          <!-- Default / Project Settings -->
+          <!-- Nothing selected -->
           <div id="insp-project" class="insp-section">
-            <div class="field-group">
-              <label class="field-label">Canvas Background</label>
-              <div class="swatch-row" id="bg-swatches">
-                <button type="button" class="swatch" data-color="#0e0f12" style="--sw:#0e0f12" title="Charcoal"></button>
-                <button type="button" class="swatch" data-color="#000000" style="--sw:#000000" title="Pure Black"></button>
-                <button type="button" class="swatch" data-color="#f4f0e4" style="--sw:#f4f0e4" title="Warm Paper"></button>
-                <button type="button" class="swatch" data-color="#19232c" style="--sw:#19232c" title="Midnight"></button>
-                <button type="button" class="swatch" data-color="#2c1d1a" style="--sw:#2c1d1a" title="Espresso"></button>
-                <input id="bg-color-input" type="color" class="color-picker" value="#0e0f12" aria-label="Custom canvas background color">
-              </div>
-            </div>
+            <p class="insp-empty">Select a clip on the timeline to edit it.</p>
 
             <div class="tip-card">
-              <p class="tip-title">80/20 workflow</p>
+              <p class="tip-title">Quick tips</p>
               <ul class="tip-list">
                 <li><strong>Space</strong> plays or pauses</li>
                 <li><strong>S</strong> splits at the red needle</li>
@@ -274,17 +252,13 @@
           <!-- Video / Image Inspector -->
           <div id="insp-video" class="insp-section" hidden>
             <div class="field-group" id="v-speed-group">
-              <div class="field-row">
-                <label class="field-label" for="v-speed">Speed</label>
-                <output id="v-speed-out" class="field-val">1.00×</output>
-              </div>
+              <label class="field-label">Speed</label>
               <div class="pill-row" id="v-speed-presets">
                 <button type="button" class="pill-btn" data-speed="0.5">0.5×</button>
                 <button type="button" class="pill-btn" data-speed="1">1×</button>
                 <button type="button" class="pill-btn" data-speed="1.5">1.5×</button>
                 <button type="button" class="pill-btn" data-speed="2">2×</button>
               </div>
-              <input id="v-speed" type="range" min="0.25" max="4" step="0.05" value="1">
             </div>
 
             <div class="field-group" id="v-audio-group">
@@ -308,12 +282,7 @@
                 <button id="v-fit-cover" type="button" class="pill-btn" data-fit="cover">Fill</button>
                 <button id="v-fit-contain" type="button" class="pill-btn" data-fit="contain">Fit</button>
                 <button id="v-rotate-btn" type="button" class="pill-btn" title="Rotate 90°">↻ 90°</button>
-                <button id="v-flip-btn" type="button" class="pill-btn" aria-pressed="false" title="Flip horizontally">⇄ Flip</button>
               </div>
-              <label class="check-row" id="v-blur-row">
-                <input id="v-blur-bg" type="checkbox" checked>
-                <span>Blurred backdrop when fitted</span>
-              </label>
               <div class="field-row mt-sm">
                 <label class="field-sub" for="v-zoom">Zoom</label>
                 <output id="v-zoom-out" class="field-val">100%</output>
@@ -333,36 +302,31 @@
                 <button id="v-color-reset" type="button" class="text-btn">Reset</button>
               </div>
               <div class="filter-grid" id="v-filter-grid"></div>
-              <div class="slider-stack">
-                <div class="field-row">
-                  <label class="field-sub" for="v-bright">Brightness</label>
-                  <output id="v-bright-out" class="field-val">100%</output>
+              <details class="adjust-details">
+                <summary>Adjust</summary>
+                <div class="slider-stack">
+                  <div class="field-row">
+                    <label class="field-sub" for="v-bright">Brightness</label>
+                    <output id="v-bright-out" class="field-val">100%</output>
+                  </div>
+                  <input id="v-bright" type="range" min="40" max="170" step="1" value="100">
+                  <div class="field-row">
+                    <label class="field-sub" for="v-contrast">Contrast</label>
+                    <output id="v-contrast-out" class="field-val">100%</output>
+                  </div>
+                  <input id="v-contrast" type="range" min="40" max="170" step="1" value="100">
+                  <div class="field-row">
+                    <label class="field-sub" for="v-sat">Saturation</label>
+                    <output id="v-sat-out" class="field-val">100%</output>
+                  </div>
+                  <input id="v-sat" type="range" min="0" max="200" step="1" value="100">
                 </div>
-                <input id="v-bright" type="range" min="40" max="170" step="1" value="100">
-                <div class="field-row">
-                  <label class="field-sub" for="v-contrast">Contrast</label>
-                  <output id="v-contrast-out" class="field-val">100%</output>
-                </div>
-                <input id="v-contrast" type="range" min="40" max="170" step="1" value="100">
-                <div class="field-row">
-                  <label class="field-sub" for="v-sat">Saturation</label>
-                  <output id="v-sat-out" class="field-val">100%</output>
-                </div>
-                <input id="v-sat" type="range" min="0" max="200" step="1" value="100">
-              </div>
+              </details>
             </div>
 
             <div class="field-group">
-              <label class="field-label">Transition in &amp; fades</label>
-              <div class="filter-grid" id="v-trans-grid"></div>
-              <div id="v-trans-dur-wrap">
-                <div class="field-row">
-                  <label class="field-sub" for="v-trans-dur">Transition length</label>
-                  <output id="v-trans-dur-out" class="field-val">0.45s</output>
-                </div>
-                <input id="v-trans-dur" type="range" min="0.15" max="1.2" step="0.05" value="0.45">
-              </div>
-              <div class="field-row mt-sm">
+              <label class="field-label">Fade</label>
+              <div class="field-row">
                 <label class="field-sub" for="v-fadein">Fade in from black</label>
                 <output id="v-fadein-out" class="field-val">0.0s</output>
               </div>
@@ -378,8 +342,8 @@
           <!-- Text Inspector -->
           <div id="insp-text" class="insp-section" hidden>
             <div class="field-group">
-              <label class="field-label" for="t-content">Caption text</label>
-              <textarea id="t-content" class="text-area" rows="3" placeholder="Type your caption…"></textarea>
+              <label class="field-label" for="t-content">Text</label>
+              <textarea id="t-content" class="text-area" rows="3" placeholder="Type your text…"></textarea>
             </div>
 
             <div class="field-group">
@@ -392,7 +356,6 @@
               <div class="pill-row" id="t-anim-row">
                 <button type="button" class="pill-btn" data-anim="pop">Pop</button>
                 <button type="button" class="pill-btn" data-anim="fade">Fade</button>
-                <button type="button" class="pill-btn" data-anim="slide">Slide</button>
                 <button type="button" class="pill-btn" data-anim="none">None</button>
               </div>
             </div>
@@ -413,24 +376,7 @@
                 <button type="button" class="pill-btn" data-pos="bottom">Bottom</button>
               </div>
               <p class="field-hint">Or drag the text directly on the preview.</p>
-            </div>
-
-            <div class="field-group">
-              <div class="field-row">
-                <label class="field-label">Custom colors</label>
-                <button id="t-color-reset" type="button" class="text-btn">Preset default</button>
-              </div>
-              <div class="color-pair">
-                <label class="color-chip">
-                  <input id="t-color" type="color" value="#ffffff">
-                  <span>Text</span>
-                </label>
-                <label class="color-chip">
-                  <input id="t-bg" type="color" value="#121316">
-                  <span>Backdrop</span>
-                </label>
-              </div>
-              <button id="t-apply-all-btn" type="button" class="btn-secondary full-width mt-sm">Apply style to all captions</button>
+              <button id="t-apply-all-btn" type="button" class="btn-secondary full-width mt-sm">Apply style to all text</button>
             </div>
           </div>
 
@@ -492,12 +438,8 @@
         </div>
 
         <div class="tl-tools-right">
-          <button id="snap-btn" type="button" class="tool-btn" aria-pressed="true" title="Snap clips to edges and playhead">
-            <span>Snap</span>
-          </button>
           <div class="zoom-group" aria-label="Timeline zoom">
             <button id="zoom-out-btn" type="button" class="icon-btn sm" title="Zoom out (-)" aria-label="Zoom out">−</button>
-            <input id="zoom-slider" type="range" min="24" max="220" step="4" value="72" aria-label="Timeline zoom level">
             <button id="zoom-in-btn" type="button" class="icon-btn sm" title="Zoom in (+)" aria-label="Zoom in">+</button>
             <button id="zoom-fit-btn" type="button" class="mini-btn" title="Fit whole project in view">Fit</button>
           </div>
@@ -506,21 +448,27 @@
 
       <div class="timeline-grid">
         <div class="track-headers">
-          <div class="ruler-corner" aria-hidden="true">TIME</div>
+          <div class="ruler-corner" aria-hidden="true"></div>
           <div class="track-head" data-track="text">
             <span class="track-tag tag-text" aria-hidden="true">T</span>
             <span class="track-name">Text</span>
-            <button type="button" class="track-toggle" data-toggle-track="text" title="Hide / Show text track" aria-label="Hide or show text track" aria-pressed="false">●</button>
+            <button type="button" class="track-toggle" data-toggle-track="text" title="Hide / Show text track" aria-label="Hide or show text track" aria-pressed="false">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
           </div>
           <div class="track-head" data-track="video">
             <span class="track-tag tag-video" aria-hidden="true">V</span>
             <span class="track-name">Video</span>
-            <button type="button" class="track-toggle" data-toggle-track="video" title="Mute / Unmute video audio" aria-label="Mute or unmute video audio" aria-pressed="false">●</button>
+            <button type="button" class="track-toggle" data-toggle-track="video" title="Mute / Unmute video audio" aria-label="Mute or unmute video audio" aria-pressed="false">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+            </button>
           </div>
           <div class="track-head" data-track="audio">
             <span class="track-tag tag-audio" aria-hidden="true">A</span>
             <span class="track-name">Audio</span>
-            <button type="button" class="track-toggle" data-toggle-track="audio" title="Mute / Unmute audio track" aria-label="Mute or unmute audio track" aria-pressed="false">●</button>
+            <button type="button" class="track-toggle" data-toggle-track="audio" title="Mute / Unmute audio track" aria-label="Mute or unmute audio track" aria-pressed="false">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+            </button>
           </div>
         </div>
 
@@ -572,27 +520,19 @@
         <button type="button" class="icon-btn" data-close-modal="export-modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body">
-        <p class="modal-sub">Rendered directly on your machine using HTML5 Canvas, Web Audio, and MediaRecorder. No server, no watermark.</p>
+        <p class="modal-sub">Rendered on your device. No upload, no watermark.</p>
 
         <div class="export-options" id="export-options">
           <div class="field-group">
             <label class="field-label">Resolution</label>
             <div class="pill-row">
-              <button type="button" class="pill-btn" data-res="720" aria-pressed="true">720p (Fast)</button>
-              <button type="button" class="pill-btn" data-res="1080" aria-pressed="false">1080p (HD)</button>
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label class="field-label">Frame rate</label>
-            <div class="pill-row">
-              <button type="button" class="pill-btn" data-fps="30" aria-pressed="true">30 fps</button>
-              <button type="button" class="pill-btn" data-fps="60" aria-pressed="false">60 fps</button>
+              <button type="button" class="pill-btn" data-res="1080" aria-pressed="true">1080p (HD)</button>
+              <button type="button" class="pill-btn" data-res="720" aria-pressed="false">720p (Fast)</button>
             </div>
           </div>
 
           <div class="export-summary" id="export-summary">
-            <div><span>Output</span><strong id="export-dims">720 × 1280</strong></div>
+            <div><span>Output</span><strong id="export-dims">1080 × 1920</strong></div>
             <div><span>Duration</span><strong id="export-dur">00:00.0</strong></div>
             <div><span>Format</span><strong id="export-fmt">Detecting…</strong></div>
           </div>
