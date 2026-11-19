@@ -1,7 +1,7 @@
 // Cut — App-side types (DOM, media, audio graph) that the pure engine does not know about.
 import type { MediaKind, Project } from './engine/index.ts';
 
-export type SceneId = 'tokyo-rain' | 'golden-hour' | 'kinetic-grid';
+export type SceneId = 'tokyo-rain' | 'golden-hour' | 'kinetic-grid' | 'night-route';
 
 /** An imported or generated source. `blob` is what gets persisted; `url`/`img`/`audioBuffer` are runtime-only. */
 export interface MediaItem {

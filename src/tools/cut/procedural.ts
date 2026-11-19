@@ -1,6 +1,7 @@
 // Cut — Procedural demo scenes, the lo-fi demo track synth, and waveform peaks.
 import * as E from './engine/index.ts';
 import { audioContextClass, ensureAudioContext } from './audio.ts';
+import { drawNightRoute } from './demo-route.ts';
 import { context2d, makeCanvas } from './dom.ts';
 import type { SceneId } from './types.ts';
 
@@ -143,6 +144,7 @@ function drawKineticGrid(ctx: Ctx, t: number, w: number, h: number): void {
 
 export function drawProceduralClip(ctx: Ctx, sceneId: SceneId | null | undefined, t: number, w: number, h: number): void {
   if (sceneId === 'tokyo-rain') drawTokyoRain(ctx, t, w, h);
+  else if (sceneId === 'night-route') drawNightRoute(ctx, t, w, h);
   else if (sceneId === 'golden-hour') drawGoldenHour(ctx, t, w, h);
   else drawKineticGrid(ctx, t, w, h);
 }

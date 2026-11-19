@@ -49,7 +49,10 @@ export function renderPreview(): void {
     el.stageEmpty.hidden = hasClips;
     lastStageEmpty = hasClips;
   }
-  renderFrame(previewCtx, project(), el.previewCanvas.width, el.previewCanvas.height, S.playhead, true);
+  // Clips end on an exclusive boundary. Hold the last image when playback stops at the end.
+  const atEnd = !S.playing && S.playhead > 0 && S.playhead === E.computeProjectDuration(project().clips);
+  const frameTime = atEnd ? S.playhead - 0.001 : S.playhead;
+  renderFrame(previewCtx, project(), el.previewCanvas.width, el.previewCanvas.height, frameTime, true);
   updateTimecodeUI();
   updatePlayheadUI();
   const dt = performance.now() - t0;

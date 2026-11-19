@@ -311,4 +311,30 @@ with wrap`;
   assert.equal(E.formatTimecode(119.95, false), '01:59');
 }
 
-console.log('Cut engine, transitions, SRT/script captions, overlap resolution, history, and HTML integration checks passed.');
+// The editable reel has picture and music for the full 30 seconds, including after a speed cut.
+{
+  const { cutLastTrain, reelPhotos } = require(path.join(SRC, 'demo-sequence.ts'));
+  const media = {
+    route: { id: 'route', kind: 'procedural', duration: 9 },
+    score: { id: 'score', kind: 'audio', duration: 30 },
+  };
+  for (const [id, name] of Object.entries(reelPhotos)) media[id] = { id, name, kind: 'image' };
+  const clips = cutLastTrain(media);
+  const shots = clips.filter((c) => c.track === 'video');
+  let end = 0;
+  for (const shot of shots) {
+    assert.equal(shot.start, end);
+    assert.ok(shot.sourceStart + shot.speed * shot.duration <= shot.mediaDuration);
+    end += shot.duration;
+  }
+  assert.equal(end, 30);
+  assert.equal(E.computeProjectDuration(clips), 30);
+  const score = clips.find((c) => c.track === 'audio');
+  assert.equal(score.start, 0);
+  assert.equal(score.duration, end);
+  const [normal, fast] = shots.filter((c) => c.mediaId === 'route');
+  assert.equal(fast.sourceStart, normal.sourceStart + normal.duration * normal.speed);
+  assert.equal(fast.speed, 2);
+}
+
+console.log('Cut engine, demo timing, transitions, captions, history, and HTML integration checks passed.');

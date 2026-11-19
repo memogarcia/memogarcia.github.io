@@ -151,7 +151,7 @@ function loadVideoMedia(file: File): Promise<MediaItem | null> {
   });
 }
 
-function loadImageMedia(file: File): Promise<MediaItem | null> {
+export function loadImageMedia(file: File): Promise<MediaItem | null> {
   return new Promise((resolve) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -194,7 +194,7 @@ function probeAudioDuration(url: string): Promise<number> {
   });
 }
 
-async function loadAudioMedia(file: File): Promise<MediaItem | null> {
+export async function loadAudioMedia(file: File): Promise<MediaItem | null> {
   const url = URL.createObjectURL(file);
   const base = { id: E.makeId('m'), kind: 'audio' as const, name: stripExtension(file.name), blob: file, url };
   if (!canDecodeInMemory(file, 0)) {

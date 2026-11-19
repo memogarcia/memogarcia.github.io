@@ -3,6 +3,7 @@ import * as E from './engine/index.ts';
 import type { Clip, Project, Rect, TextPreset } from './engine/index.ts';
 import { context2d, makeCanvas } from './dom.ts';
 import { slotForClip } from './media-pool.ts';
+import { gradeStill } from './photo-grade.ts';
 import { drawProceduralClip } from './procedural.ts';
 import { mediaMap, S } from './state.ts';
 
@@ -12,6 +13,7 @@ type Drawable = CanvasImageSource;
 // Offscreen scratch canvases for transitions and the 1/8-scale blurred backdrop
 const scratchA = makeCanvas();
 const scratchCtxA = context2d(scratchA, { alpha: false });
+const supportsCanvasFilter = typeof scratchCtxA.filter === 'string';
 const scratchB = makeCanvas();
 const scratchCtxB = context2d(scratchB, { alpha: false });
 const blurCanvas = makeCanvas();
@@ -119,9 +121,13 @@ function drawVideoClipToCtx(ctx: Ctx, p: Project, clip: Clip, w: number, h: numb
       if (clip.fit === 'contain' && clip.blurBg) {
         drawBlurredBackdrop(ctx, p, clip, picked.drawable, srcW, srcH, w, h);
       }
-      if (filterStr !== 'none') ctx.filter = filterStr;
+      let drawable = picked.drawable;
+      if (filterStr !== 'none') {
+        if (supportsCanvasFilter) ctx.filter = filterStr;
+        else if (drawable instanceof HTMLImageElement) drawable = gradeStill(drawable, filterStr);
+      }
       const rect = E.computeDrawRect(srcW, srcH, w, h, clip.fit || 'cover', zoom, offX, offY);
-      drawTransformedDrawable(ctx, picked.drawable, rect, clip.rotate, clip.flipH);
+      drawTransformedDrawable(ctx, drawable, rect, clip.rotate, clip.flipH);
     }
   }
   ctx.restore();
