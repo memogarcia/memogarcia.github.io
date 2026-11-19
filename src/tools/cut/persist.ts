@@ -2,12 +2,12 @@
 import * as E from './engine/index.ts';
 import type { Clip, Project } from './engine/index.ts';
 import { fitTimelineZoom } from './actions.ts';
-import { audioContextClass, AG, scheduleAllAudioFrom } from './audio.ts';
+import { audioContextClass, AG, extractPeaks, scheduleAllAudioFrom } from './audio.ts';
+import { el } from './dom.ts';
 import { renderInspector } from './inspector.ts';
 import { destroyAllSlots, syncMediaToTime } from './media-pool.ts';
 import { pausePlayback, renderPreview } from './playback.ts';
 import { closeTransitionPopover } from './popover.ts';
-import { extractPeaks, makeProceduralThumbs, synthesizeDemoAudio } from './procedural.ts';
 import { renderAll } from './refresh.ts';
 import { deletedMediaCache, mediaMap, project, S } from './state.ts';
 import * as Store from './storage.ts';
@@ -30,7 +30,7 @@ function refreshSaveStatus(): void {
       `${n} imported ${n === 1 ? 'file' : 'files'} could not be stored locally (storage full or private window). `
       + 'Clips using them will be missing after a reload.');
   } else {
-    setSaveStatus('Saved locally', true);
+    setSaveStatus('Saved', true);
   }
 }
 
@@ -42,7 +42,6 @@ export function scheduleAutosave(): void {
     const p = project();
     lastProjectSaveOk = await Store.saveProjectState({
       aspect: p.aspect,
-      bgColor: p.bgColor,
       clips: p.clips,
       selectedClipId: p.selectedClipId,
       snap: p.snap,
@@ -64,8 +63,6 @@ function toRecord(media: MediaItem): MediaRecord {
     height: media.height || 0,
     thumbs: media.thumbs || [],
     peaks: media.peaks || null,
-    sceneId: media.sceneId || null,
-    isDemoAudio: Boolean(media.isDemoAudio),
     streamedAudio: Boolean(media.streamedAudio),
     blob: media.blob || null,
   };
@@ -123,27 +120,18 @@ export async function decodeBlobAudioAsync(blob: Blob, item: MediaItem): Promise
 }
 
 function restoreMediaRecord(rec: MediaRecord): void {
-  if (rec.kind === 'procedural') {
-    mediaMap.set(rec.id, {
-      ...rec,
-      thumbs: rec.thumbs && rec.thumbs.length ? rec.thumbs : makeProceduralThumbs(rec.sceneId, rec.duration),
-    });
-  } else if (rec.isDemoAudio) {
-    const synth = synthesizeDemoAudio(rec.duration || 11.6);
-    mediaMap.set(rec.id, { ...rec, audioBuffer: synth.buffer, peaks: rec.peaks || synth.peaks });
-  } else if (rec.blob) {
-    const blob = rec.blob;
-    const url = URL.createObjectURL(blob);
-    if (rec.kind === 'image') {
-      const img = new Image();
-      img.src = url;
-      img.onload = () => renderPreview();
-      mediaMap.set(rec.id, { ...rec, url, img });
-    } else {
-      const item: MediaItem = { ...rec, url, audioBuffer: null };
-      mediaMap.set(rec.id, item);
-      void decodeBlobAudioAsync(blob, item);
-    }
+  if (!rec.blob) return;
+  const blob = rec.blob;
+  const url = URL.createObjectURL(blob);
+  if (rec.kind === 'image') {
+    const img = new Image();
+    img.src = url;
+    img.onload = () => renderPreview();
+    mediaMap.set(rec.id, { ...rec, url, img });
+  } else {
+    const item: MediaItem = { ...rec, url, audioBuffer: null };
+    mediaMap.set(rec.id, item);
+    void decodeBlobAudioAsync(blob, item);
   }
 }
 
@@ -173,7 +161,6 @@ export async function restoreSavedSession(): Promise<void> {
     dropped = state.clips.length - validClips.length;
     const restored: Project = E.createProject({
       aspect: E.isKeyOf(E.ASPECTS, state.aspect) ? state.aspect : '9:16',
-      bgColor: state.bgColor || '#0e0f12',
       clips: validClips,
       selectedClipId: validClips.some((c) => c.id === state.selectedClipId) ? state.selectedClipId ?? null : null,
       snap: state.snap !== false,
@@ -200,7 +187,7 @@ export async function restoreSavedSession(): Promise<void> {
     renderTrackToggles();
   }
 
-  setSaveStatus('Restored', true);
+  setSaveStatus('Saved', true);
   fitTimelineZoom();
   renderAll();
   if (dropped) {
@@ -209,6 +196,8 @@ export async function restoreSavedSession(): Promise<void> {
 }
 
 export async function resetProject(): Promise<void> {
+  await S.restored;
+  if (S.exporting) return;
   if (project().clips.length || mediaMap.size) {
     if (!window.confirm('Clear all clips and imported media to start a fresh project?')) return;
   }
@@ -232,7 +221,8 @@ export async function resetProject(): Promise<void> {
   renderTrackToggles();
   if (Store.available) await Store.clearAll();
   lastProjectSaveOk = true;
-  setSaveStatus('Local', false);
+  setSaveStatus('Saved', false);
   renderAll();
-  showToast('Started fresh project');
+  el.emptyImportBtn.focus({ preventScroll: true });
+  showToast('New project ready');
 }

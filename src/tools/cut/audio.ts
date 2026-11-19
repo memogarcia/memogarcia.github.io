@@ -159,3 +159,20 @@ export function setMasterMuted(muted: boolean): void {
   S.masterMuted = muted;
   if (AG.speakerGain) AG.speakerGain.gain.value = muted ? 0 : 1;
 }
+
+export function extractPeaks(data: Float32Array, count = 120): number[] {
+  const step = Math.max(1, Math.floor(data.length / count));
+  const stride = Math.max(1, Math.floor(step / 24));
+  const peaks: number[] = [];
+  for (let i = 0; i < count; i++) {
+    let max = 0;
+    const start = i * step;
+    const end = Math.min(data.length, start + step);
+    for (let j = start; j < end; j += stride) {
+      const a = Math.abs(data[j]);
+      if (a > max) max = a;
+    }
+    peaks.push(E.clamp(max, 0.05, 1));
+  }
+  return peaks;
+}

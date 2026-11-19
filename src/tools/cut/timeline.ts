@@ -244,5 +244,4 @@ export function updateTimelineButtons(): void {
   el.dupBtn.disabled = !sel;
   el.delBtn.disabled = !sel;
   el.closeGapsBtn.disabled = !project().clips.some((c) => c.track === 'video');
-  el.snapBtn.setAttribute('aria-pressed', String(project().snap));
 }

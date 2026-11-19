@@ -111,6 +111,45 @@
   margin-right: 2px;
 }
 
+/* ⋯ menu: a native popover, positioned under its button by events.ts */
+.menu-popover {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  min-width: 200px;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  text-align: left;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--panel-alt);
+}
+
+.menu-item kbd {
+  font: 11px var(--mono);
+  color: var(--ink-soft);
+}
+
 /* ── Buttons ───────────────────────────────────────────── */
 
 .btn-primary {

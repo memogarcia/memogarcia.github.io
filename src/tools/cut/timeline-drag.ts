@@ -23,8 +23,8 @@ function snapEdge(proposed: number, targets: readonly number[], thresh: number):
   return { time: proposed, snapped: null };
 }
 
-function computeDrag(handle: Handle, orig: Clip, dt: number, targets: readonly number[], thresh: number) {
-  const snapOn = project().snap;
+function computeDrag(handle: Handle, orig: Clip, dt: number, targets: readonly number[], thresh: number, bypassSnap = false) {
+  const snapOn = !bypassSnap && project().snap;
   if (handle === 'move') {
     const proposed = Math.max(0, orig.start + dt);
     if (!snapOn) return { clip: { ...orig, start: E.roundTime(proposed) }, snappedAt: null };
@@ -62,7 +62,7 @@ export function onClipPointerDown(ev: PointerEvent, clipId: string): void {
     const dx = moveEv.clientX - startX;
     if (!moved && Math.abs(dx) < 3) return;
     moved = true;
-    const { clip: updated, snappedAt } = computeDrag(handle, origClip, dx / S.pxPerSec, snapTargets, snapThresh);
+    const { clip: updated, snappedAt } = computeDrag(handle, origClip, dx / S.pxPerSec, snapTargets, snapThresh, moveEv.altKey);
 
     // Update the one block and repaint the preview; the timeline DOM is rebuilt on release.
     patchClipLive(clipId, () => updated);

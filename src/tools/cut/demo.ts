@@ -7,8 +7,7 @@ import { el } from './dom.ts';
 import { commitState } from './history.ts';
 import { loadAudioMedia, loadImageMedia } from './ingest.ts';
 import { persistMedia } from './persist.ts';
-import { pausePlayback, startPlayback } from './playback.ts';
-import { openScreening } from './screening.ts';
+import { pausePlayback } from './playback.ts';
 import { mediaMap, S } from './state.ts';
 import type { MediaItem } from './types.ts';
 import { showToast } from './ui.ts';
@@ -35,8 +34,8 @@ async function loadSource(key: ReelSource): Promise<MediaItem> {
 }
 
 export async function loadDemoReel(): Promise<void> {
-  if (el.demoBtn.disabled || S.exporting) return;
-  const buttons = [el.demoBtn, el.emptyDemoBtn];
+  if (el.emptyDemoBtn.disabled || S.exporting) return;
+  const buttons = [el.emptyDemoBtn];
   const labels = buttons.map((button) => button.textContent);
   for (const button of buttons) {
     button.disabled = true;
@@ -73,13 +72,12 @@ export async function loadDemoReel(): Promise<void> {
     }
     S.playhead = 0;
     el.timelineScroll.scrollLeft = 0;
-    commitState((p) => ({ ...p, aspect: '16:9', bgColor: '#090a0b', clips, selectedClipId: null }), { media: true, resize: true });
+    commitState((p) => ({ ...p, aspect: '16:9', clips, selectedClipId: null }), { media: true, resize: true });
     fitTimelineZoom();
-    openScreening();
-    startPlayback();
     el.playBtn.focus({ preventScroll: true });
+    showToast('Demo ready. Select a clip to edit it.');
   } catch {
-    showToast('Could not load the film. Try again.');
+    showToast('Could not load the demo. Try again.');
   } finally {
     for (const item of newItems) {
       if (item.url && mediaMap.get(item.id) !== item) URL.revokeObjectURL(item.url);

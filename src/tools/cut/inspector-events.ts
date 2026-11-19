@@ -1,18 +1,15 @@
-// Cut — Inspector control wiring. Sliders and color pickers update live and commit one undo step
-// when the gesture ends.
+// Cut — Inspector control wiring. Sliders update live and commit one undo step when the gesture ends.
 import * as E from './engine/index.ts';
 import type { Clip, Fit, Project, TextAnimation, Track } from './engine/index.ts';
 import { scheduleAllAudioFrom, updateLiveClipAudioGain } from './audio.ts';
 import { closestFrom, el } from './dom.ts';
 import {
-  clipBlock, commitFromSnapshot, commitState, patchClipLive, setPresent, snapshotForUndo,
+  clipBlock, commitFromSnapshot, commitState, patchClipLive, snapshotForUndo,
 } from './history.ts';
 import { detachVideoAudio } from './ingest.ts';
-import { renderInspector, TEXT_Y_POSITIONS } from './inspector.ts';
-import { schedulePreviewRender } from './playback.ts';
+import { TEXT_Y_POSITIONS } from './inspector.ts';
 import { scheduleAutosave } from './persist.ts';
-import { onStateChanged } from './refresh.ts';
-import { getSelectedClip, project, S } from './state.ts';
+import { getSelectedClip, S } from './state.ts';
 import { renderTimelineClips } from './timeline.ts';
 import { showToast } from './ui.ts';
 
@@ -32,23 +29,6 @@ export function bindSliderWithUndo(
   input.addEventListener('input', () => {
     if (!before) before = snapshotForUndo();
     onLive(Number(input.value));
-  });
-  input.addEventListener('change', finish);
-  input.addEventListener('blur', finish);
-}
-
-function bindColorWithUndo(input: HTMLInputElement, onLive: (val: string) => boolean, onCommit?: () => void): void {
-  let before: Project | null = null;
-  const finish = () => {
-    if (!before) return;
-    const snap = before;
-    before = null;
-    commitFromSnapshot(snap);
-    onCommit?.();
-  };
-  input.addEventListener('input', () => {
-    const snap = before || snapshotForUndo();
-    if (onLive(input.value)) before = snap;
   });
   input.addEventListener('change', finish);
   input.addEventListener('blur', finish);
@@ -97,39 +77,10 @@ function wireVolume(track: 'video' | 'audio', vol: HTMLInputElement, out: HTMLOu
   mute.addEventListener('click', () => commitSelected(track, (c) => ({ muted: !c.muted })));
 }
 
-function wireCanvasSettings(): void {
-  el.bgSwatches.addEventListener('click', (ev) => {
-    const sw = closestFrom(ev.target, '.swatch');
-    const color = sw?.dataset.color;
-    if (color) commitState((p) => ({ ...p, bgColor: color }));
-  });
-  bindColorWithUndo(el.bgColorInput, (val) => {
-    setPresent({ ...project(), bgColor: val });
-    schedulePreviewRender();
-    return true;
-  }, renderInspector);
-}
-
 function wireVideoInspector(): void {
   el.vSpeedPresets.addEventListener('click', (ev) => {
     const speed = Number(closestFrom(ev.target, '.pill-btn')?.dataset.speed);
     if (speed) commitSelected('video', (c) => E.setClipSpeed(c, speed), { resolveOverlap: true });
-  });
-  bindSliderWithUndo(el.vSpeed, (val) => {
-    const sel = selectedOn('video');
-    if (!sel) return;
-    const updated = patchClipLive(sel.id, (c) => E.setClipSpeed(c, val));
-    if (!updated) return;
-    el.vSpeedOut.textContent = `${updated.speed.toFixed(2)}×`;
-    el.inspectorMeta.textContent = E.formatTimecode(updated.duration);
-    const blk = clipBlock(sel.id);
-    if (blk) blk.style.width = `${Math.max(14, updated.duration * S.pxPerSec)}px`;
-  }, () => {
-    const sel = selectedOn('video');
-    if (sel) {
-      setPresent({ ...project(), clips: E.resolveVideoTrackOverlap(project().clips, sel.id, { preserveOrder: true }) });
-    }
-    onStateChanged();
   });
   wireVolume('video', el.vVol, el.vVolOut, el.vMuteBtn);
   el.vExtractAudioBtn.addEventListener('click', () => {
@@ -144,9 +95,7 @@ function wireVideoInspector(): void {
   for (const btn of [el.vFitCover, el.vFitContain]) {
     btn.addEventListener('click', () => commitSelected('video', () => ({ fit: btn.dataset.fit as Fit })));
   }
-  el.vBlurBg.addEventListener('change', () => commitSelected('video', () => ({ blurBg: el.vBlurBg.checked })));
   el.vRotateBtn.addEventListener('click', () => commitSelected('video', (c) => ({ rotate: ((c.rotate || 0) + 90) % 360 })));
-  el.vFlipBtn.addEventListener('click', () => commitSelected('video', (c) => ({ flipH: !c.flipH })));
   liveSlider('video', el.vZoom, el.vZoomOut, (v) => `${Math.round(v)}%`, (v) => ({ zoom: v / 100 }));
 
   liveSlider(null, el.vBright, el.vBrightOut, (v) => `${v}%`, (v) => ({ brightness: v }));
@@ -156,9 +105,6 @@ function wireVideoInspector(): void {
     commitSelected('video', () => ({ filter: 'none', brightness: 100, contrast: 100, saturation: 100 }));
   });
 
-  liveSlider('video', el.vTransDur, el.vTransDurOut, (v) => `${v.toFixed(2)}s`, (v, c) => ({
-    transitionIn: { type: c.transitionIn?.type && c.transitionIn.type !== 'none' ? c.transitionIn.type : 'dissolve', duration: v },
-  }));
   liveSlider(null, el.vFadeIn, el.vFadeInOut, (v) => `${v.toFixed(1)}s`, (v) => ({ fadeIn: v }), rescheduleIfPlaying);
   liveSlider(null, el.vFadeOut, el.vFadeOutOut, (v) => `${v.toFixed(1)}s`, (v) => ({ fadeOut: v }), rescheduleIfPlaying);
 }
@@ -195,20 +141,11 @@ function wireTextInspector(): void {
     if (pos) commitSelected('text', () => ({ x: 0.5, y: TEXT_Y_POSITIONS[pos] ?? 0.78 }));
   });
 
-  const liveColor = (key: 'color' | 'bgColor') => (val: string) => {
-    const sel = selectedOn('text');
-    if (!sel) return false;
-    patchClipLive(sel.id, (c) => ({ ...c, [key]: val }));
-    return true;
-  };
-  bindColorWithUndo(el.tColor, liveColor('color'));
-  bindColorWithUndo(el.tBg, liveColor('bgColor'));
-  el.tColorReset.addEventListener('click', () => commitSelected('text', () => ({ color: '', bgColor: '' })));
   el.tApplyAllBtn.addEventListener('click', () => {
     const sel = selectedOn('text');
     if (!sel) return;
     commitState((p) => ({ ...p, clips: E.applyTextStyleToAll(p.clips, sel.id) }));
-    showToast('Applied style to all captions');
+    showToast('Applied style to all text');
   });
 }
 
@@ -219,7 +156,6 @@ function wireAudioInspector(): void {
 }
 
 export function wireInspectorControls(): void {
-  wireCanvasSettings();
   wireVideoInspector();
   wireTextInspector();
   wireAudioInspector();

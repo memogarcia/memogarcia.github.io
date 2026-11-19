@@ -1,6 +1,6 @@
-// Cut — Context-sensitive inspector: canvas settings, or the selected video, caption, or audio clip.
+// Cut — Context-sensitive inspector: selected video, text, or audio clip.
 import * as E from './engine/index.ts';
-import type { Clip, FilterKey, KenBurnsKey, Project, TextPresetKey, TransitionType } from './engine/index.ts';
+import type { Clip, FilterKey, KenBurnsKey, Project, TextPresetKey } from './engine/index.ts';
 import { el } from './dom.ts';
 import { commitState } from './history.ts';
 import { getSelectedClip, mediaMap, project } from './state.ts';
@@ -37,15 +37,8 @@ function chipGrid<K extends string>(
 
 export function buildInspectorGrids(): void {
   chipGrid<FilterKey>(el.vFilterGrid, E.FILTERS, 'filter', 'video', (filter) => ({ filter }));
-  chipGrid<TransitionType>(el.vTransGrid, E.TRANSITIONS, 'trans', 'video', (type) => (c) => ({
-    transitionIn: { type, duration: c.transitionIn?.duration || 0.45 },
-  }));
   chipGrid<KenBurnsKey>(el.vKenBurnsGrid, E.KEN_BURNS, 'kb', 'video', (kenBurns) => ({ kenBurns }));
   chipGrid<TextPresetKey>(el.tPresetGrid, E.TEXT_PRESETS, 'preset', 'text', (preset) => ({ preset, color: '', bgColor: '' }));
-}
-
-export function toHexColor(val: unknown, fallback: string): string {
-  return typeof val === 'string' && /^#[0-9a-f]{6}$/i.test(val) ? val : fallback;
 }
 
 function pressAll(container: HTMLElement, selector: string, isOn: (btn: HTMLElement) => boolean): void {
@@ -71,12 +64,11 @@ function renderVideoInspector(sel: Clip): void {
   const isImage = sel.kind === 'image';
   const media = sel.mediaId ? mediaMap.get(sel.mediaId) : undefined;
   el.vSpeedGroup.hidden = isImage;
-  el.vAudioGroup.hidden = isImage || sel.kind === 'procedural';
+  el.vAudioGroup.hidden = isImage;
   el.vExtractAudioBtn.hidden = !(media && (media.audioBuffer || media.streamedAudio));
   el.vMotionGroup.hidden = !isImage;
 
   const spd = sel.speed || 1;
-  setSlider(el.vSpeed, el.vSpeedOut, spd, `${spd.toFixed(2)}×`);
   pressAll(el.vSpeedPresets, '.pill-btn', (b) => Math.abs(Number(b.dataset.speed) - spd) < 0.01);
 
   const volPct = Math.round((sel.volume ?? 1) * 100);
@@ -85,9 +77,6 @@ function renderVideoInspector(sel: Clip): void {
 
   el.vFitCover.setAttribute('aria-pressed', String((sel.fit || 'cover') === 'cover'));
   el.vFitContain.setAttribute('aria-pressed', String(sel.fit === 'contain'));
-  el.vFlipBtn.setAttribute('aria-pressed', String(Boolean(sel.flipH)));
-  el.vBlurRow.hidden = sel.fit !== 'contain';
-  el.vBlurBg.checked = sel.blurBg !== false;
 
   const zoomPct = Math.round((sel.zoom || 1) * 100);
   setSlider(el.vZoom, el.vZoomOut, zoomPct, `${zoomPct}%`);
@@ -98,17 +87,12 @@ function renderVideoInspector(sel: Clip): void {
   setSlider(el.vContrast, el.vContrastOut, sel.contrast ?? 100, `${sel.contrast ?? 100}%`);
   setSlider(el.vSat, el.vSatOut, sel.saturation ?? 100, `${sel.saturation ?? 100}%`);
 
-  const tr = sel.transitionIn || { type: 'none', duration: 0.45 };
-  pressAll(el.vTransGrid, '.filter-chip', (b) => b.dataset.trans === tr.type);
-  el.vTransDurWrap.hidden = tr.type === 'none';
-  setSlider(el.vTransDur, el.vTransDurOut, tr.duration || 0.45, `${(tr.duration || 0.45).toFixed(2)}s`);
-
   setSlider(el.vFadeIn, el.vFadeInOut, sel.fadeIn || 0, `${(sel.fadeIn || 0).toFixed(1)}s`);
   setSlider(el.vFadeOut, el.vFadeOutOut, sel.fadeOut || 0, `${(sel.fadeOut || 0).toFixed(1)}s`);
 }
 
 function renderTextInspector(p: Project, sel: Clip): void {
-  el.inspectorTitle.textContent = 'Caption';
+  el.inspectorTitle.textContent = 'Text';
   el.inspectorMeta.textContent = E.formatTimecode(sel.duration);
   if (document.activeElement !== el.tContent) el.tContent.value = sel.text || '';
   pressAll(el.tPresetGrid, '.filter-chip', (b) => b.dataset.preset === (sel.preset || 'caption'));
@@ -121,9 +105,6 @@ function renderTextInspector(p: Project, sel: Clip): void {
     return targetY !== undefined && Math.abs(curY - targetY) < 0.08;
   });
 
-  const preset = E.TEXT_PRESETS[sel.preset || 'caption'] || E.TEXT_PRESETS.caption;
-  el.tColor.value = toHexColor(sel.color || preset.color, '#ffffff');
-  el.tBg.value = toHexColor(sel.bgColor || preset.bgColor, '#121316');
   el.tApplyAllBtn.hidden = p.clips.filter((c) => c.track === 'text').length < 2;
 }
 
@@ -148,10 +129,8 @@ export function renderInspector(): void {
   el.inspAudio.hidden = sel?.track !== 'audio';
 
   if (!sel) {
-    el.inspectorTitle.textContent = 'Canvas';
-    el.inspectorMeta.textContent = p.aspect;
-    el.bgColorInput.value = p.bgColor || '#0e0f12';
-    pressAll(el.bgSwatches, '.swatch', (b) => b.dataset.color === p.bgColor);
+    el.inspectorTitle.textContent = 'Edit';
+    el.inspectorMeta.textContent = '';
   } else if (sel.track === 'video') {
     renderVideoInspector(sel);
   } else if (sel.track === 'text') {

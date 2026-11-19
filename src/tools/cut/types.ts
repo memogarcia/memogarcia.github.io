@@ -1,9 +1,7 @@
 // Cut — App-side types (DOM, media, audio graph) that the pure engine does not know about.
 import type { MediaKind, Project } from './engine/index.ts';
 
-export type SceneId = 'tokyo-rain' | 'golden-hour' | 'kinetic-grid' | 'night-route';
-
-/** An imported or generated source. `blob` is what gets persisted; `url`/`img`/`audioBuffer` are runtime-only. */
+/** An imported source. `blob` is what gets persisted; `url`/`img`/`audioBuffer` are runtime-only. */
 export interface MediaItem {
   id: string;
   kind: MediaKind;
@@ -13,8 +11,6 @@ export interface MediaItem {
   height?: number;
   thumbs?: string[];
   peaks?: number[] | null;
-  sceneId?: SceneId | null;
-  isDemoAudio?: boolean;
   blob?: Blob | null;
   url?: string;
   img?: HTMLImageElement;
@@ -33,8 +29,6 @@ export interface MediaRecord {
   height: number;
   thumbs: string[];
   peaks: number[] | null;
-  sceneId: SceneId | null;
-  isDemoAudio: boolean;
   streamedAudio: boolean;
   blob: Blob | null;
 }

@@ -33,7 +33,7 @@ export const S = {
   canvasDrag: null as CanvasDrag | null,
 
   // Export
-  exportSettings: { res: '720' as Quality, fps: 30 },
+  exportSettings: { res: '1080' as Quality, fps: 30 },
   exporting: false,
   exportAbort: null as (() => void) | null,
   lastExportUrl: null as string | null,

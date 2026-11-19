@@ -24,27 +24,19 @@
       <button type="button" class="icon-btn" data-close-modal="export-modal" aria-label="Close">×</button>
     </div>
     <div class="modal-body">
-      <p class="modal-sub">Rendered directly on your machine using HTML5 Canvas, Web Audio, and MediaRecorder. No server, no watermark.</p>
+      <p class="modal-sub">Rendered on your device. No upload, no watermark.</p>
 
       <div class="export-options" id="export-options">
         <div class="field-group">
           <label class="field-label">Resolution</label>
           <div class="pill-row">
-            <button type="button" class="pill-btn" data-res="720" aria-pressed="true">720p (Fast)</button>
-            <button type="button" class="pill-btn" data-res="1080" aria-pressed="false">1080p (HD)</button>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Frame rate</label>
-          <div class="pill-row">
-            <button type="button" class="pill-btn" data-fps="30" aria-pressed="true">30 fps</button>
-            <button type="button" class="pill-btn" data-fps="60" aria-pressed="false">60 fps</button>
+            <button type="button" class="pill-btn" data-res="1080" aria-pressed="true">1080p (HD)</button>
+            <button type="button" class="pill-btn" data-res="720" aria-pressed="false">720p (Fast)</button>
           </div>
         </div>
 
         <div class="export-summary" id="export-summary">
-          <div><span>Output</span><strong id="export-dims">720 × 1280</strong></div>
+          <div><span>Output</span><strong id="export-dims">1080 × 1920</strong></div>
           <div><span>Duration</span><strong id="export-dur">00:00.0</strong></div>
           <div><span>Format</span><strong id="export-fmt">Detecting…</strong></div>
         </div>

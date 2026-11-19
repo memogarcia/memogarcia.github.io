@@ -31,10 +31,10 @@ export function cutLastTrain(media: Record<ReelSource, MediaRef>): Clip[] {
   }
   return [
     shot('ueno', 0, 5.5, { kenBurns: 'zoom-in', brightness: 116, fadeIn: 0.6 }),
-    shot('platform', 5.5, 4, { kenBurns: 'pan-left', brightness: 93 }),
+    shot('platform', 5.5, 4, { kenBurns: 'zoom-out', brightness: 93 }),
     shot('passengers', 9.5, 4.5, { kenBurns: 'zoom-in', saturation: 82 }),
     shot('interior', 14, 4, { kenBurns: 'zoom-in', brightness: 91, saturation: 78 }),
-    shot('blur', 18, 3.5, { kenBurns: 'pan-right', brightness: 110 }),
+    shot('blur', 18, 3.5, { kenBurns: 'zoom-in', brightness: 110 }),
     shot('street', 21.5, 4.5, { kenBurns: 'zoom-out', saturation: 86 }),
     shot('ueno', 26, 4, { kenBurns: 'zoom-out', brightness: 105, fadeOut: 1.2,
       transitionIn: { type: 'dissolve', duration: 0.9 } }),

@@ -4,7 +4,6 @@ import type { Clip, Project, Rect, TextPreset } from './engine/index.ts';
 import { context2d, makeCanvas } from './dom.ts';
 import { slotForClip } from './media-pool.ts';
 import { gradeStill } from './photo-grade.ts';
-import { drawProceduralClip } from './procedural.ts';
 import { mediaMap, S } from './state.ts';
 
 type Ctx = CanvasRenderingContext2D;
@@ -18,6 +17,8 @@ const scratchB = makeCanvas();
 const scratchCtxB = context2d(scratchB, { alpha: false });
 const blurCanvas = makeCanvas();
 const blurCtx = context2d(blurCanvas, { alpha: false });
+/** Letterbox and transition fill. Black is what players and fades expect. */
+const CANVAS_BG = '#000';
 
 const textLayoutCache = new Map<string, { lines: string[]; textWidth: number }>();
 
@@ -66,7 +67,7 @@ function pickDrawable(clip: Clip, fallbackW: number, fallbackH: number): { drawa
   return null;
 }
 
-function drawBlurredBackdrop(ctx: Ctx, p: Project, clip: Clip, drawable: Drawable, srcW: number, srcH: number, w: number, h: number): void {
+function drawBlurredBackdrop(ctx: Ctx, clip: Clip, drawable: Drawable, srcW: number, srcH: number, w: number, h: number): void {
   // A 1/8-scale blur pass looks the same as a full-resolution one and costs a fraction of it.
   const bw = Math.max(48, Math.round(w / 8));
   const bh = Math.max(48, Math.round(h / 8));
@@ -75,7 +76,7 @@ function drawBlurredBackdrop(ctx: Ctx, p: Project, clip: Clip, drawable: Drawabl
     blurCanvas.height = bh;
   }
   blurCtx.save();
-  blurCtx.fillStyle = p.bgColor || '#0e0f12';
+  blurCtx.fillStyle = CANVAS_BG;
   blurCtx.fillRect(0, 0, bw, bh);
   blurCtx.filter = 'blur(4px) brightness(0.55) saturate(1.15)';
   const smallCover = E.computeDrawRect(srcW, srcH, bw, bh, 'cover', 1.12, 0, 0);
@@ -88,7 +89,7 @@ function drawBlurredBackdrop(ctx: Ctx, p: Project, clip: Clip, drawable: Drawabl
   ctx.restore();
 }
 
-function drawVideoClipToCtx(ctx: Ctx, p: Project, clip: Clip, w: number, h: number, localTime: number): void {
+function drawVideoClipToCtx(ctx: Ctx, clip: Clip, w: number, h: number, localTime: number): void {
   const media = clip.mediaId ? mediaMap.get(clip.mediaId) : undefined;
   if (!media) return;
   const opacity = E.computeClipOpacity(clip, localTime);
@@ -103,32 +104,21 @@ function drawVideoClipToCtx(ctx: Ctx, p: Project, clip: Clip, w: number, h: numb
   ctx.save();
   ctx.globalAlpha *= opacity;
 
-  if (media.kind === 'procedural') {
-    if (filterStr !== 'none') ctx.filter = filterStr;
-    ctx.translate(w / 2 + offX * w, h / 2 + offY * h);
-    if (clip.flipH) ctx.scale(-1, 1);
-    if (clip.rotate) ctx.rotate((clip.rotate * Math.PI) / 180);
-    if (zoom !== 1) ctx.scale(zoom, zoom);
-    ctx.translate(-w / 2, -h / 2);
-    const sourceTime = (clip.sourceStart || 0) + localTime * (clip.speed || 1);
-    drawProceduralClip(ctx, media.sceneId, sourceTime, w, h);
-  } else {
-    const picked = pickDrawable(clip, w, h);
-    if (picked) {
-      const rotated = clip.rotate === 90 || clip.rotate === 270;
-      const srcW = rotated ? picked.h : picked.w;
-      const srcH = rotated ? picked.w : picked.h;
-      if (clip.fit === 'contain' && clip.blurBg) {
-        drawBlurredBackdrop(ctx, p, clip, picked.drawable, srcW, srcH, w, h);
-      }
-      let drawable = picked.drawable;
-      if (filterStr !== 'none') {
-        if (supportsCanvasFilter) ctx.filter = filterStr;
-        else if (drawable instanceof HTMLImageElement) drawable = gradeStill(drawable, filterStr);
-      }
-      const rect = E.computeDrawRect(srcW, srcH, w, h, clip.fit || 'cover', zoom, offX, offY);
-      drawTransformedDrawable(ctx, drawable, rect, clip.rotate, clip.flipH);
+  const picked = pickDrawable(clip, w, h);
+  if (picked) {
+    const rotated = clip.rotate === 90 || clip.rotate === 270;
+    const srcW = rotated ? picked.h : picked.w;
+    const srcH = rotated ? picked.w : picked.h;
+    if (clip.fit === 'contain') {
+      drawBlurredBackdrop(ctx, clip, picked.drawable, srcW, srcH, w, h);
     }
+    let drawable = picked.drawable;
+    if (filterStr !== 'none') {
+      if (supportsCanvasFilter) ctx.filter = filterStr;
+      else if (drawable instanceof HTMLImageElement) drawable = gradeStill(drawable, filterStr);
+    }
+    const rect = E.computeDrawRect(srcW, srcH, w, h, clip.fit || 'cover', zoom, offX, offY);
+    drawTransformedDrawable(ctx, drawable, rect, clip.rotate, clip.flipH);
   }
   ctx.restore();
 }
@@ -142,15 +132,14 @@ function ensureScratchSize(w: number, h: number): void {
   }
 }
 
-function drawTransitionLayer(ctx: Ctx, p: Project, tr: E.TransitionState, w: number, h: number, time: number): void {
+function drawTransitionLayer(ctx: Ctx, tr: E.TransitionState, w: number, h: number, time: number): void {
   ensureScratchSize(w, h);
-  const bg = p.bgColor || '#0e0f12';
-  scratchCtxA.fillStyle = bg;
+  scratchCtxA.fillStyle = CANVAS_BG;
   scratchCtxA.fillRect(0, 0, w, h);
-  drawVideoClipToCtx(scratchCtxA, p, tr.outgoing, w, h, Math.max(0, tr.outgoing.duration - 0.02));
-  scratchCtxB.fillStyle = bg;
+  drawVideoClipToCtx(scratchCtxA, tr.outgoing, w, h, Math.max(0, tr.outgoing.duration - 0.02));
+  scratchCtxB.fillStyle = CANVAS_BG;
   scratchCtxB.fillRect(0, 0, w, h);
-  drawVideoClipToCtx(scratchCtxB, p, tr.incoming, w, h, Math.max(0, time - tr.incoming.start));
+  drawVideoClipToCtx(scratchCtxB, tr.incoming, w, h, Math.max(0, time - tr.incoming.start));
 
   const prog = tr.progress;
   ctx.save();
@@ -284,15 +273,15 @@ function drawSnapGuides(ctx: Ctx, w: number, h: number): void {
 export function renderFrame(ctx: Ctx, p: Project, w: number, h: number, time: number, isPreview = false): void {
   if (isPreview) S.renderedTextBoxes = [];
   ctx.save();
-  ctx.fillStyle = p.bgColor || '#0e0f12';
+  ctx.fillStyle = CANVAS_BG;
   ctx.fillRect(0, 0, w, h);
 
   const active = E.getActiveClipsAt(p.clips, time);
   const transition = E.getTransitionStateAt(p.clips, time);
   if (transition) {
-    drawTransitionLayer(ctx, p, transition, w, h, time);
+    drawTransitionLayer(ctx, transition, w, h, time);
   } else if (active.video) {
-    drawVideoClipToCtx(ctx, p, active.video, w, h, Math.max(0, time - active.video.start));
+    drawVideoClipToCtx(ctx, active.video, w, h, Math.max(0, time - active.video.start));
   }
 
   if (!S.trackMuted.text) {

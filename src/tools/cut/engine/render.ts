@@ -37,12 +37,9 @@ export function evalKenBurns(clip: Pick<Clip, 'duration' | 'kenBurns'>, localTim
   const p = clamp(localTime / Math.max(0.001, clip.duration), 0, 1);
   if (mode === 'zoom-in') return { scale: 1 + 0.14 * p, panX: 0, panY: 0 };
   if (mode === 'zoom-out') return { scale: 1.14 - 0.14 * p, panX: 0, panY: 0 };
-  if (mode === 'pan-left') return { scale: 1.12, panX: 0.05 - 0.1 * p, panY: 0 };
-  if (mode === 'pan-right') return { scale: 1.12, panX: -0.05 + 0.1 * p, panY: 0 };
   return { ...STILL };
 }
 
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 const easeOutBack = (t: number) => {
   const c1 = 1.70158;
   const c3 = c1 + 1;
@@ -60,8 +57,7 @@ export function evalTextAnim(
   const anim = clip.animation || 'none';
 
   let scale = 1;
-  let offsetY = 0;
-  if (anim === 'none') return { alpha: 1, scale, offsetY };
+  if (anim === 'none') return { alpha: 1, scale, offsetY: 0 };
 
   const pIn = inDur > 0 ? clamp(localTime / inDur, 0, 1) : 1;
   const pOut = outDur > 0 ? clamp((dur - localTime) / outDur, 0, 1) : 1;
@@ -69,11 +65,8 @@ export function evalTextAnim(
   if (anim === 'pop') {
     scale = pIn < 1 ? 0.72 + 0.28 * easeOutBack(pIn) : 1;
     if (pOut < 1) scale *= 0.9 + 0.1 * pOut;
-  } else if (anim === 'slide') {
-    if (pIn < 1) offsetY = (1 - easeOut(pIn)) * 34;
-    else if (pOut < 1) offsetY = -(1 - pOut) * 18;
   }
-  return { alpha: clamp(alpha, 0, 1), scale, offsetY };
+  return { alpha: clamp(alpha, 0, 1), scale, offsetY: 0 };
 }
 
 export function buildCanvasFilter(clip: Pick<Clip, 'filter' | 'brightness' | 'contrast' | 'saturation'>): string {

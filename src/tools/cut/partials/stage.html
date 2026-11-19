@@ -8,18 +8,16 @@
     <div class="canvas-frame" id="canvas-frame">
       <canvas id="preview-canvas" width="720" height="1280" aria-label="Video preview canvas"></canvas>
     </div>
-      <div id="stage-empty" class="stage-empty">
-        <div class="stage-empty-inner">
-          <p class="stage-empty-eyebrow">A 30-second photo film</p>
-          <h2 class="stage-empty-title">Last Train</h2>
-          <p class="stage-empty-sub">Japan after dark.<br>Real photographs. Sound from the platform.</p>
-          <div class="stage-empty-actions">
-            <button id="empty-demo-btn" type="button" class="btn-primary">Watch the film</button>
-            <button id="empty-import-btn" type="button" class="btn-secondary">Start with your own media</button>
-          </div>
-          <p class="stage-empty-note">Every cut is editable. Headphones recommended.</p>
+    <div id="stage-empty" class="stage-empty">
+      <div class="stage-empty-inner">
+        <h2 class="stage-empty-title">Create your video</h2>
+        <p class="stage-empty-sub">Drop video, photos, or audio here. Files stay on your device.</p>
+        <div class="stage-empty-actions">
+          <button id="empty-import-btn" type="button" class="btn-primary">Import media</button>
         </div>
+        <button id="empty-demo-btn" type="button" class="stage-empty-link">or try a sample project</button>
       </div>
+    </div>
   </div>
   <input id="screening-scrub" class="screening-scrub" type="range" min="0" max="30" step="0.1" value="0" aria-label="Film position">
   <!-- Transport Bar -->
@@ -34,15 +32,9 @@
       <button id="jump-start-btn" type="button" class="icon-btn" title="Jump to start (Home)" aria-label="Jump to start">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20 9 12l10-8v16Z"/><path d="M5 19V5"/></svg>
       </button>
-      <button id="step-back-btn" type="button" class="icon-btn" title="Step back 0.1s (←)" aria-label="Step back">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
       <button id="play-btn" type="button" class="play-btn" title="Play / Pause (Space)" aria-label="Play" aria-pressed="false">
         <svg class="icon-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>
         <svg class="icon-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
-      </button>
-      <button id="step-fwd-btn" type="button" class="icon-btn" title="Step forward 0.1s (→)" aria-label="Step forward">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
       </button>
       <button id="jump-end-btn" type="button" class="icon-btn" title="Jump to end (End)" aria-label="Jump to end">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l10 8-10 8V4Z"/><path d="M19 5v14"/></svg>

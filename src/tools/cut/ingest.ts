@@ -1,12 +1,11 @@
 // Cut — File import (video, image, audio, SRT/VTT) and adding media or captions to the timeline.
 import * as E from './engine/index.ts';
 import type { TextPresetKey } from './engine/index.ts';
-import { ensureAudioContext } from './audio.ts';
+import { ensureAudioContext, extractPeaks } from './audio.ts';
 import { context2d, el, makeCanvas } from './dom.ts';
 import { commitState } from './history.ts';
 import { renderMediaBin } from './media-bin.ts';
 import { canDecodeInMemory, decodeBlobAudioAsync, persistMedia } from './persist.ts';
-import { extractPeaks } from './procedural.ts';
 import { mediaMap, project, S } from './state.ts';
 import { showToast, stripExtension } from './ui.ts';
 import type { MediaItem } from './types.ts';
@@ -233,9 +232,9 @@ export function appendMediaToTimeline(media: MediaItem): void {
 }
 
 export function addTextAtPlayhead(presetKey: TextPresetKey = 'caption'): void {
-  const clip = E.createTextClip(E.roundTime(S.playhead), { text: 'New caption', preset: presetKey });
+  const clip = E.createTextClip(E.roundTime(S.playhead), { text: 'New text', preset: presetKey });
   commitState((p) => ({ ...p, clips: p.clips.concat(clip), selectedClipId: clip.id }));
-  showToast(`Added ${E.TEXT_PRESETS[presetKey]?.label || 'text'} caption`);
+  showToast(`Added ${E.TEXT_PRESETS[presetKey]?.label || 'text'}`);
   setTimeout(() => {
     el.tContent.focus();
     el.tContent.select();
@@ -249,10 +248,9 @@ export function importCaptionsFromText(rawText: string): void {
     showToast('Paste .srt subtitles or at least one caption line');
     return;
   }
-  const replaceExisting = el.bulkReplace.checked;
   commitState((p) => ({
     ...p,
-    clips: (replaceExisting ? p.clips.filter((c) => c.track !== 'text') : p.clips).concat(created),
+    clips: p.clips.filter((c) => c.track !== 'text').concat(created),
     selectedClipId: created[0].id,
   }));
   showToast(`Added ${created.length} ${created.length === 1 ? 'caption' : 'captions'}`);

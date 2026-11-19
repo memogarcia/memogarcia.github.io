@@ -145,8 +145,8 @@ const readDir = (dir, ext) => readdirSync(dir)
 
 // 6. Seam transitions detection & evaluation
 {
-  const v1 = E.createVideoClip({ id: 'm1', kind: 'procedural', name: 'A' }, 0, { duration: 4 });
-  const v2 = E.createVideoClip({ id: 'm2', kind: 'procedural', name: 'B' }, 4, {
+  const v1 = E.createVideoClip({ id: 'm1', kind: 'video', name: 'A' }, 0, { duration: 4 });
+  const v2 = E.createVideoClip({ id: 'm2', kind: 'video', name: 'B' }, 4, {
     duration: 4,
     transitionIn: { type: 'dissolve', duration: 0.6 },
   });
@@ -190,12 +190,12 @@ with wrap`;
 
   const styled = E.applyTextStyleToAll(
     [
-      { ...scriptClips[0], preset: 'editorial', fontSize: 52, y: 0.5 },
+      { ...scriptClips[0], preset: 'outline', fontSize: 52, y: 0.5 },
       scriptClips[1],
     ],
     scriptClips[0].id
   );
-  assert.equal(styled[1].preset, 'editorial');
+  assert.equal(styled[1].preset, 'outline');
   assert.equal(styled[1].fontSize, 52);
   assert.equal(styled[1].y, 0.5);
 }

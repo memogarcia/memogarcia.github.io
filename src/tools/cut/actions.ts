@@ -65,7 +65,6 @@ function redrawTimeline(): void {
 
 export function setZoom(next: number): void {
   S.pxPerSec = E.clamp(next, 24, 220);
-  el.zoomSlider.value = String(S.pxPerSec);
   redrawTimeline();
 }
 
@@ -74,7 +73,6 @@ export function fitTimelineZoom(): void {
   const avail = Math.max(300, (el.timelineScroll.clientWidth || 720) - 48);
   if (total > 0) {
     S.pxPerSec = E.clamp(Math.round(avail / (total + 1.5)), 24, 220);
-    el.zoomSlider.value = String(S.pxPerSec);
   }
   redrawTimeline();
 }

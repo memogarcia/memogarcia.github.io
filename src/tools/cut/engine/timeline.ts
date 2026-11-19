@@ -34,7 +34,7 @@ export interface SplitResult {
 
 /** Clips whose `sourceStart` maps to a position in a time-based source (not stills or text). */
 function isMediaTimed(clip: Clip): boolean {
-  return clip.track === 'audio' || clip.kind === 'video' || clip.kind === 'procedural';
+  return clip.track === 'audio' || clip.kind === 'video';
 }
 
 function sortedVideos(clips: readonly Clip[]): Clip[] {

@@ -224,6 +224,10 @@
 /* ── Responsive ────────────────────────────────────────── */
 
 @media (max-width: 980px) {
+  .transport { padding: 0 8px; }
+  .transport-controls { gap: 0; }
+  .transport-time { gap: 2px; }
+  .timecode { font-size: 10px; }
   .workspace {
     grid-template-columns: 204px minmax(0, 1fr) 232px;
   }
@@ -265,9 +269,11 @@
     gap: 6px;
   }
   .topbar-right {
-    flex: 0 0 auto;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
     gap: 4px;
   }
+  .menu-item { min-height: 44px; }
   .topbar-center {
     order: 3;
     width: 100%;
@@ -275,7 +281,7 @@
   }
   .workspace {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 46vh auto auto;
+    grid-template-rows: minmax(260px, 46vh) auto auto;
     overflow: visible;
     min-width: 0;
   }

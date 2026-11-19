@@ -6,7 +6,7 @@ import { scheduleAllAudioFrom, setMasterMuted } from './audio.ts';
 import { loadDemoReel } from './demo.ts';
 import { byId, closestFrom, el } from './dom.ts';
 import { closeExportModal, openExportModal, startExport, updateExportSummary } from './export.ts';
-import { commitState, redo, selectClip, undo, updateStateSilent } from './history.ts';
+import { commitState, redo, selectClip, undo } from './history.ts';
 import { addTextAtPlayhead, importCaptionsFromText, ingestFiles } from './ingest.ts';
 import { syncMediaToTime } from './media-pool.ts';
 import { resetProject, scheduleAutosave } from './persist.ts';
@@ -46,9 +46,7 @@ function wireLibrary(): void {
     el.fileInput.value = '';
     void ingestFiles(files);
   });
-  el.demoBtn.addEventListener('click', () => void loadDemoReel());
   el.emptyDemoBtn.addEventListener('click', () => void loadDemoReel());
-  el.quickTextBtn.addEventListener('click', () => addTextAtPlayhead('caption'));
   el.tlTextBtn.addEventListener('click', () => addTextAtPlayhead('caption'));
 }
 
@@ -76,6 +74,22 @@ function wireDragAndDrop(): void {
   });
 }
 
+function wireProjectMenu(): void {
+  // A native popover gives light dismiss and Escape for free. It opens under the ⋯ button.
+  const menu = el.projectMenu;
+  menu.addEventListener('beforetoggle', (ev) => {
+    if ((ev as ToggleEvent).newState !== 'open') return;
+    const r = el.projectMenuBtn.getBoundingClientRect();
+    menu.style.top = `${Math.round(r.bottom + 6)}px`;
+    menu.style.right = `${Math.round(window.innerWidth - r.right)}px`;
+  });
+  menu.addEventListener('toggle', (ev) => {
+    el.projectMenuBtn.setAttribute('aria-expanded', String((ev as ToggleEvent).newState === 'open'));
+  });
+  el.newProjectBtn.addEventListener('click', () => { menu.hidePopover(); void resetProject(); });
+  el.shortcutsBtn.addEventListener('click', () => { menu.hidePopover(); el.shortcutsModal.hidden = false; });
+}
+
 function wireTopbarAndTransport(): void {
   el.aspectGroup.addEventListener('click', (ev) => {
     const aspect = closestFrom(ev.target, '.seg-btn')?.dataset.aspect;
@@ -85,15 +99,12 @@ function wireTopbarAndTransport(): void {
   });
   el.undoBtn.addEventListener('click', undo);
   el.redoBtn.addEventListener('click', redo);
-  el.newProjectBtn.addEventListener('click', () => void resetProject());
-  el.shortcutsBtn.addEventListener('click', () => { el.shortcutsModal.hidden = false; });
+  wireProjectMenu();
   el.exportOpenBtn.addEventListener('click', openExportModal);
 
   el.playBtn.addEventListener('click', togglePlayback);
   el.jumpStartBtn.addEventListener('click', () => seekTo(0));
   el.jumpEndBtn.addEventListener('click', () => seekTo(E.computeProjectDuration(project().clips)));
-  el.stepBackBtn.addEventListener('click', () => seekTo(Math.max(0, S.playhead - 0.1)));
-  el.stepFwdBtn.addEventListener('click', () => seekTo(S.playhead + 0.1));
   el.masterMuteBtn.addEventListener('click', () => {
     setMasterMuted(!S.masterMuted);
     el.masterMuteBtn.setAttribute('aria-pressed', String(S.masterMuted));
@@ -106,12 +117,7 @@ function wireTimeline(): void {
   el.dupBtn.addEventListener('click', duplicateSelected);
   el.delBtn.addEventListener('click', (ev) => deleteSelected(ev.shiftKey));
   el.closeGapsBtn.addEventListener('click', closeVideoGaps);
-  el.snapBtn.addEventListener('click', () => {
-    updateStateSilent((p) => ({ ...p, snap: !p.snap }));
-    showToast(project().snap ? 'Snapping on' : 'Snapping off');
-  });
 
-  el.zoomSlider.addEventListener('input', () => setZoom(Number(el.zoomSlider.value)));
   el.zoomInBtn.addEventListener('click', () => setZoom(S.pxPerSec + 20));
   el.zoomOutBtn.addEventListener('click', () => setZoom(S.pxPerSec - 20));
   el.zoomFitBtn.addEventListener('click', fitTimelineZoom);
@@ -163,16 +169,11 @@ function wireDialogs(): void {
   el.exportOptions.addEventListener('click', (ev) => {
     const btn = closestFrom(ev.target, '.pill-btn');
     if (!btn) return;
-    const { res, fps } = btn.dataset;
+    const { res } = btn.dataset;
     if (res === '720' || res === '1080') {
       S.exportSettings.res = res as Quality;
       el.exportOptions.querySelectorAll<HTMLElement>('[data-res]').forEach((b) => {
         b.setAttribute('aria-pressed', String(b.dataset.res === res));
-      });
-    } else if (fps) {
-      S.exportSettings.fps = Number(fps);
-      el.exportOptions.querySelectorAll<HTMLElement>('[data-fps]').forEach((b) => {
-        b.setAttribute('aria-pressed', String(Number(b.dataset.fps) === S.exportSettings.fps));
       });
     }
     updateExportSummary();

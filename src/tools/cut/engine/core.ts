@@ -22,7 +22,6 @@ export function roundTime(sec: number): number {
 export function createProject(overrides: Partial<Project> = {}): Project {
   return {
     aspect: '9:16',
-    bgColor: '#0e0f12',
     clips: [],
     selectedClipId: null,
     snap: true,
@@ -47,7 +46,6 @@ export function createVideoClip(media: MediaRef, start = 0, overrides: Partial<C
     volume: 1,
     muted: false,
     fit: 'cover',
-    blurBg: true,
     zoom: 1,
     offsetX: 0,
     offsetY: 0,

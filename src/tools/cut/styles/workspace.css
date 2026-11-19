@@ -332,6 +332,7 @@
 
 .stage-panel {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) 44px;
   background: var(--stage);
   min-width: 0;
@@ -374,8 +375,8 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(14, 15, 18, 0.88);
-  color: #f4f0e4;
+  background: var(--panel);
+  color: var(--ink);
   text-align: center;
 }
 
@@ -384,31 +385,48 @@
 }
 
 .stage-empty-inner {
-  max-width: 240px;
+  max-width: 360px;
 }
 
 .stage-empty-title {
-  margin: 0 0 6px;
-  font: 600 18px var(--serif);
+  margin: 0 0 12px;
+  font: 600 clamp(24px, 3vw, 32px) / 1.2 var(--serif);
 }
 
 .stage-empty-sub {
-  margin: 0 0 14px;
-  font-size: 12px;
+  margin: 0 0 24px;
+  font-size: 14px;
   line-height: 1.5;
-  color: rgba(244, 240, 228, 0.72);
+  color: var(--ink-soft);
 }
 
 .stage-empty-actions {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
 }
 
-.stage-empty .btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #f4f0e4;
+.stage-empty-actions button {
+  min-height: 44px;
+  min-width: 112px;
+  font-size: 14px;
+}
+
+/* The sample is an aside, not a second call to action. */
+.stage-empty-link {
+  margin-top: 14px;
+  padding: 6px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.stage-empty-link:hover:not(:disabled) {
+  color: var(--ink);
 }
 
 /* Transport bar */

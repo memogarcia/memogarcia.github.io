@@ -2,8 +2,8 @@
 import type { ASPECTS, FILTERS, KEN_BURNS, TEXT_PRESETS, TRANSITIONS } from './presets.ts';
 
 export type Track = 'video' | 'audio' | 'text';
-export type ClipKind = 'video' | 'image' | 'procedural' | 'audio' | 'text';
-export type MediaKind = 'video' | 'image' | 'procedural' | 'audio';
+export type ClipKind = 'video' | 'image' | 'audio' | 'text';
+export type MediaKind = 'video' | 'image' | 'audio';
 export type DetectedKind = MediaKind | 'subtitle';
 
 export type AspectKey = keyof typeof ASPECTS;
@@ -11,7 +11,7 @@ export type FilterKey = keyof typeof FILTERS;
 export type TransitionType = keyof typeof TRANSITIONS;
 export type KenBurnsKey = keyof typeof KEN_BURNS;
 export type TextPresetKey = keyof typeof TEXT_PRESETS;
-export type TextAnimation = 'none' | 'fade' | 'pop' | 'slide';
+export type TextAnimation = 'none' | 'fade' | 'pop';
 export type Fit = 'cover' | 'contain';
 export type Quality = '720' | '1080';
 
@@ -46,7 +46,6 @@ export interface Clip {
 
   // Video
   fit?: Fit;
-  blurBg?: boolean;
   zoom?: number;
   /** Normalized pan offset (-1..1). */
   offsetX?: number;
@@ -74,7 +73,6 @@ export interface Clip {
 
 export interface Project {
   aspect: AspectKey;
-  bgColor: string;
   clips: Clip[];
   selectedClipId: string | null;
   snap: boolean;

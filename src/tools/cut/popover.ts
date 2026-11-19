@@ -6,7 +6,7 @@ import { commitState, patchClipLive } from './history.ts';
 import { bindSliderWithUndo } from './inspector-events.ts';
 import { renderInspector } from './inspector.ts';
 import { seekTo } from './playback.ts';
-import { findClip, project, S } from './state.ts';
+import { findClip, S } from './state.ts';
 import { renderTimelineClips } from './timeline.ts';
 
 function setPressed(grid: HTMLElement, type: string): void {
@@ -77,11 +77,6 @@ export function wireTransitionPopover(): void {
     });
     if (!updated?.transitionIn) return;
     setPressed(el.transPopGrid, updated.transitionIn.type);
-    if (project().selectedClipId === clipId) {
-      el.vTransDurWrap.hidden = false;
-      el.vTransDur.value = String(val);
-      el.vTransDurOut.textContent = `${val.toFixed(2)}s`;
-    }
   }, () => {
     renderTimelineClips();
     renderInspector();

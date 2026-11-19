@@ -1,6 +1,7 @@
 // Cut — Media library list and caption style cards in the left drawer.
 import * as E from './engine/index.ts';
 import type { TextPresetKey } from './engine/index.ts';
+import { REEL_ID } from './demo-sequence.ts';
 import { el } from './dom.ts';
 import { commitState } from './history.ts';
 import { addTextAtPlayhead, appendMediaToTimeline } from './ingest.ts';
@@ -102,6 +103,8 @@ function mediaRow(media: MediaItem): HTMLElement {
 
 export function renderMediaBin(): void {
   perf.mediaBinRebuilds += 1;
+  // Sample credits belong with the sample media, not with the user's own project.
+  el.reelCredits.hidden = ![...mediaMap.keys()].some((id) => id.startsWith(REEL_ID));
   if (!mediaMap.size) {
     el.mediaList.replaceChildren(create('p', 'empty-note',
       'Imported files stay in your browser. Click any item to append it to the timeline.'));

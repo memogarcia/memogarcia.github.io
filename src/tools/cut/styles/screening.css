@@ -1,34 +1,4 @@
-/* The first frame is a film poster; the editor is still one import away. */
-.stage-empty {
-  inset: 16px;
-  padding: clamp(24px, 5vw, 64px);
-  place-items: end start;
-  text-align: left;
-  border: 1px solid #ffffff1a;
-  border-radius: 2px;
-  background: linear-gradient(180deg, #07090900 0%, #07090944 32%, #070909e8 100%),
-    url('/img/cut-last-train-ueno-photo.webp') center 42% / cover;
-}
-.stage-empty-inner { max-width: 420px; }
-.stage-empty-eyebrow {
-  margin: 0 0 18px;
-  font: 500 11px var(--mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: #dddcd5;
-}
-.stage-empty-title {
-  margin: 0 0 16px;
-  font: 500 clamp(36px, 5vw, 78px) / .95 'Helvetica Neue', Arial, sans-serif;
-  letter-spacing: -.045em;
-}
-.stage-empty-sub { font-size: 15px; line-height: 1.6; color: #d7d8d3; margin-bottom: 24px; }
-.stage-empty-actions { align-items: stretch; max-width: 280px; gap: 10px; }
-.stage-empty-actions button { min-height: 44px; font-size: 14px; }
-.stage-empty .btn-primary { background: #eeede7; color: #121414; border-radius: 3px; }
-.stage-empty .btn-primary:hover { background: #fff; }
-.stage-empty .btn-secondary { border-radius: 3px; background: #0c101070; }
-.stage-empty-note { margin: 18px 0 0; color: #b3b7b2; font-size: 12px; line-height: 1.5; }
+/* Demo source credits and optional cinema preview. */
 .reel-credits { color: var(--ink-soft); font-size: 12px; line-height: 1.6; margin-top: 12px; }
 .reel-credits summary { cursor: pointer; padding: 8px 0; }
 .reel-credits p { margin: 10px 0; }
@@ -118,14 +88,6 @@
 body.is-screening { overflow: hidden; }
 
 @media (max-width: 760px) {
-  .stage-empty { inset: 8px; padding: 24px; background-position: center 35%; }
-  .stage-empty-inner { width: 100%; max-width: none; }
-  .stage-empty-eyebrow { margin-bottom: 10px; }
-  .stage-empty-title { font-size: 40px; margin-bottom: 10px; }
-  .stage-empty-sub { font-size: 14px; margin-bottom: 14px; }
-  .stage-empty-actions { flex-direction: row; max-width: none; }
-  .stage-empty-actions button { flex: 1; font-size: 12px; padding: 8px; }
-  .stage-empty-note { margin-top: 12px; font-size: 11px; }
   #screening-dialog .stage-panel { padding: 0 16px; grid-template-rows: 64px minmax(0, 1fr) 44px 72px; }
   .screening-header > div { gap: 12px; }
   #screening-title { font-size: 12px; max-width: 120px; }
@@ -139,6 +101,4 @@ body.is-screening { overflow: hidden; }
 }
 @media (max-height: 600px) {
   #screening-dialog .stage-panel { grid-template-rows: 48px minmax(0, 1fr) 24px 52px; }
-  .stage-empty-note { display: none; }
-  .stage-empty { padding: 20px; }
 }

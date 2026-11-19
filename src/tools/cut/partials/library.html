@@ -14,11 +14,6 @@
         <span class="import-sub">MP4, WebM, MOV, PNG, MP3, SRT</span>
       </button>
       <input id="file-input" type="file" accept="video/*,image/*,audio/*,.srt,.vtt" multiple hidden>
-
-      <div class="quick-row">
-        <button id="quick-text-btn" type="button" class="btn-secondary flex-1">+ Caption</button>
-        <button id="demo-btn" type="button" class="btn-secondary" title="Watch Last Train, an editable photo film with recorded station sound">Watch demo</button>
-      </div>
       <!-- @include reel-credits.html -->
     </div>
 
@@ -43,11 +38,7 @@
           <input id="srt-file-input" type="file" accept=".srt,.vtt,.txt" hidden>
         </div>
         <textarea id="bulk-captions" class="text-area" rows="5" placeholder="Paste .srt subtitles, or one caption per line to auto-time across your video…"></textarea>
-        <label class="check-row">
-          <input id="bulk-replace" type="checkbox" checked>
-          <span>Replace existing captions</span>
-        </label>
-        <button id="bulk-captions-btn" type="button" class="btn-secondary full-width mt-xs">Generate captions on timeline</button>
+        <button id="bulk-captions-btn" type="button" class="btn-secondary full-width mt-xs">Add to timeline</button>
       </div>
     </div>
   </div>
