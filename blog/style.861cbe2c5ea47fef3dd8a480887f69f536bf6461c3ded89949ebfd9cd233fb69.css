@@ -325,8 +325,7 @@ nav a[aria-current="page"] {
   opacity: 0.75;
 }
 
-/* Editorial Left-Rail Index (Home Stories Shelf, Writing by Year, Archives) */
-.stories-shelf,
+/* Editorial Left-Rail Index (Writing by Year, Archives) */
 .writing {
   border-top: 1px solid var(--line);
   scroll-margin-top: 24px;
@@ -356,10 +355,6 @@ nav a[aria-current="page"] {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
-
-.index-group--stories .index-rail { color: var(--accent); }
-
-.index-column { min-width: 0; }
 
 .post-list {
   padding: 0;
@@ -403,10 +398,6 @@ nav a[aria-current="page"] {
   letter-spacing: -0.01em;
 }
 
-.post-list--stories .post-title {
-  font-style: italic;
-}
-
 .post-list a:hover .post-title {
   color: var(--accent);
 }
@@ -432,27 +423,6 @@ nav a[aria-current="page"] {
   color: var(--accent);
   transform: translateX(3px);
 }
-
-.shelf-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 10px;
-  padding: 6px 0;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.18s ease;
-}
-
-.shelf-more span {
-  transition: transform 0.2s ease;
-}
-
-.shelf-more:hover { color: var(--accent); }
-.shelf-more:hover span { transform: translateX(3px); }
 
 /* Section & Archive Pages */
 .section-page,
